@@ -5,24 +5,27 @@ export const baseUrl = 'https://profitableweb.ru';
 
 // SEO Keywords
 export const seoKeywords = [
-  'hobby monetization',
-  'passive income',
-  'side hustle',
-  'entrepreneurship',
-  'personal finance',
-  'creative business',
+  'монетизация хобби',
+  'пассивный доход',
+  'заработок в интернете',
+  'фриланс',
+  'предпринимательство',
+  'творческий бизнес',
+  'side project',
+  'AI автоматизация',
+  'digital продукты',
 ];
 
 // Core metadata configuration
 export const coreMetadata = {
   title: {
-    default: 'ProfitableWeb - Monetize Your Hobbies',
+    default: 'ProfitableWeb — Исследовательская лаборатория монетизации труда',
     template: '%s | ProfitableWeb',
   },
   description:
-    'Research blog documenting insights and strategies for generating financial capital from personal hobbies and passions.',
+    'Открытая лаборатория по исследованию трансформации труда в эпоху AI-автоматизации. Изучаем механизмы преобразования личных компетенций и призвания в автономные цифровые активы.',
   siteName: 'ProfitableWeb',
-  creator: 'ProfitableWeb Team',
+  creator: 'ProfitableWeb Research Lab',
   publisher: 'ProfitableWeb',
 } as const;
 
@@ -90,7 +93,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'ru_RU',
     url: baseUrl,
     siteName: coreMetadata.siteName,
     title: coreMetadata.title.default,
