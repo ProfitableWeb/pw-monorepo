@@ -1,0 +1,152 @@
+// Light Theme Configuration
+// CSS custom properties for light theme
+
+[data-theme="light"],
+:root {
+  // ===== BRAND COLORS =====
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-active: #1d4ed8;
+  --color-primary-light: #dbeafe;
+
+  --color-secondary: #14b8a6;
+  --color-secondary-hover: #0d9488;
+  --color-secondary-light: #ccfbf1;
+
+  --color-accent: #f97316;
+  --color-accent-hover: #ea580c;
+  --color-accent-light: #fed7aa;
+
+  // ===== SURFACE COLORS =====
+  --color-background: #fafafa;
+  --color-surface: #f5f5f5;
+  --color-surface-hover: #e5e5e5;
+  --color-surface-active: #d4d4d4;
+  --color-border: #d4d4d4;
+  --color-border-hover: #a3a3a3;
+
+  // ===== TEXT COLORS =====
+  --color-text-primary: #171717;
+  --color-text-secondary: #404040;
+  --color-text-muted: #737373;
+  --color-text-inverse: #fafafa;
+  --color-text-disabled: #a3a3a3;
+
+  // ===== STATUS COLORS =====
+  --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-success-dark: #15803d;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #b45309;
+
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #b91c1c;
+
+  --color-info: #0ea5e9;
+  --color-info-light: #e0f2fe;
+  --color-info-dark: #0369a1;
+
+  // ===== INTERACTIVE COLORS =====
+  --color-link: #2563eb;
+  --color-link-hover: #1d4ed8;
+  --color-link-visited: #1e40af;
+
+  --color-focus: #3b82f6;
+  --color-focus-ring: rgba(59, 130, 246, 0.1);
+
+  // ===== SEMANTIC COLORS =====
+  --color-highlight: #fed7aa;
+  --color-selection: #dbeafe;
+  --color-code-bg: #f5f5f5;
+  --color-code-text: #262626;
+
+  // ===== SHADOW DEFINITIONS =====
+  --shadow-color: 0, 0, 0;
+  --shadow-sm: 0 1px 2px 0 rgba(var(--shadow-color), 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(var(--shadow-color), 0.1), 0 2px 4px -1px rgba(var(--shadow-color), 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(var(--shadow-color), 0.1), 0 4px 6px -2px rgba(var(--shadow-color), 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(var(--shadow-color), 0.1), 0 10px 10px -5px rgba(var(--shadow-color), 0.04);
+
+  // ===== COMPONENT-SPECIFIC COLORS =====
+
+  // Header/Navigation
+  --nav-background: #fafafa;
+  --nav-text: #171717;
+  --nav-border: #e5e5e5;
+
+  // Sidebar
+  --sidebar-background: #f5f5f5;
+  --sidebar-text: #262626;
+  --sidebar-border: #e5e5e5;
+
+  // Cards
+  --card-background: #fafafa;
+  --card-border: #e5e5e5;
+  --card-shadow: var(--shadow-sm);
+
+  // Forms
+  --input-background: #fafafa;
+  --input-border: #d4d4d4;
+  --input-border-focus: #3b82f6;
+  --input-text: #171717;
+  --input-placeholder: #737373;
+
+  // Buttons
+  --button-primary-bg: #3b82f6;
+  --button-primary-text: #fafafa;
+  --button-primary-hover: #2563eb;
+
+  --button-secondary-bg: #f5f5f5;
+  --button-secondary-text: #171717;
+  --button-secondary-hover: #e5e5e5;
+
+  // Code blocks
+  --code-background: #f5f5f5;
+  --code-border: #e5e5e5;
+  --code-text: #262626;
+}
+
+// ===== LIGHT THEME SPECIFIC STYLES =====
+[data-theme="light"] {
+  color-scheme: light;
+
+  // Ensure proper contrast for images and media
+  img {
+    opacity: 1;
+  }
+
+  // Code syntax highlighting adjustments for light theme
+  pre,
+  code {
+    background-color: var(--code-background);
+    color: var(--code-text);
+  }
+
+  // Selection styling
+  ::selection {
+    background-color: var(--color-selection);
+    color: var(--color-text-primary);
+  }
+
+  // Scrollbar styling for light theme
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-border-hover);
+    }
+  }
+}

@@ -1,0 +1,184 @@
+// Spacing System
+// Consistent spacing scale for margins, padding, and layout
+
+// ===== BASE SPACING UNIT =====
+// All spacing is based on a 0.25rem (4px) base unit
+$space-unit: 0.25rem; // 4px
+
+// ===== SPACING SCALE =====
+// Consistent spacing values for the entire application
+$space-0: 0;
+$space-px: 1px;
+$space-0_5: calc($space-unit * 0.5); // 2px
+$space-1: calc($space-unit * 1); // 4px
+$space-1_5: calc($space-unit * 1.5); // 6px
+$space-2: calc($space-unit * 2); // 8px
+$space-2_5: calc($space-unit * 2.5); // 10px
+$space-3: calc($space-unit * 3); // 12px
+$space-3_5: calc($space-unit * 3.5); // 14px
+$space-4: calc($space-unit * 4); // 16px
+$space-5: calc($space-unit * 5); // 20px
+$space-6: calc($space-unit * 6); // 24px
+$space-7: calc($space-unit * 7); // 28px
+$space-8: calc($space-unit * 8); // 32px
+$space-9: calc($space-unit * 9); // 36px
+$space-10: calc($space-unit * 10); // 40px
+$space-11: calc($space-unit * 11); // 44px
+$space-12: calc($space-unit * 12); // 48px
+$space-14: calc($space-unit * 14); // 56px
+$space-16: calc($space-unit * 16); // 64px
+$space-20: calc($space-unit * 20); // 80px
+$space-24: calc($space-unit * 24); // 96px
+$space-28: calc($space-unit * 28); // 112px
+$space-32: calc($space-unit * 32); // 128px
+$space-36: calc($space-unit * 36); // 144px
+$space-40: calc($space-unit * 40); // 160px
+$space-44: calc($space-unit * 44); // 176px
+$space-48: calc($space-unit * 48); // 192px
+$space-52: calc($space-unit * 52); // 208px
+$space-56: calc($space-unit * 56); // 224px
+$space-60: calc($space-unit * 60); // 240px
+$space-64: calc($space-unit * 64); // 256px
+$space-72: calc($space-unit * 72); // 288px
+$space-80: calc($space-unit * 80); // 320px
+$space-96: calc($space-unit * 96); // 384px
+
+// ===== SEMANTIC SPACING ALIASES =====
+// Common spacing values with semantic names
+$space-xs: $space-2; // 8px
+$space-sm: $space-4; // 16px
+$space-md: $space-6; // 24px
+$space-lg: $space-8; // 32px
+$space-xl: $space-12; // 48px
+$space-2xl: $space-16; // 64px
+$space-3xl: $space-24; // 96px
+
+// ===== COMPONENT SPACING =====
+// Specific spacing for common UI patterns
+
+// Container padding
+$container-padding-sm: $space-4; // 16px
+$container-padding-md: $space-6; // 24px
+$container-padding-lg: $space-8; // 32px
+
+// Section spacing
+$section-spacing-sm: $space-12; // 48px
+$section-spacing-md: $space-16; // 64px
+$section-spacing-lg: $space-24; // 96px
+$section-spacing-xl: $space-32; // 128px
+
+// Card spacing
+$card-padding-sm: $space-4; // 16px
+$card-padding-md: $space-6; // 24px
+$card-padding-lg: $space-8; // 32px
+
+// Button spacing
+$button-padding-x-sm: $space-3; // 12px
+$button-padding-y-sm: $space-1_5; // 6px
+$button-padding-x-md: $space-4; // 16px
+$button-padding-y-md: $space-2_5; // 10px
+$button-padding-x-lg: $space-6; // 24px
+$button-padding-y-lg: $space-3; // 12px
+
+// Input spacing
+$input-padding-x: $space-3; // 12px
+$input-padding-y: $space-2_5; // 10px
+
+// ===== BORDER RADIUS =====
+// Consistent border radius values
+$radius-none: 0;
+$radius-sm: 0.125rem; // 2px
+$radius-md: 0.25rem; // 4px
+$radius-lg: 0.375rem; // 6px
+$radius-xl: 0.5rem; // 8px
+$radius-2xl: 0.75rem; // 12px
+$radius-3xl: 1rem; // 16px
+$radius-full: 9999px; // Full rounded
+
+// ===== SHADOWS =====
+// Consistent shadow definitions
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+$shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+// ===== TRANSITIONS =====
+// Consistent animation timing
+$transition-fast: all 0.15s ease-in-out;
+$transition-normal: all 0.25s ease-in-out;
+$transition-slow: all 0.4s ease-in-out;
+
+// ===== Z-INDEX SCALE =====
+// Layering system for overlapping elements
+$z-base: 0;
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;
+$z-toast: 1080;
+
+// ===== SPACING UTILITY MIXINS =====
+
+// Responsive spacing mixins
+@mixin responsive-padding($size) {
+  @if $size == "sm" {
+    padding: $container-padding-sm;
+
+    @media (min-width: 768px) {
+      padding: $container-padding-md;
+    }
+  } @else if $size == "md" {
+    padding: $container-padding-md;
+
+    @media (min-width: 768px) {
+      padding: $container-padding-lg;
+    }
+  } @else if $size == "lg" {
+    padding: $container-padding-lg;
+
+    @media (min-width: 1024px) {
+      padding: $space-12;
+    }
+  }
+}
+
+@mixin responsive-margin($size) {
+  @if $size == "sm" {
+    margin: $space-4;
+
+    @media (min-width: 768px) {
+      margin: $space-6;
+    }
+  } @else if $size == "md" {
+    margin: $space-6;
+
+    @media (min-width: 768px) {
+      margin: $space-8;
+    }
+  } @else if $size == "lg" {
+    margin: $space-8;
+
+    @media (min-width: 1024px) {
+      margin: $space-12;
+    }
+  }
+}
+
+// Container max-width mixin
+@mixin container($max-width: 1200px) {
+  max-width: $max-width;
+  margin-left: auto;
+  margin-right: auto;
+  @include responsive-padding("sm");
+}

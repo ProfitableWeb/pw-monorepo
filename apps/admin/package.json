@@ -1,0 +1,30 @@
+{
+  "name": "@profitable-web/admin",
+  "version": "0.1.0",
+  "description": "Admin panel for ProfitableWeb",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@profitable-web/types": "workspace:*",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.0.2",
+    "typescript": "^5.9.2",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "^15.2.0"
+  },
+  "engines": {
+    "bun": ">=1.2.21"
+  }
+}

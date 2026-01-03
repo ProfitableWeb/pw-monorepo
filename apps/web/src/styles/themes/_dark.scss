@@ -1,0 +1,201 @@
+// Dark Theme Configuration
+// CSS custom properties for dark theme
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  // ===== BRAND COLORS =====
+  // Slightly adjusted for better contrast in dark mode
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-primary-active: #bfdbfe;
+  --color-primary-light: #1e3a8a;
+
+  --color-secondary: #2dd4bf;
+  --color-secondary-hover: #5eead4;
+  --color-secondary-light: #134e4a;
+
+  --color-accent: #fb923c;
+  --color-accent-hover: #fdba74;
+  --color-accent-light: #7c2d12;
+
+  // ===== SURFACE COLORS =====
+  --color-background: #171717;
+  --color-surface: #262626;
+  --color-surface-hover: #404040;
+  --color-surface-active: #525252;
+  --color-border: #525252;
+  --color-border-hover: #737373;
+
+  // ===== TEXT COLORS =====
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #d4d4d4;
+  --color-text-muted: #737373;
+  --color-text-inverse: #171717;
+  --color-text-disabled: #525252;
+
+  // ===== STATUS COLORS =====
+  // Slightly brighter versions for better visibility on dark backgrounds
+  --color-success: #4ade80;
+  --color-success-light: #14532d;
+  --color-success-dark: #86efac;
+
+  --color-warning: #fbbf24;
+  --color-warning-light: #78350f;
+  --color-warning-dark: #fcd34d;
+
+  --color-error: #f87171;
+  --color-error-light: #7f1d1d;
+  --color-error-dark: #fca5a5;
+
+  --color-info: #38bdf8;
+  --color-info-light: #0c4a6e;
+  --color-info-dark: #7dd3fc;
+
+  // ===== INTERACTIVE COLORS =====
+  --color-link: #60a5fa;
+  --color-link-hover: #93c5fd;
+  --color-link-visited: #3b82f6;
+
+  --color-focus: #60a5fa;
+  --color-focus-ring: rgba(96, 165, 250, 0.2);
+
+  // ===== SEMANTIC COLORS =====
+  --color-highlight: #7c2d12;
+  --color-selection: #1e3a8a;
+  --color-code-bg: #262626;
+  --color-code-text: #e5e5e5;
+
+  // ===== SHADOW DEFINITIONS =====
+  // Darker shadows for depth in dark mode
+  --shadow-color: 0, 0, 0;
+  --shadow-sm: 0 1px 2px 0 rgba(var(--shadow-color), 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(var(--shadow-color), 0.3), 0 2px 4px -1px rgba(var(--shadow-color), 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(var(--shadow-color), 0.3), 0 4px 6px -2px rgba(var(--shadow-color), 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(var(--shadow-color), 0.4), 0 10px 10px -5px rgba(var(--shadow-color), 0.2);
+
+  // ===== COMPONENT-SPECIFIC COLORS =====
+
+  // Header/Navigation
+  --nav-background: #171717;
+  --nav-text: #f5f5f5;
+  --nav-border: #404040;
+
+  // Sidebar
+  --sidebar-background: #262626;
+  --sidebar-text: #e5e5e5;
+  --sidebar-border: #404040;
+
+  // Cards
+  --card-background: #262626;
+  --card-border: #404040;
+  --card-shadow: var(--shadow-md);
+
+  // Forms
+  --input-background: #262626;
+  --input-border: #525252;
+  --input-border-focus: #60a5fa;
+  --input-text: #f5f5f5;
+  --input-placeholder: #737373;
+
+  // Buttons
+  --button-primary-bg: #3b82f6;
+  --button-primary-text: #f5f5f5;
+  --button-primary-hover: #60a5fa;
+
+  --button-secondary-bg: #404040;
+  --button-secondary-text: #f5f5f5;
+  --button-secondary-hover: #525252;
+
+  // Code blocks
+  --code-background: #262626;
+  --code-border: #525252;
+  --code-text: #e5e5e5;
+
+  // ===== DARK THEME SPECIFIC ADJUSTMENTS =====
+
+  // Reduce image brightness slightly for better integration
+  img:not([data-no-dark-filter]) {
+    opacity: 0.9;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Code syntax highlighting adjustments for dark theme
+  pre,
+  code {
+    background-color: var(--code-background);
+    color: var(--code-text);
+    border: 1px solid var(--code-border);
+  }
+
+  // Selection styling for dark theme
+  ::selection {
+    background-color: var(--color-selection);
+    color: var(--color-text-primary);
+  }
+
+  // Scrollbar styling for dark theme
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-border-hover);
+    }
+  }
+
+  // Better contrast for form elements
+  input,
+  textarea,
+  select {
+    border-color: var(--input-border);
+
+    &:focus {
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--color-focus-ring);
+    }
+  }
+
+  // Ensure proper contrast for links
+  a {
+    color: var(--color-link);
+
+    &:hover {
+      color: var(--color-link-hover);
+    }
+
+    &:visited {
+      color: var(--color-link-visited);
+    }
+  }
+}
+
+// ===== SYSTEM PREFERENCE SUPPORT =====
+// Automatically apply dark theme based on system preference
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    // Apply dark theme variables when no explicit theme is set
+    // and user prefers dark mode
+    color-scheme: dark;
+
+    --color-primary: #60a5fa;
+    --color-primary-hover: #93c5fd;
+    --color-surface: #262626;
+    --color-background: #171717;
+    --color-text-primary: #f5f5f5;
+    --color-text-secondary: #d4d4d4;
+  }
+}

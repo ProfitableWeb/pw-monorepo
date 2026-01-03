@@ -1,0 +1,54 @@
+{
+  "name": "@profitable-web/web",
+  "version": "0.1.0",
+  "description": "Next.js 15+ frontend для исследовательского блога по монетизации хобби с чистым SCSS",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build && next export",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@profitable-web/types": "workspace:*",
+    "@tanstack/react-query": "^5.87.1",
+    "framer-motion": "^12.23.12",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.0.2",
+    "typescript": "^5.9.2",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "^15.2.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "prettier": "^3.6.2",
+    "sass": "^1.92.1",
+    "vitest": "^3.2.4",
+    "@vitejs/plugin-react": "^5.0.2",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/user-event": "^14.6.1",
+    "jsdom": "^26.1.0",
+    "@vitest/ui": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4"
+  },
+  "engines": {
+    "bun": ">=1.2.21"
+  }
+}

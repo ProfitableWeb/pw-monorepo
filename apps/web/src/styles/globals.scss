@@ -1,0 +1,36 @@
+// Global Styles - Minimal Hello World
+// Only essential styles needed right now
+
+// ===== IMPORT THEMES =====
+@import "./themes/light";
+@import "./themes/dark";
+
+// ===== FONTS =====
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+// ===== CSS VARIABLES =====
+:root {
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --radius: 0.5rem;
+  --transition: 0.2s ease;
+}
+
+// ===== BASE =====
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}

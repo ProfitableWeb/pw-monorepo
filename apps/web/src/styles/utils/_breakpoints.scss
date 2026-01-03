@@ -1,0 +1,269 @@
+// Responsive Breakpoints
+// Mobile-first responsive design system
+
+// ===== BREAKPOINT VALUES =====
+// Standard breakpoints for responsive design
+$breakpoint-xs: 475px; // Extra small devices (large phones)
+$breakpoint-sm: 640px; // Small devices (tablets)
+$breakpoint-md: 768px; // Medium devices (small laptops)
+$breakpoint-lg: 1024px; // Large devices (laptops/desktops)
+$breakpoint-xl: 1280px; // Extra large devices (large desktops)
+$breakpoint-2xl: 1536px; // 2X large devices (larger desktops)
+
+// ===== CONTAINER MAX WIDTHS =====
+// Maximum content width for each breakpoint
+$container-xs: 100%;
+$container-sm: 640px;
+$container-md: 768px;
+$container-lg: 1024px;
+$container-xl: 1280px;
+$container-2xl: 1536px;
+
+// ===== RESPONSIVE MIXINS =====
+// Mobile-first media query mixins
+
+// Min-width breakpoints (mobile-first)
+@mixin xs {
+  @media (min-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+@mixin xxl {
+  @media (min-width: $breakpoint-2xl) {
+    @content;
+  }
+}
+
+// Max-width breakpoints (desktop-first)
+@mixin max-xs {
+  @media (max-width: calc($breakpoint-xs - 1px)) {
+    @content;
+  }
+}
+
+@mixin max-sm {
+  @media (max-width: calc($breakpoint-sm - 1px)) {
+    @content;
+  }
+}
+
+@mixin max-md {
+  @media (max-width: calc($breakpoint-md - 1px)) {
+    @content;
+  }
+}
+
+@mixin max-lg {
+  @media (max-width: calc($breakpoint-lg - 1px)) {
+    @content;
+  }
+}
+
+@mixin max-xl {
+  @media (max-width: calc($breakpoint-xl - 1px)) {
+    @content;
+  }
+}
+
+@mixin max-xxl {
+  @media (max-width: calc($breakpoint-2xl - 1px)) {
+    @content;
+  }
+}
+
+// Range breakpoints (between two breakpoints)
+@mixin between($min, $max) {
+  @media (min-width: $min) and (max-width: calc($max - 1px)) {
+    @content;
+  }
+}
+
+// Common range combinations
+@mixin mobile-only {
+  @include max-sm {
+    @content;
+  }
+}
+
+@mixin tablet-only {
+  @include between($breakpoint-sm, $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin desktop-only {
+  @include lg {
+    @content;
+  }
+}
+
+// ===== CONTAINER MIXIN =====
+// Responsive container with max-width constraints
+@mixin responsive-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $space-4;
+  padding-right: $space-4;
+
+  @include sm {
+    max-width: $container-sm;
+    padding-left: $space-6;
+    padding-right: $space-6;
+  }
+
+  @include md {
+    max-width: $container-md;
+  }
+
+  @include lg {
+    max-width: $container-lg;
+    padding-left: $space-8;
+    padding-right: $space-8;
+  }
+
+  @include xl {
+    max-width: $container-xl;
+  }
+
+  @include xxl {
+    max-width: $container-2xl;
+  }
+}
+
+// ===== GRID SYSTEM =====
+// Flexible grid system for layouts
+
+@mixin grid-container($gap: $space-6) {
+  display: grid;
+  gap: $gap;
+  width: 100%;
+}
+
+@mixin grid-cols($cols) {
+  grid-template-columns: repeat($cols, minmax(0, 1fr));
+}
+
+// Responsive grid utilities
+@mixin responsive-grid($mobile: 1, $tablet: 2, $desktop: 3) {
+  @include grid-container;
+  @include grid-cols($mobile);
+
+  @include sm {
+    @include grid-cols($tablet);
+  }
+
+  @include lg {
+    @include grid-cols($desktop);
+  }
+}
+
+// ===== FLEXBOX UTILITIES =====
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-column-center {
+  @include flex-column;
+  align-items: center;
+  justify-content: center;
+}
+
+// ===== ASPECT RATIO UTILITIES =====
+@mixin aspect-ratio($width, $height) {
+  aspect-ratio: $width / $height;
+}
+
+// Common aspect ratios
+@mixin aspect-square {
+  @include aspect-ratio(1, 1);
+}
+
+@mixin aspect-video {
+  @include aspect-ratio(16, 9);
+}
+
+@mixin aspect-photo {
+  @include aspect-ratio(4, 3);
+}
+
+// ===== RESPONSIVE TYPOGRAPHY =====
+@mixin responsive-text($mobile-size, $desktop-size) {
+  font-size: $mobile-size;
+
+  @include lg {
+    font-size: $desktop-size;
+  }
+}
+
+// ===== PRINT STYLES =====
+@mixin print-only {
+  @media print {
+    @content;
+  }
+}
+
+@mixin screen-only {
+  @media screen {
+    @content;
+  }
+}
+
+// ===== MOTION PREFERENCES =====
+@mixin respect-motion-preference {
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
