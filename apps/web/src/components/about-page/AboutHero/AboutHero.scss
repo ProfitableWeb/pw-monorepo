@@ -1,0 +1,49 @@
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/variables';
+
+.about-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  background: var(--surface-primary);
+  padding: 60px 20px;
+
+  &__container {
+    max-width: 900px;
+    text-align: center;
+  }
+
+  &__title {
+    font-family: var(--font-family-heading);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+
+    @include md {
+      font-size: 48px;
+    }
+
+    @include lg {
+      font-size: 56px;
+    }
+  }
+
+  &__subtitle {
+    font-family: var(--font-family-primary);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+
+    @include md {
+      font-size: 18px;
+    }
+
+    @include lg {
+      font-size: 20px;
+    }
+  }
+}

@@ -1,0 +1,60 @@
+@import '@/styles/utils/variables';
+
+.toc {
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    margin-bottom: 8px;
+
+    // Уровень вложенности
+    &--level-2 {
+      padding-left: 16px;
+    }
+
+    &--active .toc__link {
+      color: var(--link-color);
+      font-weight: 600;
+      border-left: 2px solid var(--link-color);
+    }
+  }
+
+  &__link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+    background: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--link-color);
+      border-left-color: var(--link-color-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--link-color);
+      outline-offset: 2px;
+    }
+  }
+}

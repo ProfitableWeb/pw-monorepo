@@ -1,0 +1,70 @@
+@import '@/styles/utils/variables';
+
+.sidebar-widget {
+  padding: 24px;
+  background: var(--surface-secondary);
+  border-radius: 8px;
+  margin-bottom: 24px;
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
+  }
+
+  &__content {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+
+    // Стили для ссылок внутри widget'а
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+      transition: color 0.2s ease-in-out;
+
+      &:hover {
+        color: var(--link-color-hover);
+      }
+    }
+
+    // Списки внутри widget'а
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 12px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    // Кнопки внутри widget'а
+    button {
+      width: 100%;
+      padding: 12px 24px;
+      background: var(--link-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        background: var(--link-color-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}

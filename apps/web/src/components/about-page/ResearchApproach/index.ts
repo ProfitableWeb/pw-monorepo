@@ -1,0 +1,1 @@
+export { ResearchApproach } from './ResearchApproach';

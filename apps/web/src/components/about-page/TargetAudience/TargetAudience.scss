@@ -1,0 +1,36 @@
+@import '@/styles/utils/variables';
+
+.target-audience {
+  padding: 40px 0;
+
+  &__heading {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  &__list-item {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    padding-left: 24px;
+    position: relative;
+
+    &:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--link-color);
+      font-weight: bold;
+    }
+  }
+}
