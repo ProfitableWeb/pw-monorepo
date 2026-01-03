@@ -2,8 +2,12 @@
 // Only essential styles needed right now
 
 // ===== IMPORT THEMES =====
-@import "./themes/light";
-@import "./themes/dark";
+@import "./themes/light/index";
+@import "./themes/dark/index";
+
+// ===== IMPORT UTILITIES =====
+@import "./utils/animations";
+@import "./utils/text-decorations";
 
 // ===== FONTS =====
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
@@ -15,7 +19,6 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --radius: 0.5rem;
-  --transition: 0.2s ease;
 }
 
 // ===== BASE =====
@@ -30,7 +33,29 @@ body {
   background-color: var(--color-background);
   color: var(--color-text-primary);
   line-height: 1.6;
-  transition:
-    background-color var(--transition),
-    color var(--transition);
+}
+
+// ===== UNIFIED THEME TRANSITIONS =====
+// Плавный одновременный переход для всех элементов при смене темы
+// Применяется только к элементам, использующим CSS переменные цветов
+[class*="article-"],
+[class*="masonry-"],
+[class*="app-bar"],
+[class*="hero-"],
+[class*="load-more"],
+[class*="card"],
+[class*="button"],
+[class*="input"],
+[class*="theme-toggle"],
+body,
+html {
+  transition: var(--transition-theme-all);
+}
+
+// SVG элементы для иконок
+svg,
+svg path,
+svg circle,
+svg line {
+  transition: var(--transition-svg);
 }

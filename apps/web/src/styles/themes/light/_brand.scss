@@ -1,0 +1,19 @@
+// Light Theme - Brand Colors
+// Primary, secondary, and accent colors
+
+[data-theme="light"],
+:root {
+  // ===== BRAND COLORS =====
+  --color-primary: #5ADC5A;
+  --color-primary-hover: #4BC04B;
+  --color-primary-active: #3FA43F;
+  --color-primary-light: #E8F5E8;
+
+  --color-secondary: #14b8a6;
+  --color-secondary-hover: #0d9488;
+  --color-secondary-light: #ccfbf1;
+
+  --color-accent: #f97316;
+  --color-accent-hover: #ea580c;
+  --color-accent-light: #fed7aa;
+}

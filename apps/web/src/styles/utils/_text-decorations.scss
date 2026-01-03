@@ -1,0 +1,48 @@
+// ===== TEXT DECORATIONS =====
+// Декоративные стили для выделения текста
+
+/**
+ * Маркер-хайлайт с зелёным фоном
+ * Используется для выделения важных фраз в тексте
+ * 
+ * @example
+ * <span class="mark-highlight">важная фраза</span>
+ */
+.mark-highlight {
+  background-color: var(--mark-green-bg);
+  color: var(--mark-green-text);
+  padding: 2px 6px;
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-color var(--transition-normal);
+}
+
+/**
+ * Базовый стиль для всех ссылок внутри параграфов
+ * При наведении подчёркивание плавно исчезает
+ * 
+ * @example
+ * <p><a href="#">текст ссылки</a></p>
+ */
+p a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-underline-color);
+  transition: 
+    border-bottom-color var(--transition-normal),
+    color var(--transition-normal);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--link-hover-color);
+    border-bottom-color: transparent;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--link-underline-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+

@@ -1,0 +1,154 @@
+@import '../../../styles/utils/variables';
+@import '../../../styles/utils/mixins';
+@import '../../../styles/utils/breakpoints';
+
+.app-footer {
+  width: 100%;
+  background: transparent;
+  border-top: none;
+  padding: 28px 0;
+  margin-top: 10px;
+  margin-bottom: 64px;
+  @include md {
+    padding: 64px 0;
+  }
+}
+
+.app-footer__container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-footer__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.app-footer__text {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+
+  @include md {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.app-footer__brand {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.app-footer__brand--accent {
+  color: var(--color-primary);
+}
+
+// ===== FOOTER SOCIAL ICONS =====
+.footer-social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  @include md {
+    gap: 24px;
+  }
+}
+
+.footer-social-icons__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-radius: var(--radius-xl);
+  background: var(--color-background);
+  border: 2px solid var(--color-border);
+  transition: 
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  @include md {
+    width: 64px;
+    height: 64px;
+  }
+
+  // Важно! Сбрасываем стили visited ссылок
+  &:visited {
+    color: var(--color-text-muted);
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+
+    @include md {
+      width: 36px;
+      height: 36px;
+    }
+
+    path {
+      fill: currentColor;
+      fill-opacity: 0.9;
+      transition: fill-opacity 0.3s ease;
+    }
+  }
+
+  // Hover эффект с подсветкой
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-light) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+
+    &::before {
+      opacity: 1;
+    }
+
+    svg {
+      transform: scale(1.1);
+
+      path {
+        fill-opacity: 1;
+      }
+    }
+  }
+
+  &:hover:visited {
+    color: var(--color-primary);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+}
+

@@ -1,0 +1,19 @@
+// Dark Theme - Hero Header Colors
+// Colors specific to hero sections and landing pages in dark mode
+
+[data-theme="dark"] {
+  // ===== HERO HEADER COLORS =====
+  --hero-title-color: #acacac;
+  --hero-title-link-color: #e9e9e9;
+  --hero-title-link-hover-color: #9fec9ffd;
+  --hero-text-color: #aaaaaa;
+  --hero-bg-color: #1a1a1a;
+  --mark-green-bg: #77fc771c;
+  --mark-green-text: #9fec9ffd;
+  --hero-category-color: #4DBBFF;
+  --hero-category-border-color: rgba(77, 187, 255, 0.2);
+  --hero-link-color: rgba(255, 255, 255, 1);
+  --hero-paragraph-link-color: #ffffff !important;
+}
+
+

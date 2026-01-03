@@ -1,0 +1,17 @@
+// Dark Theme - Interactive Colors
+// Links, focus states, and interactive elements for dark mode
+
+[data-theme="dark"] {
+  // ===== INTERACTIVE COLORS =====
+  --color-link: #e4e4e4;
+  --color-link-hover: #e4e4e4;
+  --color-link-visited: #e4e4e4;
+
+  --color-focus: #5ADC5A;
+  --color-focus-ring: rgba(90, 220, 90, 0.2);
+
+  // Link decoration colors
+  --link-underline-color: rgba(255, 255, 255, 0.3);
+  --link-hover-color: rgba(255, 255, 255, 0.6);
+}
+

@@ -1,0 +1,11 @@
+// Dark Theme - Semantic Colors
+// Highlight, selection, code, and other semantic uses for dark mode
+
+[data-theme="dark"] {
+  // ===== SEMANTIC COLORS =====
+  --color-highlight: #7c2d12;
+  --color-selection: #1e3a8a;
+  --color-code-bg: #262626;
+  --color-code-text: #e5e5e5;
+}
+

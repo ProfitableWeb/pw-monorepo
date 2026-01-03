@@ -1,0 +1,34 @@
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/variables';
+
+// ===== APP PAGE WRAPPER COMPONENT =====
+// Адаптивная обёртка для контента страниц приложения
+
+.app-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  transition: var(--transition-normal);
+  main {
+    width: 100%;
+  }
+  // Mobile (<768px)
+  padding: 0 20px;
+
+  // Tablet (768-1024px)
+  @include md {
+    padding: 0 40px;
+  }
+
+  // Desktop (>1024px)
+  @include lg {
+    padding: 0 68px;
+  }
+
+  // Large Desktop (>1440px)
+  @media (min-width: 1441px) {
+    padding: 0 86px;
+  }
+}
+

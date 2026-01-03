@@ -1,0 +1,9 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+
+.app-bar-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+

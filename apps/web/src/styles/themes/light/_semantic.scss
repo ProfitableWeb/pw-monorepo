@@ -1,0 +1,13 @@
+// Light Theme - Semantic Colors
+// Highlight, selection, code, and other semantic uses
+
+[data-theme="light"],
+:root {
+  // ===== SEMANTIC COLORS =====
+  --color-highlight: #fed7aa;
+  --color-selection: #dbeafe;
+  --color-code-bg: #f5f5f5;
+  --color-code-text: #262626;
+}
+
+

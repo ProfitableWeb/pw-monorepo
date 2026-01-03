@@ -1,0 +1,20 @@
+// Dark Theme - Brand Colors
+// Primary, secondary, and accent colors adjusted for dark backgrounds
+
+[data-theme="dark"] {
+  // ===== BRAND COLORS =====
+  // Slightly adjusted for better contrast in dark mode
+  --color-primary: #5ADC5A;
+  --color-primary-hover: #6BE66B;
+  --color-primary-active: #7AF07A;
+  --color-primary-light: #1A4D1A;
+
+  --color-secondary: #2dd4bf;
+  --color-secondary-hover: #5eead4;
+  --color-secondary-light: #134e4a;
+
+  --color-accent: #fb923c;
+  --color-accent-hover: #fdba74;
+  --color-accent-light: #7c2d12;
+}
+

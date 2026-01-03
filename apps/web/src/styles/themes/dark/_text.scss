@@ -1,0 +1,18 @@
+// Dark Theme - Text Colors
+// All text-related color variables for dark mode
+
+[data-theme="dark"] {
+  // ===== TEXT COLORS =====
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #d4d4d4;
+  --color-text-muted: #737373;
+  --color-text-inverse: #171717;
+  --color-text-disabled: #525252;
+
+  // ===== ADDITIONAL TEXT COLORS =====
+  --text-primary-color: #ffffff;
+  --text-paragraph-color: #9c9c9c;
+  --text-masonry-paragraph-color: #9c9c9c;
+  --text-accent-color: #66bb6a;
+}
+

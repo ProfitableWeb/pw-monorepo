@@ -1,0 +1,86 @@
+@import '../../../../styles/utils/variables';
+@import '../../../../styles/utils/mixins';
+@import '../../../../styles/utils/breakpoints';
+
+// ===== ЛЕВАЯ СЕКЦИЯ =====
+.app-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+
+  @include lg {
+    flex: 0;
+  }
+}
+
+.app-bar__menu-button {
+  @include button-reset;
+  @include flex-center;
+  
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: var(--transition-color);
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.app-bar__menu-button {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .app-bar__menu-button {
+    color: var(--color-text-muted);
+    
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .app-bar__menu-button {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Явная темная тема
+[data-theme="dark"] .app-bar__menu-button {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+}

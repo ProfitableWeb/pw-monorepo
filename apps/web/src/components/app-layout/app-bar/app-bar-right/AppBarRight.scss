@@ -1,0 +1,48 @@
+@import '../../../../styles/utils/variables';
+@import '../../../../styles/utils/mixins';
+@import '../../../../styles/utils/breakpoints';
+
+// ===== ПРАВАЯ СЕКЦИЯ =====
+.app-bar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  // Принудительно создаём новый stacking context
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
+.app-bar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.app-bar__nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-primary);
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}

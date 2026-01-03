@@ -1,0 +1,45 @@
+@import '@/styles/utils/variables';
+
+.masonry-grid {
+  width: 100%;
+  min-height: 400px;
+  background: transparent;
+
+  &__fallback {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 40px;
+  }
+
+  &__fallback-card {
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: transparent;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--color-text-primary);
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0 0 8px 0;
+      color: var(--color-text-secondary);
+    }
+
+    time {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+  }
+}
+

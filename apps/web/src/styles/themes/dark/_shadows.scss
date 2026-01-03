@@ -1,0 +1,14 @@
+// Dark Theme - Shadow Definitions
+// Darker shadows for depth in dark mode
+
+[data-theme="dark"] {
+  // ===== SHADOW DEFINITIONS =====
+  // Darker shadows for depth in dark mode
+  --shadow-color: 0, 0, 0;
+  --shadow-sm: 0 1px 2px 0 rgba(var(--shadow-color), 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(var(--shadow-color), 0.3), 0 2px 4px -1px rgba(var(--shadow-color), 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(var(--shadow-color), 0.3), 0 4px 6px -2px rgba(var(--shadow-color), 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(var(--shadow-color), 0.4), 0 10px 10px -5px rgba(var(--shadow-color), 0.2);
+}
+
+

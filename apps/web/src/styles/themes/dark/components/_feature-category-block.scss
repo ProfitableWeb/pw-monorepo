@@ -1,0 +1,15 @@
+// Dark Theme - Feature Category Block
+// Variables to control text, border, background and hover behavior
+
+[data-theme="dark"] {
+  --feature-category-text: #7DD3FC; // Светлее для лучшего контраста на тёмном фоне
+  --feature-category-text-hover: #BAE6FD; // Ещё светлее при наведении
+
+  --feature-category-bg: transparent;
+  --feature-category-bg-hover: rgba(125, 211, 252, 0.15); // Обновлённый цвет для hover
+
+  --feature-category-border: rgba(125, 211, 252, 0.30); // Более видимая граница
+  --feature-category-border-hover: rgba(125, 211, 252, 0.70); // Чёткая граница при наведении
+}
+
+

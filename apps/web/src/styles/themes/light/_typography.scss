@@ -1,0 +1,28 @@
+// Light Theme - Typography
+// Font weights and text rendering optimized for light backgrounds
+
+[data-theme="light"],
+:root {
+  // ===== FONT WEIGHTS =====
+  // Standard weights for dark text on light backgrounds
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  // ===== SEMANTIC FONT WEIGHTS =====
+  // Context-specific weights
+  --font-weight-body: 400;
+  --font-weight-heading: 700;
+  --font-weight-subheading: 500;
+  --font-weight-caption: 400;
+  --font-weight-button: 500;
+
+  // ===== TEXT RENDERING =====
+  // Optimized for light theme
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+

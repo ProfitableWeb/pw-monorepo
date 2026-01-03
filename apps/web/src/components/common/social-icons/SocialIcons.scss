@@ -1,0 +1,215 @@
+@import '../../../styles/utils/variables';
+@import '../../../styles/utils/mixins';
+@import '../../../styles/utils/breakpoints';
+
+.social-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.social-icons__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition-color);
+  position: relative;
+  overflow: hidden;
+
+  // Важно! Сбрасываем стили visited ссылок
+  &:visited {
+    color: var(--color-text-muted);
+  }
+
+  &:hover {
+    color: var(--color-primary);
+  }
+
+  &:hover:visited {
+    color: var(--color-primary);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.social-icons__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-color);
+
+  svg {
+    display: block;
+    transition: var(--transition-color);
+    
+    path {
+      fill: currentColor;
+      fill-opacity: 0.9;
+      transition: fill-opacity var(--transition-color);
+    }
+  }
+}
+
+// Hover увеличивает fill-opacity для более яркого отображения
+.social-icons__link:hover .social-icons__icon svg path {
+  fill-opacity: 1;
+}
+
+.social-icons__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: var(--transition-color);
+}
+
+// ===== SIZE VARIANTS =====
+.social-icons--sm {
+  .social-icons__link {
+    width: 28px;
+    height: 28px;
+  }
+
+  .social-icons__icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.social-icons--md {
+  .social-icons__link {
+    width: 28px;
+    height: 28px;
+  }
+
+  .social-icons__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.social-icons--lg {
+  .social-icons__link {
+    width: 40px;
+    height: 40px;
+  }
+
+  .social-icons__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// ===== HOVER EFFECTS =====
+.social-icons__link:hover {
+  .social-icons__label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// ===== RESPONSIVE BEHAVIOR =====
+@include mobile-only {
+  .social-icons {
+    display: none;
+  }
+}
+
+@include sm {
+  .social-icons {
+    display: flex;
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.social-icons__link {
+  color: var(--color-text-muted);
+  
+  &:visited {
+    color: var(--color-text-muted);
+  }
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+  
+  &:hover:visited {
+    color: var(--color-primary);
+  }
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .social-icons__link {
+    color: var(--color-text-muted);
+    
+    &:visited {
+      color: var(--color-text-muted);
+    }
+    
+    &:hover {
+      color: var(--color-primary);
+    }
+    
+    &:hover:visited {
+      color: var(--color-primary);
+    }
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .social-icons__link {
+  color: var(--color-text-muted);
+  
+  &:visited {
+    color: var(--color-text-muted);
+  }
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+  
+  &:hover:visited {
+    color: var(--color-text-primary);
+  }
+}
+
+// Явная темная тема
+[data-theme="dark"] .social-icons__link {
+  color: var(--color-text-muted);
+  
+  &:visited {
+    color: var(--color-text-muted);
+  }
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+  
+  &:hover:visited {
+    color: var(--color-primary);
+  }
+}
+
+
+// ===== ANIMATION STATES =====
+.social-icons__link {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-primary);
+    opacity: 0;
+    border-radius: inherit;
+  }
+}

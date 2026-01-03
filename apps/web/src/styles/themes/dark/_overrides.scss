@@ -1,0 +1,78 @@
+// Dark Theme - Theme-Specific Overrides
+// Element-specific adjustments for dark theme
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  // ===== DARK THEME SPECIFIC ADJUSTMENTS =====
+
+  // Reduce image brightness slightly for better integration
+  img:not([data-no-dark-filter]) {
+    opacity: 0.9;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Code syntax highlighting adjustments for dark theme
+  pre,
+  code {
+    background-color: var(--code-background);
+    color: var(--code-text);
+    border: 1px solid var(--code-border);
+  }
+
+  // Selection styling for dark theme
+  ::selection {
+    background-color: var(--color-selection);
+    color: var(--color-text-primary);
+  }
+
+  // Scrollbar styling for dark theme
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-border-hover);
+    }
+  }
+
+  // Better contrast for form elements
+  input,
+  textarea,
+  select {
+    border-color: var(--input-border);
+
+    &:focus {
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--color-focus-ring);
+    }
+  }
+
+  // Ensure proper contrast for links
+  // Исключаем компоненты с собственными цветовыми схемами
+  a:not(.feature-category-block__item):not(.social-icons__link) {
+    color: var(--color-link);
+
+    &:hover {
+      color: var(--color-link-hover);
+    }
+
+    &:visited {
+      color: var(--color-link-visited);
+    }
+  }
+}
+

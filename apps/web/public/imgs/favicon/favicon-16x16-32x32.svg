@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{opacity:0.8;clip-path:url(#SVGID_00000005981288750117932230000012469403493975745938_);enable-background:new    ;}
+	.st2{opacity:0.65;clip-path:url(#SVGID_00000094597424582826073890000002946050907482067877_);}
+	.st3{fill:#5ADC5A;}
+</style>
+<path class="st0" d="M4,0h24c2.2,0,4,1.8,4,4v24c0,2.2-1.8,4-4,4H4c-2.2,0-4-1.8-4-4V4C0,1.8,1.8,0,4,0z"/>
+<g>
+	<g>
+		<defs>
+			<rect id="SVGID_1_" x="4.4" y="8.4" width="23.3" height="16.5"/>
+		</defs>
+		<clipPath id="SVGID_00000131353979613016673080000012428630814601388717_">
+			<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+		</clipPath>
+		
+			<path style="opacity:0.8;clip-path:url(#SVGID_00000131353979613016673080000012428630814601388717_);enable-background:new    ;" d="
+			M8.3,19.3v5.6H4.4V8.4h6.5c1.2,0,2.3,0.2,3.3,0.7c1,0.5,1.7,1.1,2.2,2c0.5,0.9,0.8,1.8,0.8,2.9c0,1.6-0.6,2.9-1.7,3.9
+			c-1.1,1-2.7,1.4-4.7,1.4L8.3,19.3L8.3,19.3z M8.3,16.2h2.6c0.8,0,1.3-0.2,1.7-0.6c0.4-0.4,0.6-0.9,0.6-1.6c0-0.8-0.2-1.4-0.6-1.8
+			c-0.4-0.5-1-0.7-1.7-0.7H8.3L8.3,16.2L8.3,16.2z"/>
+	</g>
+	<g>
+		<defs>
+			<rect id="SVGID_00000125573443053726744630000012673825594613291945_" x="4.4" y="8.4" width="23.3" height="16.5"/>
+		</defs>
+		<clipPath id="SVGID_00000030455804938440278170000009133985461742882703_">
+			<use xlink:href="#SVGID_00000125573443053726744630000012673825594613291945_"  style="overflow:visible;"/>
+		</clipPath>
+		<g style="opacity:0.65;clip-path:url(#SVGID_00000030455804938440278170000009133985461742882703_);">
+			<path class="st3" d="M21.9,18.8l1.9-10.3h3.9l-3.4,16.5h-4.1L18,15.5l-2.1,9.4h-4L8.4,8.4h3.9l1.9,10.3l2.2-10.3h3.3L21.9,18.8
+				L21.9,18.8z"/>
+		</g>
+	</g>
+</g>
+</svg>

@@ -1,0 +1,10 @@
+// Light Theme - Cards
+
+[data-theme="light"],
+:root {
+  --card-background: #fafafa;
+  --card-border: #e5e5e5;
+  --card-shadow: var(--shadow-sm);
+}
+
+

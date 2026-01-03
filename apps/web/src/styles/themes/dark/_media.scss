@@ -1,0 +1,20 @@
+// Dark Theme - System Preference Support
+// Automatically apply dark theme based on system preference
+
+// ===== SYSTEM PREFERENCE SUPPORT =====
+// Automatically apply dark theme based on system preference
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    // Apply dark theme variables when no explicit theme is set
+    // and user prefers dark mode
+    color-scheme: dark;
+
+    --color-primary: #5ADC5A;
+    --color-primary-hover: #6BE66B;
+    --color-surface: #262626;
+    --color-background: #171717;
+    --color-text-primary: #f5f5f5;
+    --color-text-secondary: #d4d4d4;
+  }
+}
+

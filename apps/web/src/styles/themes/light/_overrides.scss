@@ -1,0 +1,45 @@
+// Light Theme - Theme-Specific Overrides
+// Element-specific adjustments for light theme
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  // Ensure proper contrast for images and media
+  img {
+    opacity: 1;
+  }
+
+  // Code syntax highlighting adjustments for light theme
+  pre,
+  code {
+    background-color: var(--code-background);
+    color: var(--code-text);
+  }
+
+  // Selection styling
+  ::selection {
+    background-color: var(--color-selection);
+    color: var(--color-text-primary);
+  }
+
+  // Scrollbar styling for light theme
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-border-hover);
+    }
+  }
+}
+
+

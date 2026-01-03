@@ -1,0 +1,184 @@
+@import '../../../styles/utils/variables';
+@import '../../../styles/utils/mixins';
+@import '../../../styles/utils/breakpoints';
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  transition:  var(--transition-normal);
+  &:hover {
+    transform: scale(1.1);
+    background: transparent;
+  }
+  z-index: var(--z-tobar-logo);
+}
+
+.logo__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.logo__svg {
+  display: block;
+  transition: all var(--transition-normal);
+  background: transparent;
+}
+
+.logo__path-primary {
+  fill: var(--color-text-primary);
+  transition: fill var(--transition-normal);
+}
+
+.logo__path-accent {
+  fill: var(--color-primary);
+  transition: fill var(--transition-normal);
+}
+
+.logo__text {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  transition: color var(--transition-normal);
+  white-space: nowrap;
+}
+
+// ===== SIZE VARIANTS =====
+.logo--sm {
+  .logo__svg {
+    width: 20px;
+    height: 14px;
+  }
+
+  .logo__text {
+    font-size: var(--font-size-sm);
+  }
+}
+
+.logo--md {
+  .logo__svg {
+    width: 31px;
+    height: 22px;
+  }
+
+  .logo__text {
+    font-size: var(--font-size-base);
+  }
+}
+
+.logo--lg {
+  .logo__svg {
+    width: 40px;
+    height: 28px;
+  }
+
+  .logo__text {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.logo--xl {
+  .logo__svg {
+    width: 50px;
+    height: 35px;
+  }
+
+  .logo__text {
+    font-size: var(--font-size-xl);
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.logo__path-primary {
+  fill: var(--color-text-primary);
+}
+
+.logo__path-accent {
+  fill: var(--color-primary);
+}
+
+.logo__text {
+  color: var(--color-text-primary);
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .logo__path-primary {
+    fill: var(--color-text-primary);
+  }
+
+  .logo__path-accent {
+    fill: var(--color-primary);
+  }
+
+  .logo__text {
+    color: var(--color-text-primary);
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .logo__path-primary {
+  fill: var(--color-text-primary);
+}
+
+[data-theme="light"] .logo__path-accent {
+  fill: var(--color-primary);
+}
+
+[data-theme="light"] .logo__text {
+  color: var(--color-text-primary);
+}
+
+// Явная темная тема
+[data-theme="dark"] .logo__path-primary {
+  fill: var(--color-text-primary);
+}
+
+[data-theme="dark"] .logo__path-accent {
+  fill: var(--color-primary);
+}
+
+[data-theme="dark"] .logo__text {
+  color: var(--color-text-primary);
+}
+
+// ===== RESPONSIVE BEHAVIOR =====
+@include mobile-only {
+  .logo__text {
+    display: none;
+  }
+}
+
+@include sm {
+  .logo__text {
+    display: inline;
+  }
+}
+
+// ===== INTERACTION STATES =====
+.logo {
+  &:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// ===== ACCESSIBILITY =====
+.logo[aria-label] {
+  &:focus {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}

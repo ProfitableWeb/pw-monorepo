@@ -1,0 +1,33 @@
+// Dark Theme - Masonry Component Colors
+// Colors specific to masonry grid and article cards (adjusted for dark backgrounds)
+
+[data-theme="dark"] {
+  // ===== MASONRY ARTICLE CARDS =====
+  
+  // Title & Subtitle
+  --masonry-title-color: var(--color-text-primary);
+  --masonry-subtitle-color: var(--color-text-primary);
+  --masonry-date-color: var(--color-text-muted);
+  
+  // Marker highlight effect (подчёркивание маркером)
+  --masonry-marker-bg: #1f381f67;
+  --masonry-marker-text: #9fec9ffd;
+  
+  // Summary/Paragraph text
+  --masonry-paragraph-color: #9c9c9c;
+  
+  // Image placeholder
+  --masonry-image-bg: var(--color-surface);
+  
+  // Links in article summary
+  --masonry-link-color: var(--color-link);
+  --masonry-link-hover: var(--color-link-hover);
+  --masonry-link-visited: var(--color-link-visited);
+  --masonry-link-underline: rgba(255, 255, 255, 0.3);
+  --masonry-link-underline-hover: rgba(255, 255, 255, 0.6);
+  
+  // Blockquote in summary
+  --masonry-blockquote-border: var(--color-border);
+}
+
+

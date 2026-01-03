@@ -1,0 +1,49 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--color-background-overlay);
+  cursor: pointer;
+  z-index: var(--z-modal);
+  
+  // Дополнительные стили для лучшего UX
+  &--no-blur {
+    backdrop-filter: none;
+  }
+  
+  &--darker {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  &--lighter {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.overlay {
+  background: var(--color-background-overlay);
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .overlay {
+    background: var(--color-background-overlay);
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .overlay {
+  background: var(--color-background-overlay);
+}
+
+// Явная темная тема
+[data-theme="dark"] .overlay {
+  background: var(--color-background-overlay);
+}

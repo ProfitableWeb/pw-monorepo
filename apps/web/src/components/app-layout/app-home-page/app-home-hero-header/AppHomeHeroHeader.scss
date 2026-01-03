@@ -1,0 +1,122 @@
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/variables';
+
+// ===== HERO HEADER COMPONENT =====
+// Философская секция главной страницы с манифестом проекта
+// Включает типографические акценты, highlight-эффекты и анимации
+
+.hero-header {
+  display: flex;
+  align-items: flex-start;
+  background-color: transparent;
+
+  // ===== CONTAINER =====
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: padding .3s;
+
+    // Mobile (<768px)
+    padding: 6px 0 0;
+
+    // Tablet (768-1024px)
+    @include md {
+      padding: 20px 0 0;
+    }
+
+    // Desktop (>1024px)
+    @include lg {
+      padding: 20px 0 0;
+    }
+  }
+
+  // ===== TITLE (H1) =====
+  // Главный заголовок - семантический H1 для SEO
+  &__title {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-bold);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--hero-title-color);
+    opacity: 0.8;
+    margin: 0;
+    transition: color var(--transition-normal);
+
+    // Mobile (<768px)
+    font-size: 15px;
+    line-height: 26px;
+
+    // Tablet (768-1024px)
+    @include md {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    // Desktop (>1024px)
+    @include lg {
+      font-size: 22px;
+      line-height: 30px;
+    }
+
+    // Ссылки внутри заголовка - без подчёркивания, полная непрозрачность
+    a {
+      opacity: 1;
+      border-bottom: none;
+      color: var(--hero-title-link-color) !important;
+      transition: color var(--transition-normal);
+      text-decoration: none;
+      font-weight: 800;
+      &:hover {
+        color: var(--hero-title-link-hover-color) !important;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--link-underline-color);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  // ===== TEXT (PARAGRAPHS) =====
+  // Описательные параграфы
+  &__text {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-normal);
+    color: var(--hero-text-color);
+    margin: 0;
+    transition: color var(--transition-normal);
+    a {
+      color: var(--hero-paragraph-link-color)!important;
+    }
+    // Mobile (<768px)
+    font-size: 13px;
+    line-height: 20px;
+
+    // Tablet & Desktop (>=768px)
+    @include md {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    // Desktop (>1024px)
+    @include lg {
+          font-size: 17x;
+          line-height: 30px;
+    }
+  }
+
+}
+
+// ===== ACCESSIBILITY =====
+// анимации
+@media (prefers-reduced-motion: reduce) {
+  .hero-header {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

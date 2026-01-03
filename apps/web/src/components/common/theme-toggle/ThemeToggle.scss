@@ -1,0 +1,74 @@
+@import '../../../styles/utils/variables';
+@import '../../../styles/utils/mixins';
+
+.theme-toggle {
+  @include button-reset;
+  @include flex-center;
+  
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: var(--color-text-muted);
+
+  cursor: pointer;
+  
+  &:hover:not(&--loading) {
+    color: var(--color-text-primary);
+  }
+  
+  &:active:not(&--loading) {
+    transform: scale(0.95);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  
+  // Состояние загрузки (для SSR заглушки)
+  &--loading {
+    opacity: 0.5;
+    cursor: wait;
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.theme-toggle {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .theme-toggle {
+    color: var(--color-text-muted);
+    
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+// Явная светлая тема
+[data-theme='light'] .theme-toggle {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Явная темная тема
+[data-theme='dark'] .theme-toggle {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+

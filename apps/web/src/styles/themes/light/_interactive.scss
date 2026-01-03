@@ -1,0 +1,18 @@
+// Light Theme - Interactive Colors
+// Links, focus states, and interactive elements
+
+[data-theme="light"],
+:root {
+  // ===== INTERACTIVE COLORS =====
+  --color-link: #000000;
+  --color-link-hover: #000000;
+  --color-link-visited: #000000;
+
+  --color-focus: #5ADC5A;
+  --color-focus-ring: rgba(90, 220, 90, 0.1);
+
+  // Link decoration colors
+  --link-underline-color: rgba(0, 0, 0, 0.2);
+  --link-hover-color: rgba(0, 0, 0, 0.5);
+}
+

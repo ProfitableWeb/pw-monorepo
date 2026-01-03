@@ -1,0 +1,59 @@
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/variables';
+
+// ===== FEATURE CATEGORY BLOCK COMPONENT =====
+// Блок категорий-тегов с фирменным синим цветом
+
+.feature-category-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 11px 0;
+  
+  // Mobile (<768px)
+  gap: 10px;
+
+  // Desktop (>=768px)
+  @include md {
+    gap: 12px;
+  }
+
+  // ===== CATEGORY ITEM =====
+  &__item {
+    box-sizing: content-box;
+    display: inline-block;
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-normal);
+    color: var(--feature-category-text);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--feature-category-border);
+    transition: 
+      var(--transition-color),
+      var(--transition-background),
+      var(--transition-border);
+
+    // Mobile (<768px)
+    font-size: 13px;
+    line-height: 18px;
+
+    // Tablet & Desktop (>=768px)
+    @include md {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    // Hover эффект
+    &:hover {
+      color: var(--feature-category-text-hover);
+      background-color: var(--feature-category-bg-hover);
+      border-color: var(--feature-category-border-hover);
+    }
+    // Active эффект
+    &:active {
+      opacity: 0.6;
+    }
+  }
+}
+

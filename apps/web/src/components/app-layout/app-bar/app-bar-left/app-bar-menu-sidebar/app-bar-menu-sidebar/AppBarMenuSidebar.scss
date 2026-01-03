@@ -1,0 +1,89 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+
+.app-bar-menu-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  z-index: var(--z-modal);
+  
+  &__swipe-detector {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__content {
+    position: fixed;
+    padding-top:70px;
+    padding-left:64px;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--color-background);
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+    z-index: 1051;
+    
+  }
+
+  &__nav {
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  }
+  
+  &__nav-item {
+    display: inline-block;
+    padding:2px 8px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: var(--transition-color);
+    width: fit-content;
+    margin-bottom: var(--space-xs);
+    
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.app-bar-menu-sidebar {
+  &__content {
+    background: var(--color-background);
+    border-right: 1px solid var(--color-border);
+  }
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .app-bar-menu-sidebar {
+    &__content {
+      background: var(--color-background);
+      border-right: 1px solid var(--color-border);
+    }
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .app-bar-menu-sidebar {
+  &__content {
+    background: var(--color-background);
+    border-right: 1px solid var(--color-border);
+  }
+}
+
+// Явная темная тема
+[data-theme="dark"] .app-bar-menu-sidebar {
+  &__content {
+    background: var(--color-background);
+    border-right: 1px solid var(--color-border);
+  }
+}

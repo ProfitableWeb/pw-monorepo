@@ -1,0 +1,20 @@
+// Light Theme - Hero Header Colors
+// Colors specific to hero sections and landing pages
+
+[data-theme="light"],
+:root {
+  // ===== HERO HEADER COLORS =====
+  --hero-title-color: rgba(0, 0, 0, .8);
+  --hero-title-link-color: #1a1a1a;
+  --hero-title-link-hover-color: #64c464fd;
+  --hero-text-color: #000000;
+  --hero-link-color: rgba(0, 0, 0, .9);
+  --hero-bg-color: #ffffff;
+  --mark-green-bg: #c5f3c5;
+  --mark-green-text: #182718;
+  --hero-category-color: #009CE0;
+  --hero-category-border-color: rgba(0, 156, 224, 0.15);
+  --hero-paragraph-link-color: #000000;
+}
+
+

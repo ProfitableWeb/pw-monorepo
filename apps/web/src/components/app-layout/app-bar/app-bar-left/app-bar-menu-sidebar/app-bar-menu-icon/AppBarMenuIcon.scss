@@ -1,0 +1,128 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+@import '@/styles/utils/breakpoints';
+
+.app-bar-menu-icon {
+  @include button-reset;
+  @include flex-center;
+  
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: var(--transition-color);
+  position: relative;
+  z-index: var(--z-tobar-logo);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &__container {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    transition: transform var(--duration-medium) ease-in-out;
+  }
+
+  &__menu,
+  &__close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    transition: 
+      opacity var(--duration-medium) ease-in-out, 
+      transform var(--duration-medium) ease-in-out;
+  }
+
+  &__menu {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  &__close {
+    opacity: 0;
+    transform: rotate(-180deg);
+  }
+
+  // Состояние открытого меню
+  &--open {
+    .app-bar-menu-icon__container {
+      // Mobile (<768px)
+      transform: translateX(160px);
+
+      // Tablet (768-1024px)
+      @include md {
+        transform: translateX(140px);
+      }
+
+      // Desktop (>1024px)
+      @include lg {
+        transform: translateX(140px);
+      }
+
+      // Large Desktop (>1440px)
+      @media (min-width: 1441px) {
+        transform: translateX(130px);
+      }
+    }
+
+    .app-bar-menu-icon__menu {
+      opacity: 0;
+      transform: rotate(180deg);
+    }
+
+    .app-bar-menu-icon__close {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+  }
+}
+
+// ===== THEME SUPPORT =====
+// Светлая тема (по умолчанию)
+.app-bar-menu-icon {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Темная тема через медиа-запрос
+@media (prefers-color-scheme: dark) {
+  .app-bar-menu-icon {
+    color: var(--color-text-muted);
+    
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+// Явная светлая тема
+[data-theme="light"] .app-bar-menu-icon {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+// Явная темная тема
+[data-theme="dark"] .app-bar-menu-icon {
+  color: var(--color-text-muted);
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+}

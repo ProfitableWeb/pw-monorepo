@@ -1,0 +1,84 @@
+// Animation & Transition Variables
+// Централизованная система таймингов и easing функций
+
+:root {
+  // ===== DURATION VARIABLES =====
+  // Основные длительности
+  --duration-instant: 0.1s;
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-medium: 0.3s;
+  --duration-slow: 0.5s;
+  --duration-slower: 0.8s;
+
+  // ===== EASING FUNCTIONS =====
+  // Стандартные функции плавности
+  --ease-linear: linear;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  // ===== THEME TRANSITION =====
+  // Переход между темами (светлая/тёмная)
+  --theme-transition-duration: var(--duration-medium);
+  --theme-transition-timing: ease;
+
+  // Полная строка для удобства
+  --theme-transition: var(--theme-transition-duration) var(--theme-transition-timing);
+
+  // ===== COMPONENT TRANSITIONS =====
+  // Переходы для конкретных свойств
+  --transition-background: background-color var(--theme-transition);
+  --transition-color: color var(--theme-transition);
+  --transition-border: border-color var(--theme-transition);
+  --transition-shadow: box-shadow var(--theme-transition);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-smooth);
+  --transition-transform: transform var(--duration-normal) var(--ease-smooth);
+
+  // ===== INTERACTION TRANSITIONS =====
+  // Для интерактивных элементов (hover, focus)
+  --transition-hover: var(--duration-fast) var(--ease-smooth);
+  --transition-focus: var(--duration-fast) var(--ease-smooth);
+
+  // ===== COMPOSITE TRANSITIONS =====
+  // Комбинированные переходы для смены темы
+  --transition-theme-all: 
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition);
+
+  // ===== SVG TRANSITIONS =====
+  --transition-svg: 
+    fill var(--theme-transition),
+    stroke var(--theme-transition);
+
+  // ===== DELAYS =====
+  --delay-short: 0.1s;
+  --delay-medium: 0.35s;
+  --delay-long: 0.5s;
+}
+
+// ===== ACCESSIBILITY: REDUCED MOTION =====
+// Автоматическое отключение анимаций при настройках пользователя
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0.01s;
+    --duration-fast: 0.01s;
+    --duration-normal: 0.01s;
+    --duration-medium: 0.01s;
+    --duration-slow: 0.01s;
+    --duration-slower: 0.01s;
+    
+    --theme-transition-duration: 0.01s;
+  }
+
+  * {
+    animation-duration: 0.01s !important;
+    transition-duration: 0.01s !important;
+  }
+}
+
+

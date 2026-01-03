@@ -1,0 +1,20 @@
+// Light Theme - Text Colors
+// All text-related color variables
+
+[data-theme="light"],
+:root {
+  // ===== TEXT COLORS =====
+  --color-text-primary: #171717;
+  --color-text-secondary: #404040;
+  --color-text-muted: #737373;
+  --color-text-inverse: #fafafa;
+  --color-text-disabled: #a3a3a3;
+
+  // ===== ADDITIONAL TEXT COLORS =====
+  --text-primary-color: #000000;
+  --text-paragraph-color: #333333;
+  --text-masonry-paragraph-color: #313131;
+  --text-accent-color: #3dbb42;
+}
+
+

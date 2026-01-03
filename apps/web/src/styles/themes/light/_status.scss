@@ -1,0 +1,24 @@
+// Light Theme - Status Colors
+// Success, warning, error, and info states
+
+[data-theme="light"],
+:root {
+  // ===== STATUS COLORS =====
+  --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-success-dark: #15803d;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #b45309;
+
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #b91c1c;
+
+  --color-info: #0ea5e9;
+  --color-info-light: #e0f2fe;
+  --color-info-dark: #0369a1;
+}
+
+

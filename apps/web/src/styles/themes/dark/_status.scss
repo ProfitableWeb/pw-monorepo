@@ -1,0 +1,24 @@
+// Dark Theme - Status Colors
+// Success, warning, error, and info states (brighter for dark backgrounds)
+
+[data-theme="dark"] {
+  // ===== STATUS COLORS =====
+  // Slightly brighter versions for better visibility on dark backgrounds
+  --color-success: #4ade80;
+  --color-success-light: #14532d;
+  --color-success-dark: #86efac;
+
+  --color-warning: #fbbf24;
+  --color-warning-light: #78350f;
+  --color-warning-dark: #fcd34d;
+
+  --color-error: #f87171;
+  --color-error-light: #7f1d1d;
+  --color-error-dark: #fca5a5;
+
+  --color-info: #38bdf8;
+  --color-info-light: #0c4a6e;
+  --color-info-dark: #7dd3fc;
+}
+
+

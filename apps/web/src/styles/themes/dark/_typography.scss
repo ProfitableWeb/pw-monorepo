@@ -1,0 +1,31 @@
+// Dark Theme - Typography
+// Font weights adjusted for dark backgrounds to compensate for halation effect
+
+[data-theme="dark"] {
+  // ===== FONT WEIGHTS =====
+  // Slightly reduced weights to compensate for optical thickening
+  // Light text on dark backgrounds appears heavier due to halation
+  --font-weight-light: 250;
+  --font-weight-normal: 350;
+  --font-weight-medium: 450;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 650;
+  --font-weight-extrabold: 750;
+
+  // ===== SEMANTIC FONT WEIGHTS =====
+  // Context-specific weights adjusted for dark mode
+  --font-weight-body: 350;      // Slightly lighter than light theme's 400
+  --font-weight-heading: 650;   // Slightly lighter than light theme's 700
+  --font-weight-subheading: 300; // Slightly lighter than light theme's 600
+  --font-weight-caption: 350;   // Slightly lighter than light theme's 400
+  --font-weight-button: 450;    // Slightly lighter than light theme's 500
+
+  // ===== TEXT RENDERING =====
+  // Optimized for dark theme
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  // Better text rendering on dark backgrounds
+  text-rendering: optimizeLegibility;
+}
+

@@ -1,0 +1,96 @@
+// Стили для SVG иконки солнышко-луна
+// Основано на https://github.com/argyleink/gui-challenges/tree/main/theme-switch
+
+.sun-moon-icon {
+  // Локальные CSS переменные для анимаций
+  --ease-3: cubic-bezier(0.25, 0, 0.3, 1);
+  --ease-out-5: cubic-bezier(0.230, 1.000, 0.320, 1.000);
+  --ease-elastic-3: cubic-bezier(0.5, 1.25, 0.75, 1.25);
+  --ease-elastic-4: cubic-bezier(0.5, 1.5, 0.75, 1.25);
+
+  display: block;
+  transform-origin: center;
+
+  // Базовые стили для элементов
+  &__sun,
+  &__moon-mask-circle {
+    transform-origin: center;
+  }
+
+  &__sun {
+    fill: currentColor;
+  }
+
+  &__sun-beams {
+    stroke: currentColor;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    transform-origin: center;
+  }
+}
+
+// Состояния для темной темы
+.sun-moon-icon--dark {
+  .sun-moon-icon__sun {
+    transform: scale(1.75);
+  }
+
+  .sun-moon-icon__sun-beams {
+    opacity: 0;
+    transform: rotateZ(-25deg); 
+  }
+
+  .sun-moon-icon__moon-mask-circle {
+    transform: translateX(-7px);
+  }
+}
+
+// Анимации (только если нет предпочтения к сниженному движению)
+@media (prefers-reduced-motion: no-preference) {
+  .sun-moon-icon:not(.sun-moon-icon--no-animation) {
+    .sun-moon-icon__sun {
+      transition: transform 0.5s var(--ease-elastic-3);
+    }
+
+    .sun-moon-icon__sun-beams {
+      transition: 
+        transform 0.5s var(--ease-elastic-4), 
+        opacity 0.5s var(--ease-3);
+    }
+
+    .sun-moon-icon__moon-mask-circle {
+      transition-property: transform;
+      transition-duration: 0.25s;
+      transition-timing-function: var(--ease-out-5);
+      transition-delay: 0s;
+    }
+  }
+
+  // Переопределение для темной темы
+  .sun-moon-icon--dark:not(.sun-moon-icon--no-animation) {
+    .sun-moon-icon__sun {
+      transition-timing-function: var(--ease-3);
+      transition-duration: 0.25s;
+    }
+
+    .sun-moon-icon__sun-beams {
+      transition-duration: 0.15s;
+    }
+
+    .sun-moon-icon__moon-mask-circle {
+      transition-property: transform;
+      transition-duration: 0.5s;
+      transition-timing-function: var(--ease-out-5); 
+      transition-delay: 0.05s;
+    }
+  }
+}
+
+// Отключение анимаций
+.sun-moon-icon--no-animation {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
