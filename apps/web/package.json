@@ -4,7 +4,7 @@
   "description": "Next.js 15+ frontend для исследовательского блога по монетизации хобби с чистым SCSS",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "bun --bun next dev",
     "build": "next build",
     "start": "next start",
     "export": "next build && next export",

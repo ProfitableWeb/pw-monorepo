@@ -1,0 +1,46 @@
+.about-layout {
+  display: grid;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  gap: 60px;
+  
+  // Mobile: только контент
+  grid-template-columns: 1fr;
+
+  // Desktop: 3 колонки
+  @media (min-width: 1024px) {
+    grid-template-columns: 200px 1fr 260px;
+    gap: 80px;
+  }
+
+  // TOC (слева)
+  &__toc {
+    display: none;
+
+    @media (min-width: 1024px) {
+      display: block;
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      max-height: calc(100vh - 120px);
+    }
+  }
+
+  // Основной контент
+  &__content {
+    min-width: 0;
+  }
+
+  // Sidebar (справа)
+  &__sidebar {
+    display: none;
+
+    @media (min-width: 1024px) {
+      display: block;
+      position: sticky;
+      top: 100px;
+      align-self: start;
+    }
+  }
+}

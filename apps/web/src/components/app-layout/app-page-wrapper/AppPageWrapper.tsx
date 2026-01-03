@@ -40,7 +40,11 @@ const AppPageWrapper: React.FC<AppPageWrapperProps> = ({
   children,
   className = '',
 }) => {
-  return <div className={`app-page-wrapper ${className}`}>{children}</div>;
+  return (
+    <div className={`app-page-wrapper ${className}`} suppressHydrationWarning>
+      {children}
+    </div>
+  );
 };
 
 export default AppPageWrapper;

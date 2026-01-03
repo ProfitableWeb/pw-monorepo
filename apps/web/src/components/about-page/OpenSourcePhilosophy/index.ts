@@ -1,1 +1,0 @@
-export { OpenSourcePhilosophy } from './OpenSourcePhilosophy';

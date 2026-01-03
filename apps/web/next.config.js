@@ -12,7 +12,7 @@ const nextConfig = {
   // Enable SCSS support
   sassOptions: {
     includePaths: ['./src/styles'],
-    prependData: `@import "./src/styles/utils/_variables.scss";`,
+    additionalData: `@import "utils/_variables.scss"; @import "utils/_breakpoints.scss";`,
   },
 
   // TypeScript configuration
@@ -28,9 +28,9 @@ const nextConfig = {
   // Performance optimizations
   // swcMinify is now enabled by default in Next.js 15+
 
-  // SEO-friendly static exports for better performance
-  output: 'export',
-  trailingSlash: true,
+  // SEO-friendly static exports for better performance (commented out for dev)
+  // output: 'export',
+  // trailingSlash: true,
 
   // Image optimization for static export
   images: {

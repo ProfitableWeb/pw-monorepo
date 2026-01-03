@@ -1,1 +1,0 @@
-export { ResearchApproach } from './ResearchApproach';
