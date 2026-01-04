@@ -15,21 +15,32 @@ deploy:
       ssh -i ~/.ssh/deploy_key \
           -p ${SSH_PORT:-22} \
           ${SSH_USER}@${SSH_HOST} << 'EOF'
+        set -e
+        
         # Переход в директорию проекта
-        cd ~/profitableweb-api || git clone $CI_REPOSITORY_URL ~/profitableweb-api
+        cd ~/profitableweb || git clone $CI_REPOSITORY_URL ~/profitableweb
+        cd ~/profitableweb
         
         # Обновление кода
-        cd ~/profitableweb-api
         git pull origin master
         
-        # Обновление зависимостей
+        # API: установка зависимостей
         cd apps/api
         uv sync
         
-        # Перезапуск сервиса (если настроен systemd)
-        # sudo systemctl restart profitableweb-api || true
+        # Web: сборка
+        cd ../web
+        bun install
+        bun run build
         
-        # Или запуск напрямую (для теста)
-        # pkill -f "uvicorn src.main:app" || true
-        # nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
+        # Admin: сборка
+        cd ../admin
+        bun install
+        bun run build
+        
+        # Перезапуск всех сервисов
+        cd ~/profitableweb
+        pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+        
+        echo "✅ Deploy completed!"
       EOF
