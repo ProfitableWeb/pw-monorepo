@@ -1,0 +1,35 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+    - chmod 600 ~/.ssh/deploy_key
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+  script:
+    - |
+      ssh -i ~/.ssh/deploy_key \
+          -p ${SSH_PORT:-22} \
+          ${SSH_USER}@${SSH_HOST} << 'EOF'
+        # Переход в директорию проекта
+        cd ~/profitableweb-api || git clone $CI_REPOSITORY_URL ~/profitableweb-api
+        
+        # Обновление кода
+        cd ~/profitableweb-api
+        git pull origin master
+        
+        # Обновление зависимостей
+        cd apps/api
+        uv sync
+        
+        # Перезапуск сервиса (если настроен systemd)
+        # sudo systemctl restart profitableweb-api || true
+        
+        # Или запуск напрямую (для теста)
+        # pkill -f "uvicorn src.main:app" || true
+        # nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
+      EOF

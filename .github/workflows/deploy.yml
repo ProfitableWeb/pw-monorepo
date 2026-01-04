@@ -1,0 +1,52 @@
+name: Deploy to Cloud.ru
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/deploy.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VM
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -p ${SSH_PORT:-22} \
+              ${SSH_USER}@${SSH_HOST} << 'EOF'
+            # Переход в директорию проекта
+            cd ~/profitableweb-api || git clone https://gitverse.ru/profitableweb.ru/pw-monorepo.git ~/profitableweb-api
+            
+            # Обновление кода
+            cd ~/profitableweb-api
+            git pull origin master
+            
+            # Обновление зависимостей
+            cd apps/api
+            uv sync
+            
+            # Перезапуск сервиса (если настроен systemd)
+            # sudo systemctl restart profitableweb-api || true
+            
+            # Или запуск напрямую (для теста)
+            # pkill -f "uvicorn src.main:app" || true
+            # nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
+          EOF
