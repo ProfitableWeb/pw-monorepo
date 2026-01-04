@@ -1,0 +1,65 @@
+name: Deploy to Cloud.ru
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "ecosystem.config.js"
+      - ".github/workflows/deploy.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VM
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        run: |
+          ssh -p ${SSH_PORT:-22} ${SSH_USER}@${SSH_HOST} << 'EOF'
+            set -e
+            export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+            
+            # Переход в директорию проекта
+            cd ~/profitableweb || exit 1
+            
+            # Обновление кода
+            git pull origin master
+            
+            # API: установка зависимостей
+            cd apps/api
+            uv sync
+            
+            # Web: сборка
+            cd ../web
+            bun install
+            [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
+            bun run build
+            
+            # Admin: сборка
+            cd ../admin
+            bun install
+            bun run build
+            
+            # Перезапуск всех сервисов
+            cd ~/profitableweb
+            pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+            
+            echo "✅ Deploy completed!"
+          EOF

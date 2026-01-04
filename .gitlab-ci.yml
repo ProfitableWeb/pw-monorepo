@@ -1,0 +1,50 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    # Безопасная запись ключа без echo в логах
+    - cat "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key || printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+    - chmod 600 ~/.ssh/deploy_key
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+  script:
+    - |
+      ssh -i ~/.ssh/deploy_key \
+          -o StrictHostKeyChecking=no \
+          -p ${SSH_PORT:-22} \
+          ${SSH_USER}@${SSH_HOST} << 'EOF'
+        set -e
+        export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+        
+        # Переход в директорию проекта
+        cd ~/profitableweb || exit 1
+        
+        # Обновление кода
+        git pull origin master
+        
+        # API: установка зависимостей
+        cd apps/api
+        uv sync
+        
+        # Web: сборка
+        cd ../web
+        bun install
+        [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
+        bun run build
+        
+        # Admin: сборка
+        cd ../admin
+        bun install
+        bun run build
+        
+        # Перезапуск всех сервисов
+        cd ~/profitableweb
+        pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+        
+        echo "✅ Deploy completed!"
+      EOF
