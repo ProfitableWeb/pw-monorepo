@@ -7,19 +7,22 @@ deploy:
     - master
   before_script:
     - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+    - chmod 700 ~/.ssh
+    # Безопасная запись ключа без echo в логах
+    - cat "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key || printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
     - chmod 600 ~/.ssh/deploy_key
     - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
   script:
     - |
       ssh -i ~/.ssh/deploy_key \
+          -o StrictHostKeyChecking=no \
           -p ${SSH_PORT:-22} \
           ${SSH_USER}@${SSH_HOST} << 'EOF'
         set -e
+        export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
         
         # Переход в директорию проекта
-        cd ~/profitableweb || git clone $CI_REPOSITORY_URL ~/profitableweb
-        cd ~/profitableweb
+        cd ~/profitableweb || exit 1
         
         # Обновление кода
         git pull origin master
@@ -31,6 +34,7 @@ deploy:
         # Web: сборка
         cd ../web
         bun install
+        [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
         bun run build
         
         # Admin: сборка
