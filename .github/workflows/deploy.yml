@@ -18,22 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
       - name: Deploy to VM
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-        run: |
-          ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22} ${SSH_USER}@${SSH_HOST} << 'EOF'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
             set -e
             export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
             
@@ -63,4 +55,9 @@ jobs:
             pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
             
             echo "✅ Deploy completed!"
-          EOF
+
+      - name: Verify deployment
+        run: |
+          echo "🔍 Проверка доступности сервиса..."
+          sleep 5
+          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "⚠️ Health check failed, but deploy might still be running"
