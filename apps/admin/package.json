@@ -2,6 +2,7 @@
   "name": "@profitable-web/admin",
   "version": "0.1.0",
   "description": "Admin panel for ProfitableWeb",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev --port 3001",
