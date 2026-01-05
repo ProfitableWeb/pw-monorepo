@@ -1,8 +1,8 @@
 # ProfitableWeb Research Lab
 
-<div align="center">
-  <img src="./docs/assets/imgs/ProfitableWEB_icon512x512.png" alt="ProfitableWeb Logo" width="256" height="256">
-</div>
+<br/>
+  <img src="./docs/assets/imgs/ProfitableWEB_icon512x512-transparent.png" alt="ProfitableWeb Logo" width="256" height="256">
+<br/>
 
 > Открытая лаборатория по исследованию трансформации труда в эпоху AI-автоматизации
 
