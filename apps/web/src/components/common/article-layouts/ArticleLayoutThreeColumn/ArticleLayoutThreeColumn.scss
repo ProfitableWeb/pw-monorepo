@@ -1,0 +1,66 @@
+/**
+ * Three Column Layout (TOC | Content | Sidebar)
+ * 
+ * Базовые стили компонента.
+ * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
+ */
+
+.article-layout-three-column {
+  // Базовая структура
+  display: grid;
+  max-width: 1600px; // Увеличено для более широкого контента
+  margin: 0 auto;
+
+  // Table of Contents (слева)
+  &__toc {
+    // Скрытие scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 2px;
+    }
+  }
+
+  // Основной контент
+  &__content {
+    min-width: 0; // Для корректной работы overflow в grid
+  }
+
+  // Sidebar (справа)
+  &__sidebar {
+    // Скрытие scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 2px;
+    }
+
+    // Добавляем padding-bottom, чтобы тени кнопок не обрезались
+    // при использовании overflow-y: auto
+    padding-bottom: 16px;
+  }
+}
+
+// Импортируем адаптивные настройки
+@import './responsive-layout';  // Структура: grid, display, position
+@import './responsive-sizing';   // Размеры: gap, padding, margin

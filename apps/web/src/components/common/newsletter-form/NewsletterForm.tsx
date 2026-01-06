@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Modal } from '@/components/common/modal';
 import SocialIcons from '@/components/common/social-icons';
+import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import './NewsletterForm.scss';
 
 interface NewsletterFormProps {
@@ -116,7 +117,7 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
           <p className="newsletter-form__social-title">
             Или следите за нами в соцсетях:
           </p>
-          <SocialIcons />
+          <SocialIcons links={SOCIAL_LINKS_FOOTER} />
         </div>
       </div>
     </Modal>

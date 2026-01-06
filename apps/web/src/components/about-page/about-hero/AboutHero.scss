@@ -1,19 +1,67 @@
 .about-hero {
   text-align: center;
-  padding: 80px 20px 40px;
+  padding: 50px 20px 40px; // Уменьшили отступ сверху
 
   &__title {
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 28px; // Базовый размер для mobile
+    font-weight: 900; // Увеличили толщину
     letter-spacing: 2px;
     color: var(--color-text-primary);
     margin-bottom: 12px;
   }
 
   &__subtitle {
-    font-size: 13px;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 14px; // Базовый размер для mobile
+    font-weight: 500; // Установили толщину 500
     letter-spacing: 1px;
-    color: var(--color-text-muted);
+    color: var(--color-text-primary); // Цвет как у заголовка
     text-transform: uppercase;
+  }
+}
+
+// ============================================================
+// TABLET SMALL (640-900px)
+// ============================================================
+@media (min-width: 640px) {
+  .about-hero {
+    &__title {
+      font-size: 34px;
+    }
+
+    &__subtitle {
+      font-size: 18px;
+    }
+  }
+}
+
+// ============================================================
+// TABLET (900-1200px)
+// ============================================================
+@media (min-width: 900px) {
+  .about-hero {
+    &__title {
+      font-size: 38px;
+    }
+
+    &__subtitle {
+      font-size: 20px;
+    }
+  }
+}
+
+// ============================================================
+// DESKTOP (>1200px)
+// ============================================================
+@media (min-width: 1200px) {
+  .about-hero {
+    &__title {
+      font-size: 42px; // Полный размер на десктопе
+    }
+
+    &__subtitle {
+      font-size: 24px; // Полный размер на десктопе
+    }
   }
 }

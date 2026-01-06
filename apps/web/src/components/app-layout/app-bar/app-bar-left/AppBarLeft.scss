@@ -14,6 +14,25 @@
   }
 }
 
+// Ссылка логотипа
+.app-bar__logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-color);
+
+  &:hover {
+    color: inherit; // Цвет наследуется от Logo компонента
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+}
+
 .app-bar__menu-button {
   @include button-reset;
   @include flex-center;

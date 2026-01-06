@@ -1,0 +1,65 @@
+@import '../../../../styles/utils/variables';
+
+.project-card {
+  // Отступ сверху, если карточка следует после другой карточки в sidebar
+  margin-top: 40px;
+
+  &__title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    opacity: 0.75; // Делаем заголовок светлее
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  &__definition {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    margin-bottom: 16px;
+    font-weight: 500;
+
+    &-web {
+      font-weight: 700; // Жирный для "WEB"
+      color: var(--color-primary); // Зелёный цвет
+    }
+
+    &-ru {
+      color: var(--color-text-muted) !important; // Светло-серый для ".ru"
+    }
+  }
+
+  &__description {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+  }
+
+  // Логотип PW в кнопке подписки
+  &__subscribe-btn-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  &__subscribe-btn-logo-svg {
+    display: block;
+    width: 20px;
+    height: 14px;
+  }
+
+  &__subscribe-btn-logo-path-primary {
+    fill: var(--color-text-primary);
+    transition: fill var(--transition-normal);
+  }
+
+  &__subscribe-btn-logo-path-accent {
+    fill: var(--color-primary);
+    transition: fill var(--transition-normal);
+  }
+}

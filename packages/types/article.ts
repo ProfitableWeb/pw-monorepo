@@ -1,11 +1,16 @@
 /**
+ * Layout types for articles/pages
+ */
+export type ArticleLayoutType = 'three-column' | 'two-column' | 'full-width';
+
+/**
  * Article type for blog posts
  */
 export interface Article {
   id: string;
   title: string;
   slug: string;
-  content: string;
+  content: string; // HTML format
   excerpt: string;
   category: string;
   tags: string[];
@@ -14,6 +19,7 @@ export interface Article {
   author?: string;
   readingTime?: number;
   views?: number;
+  layout?: ArticleLayoutType; // Layout type (default: 'three-column')
 }
 
 /**
@@ -28,4 +34,5 @@ export interface ArticleMeta {
   tags: string[];
   publishedAt: Date;
   readingTime?: number;
+  layout?: ArticleLayoutType; // Layout type (default: 'three-column')
 }

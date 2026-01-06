@@ -1,23 +1,27 @@
 'use client';
 
 import React from 'react';
-import { SOCIAL_LINKS } from './socialLinks';
+import { SOCIAL_LINKS, SocialLink } from './socialLinks';
 import './SocialIcons.scss';
 
 interface SocialIconsProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   showLabels?: boolean;
+  links?: SocialLink[]; // Кастомный список иконок
 }
 
 const SocialIcons: React.FC<SocialIconsProps> = ({
   className = '',
   size = 'md',
   showLabels = false,
+  links,
 }) => {
+  const displayLinks = links || SOCIAL_LINKS;
+
   return (
     <div className={`social-icons social-icons--${size} ${className}`}>
-      {SOCIAL_LINKS.map(link => (
+      {displayLinks.map(link => (
         <a
           key={link.name}
           href={link.href}

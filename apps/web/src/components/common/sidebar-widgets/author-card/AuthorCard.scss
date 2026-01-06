@@ -1,0 +1,39 @@
+.author-card {
+  &__title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    opacity: 0.75; // Делаем заголовок светлее
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  &__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 12px;
+  }
+
+  &__socials {
+    margin-bottom: 16px;
+
+    // Уменьшаем отступы между иконками в блоке автора
+    // Используем более специфичный селектор
+    > :global(.social-icons) {
+      gap: 8px;
+    }
+  }
+
+  // Альтернативный способ через переданный className
+  :global(.author-card__socials-icons) {
+    gap: 8px !important;
+  }
+
+  &__description {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+}

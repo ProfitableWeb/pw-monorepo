@@ -1,0 +1,78 @@
+/**
+ * Адаптивные настройки структуры для Two Column Layout
+ * 
+ * Этот файл содержит ТОЛЬКО структурные изменения:
+ * - grid-template-columns
+ * - display
+ * - position
+ * - visibility элементов
+ */
+
+// ============================================================
+// MOBILE (<640px) - только контент
+// ============================================================
+.article-layout-two-column {
+  grid-template-columns: 1fr;
+
+  &__content {
+    max-width: 100%;
+  }
+
+  &__sidebar {
+    display: none;
+  }
+}
+
+// ============================================================
+// TABLET SMALL (640-900px) - контент с ограничением ширины
+// ============================================================
+@media (min-width: 640px) {
+  .article-layout-two-column {
+    grid-template-columns: 1fr;
+
+    &__content {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    &__sidebar {
+      display: none;
+    }
+  }
+}
+
+// ============================================================
+// TABLET (900-1200px) - Content | Sidebar
+// ============================================================
+@media (min-width: 900px) {
+  .article-layout-two-column {
+    grid-template-columns: 1fr 280px;
+
+    &__content {
+      max-width: 100%;
+      margin: 0;
+    }
+
+    &__sidebar {
+      display: block;
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+  }
+}
+
+// ============================================================
+// DESKTOP (>1200px) - увеличенная ширина Sidebar
+// ============================================================
+@media (min-width: 1200px) {
+  .article-layout-two-column {
+    grid-template-columns: 1fr 300px;
+
+    &__sidebar {
+      width: 300px;
+    }
+  }
+}

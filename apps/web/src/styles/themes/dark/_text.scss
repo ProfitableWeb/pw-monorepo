@@ -3,11 +3,12 @@
 
 [data-theme="dark"] {
   // ===== TEXT COLORS =====
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #d4d4d4;
-  --color-text-muted: #737373;
-  --color-text-inverse: #171717;
-  --color-text-disabled: #525252;
+  --color-text-primary: #f3f3f3;    // Заголовки, важный текст
+  --color-text-body: #b4b4b4;       // Основной текст параграфов (светлее для контраста)
+  --color-text-secondary: #d4d4d4;  // Вторичный текст
+  --color-text-muted: #737373;      // Приглушенный текст
+  --color-text-inverse: #171717;    // Инверсный текст
+  --color-text-disabled: #525252;   // Недоступный текст
 
   // ===== ADDITIONAL TEXT COLORS =====
   --text-primary-color: #ffffff;

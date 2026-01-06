@@ -1,0 +1,238 @@
+/**
+ * Адаптивные настройки отступов для Article Content
+ * 
+ * Этот файл содержит ТОЛЬКО изменения отступов:
+ * - margin между элементами
+ * - padding внутри элементов
+ */
+
+// ============================================================
+// MOBILE (<640px) - базовые отступы
+// ============================================================
+.article-content {
+  // Параграфы
+  p {
+    margin-bottom: 1em;
+  }
+
+  // Заголовки
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.6em;
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  // Списки
+  ul, ol {
+    margin-bottom: 1em;
+  }
+
+  // Цитаты
+  blockquote {
+    margin: 1.5em 0;
+  }
+
+  // Секции
+  section {
+    margin-bottom: 2em;
+  }
+
+  // Изображения
+  img {
+    margin: 1.5em auto;
+  }
+
+  // Код
+  pre {
+    margin: 1.5em 0;
+  }
+
+  // Таблицы
+  table {
+    margin: 1.5em 0;
+  }
+
+  // Горизонтальная линия
+  hr {
+    margin: 2em 0;
+  }
+}
+
+// ============================================================
+// TABLET SMALL (640-900px) - увеличенные отступы
+// ============================================================
+@media (min-width: 640px) {
+  .article-content {
+    p {
+      margin-bottom: 1.1em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.6em;
+      margin-bottom: 0.65em;
+    }
+
+    ul, ol {
+      margin-bottom: 1.1em;
+    }
+
+    blockquote {
+      margin: 1.6em 0;
+    }
+
+    section {
+      margin-bottom: 2.2em;
+    }
+
+    img {
+      margin: 1.6em auto;
+    }
+
+    pre {
+      margin: 1.6em 0;
+    }
+
+    table {
+      margin: 1.6em 0;
+    }
+
+    hr {
+      margin: 2.2em 0;
+    }
+  }
+}
+
+// ============================================================
+// TABLET (900-1200px) - еще больше
+// ============================================================
+@media (min-width: 900px) {
+  .article-content {
+    p {
+      margin-bottom: 1.2em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.7em;
+      margin-bottom: 0.7em;
+    }
+
+    ul, ol {
+      margin-bottom: 1.2em;
+    }
+
+    blockquote {
+      margin: 1.7em 0;
+    }
+
+    section {
+      margin-bottom: 2.4em;
+    }
+
+    img {
+      margin: 1.7em auto;
+    }
+
+    pre {
+      margin: 1.7em 0;
+    }
+
+    table {
+      margin: 1.7em 0;
+    }
+
+    hr {
+      margin: 2.4em 0;
+    }
+  }
+}
+
+// ============================================================
+// DESKTOP (>1200px) - оптимальные отступы
+// ============================================================
+@media (min-width: 1200px) {
+  .article-content {
+    p {
+      margin-bottom: 1.3em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.8em;
+      margin-bottom: 0.75em;
+    }
+
+    ul, ol {
+      margin-bottom: 1.3em;
+    }
+
+    blockquote {
+      margin: 1.8em 0;
+    }
+
+    section {
+      margin-bottom: 2.6em;
+    }
+
+    img {
+      margin: 1.8em auto;
+    }
+
+    pre {
+      margin: 1.8em 0;
+    }
+
+    table {
+      margin: 1.8em 0;
+    }
+
+    hr {
+      margin: 2.6em 0;
+    }
+  }
+}
+
+// ============================================================
+// WIDE DESKTOP (>1600px) - максимальные отступы
+// ============================================================
+@media (min-width: 1600px) {
+  .article-content {
+    p {
+      margin-bottom: 1.4em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.9em;
+      margin-bottom: 0.8em;
+    }
+
+    ul, ol {
+      margin-bottom: 1.4em;
+    }
+
+    blockquote {
+      margin: 1.9em 0;
+    }
+
+    section {
+      margin-bottom: 2.8em;
+    }
+
+    img {
+      margin: 1.9em auto;
+    }
+
+    pre {
+      margin: 1.9em 0;
+    }
+
+    table {
+      margin: 1.9em 0;
+    }
+
+    hr {
+      margin: 2.8em 0;
+    }
+  }
+}

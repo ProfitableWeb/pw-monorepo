@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SOCIAL_LINKS } from '@/components/common/social-icons';
+import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import './AppFooter.scss';
 
 /**
@@ -10,7 +10,7 @@ import './AppFooter.scss';
 const FooterSocialIcons: React.FC = () => {
   return (
     <div className='footer-social-icons'>
-      {SOCIAL_LINKS.map(link => (
+      {SOCIAL_LINKS_FOOTER.map(link => (
         <a
           key={link.name}
           href={link.href}

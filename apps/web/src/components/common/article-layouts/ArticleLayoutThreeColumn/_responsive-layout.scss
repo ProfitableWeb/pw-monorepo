@@ -1,0 +1,142 @@
+/**
+ * Адаптивные настройки структуры для Three Column Layout
+ * 
+ * Этот файл содержит ТОЛЬКО структурные изменения:
+ * - grid-template-columns
+ * - display
+ * - position
+ * - visibility элементов
+ */
+
+// ============================================================
+// MOBILE (<640px) - только контент
+// ============================================================
+.article-layout-three-column {
+  grid-template-columns: 1fr;
+
+  &__toc {
+    display: none;
+  }
+
+  &__content {
+    max-width: 100%;
+  }
+
+  &__sidebar {
+    display: none;
+  }
+}
+
+// ============================================================
+// TABLET SMALL (640-900px) - контент с ограничением ширины
+// ============================================================
+@media (min-width: 640px) {
+  .article-layout-three-column {
+    grid-template-columns: 1fr;
+
+    &__toc {
+      display: none;
+    }
+
+    &__content {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    &__sidebar {
+      display: none;
+    }
+  }
+}
+
+// ============================================================
+// TABLET (900-1200px) - Content | Sidebar (TOC скрыт)
+// ============================================================
+@media (min-width: 900px) {
+  .article-layout-three-column {
+    grid-template-columns: 1fr 280px;
+
+    &__toc {
+      display: none;
+    }
+
+    &__content {
+      max-width: 100%;
+      margin: 0;
+    }
+
+    &__sidebar {
+      display: block;
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+  }
+}
+
+// ============================================================
+// DESKTOP MEDIUM (1200-1400px) - Content | Sidebar (TOC всё ещё скрыт)
+// ============================================================
+@media (min-width: 1200px) {
+  .article-layout-three-column {
+    grid-template-columns: 1fr 300px;
+
+    &__toc {
+      display: none; // TOC скрыт до 1400px
+    }
+
+    &__content {
+      max-width: 700px; // Ограничиваем ширину для комфортного чтения
+      margin: 0 auto; // Центрируем контент внутри колонки
+      justify-self: center; // Дополнительное центрирование в grid
+    }
+
+    &__sidebar {
+      display: block;
+      width: 300px;
+    }
+  }
+}
+
+// ============================================================
+// DESKTOP WIDE (1400-1800px) - TOC | Content | Sidebar (полные 3 колонки)
+// ============================================================
+@media (min-width: 1400px) {
+  .article-layout-three-column {
+    // Трехколоночный режим только от 1400px
+    grid-template-columns: 200px 1fr 280px;
+
+    &__toc {
+      display: block; // TOC появляется
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+
+    &__content {
+      max-width: 100%; // Убираем ограничение, контент расширяется в grid
+    }
+
+    &__sidebar {
+      width: 280px;
+    }
+  }
+}
+
+// ============================================================
+// WIDE DESKTOP (>1800px) - увеличенные боковые колонки
+// ============================================================
+@media (min-width: 1800px) {
+  .article-layout-three-column {
+    // На очень широких экранах увеличиваем боковые колонки
+    grid-template-columns: 220px 1fr 300px;
+
+    &__sidebar {
+      width: 300px;
+    }
+  }
+}

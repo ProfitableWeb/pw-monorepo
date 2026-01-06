@@ -41,7 +41,18 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Получаем высоту app-bar для учёта при прокрутке
+      const appBar = document.querySelector('.app-bar');
+      const appBarHeight = appBar ? appBar.getBoundingClientRect().height : 80;
+      const offset = appBarHeight + 20; // Дополнительный отступ 20px
+      
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
     }
   };
 

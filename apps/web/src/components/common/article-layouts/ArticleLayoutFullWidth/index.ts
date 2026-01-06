@@ -1,0 +1,1 @@
+export { ArticleLayoutFullWidth } from './ArticleLayoutFullWidth';

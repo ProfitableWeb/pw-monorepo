@@ -4,11 +4,12 @@
 [data-theme="light"],
 :root {
   // ===== TEXT COLORS =====
-  --color-text-primary: #171717;
-  --color-text-secondary: #404040;
-  --color-text-muted: #737373;
-  --color-text-inverse: #fafafa;
-  --color-text-disabled: #a3a3a3;
+  --color-text-primary: #171717;    // Заголовки, важный текст
+  --color-text-body: #2c2c2c;       // Основной текст параграфов (чуть светлее)
+  --color-text-secondary: #404040;  // Вторичный текст
+  --color-text-muted: #737373;      // Приглушенный текст
+  --color-text-inverse: #fafafa;    // Инверсный текст
+  --color-text-disabled: #a3a3a3;   // Недоступный текст
 
   // ===== ADDITIONAL TEXT COLORS =====
   --text-primary-color: #000000;
