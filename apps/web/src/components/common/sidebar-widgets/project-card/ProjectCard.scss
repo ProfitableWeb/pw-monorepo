@@ -21,9 +21,13 @@
     margin-bottom: 16px;
     font-weight: 500;
 
+    &-profitable {
+      font-weight: 700; // Жирный для "Profitable"
+    }
+
     &-web {
       font-weight: 700; // Жирный для "WEB"
-      color: var(--color-primary); // Зелёный цвет
+      color: var(--color-primary-text); // Приглушённый зелёный для текста
     }
 
     &-ru {

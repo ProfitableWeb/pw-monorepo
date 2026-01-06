@@ -13,7 +13,7 @@ interface ProjectCardProps {
 // Моковые данные по умолчанию
 const DEFAULT_PROJECT = {
   definition:
-    'ProfitableWEB.ru — Исследование, развитие и монетизация веб-сайтов для формирования полноценного интернет-пространства.',
+    '<span class="project-card__definition-profitable">Profitable</span><span class="project-card__definition-web">WEB</span><span class="project-card__definition-ru">.ru</span> — Исследование, развитие и монетизация веб-сайтов, свервисов и приложений для формирования полноценного интернет-пространства.',
   description:
     'Внедрение инновационных практик и подходов к созданию доходных проектов с акцентом на ценности профессионального контента высокого уровня.',
   subscribeLink: '#',
@@ -31,10 +31,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       <div
         className='project-card__definition'
         dangerouslySetInnerHTML={{
-          __html: definition.replace(
-            /WEB\.ru/g,
-            '<span class="project-card__definition-web">WEB</span><span class="project-card__definition-ru">.ru</span>'
-          ),
+          __html: definition,
         }}
       />
 
