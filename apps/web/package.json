@@ -31,24 +31,26 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.0.2",
-    "typescript": "^5.9.2",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vitejs/plugin-react": "^5.0.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.35.0",
     "eslint-config-next": "^15.2.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
     "sass": "^1.92.1",
-    "vitest": "^3.2.4",
-    "@vitejs/plugin-react": "^5.0.2",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/user-event": "^14.6.1",
-    "jsdom": "^26.1.0",
-    "@vitest/ui": "^3.2.4",
-    "@vitest/coverage-v8": "^3.2.4"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "bun": ">=1.2.21"

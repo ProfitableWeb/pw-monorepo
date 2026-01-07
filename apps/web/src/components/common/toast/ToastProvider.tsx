@@ -7,7 +7,6 @@ import './Toast.scss';
 
 export const ToastProvider: React.FC = () => {
   const { theme } = useTheme();
-
   const toastOptions: ToastContainerProps = {
     position: 'top-right',
     autoClose: 3000,
