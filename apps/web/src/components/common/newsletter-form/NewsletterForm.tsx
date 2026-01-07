@@ -5,6 +5,7 @@ import { Modal } from '@/components/common/modal';
 import { Button } from '@/components/common/button';
 import SocialIcons from '@/components/common/social-icons';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
+import { toast } from '@/components/common/toast';
 import './NewsletterForm.scss';
 
 interface NewsletterFormProps {
@@ -25,16 +26,18 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
     e.preventDefault();
 
     // Валидация email
+    if (!email) {
+      toast.error('Пожалуйста, введите ваш email');
+      return;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setStatus('error');
-      setErrorMessage('Пожалуйста, введите корректный email');
+      toast.error('Пожалуйста, введите корректный email');
       return;
     }
 
     setIsLoading(true);
-    setStatus('idle');
-    setErrorMessage('');
 
     try {
       // TODO: API call к backend
@@ -45,10 +48,11 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
       // });
 
       // Имитация API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      setStatus('success');
+      toast.success('Спасибо за подписку! Проверьте почту для подтверждения.');
       setEmail('');
+      setStatus('success');
 
       // Закрыть модалку через 2 секунды после успеха
       setTimeout(() => {
@@ -56,8 +60,7 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
         setStatus('idle');
       }, 2000);
     } catch (error) {
-      setStatus('error');
-      setErrorMessage('Произошла ошибка. Попробуйте позже.');
+      toast.error('Произошла ошибка. Попробуйте позже.');
     } finally {
       setIsLoading(false);
     }
@@ -67,30 +70,33 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Подписаться на рассылку"
-      size="medium"
+      title='Подписаться на рассылку'
+      size='medium'
     >
-      <div className="newsletter-form">
-        <p className="newsletter-form__description">
+      <div className='newsletter-form'>
+        <p className='newsletter-form__description'>
           Получайте последние исследования и инсайты о трансформации труда в
           эпоху AI прямо на почту.
         </p>
 
-        <form onSubmit={handleSubmit} className="newsletter-form__form">
+        <form
+          onSubmit={handleSubmit}
+          className='newsletter-form__form'
+          noValidate
+        >
           <input
-            type="email"
+            type='email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            className="newsletter-form__input"
+            onChange={e => setEmail(e.target.value)}
+            placeholder='your@email.com'
+            className='newsletter-form__input'
             disabled={isLoading || status === 'success'}
-            required
           />
 
           <Button
-            type="submit"
-            variant="outline"
-            size="md"
+            type='submit'
+            variant='outline'
+            size='md'
             fullWidth
             disabled={isLoading || status === 'success'}
           >
@@ -102,27 +108,14 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
           </Button>
         </form>
 
-        {/* Success/Error сообщения */}
-        {status === 'success' && (
-          <div className="newsletter-form__message newsletter-form__message--success">
-            Спасибо за подписку! Проверьте почту для подтверждения.
-          </div>
-        )}
-
-        {status === 'error' && (
-          <div className="newsletter-form__message newsletter-form__message--error">
-            {errorMessage}
-          </div>
-        )}
-
         {/* Социальные сети */}
-        <div className="newsletter-form__social">
-          <p className="newsletter-form__social-title">
+        <div className='newsletter-form__social'>
+          <p className='newsletter-form__social-title'>
             Или следите за нами в соцсетях:
           </p>
-          <SocialIcons 
-            links={SOCIAL_LINKS_FOOTER} 
-            className="newsletter-form__social-icons"
+          <SocialIcons
+            links={SOCIAL_LINKS_FOOTER}
+            className='newsletter-form__social-icons'
           />
         </div>
       </div>
