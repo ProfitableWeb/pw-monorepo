@@ -46,18 +46,18 @@ export const Modal: React.FC<ModalProps> = ({
 
   // Блокировка скролла через контейнер .main-layout
   useEffect(() => {
-    if (isOpen) {
-      const container = document.querySelector('.main-layout');
-      if (container) {
-        container.classList.add('modal-open');
-      }
+    if (!isOpen) return;
 
-      return () => {
-        if (container) {
-          container.classList.remove('modal-open');
-        }
-      };
+    const container = document.querySelector('.main-layout');
+    if (container) {
+      container.classList.add('modal-open');
     }
+
+    return () => {
+      if (container) {
+        container.classList.remove('modal-open');
+      }
+    };
   }, [isOpen]);
 
   // Focus trap + Escape handling
