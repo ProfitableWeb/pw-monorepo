@@ -7,6 +7,16 @@ module.exports = {
       `bun --cwd apps/web run type-check`,
     ];
   },
+  // Проверка типов при изменении конфигурационных файлов, которые могут повлиять на типы
+  'apps/web/package.json': () => {
+    return `bun --cwd apps/web run type-check`;
+  },
+  'apps/web/tsconfig.json': () => {
+    return `bun --cwd apps/web run type-check`;
+  },
+  'packages/**/package.json': () => {
+    return `bun --cwd apps/web run type-check`;
+  },
   'apps/**/*.{json,md}': (filenames) => {
     const files = filenames.map((f) => f.replace(/\\/g, '/')).join(' ');
     return `prettier --write ${files}`;
