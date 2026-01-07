@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, useRef, ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { HiX } from 'react-icons/hi';
 import './Modal.scss';
 
 interface ModalProps {
@@ -20,18 +22,42 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'medium',
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Блокировка скролла body при открытой модалке
+  // Синхронизация внутреннего состояния с внешним
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+      setIsAnimating(true);
     }
+  }, [isOpen]);
 
-    return () => {
-      document.body.style.overflow = '';
+  // Определение мобильного устройства
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
     };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Блокировка скролла через контейнер .main-layout
+  useEffect(() => {
+    if (isOpen) {
+      const container = document.querySelector('.main-layout');
+      if (container) {
+        container.classList.add('modal-open');
+      }
+
+      return () => {
+        if (container) {
+          container.classList.remove('modal-open');
+        }
+      };
+    }
   }, [isOpen]);
 
   // Focus trap + Escape handling
@@ -70,39 +96,145 @@ export const Modal: React.FC<ModalProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Обработчик закрытия с анимацией
+  const handleClose = () => {
+    setIsAnimating(false);
+  };
+
+  // Callback после завершения анимации выхода
+  const handleAnimationComplete = () => {
+    if (!isAnimating && isOpen) {
+      onClose();
+    }
+  };
+
   // Click outside для закрытия
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      handleClose();
+    }
+  };
+
+  // Drag handler для закрытия на мобильных
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    // Если свайпнули вниз больше чем на 100px или скорость > 500
+    if (info.offset.y > 100 || info.velocity.y > 500) {
+      handleClose();
     }
   };
 
   if (!isOpen) return null;
 
-  return createPortal(
-    <div
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div ref={modalRef} className={`modal modal--${size}`}>
-        {/* Header */}
-        <div className="modal__header">
-          {title && <h2 className="modal__title">{title}</h2>}
-          <button
-            className="modal__close"
-            onClick={onClose}
-            aria-label="Закрыть модальное окно"
-          >
-            ✕
-          </button>
-        </div>
+  // Варианты анимации для overlay
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
 
-        {/* Content */}
-        <div className="modal__content">{children}</div>
-      </div>
-    </div>,
+  // Варианты анимации для модалки
+  const modalVariants = {
+    // Desktop: появление из центра
+    desktop: {
+      hidden: { opacity: 0, scale: 0.95, y: 20 },
+      visible: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: {
+          type: 'spring',
+          damping: 25,
+          stiffness: 300,
+        },
+      },
+      exit: {
+        opacity: 0,
+        scale: 0.95,
+        y: 20,
+        transition: {
+          duration: 0.2,
+        },
+      },
+    },
+    // Mobile: Bottom Sheet
+    mobile: {
+      hidden: { y: '100%' },
+      visible: {
+        y: 0,
+        transition: {
+          type: 'spring',
+          damping: 30,
+          stiffness: 300,
+        },
+      },
+      exit: {
+        y: '100%',
+        transition: {
+          type: 'spring',
+          damping: 30,
+          stiffness: 300,
+        },
+      },
+    },
+  };
+
+  const currentVariants = isMobile
+    ? modalVariants.mobile
+    : modalVariants.desktop;
+
+  return createPortal(
+    <AnimatePresence onExitComplete={handleAnimationComplete}>
+      {isOpen && isAnimating && (
+        <motion.div
+          key='modal-overlay'
+          className='modal-overlay'
+          onClick={handleOverlayClick}
+          role='dialog'
+          aria-modal='true'
+          variants={overlayVariants}
+          initial='hidden'
+          animate='visible'
+          exit='exit'
+        >
+          <motion.div
+            key='modal-content'
+            ref={modalRef}
+            className={`modal modal--${size}`}
+            variants={currentVariants}
+            initial='hidden'
+            animate='visible'
+            exit='exit'
+            drag={isMobile ? 'y' : false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={handleDragEnd}
+            style={{
+              touchAction: isMobile ? 'none' : 'auto',
+              willChange: 'transform',
+              transform: 'translateZ(0)',
+            }}
+          >
+            {/* Header */}
+            <div className='modal__header'>
+              {title && <h2 className='modal__title'>{title}</h2>}
+              <button
+                className='modal__close'
+                onClick={handleClose}
+                aria-label='Закрыть модальное окно'
+              >
+                <HiX />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className='modal__content'>{children}</div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body
   );
 };

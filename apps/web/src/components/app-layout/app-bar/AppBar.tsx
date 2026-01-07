@@ -13,13 +13,28 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    const container = document.querySelector('.main-layout');
+    
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
+      const scrollTop = container ? container.scrollTop : window.scrollY;
       setIsScrolled(scrollTop > 0);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    } else {
+      window.addEventListener('scroll', handleScroll);
+    }
+
+    // Первоначальная проверка
+    handleScroll();
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (

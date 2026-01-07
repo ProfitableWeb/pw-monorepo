@@ -8,6 +8,7 @@ interface ProjectCardProps {
   definition?: string;
   description?: string;
   subscribeLink?: string;
+  onSubscribeClick?: () => void;
 }
 
 // Моковые данные по умолчанию
@@ -23,6 +24,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   definition = DEFAULT_PROJECT.definition,
   description = DEFAULT_PROJECT.description,
   subscribeLink = DEFAULT_PROJECT.subscribeLink,
+  onSubscribeClick,
 }) => {
   return (
     <div className='project-card'>
@@ -38,11 +40,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       <p className='project-card__description'>{description}</p>
 
       <Button
-        href={subscribeLink}
+        href={onSubscribeClick ? undefined : subscribeLink}
+        onClick={onSubscribeClick}
         variant='outline'
         size='md'
         fullWidth
-        target='_blank'
+        target={onSubscribeClick ? undefined : '_blank'}
       >
         Подписаться на{' '}
         <span className='project-card__subscribe-btn-logo'>

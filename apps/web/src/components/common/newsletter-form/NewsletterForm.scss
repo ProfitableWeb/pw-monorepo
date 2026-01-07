@@ -1,10 +1,11 @@
 @import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
 
 .newsletter-form {
   &__description {
     font-size: 16px;
     line-height: 1.6;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 24px;
   }
 
@@ -12,25 +13,25 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   &__input {
     padding: 14px 16px;
     font-size: 16px;
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--color-border);
     border-radius: 8px;
-    background: var(--surface-secondary);
-    color: var(--text-primary);
+    background: var(--color-background);
+    color: var(--color-text-primary);
     transition: border-color 0.2s ease-in-out;
 
     &:focus {
       outline: none;
-      border-color: var(--link-color);
+      border-color: var(--color-primary);
     }
 
     &::placeholder {
-      color: var(--text-tertiary);
+      color: var(--color-text-muted);
     }
 
     &:disabled {
@@ -39,32 +40,6 @@
     }
   }
 
-  &__submit {
-    padding: 14px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    background: var(--link-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-
-    &:hover:not(:disabled) {
-      background: var(--link-color-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
 
   &__message {
     padding: 12px 16px;
@@ -86,14 +61,33 @@
   }
 
   &__social {
-    border-top: 1px solid var(--border-color);
     padding-top: 24px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   &__social-title {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 16px;
+  }
+
+  // Переопределяем скрытие иконок на мобильных для модального окна
+  &__social-icons {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// Переопределяем скрытие на мобильных с максимальной специфичностью
+.newsletter-form__social-icons.social-icons {
+  display: flex !important;
+  
+  @include mobile-only {
+    display: flex !important;
   }
 }

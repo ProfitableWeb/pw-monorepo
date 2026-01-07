@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/common/modal';
+import { Button } from '@/components/common/button';
 import SocialIcons from '@/components/common/social-icons';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import './NewsletterForm.scss';
@@ -86,9 +87,11 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
             required
           />
 
-          <button
+          <Button
             type="submit"
-            className="newsletter-form__submit"
+            variant="outline"
+            size="md"
+            fullWidth
             disabled={isLoading || status === 'success'}
           >
             {isLoading
@@ -96,7 +99,7 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
               : status === 'success'
                 ? '✓ Подписка оформлена!'
                 : 'Подписаться'}
-          </button>
+          </Button>
         </form>
 
         {/* Success/Error сообщения */}
@@ -117,7 +120,10 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
           <p className="newsletter-form__social-title">
             Или следите за нами в соцсетях:
           </p>
-          <SocialIcons links={SOCIAL_LINKS_FOOTER} />
+          <SocialIcons 
+            links={SOCIAL_LINKS_FOOTER} 
+            className="newsletter-form__social-icons"
+          />
         </div>
       </div>
     </Modal>

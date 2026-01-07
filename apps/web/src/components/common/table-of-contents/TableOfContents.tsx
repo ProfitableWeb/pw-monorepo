@@ -17,6 +17,8 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
+    const container = document.querySelector('.main-layout');
+    
     // Intersection Observer для отслеживания активной секции
     const observer = new IntersectionObserver(
       (entries) => {
@@ -26,7 +28,10 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
           }
         });
       },
-      { rootMargin: '-100px 0px -80% 0px' }
+      { 
+        root: container,
+        rootMargin: '-100px 0px -80% 0px' 
+      }
     );
 
     // Наблюдаем за всеми секциями
@@ -40,16 +45,18 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
 
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
+    const container = document.querySelector('.main-layout');
+    
+    if (element && container) {
       // Получаем высоту app-bar для учёта при прокрутке
       const appBar = document.querySelector('.app-bar');
       const appBarHeight = appBar ? appBar.getBoundingClientRect().height : 80;
       const offset = appBarHeight + 20; // Дополнительный отступ 20px
       
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const elementPosition = element.offsetTop;
       const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
+      container.scrollTo({
         top: offsetPosition,
         behavior: 'smooth',
       });

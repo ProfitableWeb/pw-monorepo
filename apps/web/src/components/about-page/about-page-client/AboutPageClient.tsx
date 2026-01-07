@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
@@ -9,6 +9,7 @@ import { ArticleLayout } from '@/components/common/article-layouts';
 import { ArticleContent } from '@/components/common/article-content';
 import { TableOfContents } from '@/components/common/table-of-contents';
 import { AuthorCard, ProjectCard } from '@/components/common/sidebar-widgets';
+import { NewsletterForm } from '@/components/common/newsletter-form';
 import { aboutContent } from '@/config/about-content';
 
 /**
@@ -21,6 +22,8 @@ import { aboutContent } from '@/config/about-content';
  * - AuthorCard: информация об авторе справа
  */
 export const AboutPageClient: React.FC = () => {
+  const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false);
+
   return (
     <div className='about-page' suppressHydrationWarning>
       <AppBar />
@@ -39,7 +42,7 @@ export const AboutPageClient: React.FC = () => {
             sidebar={
               <>
                 <AuthorCard />
-                <ProjectCard />
+                <ProjectCard onSubscribeClick={() => setIsNewsletterModalOpen(true)} />
               </>
             }
           >
@@ -49,6 +52,12 @@ export const AboutPageClient: React.FC = () => {
         </main>
         <AppFooter />
       </AppPageWrapper>
+
+      {/* Модальное окно подписки */}
+      <NewsletterForm
+        isOpen={isNewsletterModalOpen}
+        onClose={() => setIsNewsletterModalOpen(false)}
+      />
     </div>
   );
 };
