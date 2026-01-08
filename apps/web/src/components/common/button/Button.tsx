@@ -4,54 +4,15 @@ import React from 'react';
 import './Button.scss';
 
 interface ButtonProps {
-  /**
-   * Текст кнопки
-   */
   children: React.ReactNode;
-
-  /**
-   * Вариант кнопки
-   */
   variant?: 'outline' | 'solid' | 'ghost';
-
-  /**
-   * Размер кнопки
-   */
   size?: 'sm' | 'md' | 'lg';
-
-  /**
-   * Полная ширина
-   */
   fullWidth?: boolean;
-
-  /**
-   * Ссылка (если кнопка - это link)
-   */
   href?: string;
-
-  /**
-   * Открывать в новом окне
-   */
   target?: '_blank' | '_self';
-
-  /**
-   * Обработчик клика
-   */
   onClick?: () => void;
-
-  /**
-   * Состояние disabled
-   */
   disabled?: boolean;
-
-  /**
-   * Дополнительный CSS класс
-   */
   className?: string;
-
-  /**
-   * Тип кнопки (для form)
-   */
   type?: 'button' | 'submit' | 'reset';
 }
 

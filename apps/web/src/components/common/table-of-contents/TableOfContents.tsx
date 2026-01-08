@@ -18,19 +18,19 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
 
   useEffect(() => {
     const container = document.querySelector('.main-layout');
-    
+
     // Intersection Observer для отслеживания активной секции
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
           }
         });
       },
-      { 
+      {
         root: container,
-        rootMargin: '-100px 0px -80% 0px' 
+        rootMargin: '-100px 0px -80% 0px',
       }
     );
 
@@ -46,13 +46,13 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
     const container = document.querySelector('.main-layout');
-    
+
     if (element && container) {
       // Получаем высоту app-bar для учёта при прокрутке
       const appBar = document.querySelector('.app-bar');
       const appBarHeight = appBar ? appBar.getBoundingClientRect().height : 80;
       const offset = appBarHeight + 20; // Дополнительный отступ 20px
-      
+
       const elementPosition = element.offsetTop;
       const offsetPosition = elementPosition - offset;
 
@@ -64,10 +64,10 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   };
 
   return (
-    <nav className="toc" aria-label="Table of contents">
-      <h2 className="toc__title">Содержание</h2>
-      <ul className="toc__list">
-        {items.map((item) => (
+    <nav className='toc' aria-label='Table of contents'>
+      <h2 className='toc__title'>Содержание</h2>
+      <ul className='toc__list'>
+        {items.map(item => (
           <li
             key={item.id}
             className={`toc__item toc__item--level-${item.level} ${
@@ -75,7 +75,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
             }`}
           >
             <button
-              className="toc__link"
+              className='toc__link'
               onClick={() => handleClick(item.id)}
               aria-current={activeId === item.id ? 'location' : undefined}
             >
