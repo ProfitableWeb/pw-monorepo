@@ -54,7 +54,8 @@
 
   // Active state
   &:active:not(&--disabled) {
-    transform: translateY(-2px);
+    opacity: 0.7;
+    transform: translateY(5px);
   }
 
   // Focus state
@@ -96,8 +97,6 @@
   &:hover:not(.button--disabled) {
     // Цвет текста не меняется, остаётся var(--color-text-primary)
     border-color: var(--color-primary);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 
     &::after {
       opacity: 1;
@@ -132,8 +131,6 @@
   &:hover:not(.button--disabled) {
     background: var(--color-primary-hover, var(--color-primary));
     border-color: var(--color-primary-hover, var(--color-primary));
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 
     &::after {
       opacity: 1;
@@ -167,8 +164,6 @@
   &:hover:not(.button--disabled) {
     border-color: var(--color-border);
     background: var(--color-surface);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 
     &::after {
       opacity: 1;
@@ -201,4 +196,12 @@
 
 .button--full-width {
   width: 100%;
+}
+
+// Включение hover-эффекта приподнятия и тени (по умолчанию отключен)
+.button--hover-elevation {
+  &:hover:not(.button--disabled) {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
 }

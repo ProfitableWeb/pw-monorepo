@@ -14,6 +14,7 @@ interface ButtonProps {
   disabled?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
+  enableHoverElevation?: boolean;
 }
 
 /**
@@ -32,6 +33,9 @@ interface ButtonProps {
  *
  * // Action button
  * <Button variant="solid" onClick={handleClick}>Отправить</Button>
+ *
+ * // Button с hover-эффектом приподнятия (по умолчанию отключен)
+ * <Button variant="outline" enableHoverElevation>С поднятием</Button>
  * ```
  */
 export const Button: React.FC<ButtonProps> = ({
@@ -45,6 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   className = '',
   type = 'button',
+  enableHoverElevation = false,
 }) => {
   const classNames = [
     'button',
@@ -52,6 +57,7 @@ export const Button: React.FC<ButtonProps> = ({
     `button--${size}`,
     fullWidth && 'button--full-width',
     disabled && 'button--disabled',
+    enableHoverElevation && 'button--hover-elevation',
     className,
   ]
     .filter(Boolean)
