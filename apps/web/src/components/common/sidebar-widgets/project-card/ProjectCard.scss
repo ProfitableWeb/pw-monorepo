@@ -20,18 +20,26 @@
     color: var(--color-text-primary);
     margin-bottom: 16px;
     font-weight: 500;
+    // Отключаем transition для цветов, чтобы избежать мерцания при смене темы
+    transition: none !important;
 
     &-profitable {
       font-weight: 700; // Жирный для "Profitable"
+      // Отключаем transition для цветов
+      transition: none !important;
     }
 
     &-web {
       font-weight: 700; // Жирный для "WEB"
       color: var(--color-primary-text); // Приглушённый зелёный для текста
+      // Отключаем transition для цветов
+      transition: none !important;
     }
 
     &-ru {
       color: var(--color-text-muted) !important; // Светло-серый для ".ru"
+      // Отключаем transition для цветов
+      transition: none !important;
     }
   }
 
@@ -59,11 +67,11 @@
 
   &__subscribe-btn-logo-path-primary {
     fill: var(--color-text-primary);
-    transition: fill var(--transition-normal);
+    // Убираем transition, чтобы избежать конфликтов при смене темы
   }
 
   &__subscribe-btn-logo-path-accent {
     fill: var(--color-primary);
-    transition: fill var(--transition-normal);
+    // Убираем transition, чтобы избежать конфликтов при смене темы
   }
 }

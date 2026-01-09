@@ -23,12 +23,12 @@
   position: relative;
   // Не используем overflow: hidden, чтобы тень не обрезалась при поднятии кнопки
   
-  // Плавные transitions как у иконок футера
+  // Плавные transitions только для интерактивных свойств
+  // color и border-color НЕ анимируются, чтобы избежать конфликтов при смене темы
   transition: 
-    color 0.3s ease,
-    border-color 0.3s ease,
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s ease;
+    box-shadow 0.3s ease,
+    opacity 0.2s ease;
 
   // Контент кнопки поверх градиента
   &__content {
@@ -96,7 +96,13 @@
 
   &:hover:not(.button--disabled) {
     // Цвет текста не меняется, остаётся var(--color-text-primary)
+    // Добавляем transition только для hover состояния
     border-color: var(--color-primary);
+    transition: 
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
 
     &::after {
       opacity: 1;
@@ -131,6 +137,13 @@
   &:hover:not(.button--disabled) {
     background: var(--color-primary-hover, var(--color-primary));
     border-color: var(--color-primary-hover, var(--color-primary));
+    // Добавляем transition только для hover состояния
+    transition: 
+      background 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
 
     &::after {
       opacity: 1;
@@ -164,6 +177,13 @@
   &:hover:not(.button--disabled) {
     border-color: var(--color-border);
     background: var(--color-surface);
+    // Добавляем transition только для hover состояния
+    transition: 
+      border-color 0.3s ease,
+      background 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
 
     &::after {
       opacity: 1;
