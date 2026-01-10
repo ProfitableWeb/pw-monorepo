@@ -7,7 +7,7 @@ import { toast as rtToast, ToastOptions, ToastContent } from 'react-toastify';
 export const toast = {
   // Копируем все методы оригинального toast
   ...rtToast,
-  
+
   // Переопределяем методы для предотвращения дубликатов
   success: (content: ToastContent, options?: ToastOptions) => {
     const id = typeof content === 'string' ? content : undefined;
