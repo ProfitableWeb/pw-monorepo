@@ -1,0 +1,121 @@
+.article-page {
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+
+  &__main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px var(--spacing-xl);
+  }
+
+  &__content {
+    background: var(--color-bg-primary);
+  }
+
+  &__header {
+    margin-bottom: 40px;
+  }
+
+  &__title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+  }
+
+  &__date {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+    padding: 4px 12px;
+    background: var(--color-bg-secondary);
+    border-radius: 16px;
+  }
+
+  &__body {
+    line-height: 1.8;
+    color: var(--color-text-primary);
+  }
+
+  &__excerpt {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+
+  &__placeholder {
+    padding: 60px;
+    background: var(--color-bg-secondary);
+    border-radius: 16px;
+    text-align: center;
+    border: 2px dashed var(--color-border);
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &__main {
+      padding: 50px var(--spacing-lg);
+    }
+
+    &__title {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__main {
+      padding: 40px var(--spacing-md);
+    }
+
+    &__title {
+      font-size: 32px;
+    }
+
+    &__subtitle {
+      font-size: 18px;
+    }
+
+    &__placeholder {
+      padding: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__main {
+      padding: 30px var(--spacing-sm);
+    }
+
+    &__title {
+      font-size: 26px;
+    }
+
+    &__subtitle {
+      font-size: 16px;
+    }
+
+    &__placeholder {
+      padding: 30px 20px;
+    }
+  }
+}

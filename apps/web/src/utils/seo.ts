@@ -1,4 +1,5 @@
 import { Article } from '@/components/common/masonry/types';
+import { Category } from '@/types';
 
 /**
  * Форматирует дату в формат DD.MM.YYYY
@@ -28,7 +29,7 @@ export function generateArticleJsonLd(article: Article) {
     description: article.subtitle,
     datePublished: article.createdAt,
     image: article.imageUrl,
-    url: `https://profitableweb.ru/articles/${article.slug}`,
+    url: `https://profitableweb.ru/${article.slug}`, // Короткий URL без /articles/
     author: {
       '@type': 'Organization',
       name: 'ProfitableWeb',
@@ -40,6 +41,100 @@ export function generateArticleJsonLd(article: Article) {
       timeRequired: `PT${article.readTime}M`,
     }),
   };
+}
+
+/**
+ * Генерирует JSON-LD разметку для категории (Schema.org CollectionPage)
+ *
+ * @param category - Категория для генерации разметки
+ * @param articles - Статьи в категории
+ * @returns JSON-LD объект
+ */
+export function generateCategoryJsonLd(
+  category: Category,
+  articles: Article[]
+) {
+  const baseUrl = 'https://profitableweb.ru';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.name,
+    description: category.description || `Статьи по категории ${category.name}`,
+    url: `${baseUrl}/${category.slug}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: articles.map((article, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'BlogPosting',
+          headline: article.title,
+          url: `${baseUrl}/${article.slug}`,
+        },
+      })),
+    },
+  };
+}
+
+/**
+ * Генерирует JSON-LD разметку для хлебных крошек (Schema.org BreadcrumbList)
+ *
+ * @param items - Массив элементов breadcrumbs [{name: 'Главная', url: '/'}, ...]
+ * @returns JSON-LD объект
+ */
+export function generateBreadcrumbJsonLd(
+  items: Array<{ name: string; url: string }>
+) {
+  const baseUrl = 'https://profitableweb.ru';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${baseUrl}${item.url}`,
+    })),
+  };
+}
+
+/**
+ * Генерирует JSON-LD разметку для хлебных крошек категории
+ *
+ * @param category - Категория
+ * @returns JSON-LD объект
+ */
+export function generateCategoryBreadcrumbJsonLd(category: Category) {
+  return generateBreadcrumbJsonLd([
+    { name: 'Главная', url: '/' },
+    { name: category.name, url: `/${category.slug}` },
+  ]);
+}
+
+/**
+ * Генерирует JSON-LD разметку для хлебных крошек статьи
+ *
+ * @param article - Статья
+ * @param category - Категория статьи (опционально)
+ * @returns JSON-LD объект
+ */
+export function generateArticleBreadcrumbJsonLd(
+  article: Article,
+  category?: Category
+) {
+  const items: Array<{ name: string; url: string }> = [
+    { name: 'Главная', url: '/' },
+  ];
+
+  if (category) {
+    items.push({ name: category.name, url: `/${category.slug}` });
+  }
+
+  items.push({ name: article.title, url: `/${article.slug}` });
+
+  return generateBreadcrumbJsonLd(items);
 }
 
 /**

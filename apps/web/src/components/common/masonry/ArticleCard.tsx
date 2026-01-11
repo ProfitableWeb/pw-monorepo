@@ -46,10 +46,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
       />
 
       {/* Заголовок и подзаголовок - кликабельная область */}
-      <Link
-        href={`/articles/${article.slug}`}
-        className='article-card__header-link'
-      >
+      <Link href={`/${article.slug}`} className='article-card__header-link'>
         <header>
           <h2 itemProp='headline' className='article-card__title'>
             {article.title}
@@ -84,7 +81,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
       )}
 
       {/* SEO metadata */}
-      <meta itemProp='url' content={`/articles/${article.slug}`} />
+      <meta itemProp='url' content={`/${article.slug}`} />
       <meta itemProp='author' content='ProfitableWeb' />
       {article.category && (
         <meta itemProp='articleSection' content={article.category} />

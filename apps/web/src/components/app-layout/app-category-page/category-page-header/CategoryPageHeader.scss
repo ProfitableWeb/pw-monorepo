@@ -1,0 +1,79 @@
+.category-page-header {
+  padding: 80px 0 60px;
+  background: var(--color-bg-primary);
+
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+    
+    // Для выравнивания по левому краю на широких экранах
+    @media (min-width: 1025px) {
+      max-width: none;
+      padding-left: 0;
+    }
+  }
+
+  &__title {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    text-align: left;
+  }
+
+  &__description {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    text-align: left;
+  }
+
+  @media (max-width: 1024px) {
+    padding: 60px 0 50px;
+
+    &__title {
+      font-size: 48px;
+      text-align: left;
+    }
+
+    &__description {
+      font-size: 18px;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 40px 0 30px;
+
+    &__title {
+      font-size: 36px;
+      text-align: left;
+    }
+
+    &__description {
+      font-size: 16px;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 32px 0 24px;
+
+    &__container {
+      padding: 0 var(--spacing-md);
+    }
+
+    &__title {
+      font-size: 28px;
+      text-align: left;
+    }
+
+    &__description {
+      font-size: 15px;
+      text-align: left;
+    }
+  }
+}

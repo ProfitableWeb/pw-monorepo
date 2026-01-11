@@ -75,7 +75,10 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
+  icon?: string;
+  color?: string;
   parent?: string;
+  articleCount?: number; // Количество статей в категории
 }
 
 export interface Article {

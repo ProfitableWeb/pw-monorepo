@@ -28,7 +28,7 @@ const MasonryGrid: React.FC<MasonryGridProps> = ({
         <div className='masonry-grid__fallback'>
           {articles.map(article => (
             <article key={article.id} className='masonry-grid__fallback-card'>
-              <a href={`/articles/${article.slug}`}>
+              <a href={`/${article.slug}`}>
                 <h2>{article.title}</h2>
                 <p>{article.subtitle}</p>
                 <time dateTime={article.createdAt}>

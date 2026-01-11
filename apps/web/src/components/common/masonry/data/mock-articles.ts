@@ -16,7 +16,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Бурное развитие ИИ активно оптимизирует существующие профессии, а также создаёт новые. Тенденция — упразднение узких специализаций, охват более высокого уровня понимания смежных дисциплин.</p><p>Одна из последних заметок была про «Эмоционального архитектора ИИ» — специализации, требующей высокой компетенции как контекст-инженера, так и психолога. Название такой профессии ещё не устоялось, каждый вариант описания этого вида деятельности несёт в себе свои акценты.</p><blockquote>Психоинженерия — это междисциплинарная область на стыке психологии, когнитивных наук, нейронаук, дизайна человеко‑машинных интерфейсов и разработки искусственного интеллекта.</blockquote><p>В этой статье-заметки, мы разберёмся с термином «психоинженерия», который активно набирает актуальность в попытках создать AGI-системы.</p>',
     slug: 'youtube-monetization-guide',
-    category: 'Видео',
+    category: 'attention-economy',
     readTime: 12,
   },
   {
@@ -27,7 +27,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Telegram-боты открывают огромные возможности для автоматизации бизнеса и создания пассивного дохода. От простых информационных ботов до сложных систем приёма платежей.</p>',
     slug: 'telegram-bots-business',
-    category: 'Технологии',
+    category: 'ai-automation',
     readTime: 8,
   },
   {
@@ -38,7 +38,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>NFT-революция изменила арт-индустрию навсегда. Цифровые художники теперь могут напрямую продавать свои работы коллекционерам без посредников.</p><p>В этом гайде мы пройдём путь от создания кошелька MetaMask до минтинга первой коллекции на OpenSea.</p><p>Бонус: список лучших маркетплейсов для начинающих NFT-художников.</p>',
     slug: 'nft-artists-guide',
-    category: 'Криптовалюта',
+    category: 'future-vision',
     readTime: 15,
   },
   {
@@ -49,7 +49,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Качество звука — главный фактор успеха подкаста. Разбираем оборудование от бюджетных вариантов до профессиональных студийных решений.</p>',
     slug: 'podcast-equipment-2025',
-    category: 'Аудио',
+    category: 'editorial-work',
     readTime: 10,
   },
   {
@@ -60,7 +60,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Email остаётся самым ROI-эффективным каналом маркетинга. Стратегии роста базы, создание лид-магнитов и автоматизация рассылок.</p><p>Кейсы успешных email-кампаний с конверсией 15%+.</p>',
     slug: 'email-marketing-growth',
-    category: 'Маркетинг',
+    category: 'attention-economy',
     readTime: 9,
   },
   {
@@ -71,7 +71,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Notion — это not-only-заметки, но и полноценная операционная система для личной продуктивности. Базы данных, шаблоны, автоматизация — всё в одном месте.</p>',
     slug: 'notion-productivity-guide',
-    category: 'Продуктивность',
+    category: 'ai-automation',
     readTime: 11,
   },
   {
@@ -82,7 +82,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Figma стала индустриальным стандартом для UI/UX дизайна. Компоненты, автолейауты, плагины — полный цикл работы над веб-проектом.</p><p>Бонус: 20 must-have плагинов для ускорения работы.</p>',
     slug: 'figma-web-designers',
-    category: 'Дизайн',
+    category: 'ui-ux-design',
     readTime: 13,
   },
   {
@@ -93,7 +93,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Алгоритм Instagram Reels постоянно меняется. Актуальные стратегии для максимального охвата: от выбора музыки до времени публикации.</p>',
     slug: 'instagram-reels-algorithm',
-    category: 'Социальные сети',
+    category: 'attention-economy',
     readTime: 7,
   },
   {
@@ -104,7 +104,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Создание онлайн-курса — один из лучших способов монетизации экспертности. Сравнение платформ: Stepik, GetCourse, Teachable, Gumroad.</p><p>Стратегии ценообразования и воронки продаж для EdTech-продуктов.</p><p>Кейс: как курс за $99 принёс $50k за 6 месяцев.</p>',
     slug: 'online-courses-passive-income',
-    category: 'Образование',
+    category: 'future-vision',
     readTime: 14,
   },
   {
@@ -115,7 +115,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Фриланс даёт быстрые деньги, но ограничивает масштабирование. Продуктовый бизнес требует времени на запуск, но открывает путь к пассивному доходу.</p>',
     slug: 'freelance-vs-product-business',
-    category: 'Бизнес',
+    category: 'ai-automation',
     readTime: 10,
   },
   {
@@ -126,7 +126,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>TikTok — единственная платформа где можно набрать миллионы просмотров органически. Секреты вирусного контента и работы с алгоритмом.</p>',
     slug: 'tiktok-organic-reach',
-    category: 'Социальные сети',
+    category: 'attention-economy',
     readTime: 8,
   },
   {
@@ -137,7 +137,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Автоматизация рутинных задач экономит десятки часов в месяц. Сравнение no-code платформ для создания интеграций между сервисами.</p><p>Примеры готовых workflow для контент-криейторов и предпринимателей.</p>',
     slug: 'api-automation-tools',
-    category: 'Технологии',
+    category: 'ai-automation',
     readTime: 12,
   },
   {
@@ -148,7 +148,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Хороший текст может увеличить вовлечённость в 5-10 раз. Проверенные формулы: AIDA, PAS, BAB и другие.</p>',
     slug: 'copywriting-social-media',
-    category: 'Маркетинг',
+    category: 'attention-economy',
     readTime: 9,
   },
   {
@@ -159,7 +159,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>WordPress — мощный, но сложный. Ghost — минималистичный и быстрый. Разбираем плюсы, минусы, стоимость хостинга и SEO-возможности обеих платформ.</p><p>Когда стоит мигрировать с WordPress на Ghost?</p>',
     slug: 'ghost-vs-wordpress-blog',
-    category: 'Блоггинг',
+    category: 'editorial-work',
     readTime: 11,
   },
   {
@@ -170,7 +170,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>LinkedIn — главная площадка для нетворкинга и поиска клиентов в B2B-сегменте. Контент-стратегия для роста аудитории и генерации лидов.</p>',
     slug: 'linkedin-personal-brand',
-    category: 'Карьера',
+    category: 'attention-economy',
     readTime: 10,
   },
   {
@@ -181,7 +181,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Midjourney генерирует изображения профессионального уровня за секунды. Промпт-инжиниринг, стили, параметры — всё что нужно знать для работы с AI-артом.</p><p>50 готовых промптов для блога, соцсетей и обложек.</p>',
     slug: 'midjourney-content-creators',
-    category: 'AI',
+    category: 'ai-automation',
     readTime: 13,
   },
   {
@@ -192,7 +192,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Google постоянно обновляет алгоритмы. Core Web Vitals, E-E-A-T, полезный контент — что действительно важно для ранжирования в 2025 году.</p>',
     slug: 'seo-2025-changes',
-    category: 'SEO',
+    category: 'attention-economy',
     readTime: 15,
   },
   {
@@ -203,7 +203,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Notion AI помогает писать быстрее без потери качества. Генерация идей, расширение текстов, перевод, резюмирование — практические примеры использования.</p>',
     slug: 'notion-ai-content-automation',
-    category: 'AI',
+    category: 'ai-automation',
     readTime: 8,
   },
   {
@@ -214,7 +214,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Стриминг — это не только игры. Кодинг, арт, музыка — любое творчество можно монетизировать на Twitch. Технический гайд по настройке OBS, выбору железа и оптимизации качества.</p><p>Как получить первых подписчиков и партнёрку.</p>',
     slug: 'twitch-streaming-setup',
-    category: 'Видео',
+    category: 'attention-economy',
     readTime: 12,
   },
   {
@@ -225,7 +225,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Можно ли начать дропшиппинг без бюджета? Реалистичный разбор модели: поиск поставщиков, создание интернет-магазина, таргетированная реклама.</p>',
     slug: 'dropshipping-no-budget',
-    category: 'E-commerce',
+    category: 'future-vision',
     readTime: 14,
   },
   {
@@ -236,7 +236,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>ChatGPT — ассистент который никогда не устаёт. Генерация идей, SEO-оптимизация, редактура, создание описаний для соцсетей — готовые промпты для копирования.</p>',
     slug: 'chatgpt-bloggers-prompts',
-    category: 'AI',
+    category: 'ai-automation',
     readTime: 9,
   },
   {
@@ -247,7 +247,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>GitHub Copilot обещает ускорить разработку в 2-3 раза. Тестирование на реальных проектах: JavaScript, Python, React. Плюсы, минусы и сравнение с альтернативами.</p><p>Когда AI-ассистент реально помогает, а когда только мешает.</p>',
     slug: 'github-copilot-review',
-    category: 'Разработка',
+    category: 'ai-automation',
     readTime: 11,
   },
   {
@@ -258,7 +258,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Две главные платформы для независимых авторов. Сравнение моделей монетизации, алгоритмов, аналитики и перспектив роста.</p>',
     slug: 'substack-vs-medium-2025',
-    category: 'Блоггинг',
+    category: 'editorial-work',
     readTime: 10,
   },
   {
@@ -269,7 +269,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Pinterest часто недооценивают, но он генерирует огромный трафик для блогов и интернет-магазинов. SEO-оптимизация пинов, стратегии публикаций, аналитика.</p><p>Кейс: как Pinterest увеличил трафик блога в 5 раз.</p>',
     slug: 'pinterest-website-traffic',
-    category: 'Маркетинг',
+    category: 'attention-economy',
     readTime: 12,
   },
   {
@@ -280,7 +280,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Obsidian превращает заметки в связанную сеть идей. Zettelkasten-метод, плагины, синхронизация — построение второго мозга для креативной работы.</p>',
     slug: 'obsidian-knowledge-management',
-    category: 'Продуктивность',
+    category: 'ai-automation',
     readTime: 13,
   },
   {
@@ -291,7 +291,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Gumroad — платформа для инди-создателей. Минимальная комиссия, простая настройка, встроенная аналитика. Как запустить первый продукт и масштабироваться.</p>',
     slug: 'gumroad-digital-products',
-    category: 'E-commerce',
+    category: 'future-vision',
     readTime: 9,
   },
   {
@@ -302,7 +302,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Discord эволюционировал от игровой платформы до мощного инструмента для построения комьюнити. Server Boosting, платные роли, интеграции с Patreon.</p><p>Примеры успешных платных Discord-серверов с $10k+ MRR.</p>',
     slug: 'discord-community-monetization',
-    category: 'Комьюнити',
+    category: 'attention-economy',
     readTime: 11,
   },
   {
@@ -313,7 +313,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Tailwind CSS ускоряет разработку интерфейсов в 2-3 раза. Никаких кастомных CSS-классов — всё через utility-классы. Настройка, плагины, интеграция с React/Vue.</p>',
     slug: 'tailwind-css-fast-development',
-    category: 'Разработка',
+    category: 'ui-ux-design',
     readTime: 10,
   },
   {
@@ -324,7 +324,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Patreon позволяет фанатам напрямую поддерживать любимых авторов. Tier-модель, эксклюзивный контент, стратегии удержания подписчиков.</p>',
     slug: 'patreon-creator-guide',
-    category: 'Монетизация',
+    category: 'future-vision',
     readTime: 12,
   },
   {
@@ -335,7 +335,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Vercel и Netlify — лидеры в Jamstack-хостинге. Deployment, serverless функции, аналитика, цены — детальное сравнение для выбора платформы.</p><p>Когда Vercel лучше, а когда — Netlify.</p>',
     slug: 'vercel-vs-netlify-hosting',
-    category: 'Разработка',
+    category: 'ui-ux-design',
     readTime: 13,
   },
   {
@@ -346,7 +346,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Canva демократизировала дизайн. Миллионы шаблонов, AI-инструменты, Brand Kit — всё для создания профессиональных визуалов без навыков дизайна.</p>',
     slug: 'canva-pro-design-guide',
-    category: 'Дизайн',
+    category: 'ui-ux-design',
     readTime: 8,
   },
   {
@@ -357,7 +357,7 @@ export const mockArticles: Article[] = [
     summary:
       '<p>Webflow — это не конструктор, а полноценный инструмент для создания кастомных сайтов. CMS, анимации, адаптивность — всё без написания кода.</p><p>Кейсы: сайты на Webflow которые выглядят как работы агентств за $20k+.</p>',
     slug: 'webflow-no-code-websites',
-    category: 'No-code',
+    category: 'ui-ux-design',
     readTime: 14,
   },
 ];
