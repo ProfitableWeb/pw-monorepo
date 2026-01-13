@@ -4,6 +4,52 @@
 // Базовые стили toastify
 @import 'react-toastify/dist/ReactToastify.css';
 
+// Кастомная плавная анимация с выраженным ускорением/замедлением
+@keyframes toast-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-exit {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.toast-enter {
+  animation: toast-enter 0.3s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  
+  // Скрываем progress bar пока toast появляется
+  .Toastify__progress-bar {
+    opacity: 0;
+    animation: toast-progress-fade-in 0.2s ease-out 0.25s forwards;
+  }
+}
+
+.toast-exit {
+  animation: toast-exit 0.25s cubic-bezier(0.32, 0, 0.67, 0) forwards;
+}
+
+@keyframes toast-progress-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .Toastify__toast-container {
   z-index: 10000; // Поверх всего
   
@@ -14,6 +60,7 @@
   }
 }
 
+// Стили для toast
 .Toastify__toast {
   border-radius: 6px;
   font-family: inherit;

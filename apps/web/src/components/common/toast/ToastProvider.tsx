@@ -1,9 +1,20 @@
 'use client';
 
 import React from 'react';
-import { ToastContainer, ToastContainerProps } from 'react-toastify';
+import {
+  ToastContainer,
+  ToastContainerProps,
+  cssTransition,
+} from 'react-toastify';
 import { useTheme } from '@/contexts/ThemeContext';
 import './Toast.scss';
+
+// Кастомная плавная анимация с выраженным ускорением/замедлением
+const SmoothTransition = cssTransition({
+  enter: 'toast-enter',
+  exit: 'toast-exit',
+  collapseDuration: 300,
+});
 
 export const ToastProvider: React.FC = () => {
   const { theme } = useTheme();
@@ -19,6 +30,7 @@ export const ToastProvider: React.FC = () => {
     pauseOnHover: true,
     theme: theme === 'dark' ? 'dark' : 'light',
     stacked: true,
+    transition: SmoothTransition,
   };
 
   return <ToastContainer {...toastOptions} />;

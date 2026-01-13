@@ -15,10 +15,6 @@
     overflow: hidden;
     transition: var(--transition-transform);
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
     &:active {
       transform: scale(0.95);
     }
@@ -29,17 +25,59 @@
     }
   }
 
+  &__avatar-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+
+    // Тёмно-серый слой поверх аватарки с прозрачностью 0.1
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &--large {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
   &__avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
     background: var(--color-surface);
+    filter: grayscale(80%);
+    opacity: 0.7;
+    transition: filter 0.3s ease, opacity 0.3s ease;
 
     &--large {
       width: 40px;
       height: 40px;
     }
+  }
+
+  // Восстановление яркости и прозрачности при наведении на триггер или header
+  &__trigger:hover &__avatar,
+  &__header:hover &__avatar {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
   }
 
   &__dropdown {
@@ -49,17 +87,10 @@
     min-width: 200px;
     background: var(--color-background);
     border: 1px solid var(--color-border);
-    border-radius: $radius-md;
+    border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 100;
     animation: dropdown-appear 0.15s ease-out;
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
   }
 
   &__name {
@@ -98,7 +129,7 @@
     }
 
     &:last-child {
-      border-radius: 0 0 $radius-md $radius-md;
+      border-radius: 0 0 8px 8px;
     }
 
     svg {

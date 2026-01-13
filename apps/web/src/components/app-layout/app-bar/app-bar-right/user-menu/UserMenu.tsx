@@ -63,25 +63,29 @@ export const UserMenu: React.FC = () => {
         aria-expanded={isOpen}
         aria-haspopup='true'
       >
-        <Image
-          src={user.avatar}
-          alt={user.name}
-          width={28}
-          height={28}
-          className='user-menu__avatar'
-        />
+        <span className='user-menu__avatar-wrapper'>
+          <Image
+            src={user.avatar}
+            alt={user.name}
+            width={28}
+            height={28}
+            className='user-menu__avatar'
+          />
+        </span>
       </button>
 
       {isOpen && (
         <div className='user-menu__dropdown' role='menu'>
           <div className='user-menu__header'>
-            <Image
-              src={user.avatar}
-              alt={user.name}
-              width={40}
-              height={40}
-              className='user-menu__avatar user-menu__avatar--large'
-            />
+            <span className='user-menu__avatar-wrapper user-menu__avatar-wrapper--large'>
+              <Image
+                src={user.avatar}
+                alt={user.name}
+                width={40}
+                height={40}
+                className='user-menu__avatar user-menu__avatar--large'
+              />
+            </span>
             <span className='user-menu__name'>{user.name}</span>
           </div>
           <div className='user-menu__divider' />
