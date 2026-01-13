@@ -20,6 +20,7 @@
   box-shadow: var(--shadow-lg);
   padding: 12px 16px;
   border: 1px solid var(--color-border);
+  font-size: 13px !important;
   
   &-theme--light {
     background: var(--color-background);
@@ -36,13 +37,18 @@
 .Toastify__toast-body {
   padding: 0;
   margin: 0;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
 
   & > div {
-    font-size: inherit !important;
-    font-weight: inherit !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+  }
+  
+  * {
+    font-size: 13px !important;
   }
 }
 
@@ -71,24 +77,22 @@
     opacity: 0.1;
   }
   
-  &--success {
-    background: var(--color-primary);
-  }
-  
-  &--error {
-    background: #ef4444;
+  &--success,
+  &--error,
+  &--info,
+  &--warning {
+    // Для светлой темы - чёрный, для тёмной - белый
+    background: var(--color-text-primary);
   }
 }
 
 // Кастомные стили для типов
-.Toastify__toast--success {
+.Toastify__toast--success,
+.Toastify__toast--error,
+.Toastify__toast--info,
+.Toastify__toast--warning {
   .Toastify__toast-icon svg {
-    fill: var(--color-primary);
-  }
-}
-
-.Toastify__toast--error {
-  .Toastify__toast-icon svg {
-    fill: #ef4444;
+    // Приглушённый зелёный акцентный цвет
+    fill: var(--color-primary-text);
   }
 }

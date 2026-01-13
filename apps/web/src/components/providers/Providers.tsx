@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/auth';
 import { ToastProvider } from '@/components/common/toast';
 
 interface ProvidersProps {
@@ -15,8 +16,10 @@ interface ProvidersProps {
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <ThemeProvider defaultTheme='light'>
-      {children}
-      <ToastProvider />
+      <AuthProvider>
+        {children}
+        <ToastProvider />
+      </AuthProvider>
     </ThemeProvider>
   );
 };

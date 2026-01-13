@@ -1,0 +1,108 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+@import '@/styles/utils/breakpoints';
+
+.auth-modal {
+  &__providers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 24px;
+  }
+
+  // Точная копия стилей из футера (.footer-social-icons__link)
+  &__provider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    border-radius: var(--radius-xl);
+    background: var(--color-background);
+    border: 2px solid var(--color-border);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    // Сброс button стилей
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    transition: 
+      color 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease;
+
+    @include md {
+      width: 64px;
+      height: 64px;
+    }
+
+    svg {
+      width: 32px;
+      height: 32px;
+      display: block;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+
+      @include md {
+        width: 36px;
+        height: 36px;
+      }
+
+      path {
+        fill: currentColor;
+        fill-opacity: 0.9;
+        transition: fill-opacity 0.3s ease;
+      }
+    }
+
+    // Hover эффект с подсветкой
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        var(--color-primary-light) 0%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+    }
+
+    &:hover {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+
+      &::before {
+        opacity: 1;
+      }
+
+      svg {
+        transform: scale(1.1);
+
+        path {
+          fill-opacity: 1;
+        }
+      }
+    }
+
+    &:active {
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+}

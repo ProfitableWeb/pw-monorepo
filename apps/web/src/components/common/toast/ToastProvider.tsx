@@ -8,7 +8,7 @@ import './Toast.scss';
 export const ToastProvider: React.FC = () => {
   const { theme } = useTheme();
   const toastOptions: ToastContainerProps = {
-    position: 'top-right',
+    position: 'top-center',
     autoClose: 3000,
     hideProgressBar: false,
     newestOnTop: true,
@@ -18,7 +18,7 @@ export const ToastProvider: React.FC = () => {
     draggable: true,
     pauseOnHover: true,
     theme: theme === 'dark' ? 'dark' : 'light',
-    stacked: false,
+    stacked: true,
   };
 
   return <ToastContainer {...toastOptions} />;

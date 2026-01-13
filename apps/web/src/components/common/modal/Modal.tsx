@@ -6,20 +6,31 @@ import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import './Modal.scss';
 
+interface ContentPadding {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  subtitle?: string;
   children: ReactNode;
   size?: 'small' | 'medium' | 'large';
+  contentPadding?: ContentPadding;
 }
 
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
+  subtitle,
   children,
   size = 'medium',
+  contentPadding,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -219,7 +230,10 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {/* Header */}
             <div className='modal__header'>
-              {title && <h2 className='modal__title'>{title}</h2>}
+              <div className='modal__header-text'>
+                {title && <h2 className='modal__title'>{title}</h2>}
+                {subtitle && <p className='modal__subtitle'>{subtitle}</p>}
+              </div>
               <button
                 className='modal__close'
                 onClick={handleClose}
@@ -230,7 +244,22 @@ export const Modal: React.FC<ModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className='modal__content'>{children}</div>
+            <div
+              className='modal__content'
+              data-custom-padding={contentPadding ? 'true' : undefined}
+              style={
+                contentPadding
+                  ? ({
+                      '--content-padding-top': contentPadding.top,
+                      '--content-padding-right': contentPadding.right,
+                      '--content-padding-bottom': contentPadding.bottom,
+                      '--content-padding-left': contentPadding.left,
+                    } as React.CSSProperties)
+                  : undefined
+              }
+            >
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}

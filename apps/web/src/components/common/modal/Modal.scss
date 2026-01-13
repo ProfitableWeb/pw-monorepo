@@ -72,8 +72,9 @@
   // Header
   &__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 16px;
     flex-shrink: 0; // Не сжимается при скролле
     position: relative;
 
@@ -102,6 +103,11 @@
     }
   }
 
+  &__header-text {
+    flex: 1;
+    min-width: 0;
+  }
+
   &__title {
     font-size: 20px;
     font-weight: 600;
@@ -110,6 +116,15 @@
 
     @include sm {
       font-size: 24px;
+    }
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+
+    @include sm {
+      font-size: 16px;
     }
   }
 
@@ -156,6 +171,25 @@
 
     @include sm {
       padding: 24px;
+    }
+
+    // Кастомные отступы через пропс contentPadding
+    &[data-custom-padding='true'] {
+      @include mobile-only {
+        --base-content-padding-top: 16px;
+        padding: var(--content-padding-top, 16px)
+          var(--content-padding-right, 16px)
+          var(--content-padding-bottom, 24px)
+          var(--content-padding-left, 16px);
+      }
+
+      @include sm {
+        --base-content-padding-top: 24px;
+        padding: var(--content-padding-top, 24px)
+          var(--content-padding-right, 24px)
+          var(--content-padding-bottom, 24px)
+          var(--content-padding-left, 24px);
+      }
     }
   }
 }
