@@ -9,10 +9,11 @@
 // ============================================================
 // MOBILE (<640px) - базовые отступы
 // ============================================================
-.article-content {
+.article-content,
+.article-content-one-column {
   // Параграфы
   p {
-    margin-bottom: 1em;
+    margin-bottom: 0.75em; // Меньше высоты строки для визуально компактного вида
   }
 
   // Заголовки
@@ -65,9 +66,10 @@
 // TABLET SMALL (640-900px) - увеличенные отступы
 // ============================================================
 @media (min-width: 640px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     p {
-      margin-bottom: 1.1em;
+      margin-bottom: 0.8em; // Меньше высоты строки (line-height: 1.55)
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -109,9 +111,10 @@
 // TABLET (900-1200px) - еще больше
 // ============================================================
 @media (min-width: 900px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     p {
-      margin-bottom: 1.2em;
+      margin-bottom: 0.85em; // Меньше высоты строки (line-height: 1.6)
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -153,9 +156,10 @@
 // DESKTOP (>1200px) - оптимальные отступы
 // ============================================================
 @media (min-width: 1200px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     p {
-      margin-bottom: 1.3em;
+      margin-bottom: 0.9em; // Меньше высоты строки (line-height: 1.6)
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -197,14 +201,15 @@
 // WIDE DESKTOP (>1600px) - максимальные отступы
 // ============================================================
 @media (min-width: 1600px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     p {
-      margin-bottom: 1.4em;
+      margin-bottom: 0.9em; // Меньше высоты строки (line-height: 1.6), исправлена опечатка
     }
 
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.9em;
-      margin-bottom: 0.8em;
+      margin-bottom: 0.6em;
     }
 
     ul, ol {

@@ -1,7 +1,11 @@
 /**
  * Layout types for articles/pages
  */
-export type ArticleLayoutType = 'three-column' | 'two-column' | 'full-width';
+export type ArticleLayoutType =
+  | "three-column"
+  | "two-column"
+  | "full-width"
+  | "one-column";
 
 /**
  * Article type for blog posts

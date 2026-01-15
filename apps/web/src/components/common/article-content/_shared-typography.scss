@@ -1,0 +1,238 @@
+/**
+ * Общие стили элементов оформления текста
+ * 
+ * Этот файл содержит миксины для всех HTML элементов (заголовки, параграфы, списки, цитаты, etc.)
+ * которые используются как в ArticleContent, так и в ArticleContentOneColumn.
+ * 
+ * Разница между компонентами только в ограничениях ширины (max-width):
+ * - ArticleContent: параграфы и списки ограничены 75ch для удобства чтения
+ * - ArticleContentOneColumn: параграфы и списки могут быть 100% ширины
+ */
+
+// Заголовки
+@mixin article-headings {
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+@mixin article-h1 {
+  font-size: 2.25em;
+  line-height: 1.15;
+  margin-top: 0;
+}
+
+@mixin article-h2 {
+  font-size: 1.75em;
+  line-height: 1.2;
+  padding-bottom: 0.3em;
+}
+
+@mixin article-h3 {
+  font-size: 1.5em;
+  line-height: 1.25;
+}
+
+@mixin article-h4 {
+  font-size: 1.25em;
+  line-height: 1.3;
+}
+
+@mixin article-h5 {
+  font-size: 1.1em;
+  line-height: 1.3;
+}
+
+@mixin article-h6 {
+  font-size: 1em;
+  line-height: 1.3;
+}
+
+// Параграфы (базовые стили, без max-width)
+@mixin article-paragraph {
+  margin-bottom: 0.75em; // Меньше высоты строки для визуально компактного вида
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Lead paragraph
+@mixin article-lead {
+  color: var(--color-text-primary);
+}
+
+// Ссылки
+@mixin article-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-primary);
+  transition: color 0.2s, border-color 0.2s;
+
+  &:hover {
+    color: var(--color-primary-hover, var(--color-primary));
+    border-bottom-color: var(--color-primary-hover, var(--color-primary));
+  }
+}
+
+// Списки (базовые стили, без max-width)
+@mixin article-list {
+  margin-bottom: 1.2em;
+  padding-left: 2em;
+
+  li {
+    margin-bottom: 0.5em;
+  }
+
+  // Вложенные списки
+  ul, ol {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+}
+
+@mixin article-ul {
+  list-style-type: disc;
+}
+
+@mixin article-ol {
+  list-style-type: decimal;
+}
+
+// Цитаты
+@mixin article-blockquote {
+  margin: 1.6em 0;
+  padding: 1em 1.5em 1.6em;
+  border-left: 4px solid var(--color-border);
+  background: var(--color-background-secondary);
+  font-style: normal;
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: var(--color-text-body);
+  transition: background-color 0.6s ease, border-color 0.6s ease;
+
+  a {
+    color: var(--color-text-body);
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-text-body);
+    transition: 
+      var(--transition-opacity),
+      var(--transition-border);
+    &:hover {
+      opacity: 0.6;
+      border-bottom: 2px solid rgba(var(--color-text-body), 0.0);
+    }
+  }
+
+  p {
+    margin-bottom: 1em;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Списки в цитатах
+  ul, ol {
+    margin-bottom: 0.6em;
+  }
+
+  // Заголовок цитаты
+  .blockquote-title {
+    font-size: 1.11em;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+    color: var(--color-text-body);
+  }
+
+  cite {
+    display: block;
+    margin-top: 1em;
+    font-size: 1em;
+    font-style: normal;
+    color: var(--color-text-muted);
+  }
+}
+
+// Код
+@mixin article-code {
+  padding: 0.2em 0.4em;
+  background: var(--color-background-secondary);
+  border-radius: 3px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+@mixin article-pre {
+  margin: 1.6em 0;
+  padding: 1em 1.5em;
+  background: var(--color-background-secondary);
+  border-radius: 6px;
+  overflow-x: auto;
+
+  code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+  }
+}
+
+// Изображения
+@mixin article-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.6em auto;
+  border-radius: 6px;
+}
+
+// Таблицы
+@mixin article-table {
+  width: 100%;
+  margin: 1.6em 0;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+
+  @media (min-width: 768px) {
+    display: table;
+  }
+}
+
+@mixin article-table-cell {
+  padding: 0.75em 1em;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@mixin article-table-header {
+  font-weight: 700;
+  background: var(--color-background-secondary);
+}
+
+// Горизонтальная линия
+@mixin article-hr {
+  margin: 2.4em 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+// Strong и Em
+@mixin article-strong {
+  font-weight: 700;
+}
+
+@mixin article-em {
+  font-style: italic;
+}
+
+// Секции
+@mixin article-section {
+  margin-bottom: 2.4em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

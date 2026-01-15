@@ -1,0 +1,101 @@
+/**
+ * Article Resources - стили для блока "Ресурсы"
+ * 
+ * Компонент отображает список ссылок на использованные материалы.
+ * Стилизован в минималистичном стиле, аналогично блоку вопросов.
+ */
+
+.article-resources {
+  padding: 0;
+  // Без фона для минималистичного дизайна
+  background: transparent;
+  // Разделитель над блоком - светлая линия 2px
+  border-top: 2px solid var(--color-border);
+  padding-top: 2em;
+  margin-bottom: 2em;
+
+  // Заголовок
+  &__title {
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 1em;
+    color: var(--color-text-primary);
+  }
+
+  // Список ресурсов
+  &__list {
+    // Убираем стандартные стили списка
+    list-style: none;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7em; // Увеличено расстояние между элементами
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // Отдельный элемент списка
+  &__item {
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  // Ссылка на ресурс (только название)
+  &__link {
+    display: inline;
+    color: var(--color-text-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 0.2em;
+    line-height: inherit;
+    transition: 
+      opacity 0.2s ease,
+      text-decoration-color 0.2s ease;
+    
+    &:hover {
+      opacity: 0.7;
+      text-decoration-color: var(--color-text-body);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  // Разделитель (тире)
+  &__separator {
+    color: var(--color-text-muted);
+    margin: 0 0.4em;
+    font-weight: 400;
+  }
+
+  // Описание ресурса
+  &__description {
+    color: var(--color-text-body);
+    font-weight: 400;
+  }
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .article-resources {
+    margin: 2em 0;
+    padding-top: 1.5em;
+
+    &__title {
+      font-size: 1.5em;
+      margin-bottom: 0.8em;
+    }
+
+    &__items {
+      gap: 0.5em;
+    }
+  }
+}

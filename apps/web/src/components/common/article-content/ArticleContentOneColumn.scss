@@ -1,17 +1,16 @@
 /**
- * Article Content - стили для HTML контента
+ * Article Content One Column - стили для одноколоночного HTML контента
  * 
- * Базовые стили типографики для всех HTML элементов.
- * Использует общие стили элементов оформления из _shared-typography.scss.
- * Параграфы и списки ограничены max-width: 75ch для удобства чтения.
- * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
+ * Использует общие стили элементов оформления из _shared-typography.scss,
+ * но без ограничений max-width для параграфов и списков.
+ * Блоки могут быть 100% ширины для широких элементов.
  */
 
 @import './shared-typography';
 
-.article-content {
+.article-content-one-column {
   // Базовая типографика (размер и line-height в _responsive-typography.scss)
-  color: var(--color-text-body); // Основной текст параграфов (чуть светлее заголовков)
+  color: var(--color-text-body);
 
   // Заголовки - используем общие стили
   h1, h2, h3, h4, h5, h6 {
@@ -42,16 +41,16 @@
     @include article-h6;
   }
 
-  // Параграфы - С ограничением max-width для удобства чтения
+  // Параграфы - БЕЗ ограничения max-width (100% ширина)
   p {
     @include article-paragraph;
-    max-width: 75ch; // Оптимальная ширина строки для читабельности (65-75 символов)
+    // Нет max-width: 75ch - блоки могут быть на всю ширину
   }
 
-  // Lead paragraph - вводный параграф (только через класс)
+  // Lead paragraph - вводный параграф
   .lead {
     @include article-lead;
-    max-width: 75ch;
+    // Нет max-width: 75ch - блоки могут быть на всю ширину
   }
 
   // Ссылки
@@ -59,10 +58,10 @@
     @include article-link;
   }
 
-  // Списки - С ограничением max-width для удобства чтения
+  // Списки - БЕЗ ограничения max-width (100% ширина)
   ul, ol {
     @include article-list;
-    max-width: 75ch; // Оптимальная ширина для читабельности
+    // Нет max-width: 75ch - блоки могут быть на всю ширину
   }
 
   ul {
@@ -125,6 +124,6 @@
   }
 }
 
-// Импортируем адаптивные настройки
+// Импортируем адаптивные настройки (те же, что и для ArticleContent)
 @import './responsive-typography';  // Типографика: font-size, line-height
 @import './responsive-spacing';     // Отступы: margin, padding

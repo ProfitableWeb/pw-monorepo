@@ -1,0 +1,20 @@
+/**
+ * One Column Layout (только Content)
+ * 
+ * Базовые стили компонента.
+ * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
+ */
+
+.article-layout-one-column {
+  // Базовая структура
+  width: 100%;
+
+  // Основной контент
+  &__content {
+    width: 100%;
+  }
+}
+
+// Импортируем адаптивные настройки
+@import './responsive-layout';  // Структура: вспомогательные классы
+@import './responsive-sizing';   // Размеры: padding

@@ -1,0 +1,1 @@
+export { ArticleLayoutOneColumn } from './ArticleLayoutOneColumn';

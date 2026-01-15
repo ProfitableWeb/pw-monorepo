@@ -1,0 +1,111 @@
+/**
+ * Article Author Block - стили для блока автора статьи
+ * 
+ * Блок отображается под заголовком статьи.
+ * Горизонтальная компоновка: аватар слева, информация справа.
+ */
+
+.article-author-block {
+  display: flex;
+  gap: 1.2em;
+  align-items: center;
+  margin: 2.5em 0 2em; // Увеличен отступ сверху для разделения с подзаголовком
+  padding: 0;
+
+  // Аватар (серый кружок, пока без изображения)
+  &__avatar {
+    width: 64px;
+    height: 64px;
+    min-width: 64px; // Предотвращаем сжатие
+    border-radius: 50%;
+    background: var(--color-background-secondary);
+    background-color: var(--color-border);
+    opacity: 0.6;
+    flex-shrink: 0;
+    
+    // В дальнейшем здесь будет изображение
+    // background-image: url(...);
+    // background-size: cover;
+    // background-position: center;
+  }
+
+  // Имя и социальные сети
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+  }
+
+  // Метка "Автор статьи"
+  &__label {
+    font-size: 0.75em;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    line-height: 1;
+  }
+
+  // Имя автора
+  &__name {
+    font-size: 1em; // Уменьшен с 1.1em
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap; // Имя в одну строку
+  }
+
+  // Социальные сети
+  &__socials {
+    margin: 0;
+    
+    // Уменьшаем отступы между иконками
+    :global(.article-author-block__socials-icons) {
+      gap: 0px;
+    }
+  }
+
+  // Разделитель между мета и описанием
+  &__divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--color-border);
+    opacity: 0.8;
+  }
+
+  // Описание автора
+  &__description {
+    font-size: 0.9em; // Уменьшен с 0.95em
+    line-height: 1.6;
+    color: var(--color-text-body);
+    margin: 0;
+  }
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .article-author-block {
+    gap: 0.8em;
+    margin: 0.8em 0 1.5em;
+
+    &__avatar {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+    }
+
+    &__divider {
+      align-self: stretch;
+    }
+
+    &__name {
+      font-size: 1em;
+    }
+
+    &__description {
+      font-size: 0.9em;
+    }
+  }
+}

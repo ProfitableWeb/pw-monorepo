@@ -1,0 +1,164 @@
+/**
+ * Self Assessment - стили для блока "Вопросы для усвоения материала"
+ * 
+ * Компонент использует стили из article-content для консистентности,
+ * но имеет собственные стили для интерактивных элементов.
+ */
+
+.self-assessment {
+  margin: 3em 0;
+  padding: 0;
+  // Без фона для минималистичного дизайна
+  background: transparent;
+  // Разделитель над блоком - светлая линия 2px
+  border-top: 2px solid var(--color-border);
+  padding-top: 2em;
+
+  // Заголовок
+  &__title {
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 0.8em;
+    color: var(--color-text-primary);
+  }
+
+  // Пояснение (ремарка, не основной текст)
+  &__intro {
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    margin-bottom: 1.2em;
+    margin-top: 0;
+  }
+
+  // Контейнер вопросов
+  &__questions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Отдельный вопрос
+  &__question {
+    // Без фона и границ для минималистичного дизайна
+    background: transparent;
+    padding: 0.4em 0;
+  }
+
+  // Заголовок вопроса (теперь кнопка)
+  &__question-header {
+    display: flex;
+    align-items: baseline; // Выравнивание по базовой линии для иконки и текста
+    gap: 0.5em;
+    margin-bottom: 1em;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    
+    &:focus {
+      outline: none; // Убрали рамку для focus
+    }
+    
+    &:hover {
+      opacity: 0.6;
+      
+      .self-assessment__question-text {
+        border-bottom-color: transparent; // Убираем пунктирное подчёркивание
+      }
+    }
+  }
+
+  // Иконка треугольника
+  &__question-icon {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    color: var(--color-text-body);
+    transition: transform 0.3s ease;
+    margin-top: 0.2em; // Небольшой отступ для выравнивания с текстом
+    
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__question-text {
+    font-size: 1.5em; // Увеличен с 1.3em
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-text-primary);
+    // Пунктирное подчёркивание для индикации интерактивности
+    border-bottom: 1px dashed var(--color-border);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  // Кнопка раскрытия (скрыта, раскрытие по клику на вопрос)
+  &__toggle {
+    display: none; // Скрываем кнопку, раскрытие по клику на вопрос
+  }
+
+  // Ответ (скрыт по умолчанию)
+  // SEO-friendly подход: контент всегда в DOM для краулеров,
+  // но скрыт визуально через CSS (не display:none)
+  &__answer {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden; // Дополнительное скрытие для screen readers когда закрыто
+    transition: 
+      max-height 0.3s ease,
+      opacity 0.3s ease,
+      margin-top 0.3s ease,
+      visibility 0.3s ease;
+    margin-top: 0;
+    margin-bottom: .5em;
+
+    &--expanded {
+      max-height: 1000px; // Достаточно для большинства ответов
+      opacity: 1;
+      visibility: visible; // Видим для screen readers когда открыто
+      margin-top: .5em;
+      margin-bottom: 1em;
+    }
+    
+    // Когда aria-hidden="true", дополнительно скрываем для screen readers
+    &[aria-hidden="true"] {
+      // Контент остается в DOM для SEO, но скрыт визуально и для assistive tech
+    }
+  }
+
+  &__answer-content {
+    padding-top: .5em;
+    // Ответ заподлицо с текстом вопроса (без отступа)
+    padding-left: 20px;
+  }
+
+  // Простые абзацы для ответа (без labels и специальных стилей)
+  &__answer-text {
+    font-size: 1em;
+    line-height: 1.6;
+    color: var(--color-text-body);
+    margin-bottom: 0.8em;
+    margin-top: 0;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .self-assessment {
+    &__title {
+      font-size: 1.5em;
+    }
+  }
+}

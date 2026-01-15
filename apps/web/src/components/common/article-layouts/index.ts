@@ -5,9 +5,10 @@ export { ArticleLayout } from './ArticleLayout';
 export { ArticleLayoutThreeColumn } from './ArticleLayoutThreeColumn';
 export { ArticleLayoutTwoColumn } from './ArticleLayoutTwoColumn';
 export { ArticleLayoutFullWidth } from './ArticleLayoutFullWidth';
+export { ArticleLayoutOneColumn } from './ArticleLayoutOneColumn';
 
 // Types
-export type { 
+export type {
   ArticleLayoutType,
   BaseArticleLayoutProps,
   ArticleLayoutWithTocProps,

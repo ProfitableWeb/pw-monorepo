@@ -3,7 +3,11 @@ import { ReactNode } from 'react';
 /**
  * Типы layout'ов для статей/страниц
  */
-export type ArticleLayoutType = 'three-column' | 'two-column' | 'full-width';
+export type ArticleLayoutType =
+  | 'three-column'
+  | 'two-column'
+  | 'full-width'
+  | 'one-column';
 
 /**
  * Базовые пропсы для всех layout'ов
@@ -31,5 +35,4 @@ export interface ArticleLayoutWithSidebarProps extends BaseArticleLayoutProps {
  * Пропсы для полного layout'а (TOC + Sidebar)
  */
 export interface ArticleLayoutFullProps
-  extends ArticleLayoutWithTocProps,
-    ArticleLayoutWithSidebarProps {}
+  extends ArticleLayoutWithTocProps, ArticleLayoutWithSidebarProps {}

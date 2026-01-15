@@ -6,10 +6,8 @@
  * - line-height
  */
 
-// ============================================================
-// MOBILE (<640px) - базовый размер
-// ============================================================
-.article-content {
+// Общий селектор для обоих вариантов контента
+%article-content-base {
   font-size: 14px;
   line-height: 1.35;
 
@@ -22,10 +20,19 @@
 }
 
 // ============================================================
+// MOBILE (<640px) - базовый размер
+// ============================================================
+.article-content,
+.article-content-one-column {
+  @extend %article-content-base;
+}
+
+// ============================================================
 // TABLET SMALL (640-900px) - заметное увеличение
 // ============================================================
 @media (min-width: 640px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     font-size: 15px;
     line-height: 1.55;
 
@@ -41,7 +48,8 @@
 // TABLET (900-1200px) - еще больше для планшетов
 // ============================================================
 @media (min-width: 900px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     font-size: 16px;
     line-height: 1.6;
 
@@ -57,7 +65,8 @@
 // DESKTOP (>1200px) - комфортный размер для больших экранов
 // ============================================================
 @media (min-width: 1200px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     font-size: 16px;
     line-height: 1.6;
 
@@ -73,7 +82,8 @@
 // WIDE DESKTOP (>1600px) - максимальный размер
 // ============================================================
 @media (min-width: 1600px) {
-  .article-content {
+  .article-content,
+  .article-content-one-column {
     font-size: 16px;
     line-height: 1.6;
 

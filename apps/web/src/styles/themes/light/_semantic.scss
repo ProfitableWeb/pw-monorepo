@@ -5,7 +5,7 @@
 :root {
   // ===== SEMANTIC COLORS =====
   --color-highlight: #fed7aa;
-  --color-selection: #dbeafe;
+  --color-selection: var(--color-primary-light); // Светло-зелёный для выделения текста
   --color-code-bg: #f5f5f5;
   --color-code-text: #262626;
 }
