@@ -75,12 +75,47 @@
     opacity: 0.8;
   }
 
+  // Контейнер описания (текст + ссылка)
+  &__description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+  }
+
   // Описание автора
   &__description {
     font-size: 0.9em; // Уменьшен с 0.95em
     line-height: 1.6;
     color: var(--color-text-body);
     margin: 0;
+  }
+
+  // Ссылка "Подробнее"
+  &__link {
+    font-size: 0.85em;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    transition: 
+      opacity 0.2s ease, 
+      text-decoration-color 0.2s ease,
+      text-decoration-thickness 0.2s ease;
+    align-self: flex-start;
+    outline: none;
+
+    &:hover {
+      opacity: 0.7;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 0;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
   }
 }
 

@@ -26,7 +26,7 @@ interface ArticleAuthorBlockProps {
 const DEFAULT_AUTHOR = {
   name: 'Николай Егоров',
   description:
-    'Полимат: фуллстек-разработчик, дизайнер и исследователь агентных систем. Опыт более 15 лет.',
+    'Фуллстек-разработчик и дизайнер с опытом более 15 лет. Исследователь агентных систем, AI-автоматизации.',
 };
 
 /**
@@ -74,7 +74,12 @@ export const ArticleAuthorBlock: React.FC<ArticleAuthorBlockProps> = ({
       {description && (
         <>
           <span className='article-author-block__divider' aria-hidden='true' />
-          <p className='article-author-block__description'>{description}</p>
+          <div className='article-author-block__description-container'>
+            <p className='article-author-block__description'>{description}</p>
+            <a href='/author' className='article-author-block__link'>
+              Подробнее
+            </a>
+          </div>
         </>
       )}
     </div>
