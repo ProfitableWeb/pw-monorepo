@@ -1,6 +1,6 @@
 # Формат Git коммитов
 
-Формат: `(PW-XXXX) type: subject`
+Формат: `type(PW-XXXX): subject`
 
 - Номер задачи: `(PW-001)`, `(PW-011)` - должен существовать в `docs/tasks/`
 - Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`

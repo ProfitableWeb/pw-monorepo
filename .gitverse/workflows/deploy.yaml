@@ -8,7 +8,7 @@ on:
       - "apps/**"
       - "packages/**"
       - "ecosystem.config.js"
-      - ".gitverse/workflows/deploy.yml"
+      - ".gitverse/workflows/deploy.yaml"
 
 jobs:
   deploy:
@@ -19,17 +19,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+
       - name: Deploy to VM
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -p ${SSH_PORT:-22} \
+              ${SSH_USER}@${SSH_HOST} << 'EOF'
             set -e
             export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
-
+            
             # Клонирование или обновление репозитория
             if [ -d ~/profitableweb/.git ]; then
               echo "📥 Обновление репозитория..."
@@ -63,6 +71,11 @@ jobs:
             pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
 
             echo "✅ Deploy completed!"
+          EOF
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
 
       - name: Verify deployment
         run: |
