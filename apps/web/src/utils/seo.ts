@@ -1,3 +1,4 @@
+import { AUTHOR_SCHEMA } from '@/config/author';
 import { Article } from '@/components/common/masonry/types';
 import { Category } from '@/types';
 
@@ -30,13 +31,7 @@ export function generateArticleJsonLd(article: Article) {
     datePublished: article.createdAt,
     image: article.imageUrl,
     url: `https://profitableweb.ru/${article.slug}`, // Короткий URL без /articles/
-    author: {
-      '@type': 'Person',
-      '@id': 'https://profitableweb.ru/author#person',
-      name: 'Николай Егоров',
-      url: 'https://profitableweb.ru/author',
-      image: 'https://profitableweb.ru/imgs/author/avatar.jpg',
-    },
+    author: AUTHOR_SCHEMA,
     ...(article.category && {
       articleSection: article.category,
     }),

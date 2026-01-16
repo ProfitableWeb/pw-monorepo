@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
-import SocialIcons from '@/components/common/social-icons';
-import { SOCIAL_LINKS_AUTHOR } from '@/components/common/social-icons';
+import { AUTHOR_SCHEMA, AUTHOR_DATA } from '@/config/author';
+import { ArticleAuthorAvatar } from './avatar';
+import { ArticleAuthorMeta } from './meta';
+import { ArticleAuthorDivider } from './divider';
+import { ArticleAuthorDescription } from './description';
 import './ArticleAuthorBlock.scss';
 
 interface ArticleAuthorBlockProps {
@@ -10,12 +13,18 @@ interface ArticleAuthorBlockProps {
    * Имя автора
    */
   name?: string;
-
   /**
    * Описание/биография автора
    */
   description?: string;
-
+  /**
+   * Должность автора (для SEO)
+   */
+  jobTitle?: string;
+  /**
+   * URL изображения аватара
+   */
+  avatarSrc?: string;
   /**
    * Дополнительный CSS класс
    */
@@ -24,66 +33,53 @@ interface ArticleAuthorBlockProps {
 
 // Моковые данные по умолчанию
 const DEFAULT_AUTHOR = {
-  name: 'Николай Егоров',
-  description:
-    'Фуллстек-разработчик и дизайнер с опытом более 15 лет. Исследователь агентных систем, AI-автоматизации.',
+  name: AUTHOR_DATA.name,
+  description: AUTHOR_DATA.description,
+  jobTitle: AUTHOR_DATA.jobTitle,
+  avatarSrc: '/imgs/author/avatar.jpg',
 };
 
 /**
  * ArticleAuthorBlock - блок автора статьи
  *
  * Отображается под заголовком статьи.
- * Содержит аватар (пока серый кружок), имя, социальные сети и описание автора.
- *
- * Пример использования:
- * ```tsx
- * <ArticleAuthorBlock
- *   name="Николай Егоров"
- *   description="Полимат: фуллстек-разработчик, дизайнер и исследователь агентных систем. Опыт более 15 лет."
- * />
- * ```
+ * Содержит аватар, имя, социальные сети и описание автора.
+ * Включает JSON-LD разметку Person для SEO.
  */
 export const ArticleAuthorBlock: React.FC<ArticleAuthorBlockProps> = ({
   name = DEFAULT_AUTHOR.name,
   description = DEFAULT_AUTHOR.description,
+  jobTitle = DEFAULT_AUTHOR.jobTitle,
+  avatarSrc = DEFAULT_AUTHOR.avatarSrc,
   className = '',
 }) => {
+  // Формируем JSON-LD разметку для автора
+  const jsonLd = {
+    ...AUTHOR_SCHEMA,
+    name,
+    description,
+    jobTitle,
+  };
+
   return (
     <div className={`article-author-block ${className}`}>
+      {/* JSON-LD для SEO */}
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Аватар */}
-      <div className='article-author-block__avatar'>
-        <img
-          src='/imgs/author/avatar.jpg'
-          alt={name}
-          className='article-author-block__avatar-img'
-        />
-      </div>
+      <ArticleAuthorAvatar src={avatarSrc} alt={name} />
 
-      {/* Имя и социальные сети */}
-      <div className='article-author-block__meta'>
-        <span className='article-author-block__label'>Автор статьи</span>
-        <h3 className='article-author-block__name'>{name}</h3>
-
-        {/* Социальные сети */}
-        <div className='article-author-block__socials'>
-          <SocialIcons
-            size='md'
-            className='article-author-block__socials-icons'
-            links={SOCIAL_LINKS_AUTHOR}
-          />
-        </div>
-      </div>
+      {/* Мета-информация (метка, имя, социальные сети) */}
+      <ArticleAuthorMeta name={name} />
 
       {/* Разделитель и описание */}
       {description && (
         <>
-          <span className='article-author-block__divider' aria-hidden='true' />
-          <div className='article-author-block__description-container'>
-            <p className='article-author-block__description'>{description}</p>
-            <a href='/author' className='article-author-block__link'>
-              Подробнее
-            </a>
-          </div>
+          <ArticleAuthorDivider />
+          <ArticleAuthorDescription description={description} />
         </>
       )}
     </div>

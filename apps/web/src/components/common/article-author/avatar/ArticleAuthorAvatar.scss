@@ -1,0 +1,29 @@
+/**
+ * Article Author Avatar - стили для аватара автора
+ */
+
+.article-author-avatar {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  border-radius: 50%;
+  background-color: var(--color-border);
+  overflow: hidden;
+  flex-shrink: 0;
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .article-author-avatar {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+  }
+}

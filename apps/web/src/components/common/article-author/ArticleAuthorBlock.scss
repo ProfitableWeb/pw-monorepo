@@ -1,5 +1,5 @@
 /**
- * Article Author Block - стили для блока автора статьи
+ * Article Author Block - основные стили контейнера
  * 
  * Блок отображается под заголовком статьи.
  * Горизонтальная компоновка: аватар слева, информация справа.
@@ -9,139 +9,51 @@
   display: flex;
   gap: 1.2em;
   align-items: center;
-  margin: 2.5em 0 2em; // Увеличен отступ сверху для разделения с подзаголовком
+  margin: 2.5em 0 2em;
   padding: 0;
-
-  // Аватар (серый кружок, пока без изображения)
-  &__avatar {
-    width: 64px;
-    height: 64px;
-    min-width: 64px; // Предотвращаем сжатие
-    border-radius: 50%;
-    background-color: var(--color-border);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  &__avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  // Имя и социальные сети
-  &__meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4em;
-  }
-
-  // Метка "Автор статьи"
-  &__label {
-    font-size: 0.75em;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-    line-height: 1;
-  }
-
-  // Имя автора
-  &__name {
-    font-size: 1em; // Уменьшен с 1.1em
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0;
-    line-height: 1.2;
-    white-space: nowrap; // Имя в одну строку
-  }
-
-  // Социальные сети
-  &__socials {
-    margin: 0;
-    
-    // Уменьшаем отступы между иконками
-    :global(.article-author-block__socials-icons) {
-      gap: 0px;
-    }
-  }
-
-  // Разделитель между мета и описанием
-  &__divider {
-    width: 1px;
-    align-self: stretch;
-    background: var(--color-border);
-    opacity: 0.8;
-  }
-
-  // Контейнер описания (текст + ссылка)
-  &__description-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2em;
-  }
-
-  // Описание автора
-  &__description {
-    font-size: 0.9em; // Уменьшен с 0.95em
-    line-height: 1.6;
-    color: var(--color-text-body);
-    margin: 0;
-  }
-
-  // Ссылка "Подробнее"
-  &__link {
-    font-size: 0.85em;
-    color: var(--color-text-primary);
-    text-decoration: underline;
-    text-decoration-color: var(--color-border);
-    text-underline-offset: 0.2em;
-    text-decoration-thickness: 1px;
-    transition: 
-      opacity 0.2s ease, 
-      text-decoration-color 0.2s ease,
-      text-decoration-thickness 0.2s ease;
-    align-self: flex-start;
-    outline: none;
-
-    &:hover {
-      opacity: 0.7;
-      text-decoration-color: transparent;
-      text-decoration-thickness: 0;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
-      border-radius: 2px;
-    }
-  }
 }
 
 // Адаптивность
 @media (max-width: 640px) {
   .article-author-block {
-    gap: 0.8em;
-    margin: 0.8em 0 1.5em;
+    display: grid;
+    grid-template-columns: 80px 1px 1fr;
+    grid-template-rows: auto auto;
+    gap: 1em;
+    align-items: start;
+    margin: 2em 0 1.5em;
+    position: relative;
 
-    &__avatar {
-      width: 56px;
-      height: 56px;
-      min-width: 56px;
+    // Позиционирование подкомпонентов в grid
+    .article-author-avatar {
+      grid-column: 1;
+      grid-row: 1;
     }
 
-    &__divider {
-      align-self: stretch;
+    .article-author-meta {
+      grid-column: 1;
+      grid-row: 2;
     }
 
-    &__name {
-      font-size: 1em;
+    // Перемещаем иконки социальных сетей в правый блок под описанием
+    .article-author-meta__socials {
+      position: absolute;
+      left: calc(80px + 1em + 1px + 1em);
+      right: 0;
+      top: auto;
+      bottom: 0;
+      margin-top: 0.5em;
+      z-index: 1;
     }
 
-    &__description {
-      font-size: 0.9em;
+    .article-author-divider {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .article-author-description {
+      grid-column: 3;
+      grid-row: 1;
     }
   }
 }

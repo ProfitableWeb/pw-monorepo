@@ -1,0 +1,1 @@
+export { ArticleAuthorMeta } from './ArticleAuthorMeta';

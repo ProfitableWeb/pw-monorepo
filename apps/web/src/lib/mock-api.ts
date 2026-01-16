@@ -62,3 +62,17 @@ export async function getAllCategories(): Promise<Category[]> {
 export async function getAllArticles(): Promise<Article[]> {
   return mockArticles;
 }
+
+/**
+ * Получает статьи автора
+ * @param authorName - Имя автора
+ * @returns Массив статей автора
+ */
+export async function getArticlesByAuthor(
+  authorName: string
+): Promise<Article[]> {
+  // Пока у нас все статьи принадлежат одному автору
+  // В будущем будем фильтровать по полю author в статье
+  console.log(`[MockAPI] Getting articles for author: ${authorName}`);
+  return mockArticles;
+}

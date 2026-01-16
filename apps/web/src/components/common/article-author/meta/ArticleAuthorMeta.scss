@@ -1,0 +1,55 @@
+/**
+ * Article Author Meta - стили для мета-информации автора
+ */
+
+.article-author-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+
+  &__label {
+    font-size: 0.7em;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    line-height: 1;
+  }
+
+  &__name {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  &__socials {
+    margin: 0;
+
+    :global(.article-author-meta__socials-icons) {
+      gap: 0px;
+    }
+  }
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .article-author-meta {
+    align-items: flex-start;
+    gap: 0.3em;
+    width: 80px;
+
+    &__name {
+      font-size: 0.8em;
+      white-space: normal;
+      text-align: left;
+    }
+
+    &__label {
+      font-size: 0.55em;
+    }
+  }
+}

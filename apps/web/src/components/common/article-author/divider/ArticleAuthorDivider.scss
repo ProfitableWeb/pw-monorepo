@@ -1,0 +1,18 @@
+/**
+ * Article Author Divider - стили для разделителя
+ */
+
+.article-author-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--color-border);
+  opacity: 0.8;
+}
+
+// Адаптивность
+@media (max-width: 640px) {
+  .article-author-divider {
+    width: 1px;
+    height: 100%;
+  }
+}

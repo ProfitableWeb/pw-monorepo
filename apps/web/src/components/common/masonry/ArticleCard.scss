@@ -8,6 +8,11 @@
   width: 100%;
   overflow: clip;
 
+  // На мобильных убираем padding-bottom, так как gap в колонке уже создаёт отступ
+  @include max-md {
+    padding-bottom: 0;
+  }
+
   &__header-link {
     display: block;
     text-decoration: none;

@@ -1,0 +1,1 @@
+export { ArticleAuthorDescription } from './ArticleAuthorDescription';

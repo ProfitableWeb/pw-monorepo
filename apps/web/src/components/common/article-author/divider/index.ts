@@ -1,0 +1,1 @@
+export { ArticleAuthorDivider } from './ArticleAuthorDivider';

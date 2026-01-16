@@ -115,17 +115,7 @@
 }
 
 // ===== RESPONSIVE BEHAVIOR =====
-@include mobile-only {
-  .social-icons {
-    display: none;
-  }
-}
-
-@include sm {
-  .social-icons {
-    display: flex;
-  }
-}
+// Иконки социальных сетей отображаются на всех разрешениях
 
 // ===== THEME SUPPORT =====
 // Светлая тема (по умолчанию)

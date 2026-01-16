@@ -1,0 +1,266 @@
+.author-page {
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px var(--spacing-xl) 60px;
+
+    @media (min-width: 1025px) {
+      max-width: none;
+      padding-left: 0;
+    }
+
+    @media (max-width: 768px) {
+      padding: 32px var(--spacing-md) 32px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 24px var(--spacing-md) 24px;
+    }
+  }
+
+  &__triptych {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1.5fr 1fr;
+      gap: 3rem;
+
+      // Третий элемент (контакты) на планшетах уходит вниз на всю ширину
+      & > *:last-child {
+        grid-column: span 2;
+        max-width: 800px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+
+      & > *:last-child {
+        grid-column: span 1;
+      }
+    }
+  }
+
+  &__section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+
+    @media (max-width: 768px) {
+      font-size: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+  }
+
+  // Биография
+  &__bio-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--color-text-primary);
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+
+      @media (max-width: 768px) {
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 480px) {
+        margin-bottom: 0.875rem;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Специализация
+  &__specialization {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    @media (max-width: 768px) {
+      gap: 1.25rem;
+    }
+  }
+
+  &__spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__spec-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.7rem;
+    }
+  }
+
+  &__spec-value {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.8rem;
+    }
+  }
+
+  // Контакты (минимализм)
+  &__contacts-minimal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+    }
+  }
+
+  &__contacts-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+  }
+
+  &__email-minimal {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 4px;
+    transition: var(--transition-normal);
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+    }
+
+    &:hover {
+      color: var(--color-primary);
+      text-decoration-color: var(--color-primary);
+    }
+  }
+
+  &__socials-minimal {
+    margin-top: 0.5rem;
+    opacity: 0.8;
+  }
+
+  // Статьи
+  &__articles {
+    background-color: rgba(var(--color-bg-secondary-rgb), 0.3);
+    padding: 100px 0;
+    margin-top: 4rem;
+    border-top: 1px solid var(--color-border);
+
+    @media (max-width: 768px) {
+      padding: 50px 0;
+      margin-top: 2.5rem;
+    }
+  }
+
+  &__articles-container {
+    // Используем те же паддинги, что и в шапке/контейнере
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+
+    @media (min-width: 1025px) {
+      max-width: none;
+      padding-left: 0;
+    }
+
+    @media (max-width: 480px) {
+      padding: 0 var(--spacing-md);
+    }
+  }
+
+  &__articles-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 3rem;
+    color: var(--color-text-primary);
+    letter-spacing: -0.03em;
+
+    @media (max-width: 768px) {
+      font-size: 1.75rem;
+      margin-bottom:0rem;
+    }
+  }
+
+  &__articles-grid {
+    margin-top: 2rem;
+
+    @media (max-width: 768px) {
+      margin-top: 1rem;
+    }
+
+    // Убираем нижний отступ у карточек только на мобильных, так как у article-list уже есть верхний padding
+    @media (max-width: 768px) {
+      .article-card {
+        padding-bottom: 0;
+      }
+    }
+
+    // Сокращаем верхний отступ списка статей на странице автора
+    .article-list {
+      padding-top: 20px;
+
+      @media (max-width: 768px) {
+        padding-top: 16px;
+      }
+    }
+  }
+}
