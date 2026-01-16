@@ -1,0 +1,33 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
+
+.app-bar-menu-contacts {
+  padding-top: var(--space-sm);
+  
+  &__title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-xs);
+  }
+  
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  
+  &__text {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+}
+
+// Темная тема
+[data-theme="dark"] .app-bar-menu-contacts {
+  // Без стилей для темной темы - используется общий цвет текста
+}

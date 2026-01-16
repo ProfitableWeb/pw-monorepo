@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import Overlay from '@/components/common/overlay/';
 import SwipeDetector from '@/components/common/swipe-detector/';
+import { AppBarMenuContacts } from '../app-bar-menu-contacts';
 import './AppBarMenuSidebar.scss';
 import Link from 'next/link';
 
@@ -58,15 +59,10 @@ const AppBarMenuSidebar: React.FC<AppBarMenuSidebarProps> = ({
                         О проекте
                       </Link>
                     </li>
-                    <li>
-                      <Link
-                        href='/contacts'
-                        className='app-bar-menu-sidebar__nav-item'
-                      >
-                        Контакты
-                      </Link>
-                    </li>
                   </ul>
+
+                  {/* Блок контактов вместо ссылки */}
+                  <AppBarMenuContacts />
                 </nav>
               </SwipeDetector>
             </motion.div>

@@ -17,7 +17,7 @@
   &__content {
     position: fixed;
     padding-top:70px;
-    padding-left:64px;
+    padding-left:48px;
     top: 0;
     left: 0;
     width: 260px;
@@ -34,12 +34,13 @@
       list-style: none;
       padding: 0;
       margin: 0;
+      margin-bottom: var(--space-lg);
     }
   }
   
   &__nav-item {
     display: inline-block;
-    padding:2px 8px;
+    padding:2px 0px;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     text-decoration: none;
