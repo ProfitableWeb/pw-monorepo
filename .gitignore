@@ -56,20 +56,12 @@ ENV/
 .uv/
 
 # IDEs
-.idea/
-.vscode/
 *.swp
 *.swo
 *~
-.qoder/
+
 
 # Claude Code settings (contain API keys)
 .claude/settings.json
 .claude/settings.local.json
 
-# OS
-Thumbs.db
-profitable-web-admin/
-profitable-web-backend/
-profitable-web-docs/
-profitable-web-frontend/
