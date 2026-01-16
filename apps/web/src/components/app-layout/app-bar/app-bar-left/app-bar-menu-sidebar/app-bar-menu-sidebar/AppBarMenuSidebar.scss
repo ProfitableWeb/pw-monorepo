@@ -16,8 +16,8 @@
 
   &__content {
     position: fixed;
-    padding-top:70px;
-    padding-left:48px;
+    padding-top:100px;
+    padding-left:40px;
     top: 0;
     left: 0;
     width: 260px;
@@ -39,8 +39,9 @@
   }
   
   &__nav-item {
+    margin-left: -8px;
     display: inline-block;
-    padding:2px 0px;
+    padding:2px 8px;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     text-decoration: none;
