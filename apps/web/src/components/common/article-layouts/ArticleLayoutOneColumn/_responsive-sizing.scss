@@ -16,14 +16,13 @@
  * - UX исследования показывают 66 CPL как идеальное значение
  */
 
+@import 'breakpoints';
+
 .article-layout-one-column {
   // ============================================================
   // MOBILE (<640px) - базовые отступы
   // ============================================================
-  padding-top: 20px; // Уменьшено для более компактного вида
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 40px; // Уменьшено с 60px
+  padding: 20px 0 40px;
 
   &__content {
     // На мобильных — полная ширина с padding
@@ -31,13 +30,10 @@
   }
 
   // ============================================================
-  // TABLET SMALL (640-900px) - увеличенные отступы
+  // TABLET SMALL (>=640px) - увеличенные отступы
   // ============================================================
-  @media (min-width: 640px) {
-    padding-top: 20px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 50px; // Уменьшено с 80px
+  @include respond-to('sm') {
+    padding: 20px 24px 50px;
     
     &__content {
       // Начинаем ограничивать ширину для комфортного чтения
@@ -47,32 +43,23 @@
   }
 
   // ============================================================
-  // TABLET (900-1200px) - еще больше
+  // TABLET (>=900px) - еще больше
   // ============================================================
-  @media (min-width: 900px) {
-    padding-top: 20px;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-bottom: 40px; // Уменьшено с 100px
+  @include respond-to('md') {
+    padding: 20px 32px 40px;
   }
 
   // ============================================================
-  // DESKTOP (>1200px) - оптимальные отступы
+  // DESKTOP (>=1200px) - оптимальные отступы
   // ============================================================
-  @media (min-width: 1200px) {
-    padding-top: 25px; // Уменьшено с 30px
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-bottom: 60px; // Уменьшено с 120px
+  @include respond-to('lg') {
+    padding: 25px 40px 60px;
   }
 
   // ============================================================
-  // WIDE DESKTOP (>1600px) - максимальные отступы
+  // WIDE DESKTOP (>=1600px) - максимальные отступы
   // ============================================================
-  @media (min-width: 1600px) {
-    padding-top: 25px; // Уменьшено
-    padding-left: 48px;
-    padding-right: 48px;
-    padding-bottom: 60px; // Уменьшено с 140px
+  @include respond-to('xl') {
+    padding: 25px 48px 60px;
   }
 }

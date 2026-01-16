@@ -1,11 +1,15 @@
-'use client';
-
-import React from 'react';
+import React, { memo } from 'react';
+import clsx from 'clsx';
 import type { BaseArticleLayoutProps } from '../types';
 import './ArticleLayoutOneColumn.scss';
 
 /**
  * One-Column Layout: только контент в одной колонке
+ *
+ * Server Component: этот компонент чисто презентационный (нет state/effects),
+ * поэтому может быть server component для лучшего SSR performance.
+ *
+ * Performance: React.memo предотвращает лишние re-renders когда props не меняются.
  *
  * Используется для статей с одноколоночным лейаутом.
  * Контент ограничен max-width: 70ch для оптимальной читаемости (50-75 символов — best practice).
@@ -25,13 +29,14 @@ import './ArticleLayoutOneColumn.scss';
  * - One-column: оптимизирован для статей, текст ограничен для читаемости
  * - Full-width: для лендингов, газетной вёрстки без ограничений
  */
-export const ArticleLayoutOneColumn: React.FC<BaseArticleLayoutProps> = ({
-  children,
-  className = '',
-}) => {
-  return (
-    <div className={`article-layout-one-column ${className}`}>
-      <main className='article-layout-one-column__content'>{children}</main>
-    </div>
-  );
-};
+export const ArticleLayoutOneColumn = memo<BaseArticleLayoutProps>(
+  ({ children, className }) => {
+    return (
+      <div className={clsx('article-layout-one-column', className)}>
+        <main className='article-layout-one-column__content'>{children}</main>
+      </div>
+    );
+  }
+);
+
+ArticleLayoutOneColumn.displayName = 'ArticleLayoutOneColumn';

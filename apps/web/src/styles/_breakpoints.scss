@@ -1,0 +1,93 @@
+/**
+ * Design Tokens: Breakpoints
+ * 
+ * Single source of truth для всех responsive стилей проекта.
+ * Используйте mixins вместо прямых @media queries для консистентности и DRY.
+ * 
+ * @see https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
+ */
+
+// ============================================================
+// Breakpoint values
+// ============================================================
+$breakpoint-sm: 640px;   // Tablet small
+$breakpoint-md: 900px;   // Tablet
+$breakpoint-lg: 1200px;  // Desktop
+$breakpoint-xl: 1600px;  // Wide desktop
+
+// ============================================================
+// Responsive mixins
+// ============================================================
+
+/// Responsive mixin для tablet-small и выше
+/// @param {String} $breakpoint - Размер брейкпоинта ('sm', 'md', 'lg', 'xl')
+/// @example scss
+///   .component {
+///     padding: 16px;
+///     
+///     @include respond-to('sm') {
+///       padding: 20px;
+///     }
+///   }
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: $breakpoint-xl) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint: #{$breakpoint}. Use 'sm', 'md', 'lg', or 'xl'.";
+  }
+}
+
+/// Responsive mixin для диапазона между двумя брейкпоинтами
+/// @param {String} $min-breakpoint - Минимальный брейкпоинт
+/// @param {String} $max-breakpoint - Максимальный брейкпоинт
+/// @example scss
+///   .component {
+///     @include respond-between('sm', 'md') {
+///       padding: 20px;
+///     }
+///   }
+@mixin respond-between($min-breakpoint, $max-breakpoint) {
+  $min: null;
+  $max: null;
+
+  @if $min-breakpoint == 'sm' { $min: $breakpoint-sm; }
+  @else if $min-breakpoint == 'md' { $min: $breakpoint-md; }
+  @else if $min-breakpoint == 'lg' { $min: $breakpoint-lg; }
+  @else if $min-breakpoint == 'xl' { $min: $breakpoint-xl; }
+
+  @if $max-breakpoint == 'sm' { $max: $breakpoint-sm - 1; }
+  @else if $max-breakpoint == 'md' { $max: $breakpoint-md - 1; }
+  @else if $max-breakpoint == 'lg' { $max: $breakpoint-lg - 1; }
+  @else if $max-breakpoint == 'xl' { $max: $breakpoint-xl - 1; }
+
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
+/// Responsive mixin только для mobile (меньше sm)
+/// @example scss
+///   .component {
+///     @include respond-mobile-only {
+///       padding: 12px;
+///     }
+///   }
+@mixin respond-mobile-only {
+  @media (max-width: #{$breakpoint-sm - 1}) {
+    @content;
+  }
+}
