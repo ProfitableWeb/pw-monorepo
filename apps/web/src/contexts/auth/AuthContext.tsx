@@ -30,20 +30,11 @@ const MOCK_NAMES = [
   'Ольга',
 ];
 
-const MOCK_AVATARS = [
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=1',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=2',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=3',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=4',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=5',
-];
+const MOCK_AVATARS = ['/imgs/author/avatar.jpg'];
 
 const generateMockUser = (): User => {
-  const name =
-    MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)] ?? 'Пользователь';
-  const avatar =
-    MOCK_AVATARS[Math.floor(Math.random() * MOCK_AVATARS.length)] ??
-    'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+  const name = 'Николай';
+  const avatar = '/imgs/author/avatar.jpg';
   return { name, avatar };
 };
 

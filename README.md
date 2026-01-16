@@ -61,6 +61,7 @@ ProfitableWeb/
 - **Turborepo** - Монорепо build system
 - **Bun Workspaces** - Package management
 - **GitVerse** - Git hosting (российская платформа)
+- **GitHub** - Дополнительный Git hosting для синхронизации
 
 ## Быстрый старт
 
@@ -128,6 +129,36 @@ bun turbo test
 bun turbo type-check
 ```
 
+## Работа с репозиториями
+
+Проект синхронизируется с двумя Git-репозиториями:
+
+- **GitVerse** (`origin`) - основной репозиторий: `git@gitverse.ru:profitableweb.ru/pw-monorepo.git`
+- **GitHub** (`github`) - дополнительный репозиторий: `https://github.com/ProfitableWeb/pw-monorepo.git`
+
+### Push в репозитории
+
+```bash
+# Push только в GitVerse (по умолчанию)
+git push
+# или
+git push origin
+
+# Push только в GitHub
+git push github
+
+# Push в оба репозитория одновременно
+git pushall
+```
+
+### Настройка для новых клонов
+
+Если клонируешь репозиторий впервые, добавь GitHub remote:
+
+```bash
+git remote add github https://github.com/ProfitableWeb/pw-monorepo.git
+```
+
 ## Исследовательские вопросы
 
 - Как AI-медиированная автоматизация трансформирует отношение "труд-капитал"?
@@ -165,6 +196,7 @@ MIT License - см. [LICENSE](./LICENSE)
 ## Контакты
 
 - **GitVerse**: https://gitverse.ru/profitableweb.ru/
+- **GitHub**: https://github.com/ProfitableWeb/pw-monorepo
 - **Организация**: profitableweb.ru
 
 ---

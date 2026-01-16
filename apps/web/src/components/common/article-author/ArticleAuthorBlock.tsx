@@ -50,9 +50,13 @@ export const ArticleAuthorBlock: React.FC<ArticleAuthorBlockProps> = ({
 }) => {
   return (
     <div className={`article-author-block ${className}`}>
-      {/* Аватар (пока серый кружок) */}
+      {/* Аватар */}
       <div className='article-author-block__avatar'>
-        {/* В дальнейшем здесь будет изображение */}
+        <img
+          src='/imgs/author/avatar.jpg'
+          alt={name}
+          className='article-author-block__avatar-img'
+        />
       </div>
 
       {/* Имя и социальные сети */}

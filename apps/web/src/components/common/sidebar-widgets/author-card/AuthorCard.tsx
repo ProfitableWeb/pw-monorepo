@@ -23,8 +23,19 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
 }) => {
   return (
     <div className='author-card'>
-      <h3 className='author-card__title'>Автор</h3>
-      <h4 className='author-card__name'>{name}</h4>
+      <div className='author-card__header'>
+        <div className='author-card__avatar'>
+          <img
+            src='/imgs/author/avatar.jpg'
+            alt={name}
+            className='author-card__avatar-img'
+          />
+        </div>
+        <div className='author-card__meta'>
+          <h3 className='author-card__title'>Автор</h3>
+          <h4 className='author-card__name'>{name}</h4>
+        </div>
+      </div>
 
       <div className='author-card__socials'>
         <SocialIcons

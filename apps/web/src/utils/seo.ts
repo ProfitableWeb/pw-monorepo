@@ -31,8 +31,11 @@ export function generateArticleJsonLd(article: Article) {
     image: article.imageUrl,
     url: `https://profitableweb.ru/${article.slug}`, // Короткий URL без /articles/
     author: {
-      '@type': 'Organization',
-      name: 'ProfitableWeb',
+      '@type': 'Person',
+      '@id': 'https://profitableweb.ru/author#person',
+      name: 'Николай Егоров',
+      url: 'https://profitableweb.ru/author',
+      image: 'https://profitableweb.ru/imgs/author/avatar.jpg',
     },
     ...(article.category && {
       articleSection: article.category,
