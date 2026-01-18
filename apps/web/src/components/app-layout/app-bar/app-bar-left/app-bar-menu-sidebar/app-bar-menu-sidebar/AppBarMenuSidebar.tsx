@@ -45,7 +45,7 @@ const AppBarMenuSidebar: React.FC<AppBarMenuSidebarProps> = ({
                     </li>
                     <li>
                       <Link
-                        href='/rubrics'
+                        href='/categories'
                         className='app-bar-menu-sidebar__nav-item'
                       >
                         Рубрики

@@ -76,6 +76,38 @@ export function generateCategoryJsonLd(
 }
 
 /**
+ * Генерирует JSON-LD разметку для страницы категорий
+ *
+ * @param categories - Список категорий
+ * @returns JSON-LD объект
+ */
+export function generateCategoriesJsonLd(categories: Category[]) {
+  const baseUrl = 'https://profitableweb.ru';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Категории статей',
+    description:
+      'Каталог всех категорий статей проекта ProfitableWeb. Материалы по экономике внимания, ИИ-автоматизации, UI/UX дизайну, продуктовой разработке и другим темам.',
+    url: `${baseUrl}/categories`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: categories.map((category, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'CollectionPage',
+          name: category.name,
+          description: category.description,
+          url: `${baseUrl}/${category.slug}`,
+        },
+      })),
+    },
+  };
+}
+
+/**
  * Генерирует JSON-LD разметку для хлебных крошек (Schema.org BreadcrumbList)
  *
  * @param items - Массив элементов breadcrumbs [{name: 'Главная', url: '/'}, ...]
@@ -108,6 +140,16 @@ export function generateCategoryBreadcrumbJsonLd(category: Category) {
   return generateBreadcrumbJsonLd([
     { name: 'Главная', url: '/' },
     { name: category.name, url: `/${category.slug}` },
+  ]);
+}
+
+/**
+ * Генерирует JSON-LD разметку BreadcrumbList для страницы категорий
+ */
+export function generateCategoriesBreadcrumbJsonLd() {
+  return generateBreadcrumbJsonLd([
+    { name: 'Главная', url: '/' },
+    { name: 'Категории статей', url: '/categories' },
   ]);
 }
 

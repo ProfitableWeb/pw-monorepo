@@ -1,0 +1,42 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/mixins';
+
+.categories-page {
+  &__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 80px;
+    margin-bottom: var(--space-xl);
+
+    @include max-lg {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 60px;
+    }
+
+    @include max-md {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+
+    @include max-md {
+      gap: 32px;
+    }
+  }
+}
+
+.category-card {
+  width: 100%;
+}

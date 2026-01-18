@@ -1,0 +1,133 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/mixins';
+
+.category-card {
+  background: transparent;
+  width: 100%;
+  overflow: clip;
+
+  &__header-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-opacity);
+  }
+
+  &__title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--masonry-title-color);
+    padding-bottom: 6px;
+    margin: 0;
+    display: inline;
+    background:
+      linear-gradient(to right, transparent, transparent),
+      linear-gradient(
+        to right,
+        var(--masonry-marker-bg),
+        var(--masonry-marker-bg)
+      );
+    background-size: 100% 0.6em, 0 0.6em;
+    background-position: 0 100%, 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size var(--duration-fast) ease-in-out;
+  }
+
+  &__header-link:hover &__title {
+    color: var(--masonry-marker-text);
+    background-size: 0 2em, 100% 2em;
+    transition:
+      background-size var(--duration-medium) ease-in-out,
+      color 0.3s ease-in-out;
+  }
+
+  &__subtitle-wrap {
+    margin-top: 4px;
+    line-height: 22px;
+  }
+
+  &__subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: var(--font-weight-subheading);
+    font-size: 16px;
+    color: var(--masonry-subtitle-color);
+    margin: 0;
+    display: inline;
+    background:
+      linear-gradient(to right, transparent, transparent),
+      linear-gradient(
+        to right,
+        var(--masonry-marker-bg),
+        var(--masonry-marker-bg)
+      );
+    background-size: 100% 1em, 0 1em;
+    background-position: 0 100%, 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size var(--duration-fast) ease-in-out;
+  }
+
+  &__header-link:hover &__subtitle {
+    color: var(--masonry-marker-text);
+    background-size: 0 2em, 100% 2em;
+    transition:
+      background-size var(--duration-medium) ease-in-out var(--delay-medium),
+      color var(--duration-slow) ease-in-out var(--delay-medium);
+  }
+
+  &__description {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--masonry-paragraph-color);
+    margin-top: 16px;
+
+    a {
+      color: var(--masonry-link-color);
+      text-decoration: underline;
+      text-decoration-color: var(--masonry-link-underline);
+      text-underline-offset: 2px;
+      transition:
+        color 0.2s ease-in-out,
+        text-decoration-color 0.2s ease-in-out;
+
+      &:hover {
+        color: var(--masonry-link-hover);
+        text-decoration-color: var(--masonry-link-underline-hover);
+      }
+
+      &:visited {
+        color: var(--masonry-link-visited);
+      }
+    }
+
+    blockquote {
+      font-size: 13px;
+      margin: 14px 0;
+      padding-left: 14px;
+      border-left: 2px solid var(--masonry-blockquote-border);
+    }
+
+    p {
+      margin: 0;
+      margin-bottom: 14px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-card {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
