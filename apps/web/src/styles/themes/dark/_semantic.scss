@@ -4,8 +4,8 @@
 [data-theme="dark"] {
   // ===== SEMANTIC COLORS =====
   --color-highlight: #7c2d12;
-  --color-selection: var(--color-primary-light); // Зелёный для выделения в тёмной теме
-  --color-selection-text: var(--color-text-primary); // Цвет текста при выделении в тёмной теме
+  --color-selection: rgba(0, 0, 0, 1);
+  --color-selection-text: #92dd9c; 
   --color-code-bg: #262626;
   --color-code-text: #e5e5e5;
 }

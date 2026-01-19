@@ -6,7 +6,7 @@ const nextConfig = {
     // React Compiler requires babel-plugin-react-compiler, disable for now
     // reactCompiler: true,
     // Allow cross-origin requests from specific IPs during development
-    allowedDevOrigins: ['10.66.130.47']
+    // allowedDevOrigins: ['10.66.130.47']
   },
 
   // Enable SCSS support
