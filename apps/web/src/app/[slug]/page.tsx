@@ -32,9 +32,9 @@ const STATIC_PAGES = ['about', 'contact', 'privacy', 'terms'];
 export default async function DynamicPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Проверка на статические страницы (на всякий случай)
   if (STATIC_PAGES.includes(slug)) {
@@ -124,9 +124,9 @@ export default async function DynamicPage({
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Проверка категории
   const category = await getCategoryBySlug(slug);
