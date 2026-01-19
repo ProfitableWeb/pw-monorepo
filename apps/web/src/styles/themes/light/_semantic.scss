@@ -6,6 +6,7 @@
   // ===== SEMANTIC COLORS =====
   --color-highlight: #fed7aa;
   --color-selection: var(--color-primary-light); // Светло-зелёный для выделения текста
+  --color-selection-text: var(--color-text-primary); // Цвет текста при выделении в светлой теме
   --color-code-bg: #f5f5f5;
   --color-code-text: #262626;
 }
