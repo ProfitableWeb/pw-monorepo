@@ -75,6 +75,7 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
+  subtitle?: string; // Подзаголовок категории
   icon?: string;
   color?: string;
   parent?: string;
