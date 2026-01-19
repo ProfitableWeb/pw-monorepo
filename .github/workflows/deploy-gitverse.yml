@@ -9,6 +9,9 @@ on:
       - "packages/**"
       - "ecosystem.config.js"
       - ".github/workflows/deploy-gitverse.yml"
+      - "docs/nginx/**"
+      - "scripts/update-nginx.sh"
+  workflow_dispatch:
 
 jobs:
   deploy:
