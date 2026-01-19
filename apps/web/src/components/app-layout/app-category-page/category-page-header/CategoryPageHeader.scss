@@ -21,6 +21,7 @@
     color: var(--color-text-primary);
     letter-spacing: -0.02em;
     text-align: left;
+    margin-bottom: 32px;
   }
 
   &__description {
@@ -37,6 +38,7 @@
     &__title {
       font-size: 48px;
       text-align: left;
+      margin-bottom: 28px;
     }
 
     &__description {
@@ -51,6 +53,7 @@
     &__title {
       font-size: 36px;
       text-align: left;
+      margin-bottom: 24px;
     }
 
     &__description {
@@ -69,6 +72,7 @@
     &__title {
       font-size: 28px;
       text-align: left;
+      margin-bottom: 20px;
     }
 
     &__description {
