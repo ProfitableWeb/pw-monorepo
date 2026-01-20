@@ -1,0 +1,68 @@
+# Git Remote Configuration: Dual Repository Setup
+
+## Overview
+
+ProfitableWeb project maintains synchronization with two Git repositories simultaneously:
+
+- **GitVerse (origin)** - Primary repository: `git@gitverse.ru:profitableweb.ru/pw-monorepo.git`
+- **GitHub (github)** - Secondary repository: `https://github.com/ProfitableWeb/pw-monorepo.git`
+
+## Push Commands
+
+### Push to GitVerse only (default)
+
+```bash
+git push
+# or
+git push origin
+```
+
+### Push to GitHub only
+
+```bash
+git push github
+```
+
+### Push to both repositories
+
+Use `git pushall` if configured as alias, or push manually:
+
+```bash
+git push origin && git push github
+```
+
+## Initial Setup for New Clones
+
+When cloning the repository for the first time, add the GitHub remote:
+
+```bash
+git remote add github https://github.com/ProfitableWeb/pw-monorepo.git
+```
+
+Verify remotes:
+
+```bash
+git remote -v
+```
+
+Should show:
+
+```
+origin  git@gitverse.ru:profitableweb.ru/pw-monorepo.git (fetch)
+origin  git@gitverse.ru:profitableweb.ru/pw-monorepo.git (push)
+github  https://github.com/ProfitableWeb/pw-monorepo.git (fetch)
+github  https://github.com/ProfitableWeb/pw-monorepo.git (push)
+```
+
+## Workflow Guidelines
+
+- **Primary development**: Use `git push` to push to GitVerse (origin)
+- **Backup/Mirror**: Use `git push github` to mirror to GitHub
+- **Both repositories**: Push to both when important changes need to be backed up
+
+## Important Notes
+
+- GitVerse is the **primary** repository for CI/CD and deployment
+- GitHub serves as a **backup/mirror** repository
+- Always ensure both repositories are in sync when pushing critical changes
+- Pull requests should ideally be made to GitVerse, with GitHub used primarily as a backup
