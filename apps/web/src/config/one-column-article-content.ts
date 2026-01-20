@@ -7,6 +7,9 @@
 
 export const oneColumnArticleContent = {
   title: 'Пример одноколоночной статьи',
+  publishedAt: '2025-01-15T10:00:00Z',
+  categorySlug: 'product-development',
+  categoryName: 'Продуктовая разработка',
   subtitle:
     'Демонстрация возможностей одноколоночного лейаута с блоками 100% ширины',
   content: `

@@ -5,10 +5,14 @@ import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
 import { Article } from '@/components/common/masonry/types';
+import { ArticleMeta } from '@/components/common/article-meta';
+import { Category } from '@/types';
 import './ArticlePage.scss';
 
 export interface ArticlePageProps {
   article: Article;
+  /** Категория статьи (для ссылки), при наличии получается в [slug]/page */
+  category?: Category | null;
 }
 
 /**
@@ -21,7 +25,7 @@ export interface ArticlePageProps {
  * @param {ArticlePageProps} props - Свойства компонента
  * @returns {JSX.Element} Заглушка страницы статьи
  */
-const ArticlePage: React.FC<ArticlePageProps> = ({ article }) => {
+const ArticlePage: React.FC<ArticlePageProps> = ({ article, category }) => {
   return (
     <div className='article-page'>
       <AppBar />
@@ -31,13 +35,12 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ article }) => {
             <header className='article-page__header'>
               <h1 className='article-page__title'>{article.title}</h1>
               <p className='article-page__subtitle'>{article.subtitle}</p>
-              <time className='article-page__date' dateTime={article.createdAt}>
-                {new Date(article.createdAt).toLocaleDateString('ru-RU', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </time>
+              <ArticleMeta
+                publishedAt={new Date(article.createdAt)}
+                categorySlug={article.category}
+                categoryName={category?.name}
+                className='article-page__meta'
+              />
             </header>
 
             <div className='article-page__body'>

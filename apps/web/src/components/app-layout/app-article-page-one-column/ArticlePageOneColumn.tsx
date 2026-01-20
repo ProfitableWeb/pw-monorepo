@@ -33,6 +33,9 @@ export const ArticlePageOneColumn: React.FC = () => {
           <ArticleHeader
             title={oneColumnArticleContent.title}
             subtitle={oneColumnArticleContent.subtitle}
+            publishedAt={new Date(oneColumnArticleContent.publishedAt)}
+            categorySlug={oneColumnArticleContent.categorySlug}
+            categoryName={oneColumnArticleContent.categoryName}
           />
 
           {/* Одноколоночный лейаут с контентом */}

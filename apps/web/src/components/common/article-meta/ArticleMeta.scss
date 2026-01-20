@@ -1,0 +1,38 @@
+/**
+ * Article Meta — дата публикации и категория (ссылкой)
+ *
+ * Мелкий светло-серый шрифт. Ссылка: подчёркивание через border 1px,
+ * при наведении граница становится прозрачной.
+ */
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8125rem; // ~13px, мелкий
+  line-height: 1.4;
+  color: var(--color-text-muted); // светло-серый
+  margin: 0;
+
+  &__date {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__separator {
+    opacity: 0.7;
+    user-select: none;
+  }
+
+  &__category {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    transition: border-color 0.2s ease;
+
+    &:hover,
+    &:active {
+      border-bottom-color: transparent;
+    }
+  }
+}

@@ -2,11 +2,16 @@
 
 import React from 'react';
 import { ArticleAuthorBlock } from '@/components/common/article-author';
+import { ArticleMeta } from '@/components/common/article-meta';
 import './ArticleHeader.scss';
 
 export interface ArticleHeaderProps {
   title: string;
   subtitle?: string;
+  /** Дата публикации — при наличии показывается с категорией */
+  publishedAt?: Date;
+  categorySlug?: string;
+  categoryName?: string;
 }
 
 /**
@@ -22,11 +27,24 @@ export interface ArticleHeaderProps {
 export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   title,
   subtitle,
+  publishedAt,
+  categorySlug,
+  categoryName,
 }) => {
   return (
     <header className='article-header'>
       <h1 className='article-header__title'>{title}</h1>
       {subtitle && <p className='article-header__subtitle'>{subtitle}</p>}
+
+      {/* Дата и категория (мелкий светло-серый шрифт, категория — ссылка) */}
+      {publishedAt && (
+        <ArticleMeta
+          publishedAt={publishedAt}
+          categorySlug={categorySlug}
+          categoryName={categoryName}
+          className='article-header__meta'
+        />
+      )}
 
       {/* Блок автора */}
       <ArticleAuthorBlock />

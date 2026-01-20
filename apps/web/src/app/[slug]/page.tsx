@@ -104,7 +104,7 @@ export default async function DynamicPage({
           type='application/ld+json'
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
-        <ArticlePage article={article} />
+        <ArticlePage article={article} category={category} />
       </>
     );
   }

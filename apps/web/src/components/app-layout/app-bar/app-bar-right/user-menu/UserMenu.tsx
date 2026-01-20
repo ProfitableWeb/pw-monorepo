@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { LuLogOut } from 'react-icons/lu';
+import Link from 'next/link';
+import { LuLogOut, LuMessageSquare, LuSettings } from 'react-icons/lu';
 import { useAuth } from '@/contexts/auth';
 import { toast } from '@/components/common/toast';
 import './UserMenu.scss';
@@ -89,6 +90,24 @@ export const UserMenu: React.FC = () => {
             <span className='user-menu__name'>{user.name}</span>
           </div>
           <div className='user-menu__divider' />
+          <Link
+            href='/my-comments'
+            className='user-menu__item'
+            role='menuitem'
+            onClick={() => setIsOpen(false)}
+          >
+            <LuMessageSquare />
+            <span>Мои комментарии</span>
+          </Link>
+          <Link
+            href='/settings'
+            className='user-menu__item'
+            role='menuitem'
+            onClick={() => setIsOpen(false)}
+          >
+            <LuSettings />
+            <span>Настройки</span>
+          </Link>
           <button
             className='user-menu__item'
             onClick={handleLogout}

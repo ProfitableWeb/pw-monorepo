@@ -63,7 +63,7 @@
 
   // Ensure proper contrast for links
   // Исключаем компоненты с собственными цветовыми схемами
-  a:not(.feature-category-block__item):not(.social-icons__link) {
+  a:not(.feature-category-block__item):not(.social-icons__link):not(.article-meta__category):not(.user-menu__item) {
     color: var(--color-link);
 
     &:hover {
