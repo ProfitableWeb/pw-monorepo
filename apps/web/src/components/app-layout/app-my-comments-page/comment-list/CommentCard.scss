@@ -8,6 +8,17 @@
   max-width: 800px;
   margin: 0 auto;
 
+  // Светлая рамка в светлой теме
+  [data-theme="light"] &,
+  :root:not([data-theme]) & {
+    border-color: #f0f0f0;
+  }
+
+  // Тёмная рамка в тёмной теме
+  [data-theme="dark"] & {
+    border-color: #2a2a2a;
+  }
+
   @media (max-width: 768px) {
     padding: 1rem;
     border-radius: var(--radius-lg);
@@ -157,4 +168,15 @@
     flex-shrink: 0;
     color: var(--color-text-secondary);
   }
+}
+
+// Светлый разделитель в светлой теме
+[data-theme="light"] .comment-card__divider,
+:root:not([data-theme]) .comment-card__divider {
+  background: #f0f0f0;
+}
+
+// Тёмный разделитель в тёмной теме
+[data-theme="dark"] .comment-card__divider {
+  background: #2a2a2a;
 }
