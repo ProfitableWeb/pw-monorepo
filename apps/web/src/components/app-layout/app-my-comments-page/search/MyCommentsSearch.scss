@@ -2,11 +2,11 @@
 
 .my-comments-search {
   padding: var(--spacing-md) var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: calc(var(--spacing-xl) * 1.5);
 
   @media (max-width: 768px) {
     padding: var(--spacing-sm) var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
   }
 
   &__container {
