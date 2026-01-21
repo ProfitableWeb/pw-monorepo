@@ -1,7 +1,9 @@
 import { Category } from '@/types';
 import { Article } from '@/components/common/masonry/types';
+import { Comment, CommentSearchParams } from '@profitable-web/types';
 import { mockCategories } from './mock-data/categories';
 import { mockArticles } from '@/components/common/masonry/data/mock-articles';
+import { mockComments, filterComments as filterCommentsUtil } from './mock-data/comments';
 
 /**
  * Mock-функции для получения данных
@@ -10,6 +12,7 @@ import { mockArticles } from '@/components/common/masonry/data/mock-articles';
  * - getCategoryBySlug(slug) → API endpoint `/api/categories/[slug]`
  * - getArticlesByCategory(categoryId) → API endpoint `/api/categories/[id]/articles`
  * - getArticleBySlug(slug) → API endpoint `/api/articles/[slug]`
+ * - getUserComments(userId) → API endpoint `/api/users/[userId]/comments`
  */
 
 /**
@@ -75,4 +78,30 @@ export async function getArticlesByAuthor(
   // В будущем будем фильтровать по полю author в статье
   console.log(`[MockAPI] Getting articles for author: ${authorName}`);
   return mockArticles;
+}
+
+/**
+ * Получает комментарии пользователя
+ * @param userId - ID пользователя
+ * @param params - Параметры фильтрации и пагинации
+ * @returns Массив комментариев пользователя
+ */
+export async function getUserComments(
+  userId: string,
+  params?: CommentSearchParams
+): Promise<Comment[]> {
+  console.log(`[MockAPI] Getting comments for user: ${userId}`, params);
+
+  let comments = mockComments.filter(c => c.userId === userId);
+
+  // Фильтрация по поисковому запросу
+  if (params?.query) {
+    comments = filterCommentsUtil(comments, params.query);
+  }
+
+  // Пагинация
+  const limit = params?.limit ?? comments.length;
+  const offset = params?.offset ?? 0;
+
+  return comments.slice(offset, offset + limit);
 }

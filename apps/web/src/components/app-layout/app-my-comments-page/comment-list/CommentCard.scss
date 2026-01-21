@@ -1,0 +1,136 @@
+@import '../../../../../../../styles/utils/variables';
+
+.comment-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+    }
+  }
+
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  &__avatar-wrapper {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__author-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+    }
+  }
+
+  &__time {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+    }
+  }
+
+  &__content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+
+  &__divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--spacing-md) 0;
+
+    @media (max-width: 768px) {
+      margin: var(--spacing-sm) 0;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+    }
+  }
+
+  &__footer-icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+
+    @media (max-width: 768px) {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__footer-text {
+    line-height: 1.4;
+  }
+
+  &__article-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s ease;
+
+    &:hover {
+      text-decoration-color: transparent;
+    }
+  }
+}

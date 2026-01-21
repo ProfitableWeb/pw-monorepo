@@ -1,0 +1,75 @@
+@import '../../../../../../../styles/utils/variables';
+
+.my-comments-page-header {
+  padding: 80px var(--spacing-xl) 40px;
+
+  @media (max-width: 768px) {
+    padding: 40px var(--spacing-md) 32px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 32px var(--spacing-md) 24px;
+  }
+
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+
+    @media (min-width: 1025px) {
+      max-width: none;
+    }
+  }
+
+  &__title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.03em;
+    margin-bottom: var(--spacing-md);
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__stats {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 8px 16px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+  }
+
+  &__stats-label {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+    }
+  }
+
+  &__stats-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    padding: 2px 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: var(--color-primary);
+    border-radius: var(--radius-md);
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      min-width: 24px;
+    }
+  }
+}
