@@ -48,8 +48,10 @@ bun run test:watch       # Watch mode
 ```bash
 cd apps/api
 uv sync                  # Install Python dependencies
-uv run pytest            # Run tests
+uv run pytest            # Run all tests
+uv run pytest tests/test_specific.py  # Run single test file
 uv run ruff check        # Lint
+uv run ruff check --fix  # Auto-fix lint issues
 uv run mypy .            # Type check
 ```
 
@@ -87,8 +89,8 @@ src/components/
 
 #### CSS Architecture
 - **SCSS modules** only - import styles as `import styles from './component.module.scss'`
-- **CSS variables** for theming (defined in global styles)
-- Reference variables from `styles/variables.scss`
+- **Theme system**: `styles/themes/{light,dark}/` with separate files for buttons, cards, forms, etc.
+- **Utility mixins**: `styles/utils/` for animations, breakpoints, colors, spacing, typography
 - No Tailwind, no CSS-in-JS
 
 #### State Management
@@ -134,6 +136,20 @@ git push github   # Push to GitHub only
 git pushall       # Push to both (custom alias)
 ```
 
+**Commit message format** (REQUIRED):
+- Format: `type(PW-XXXX): subject` (на русском языке)
+- Task number `(PW-XXXX)` must exist in `docs/tasks/`
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
+- Subject: lowercase, imperative mood, in Russian
+- **НЕ добавлять** `Co-Authored-By:` или другие строки авторства
+
+Examples:
+- ✅ `feat(PW-011): рефакторинг и оптимизация`
+- ✅ `fix(PW-016): исправление высоты инпута`
+- ❌ `feat: add component` (missing task number)
+- ❌ `feat(PW-016): add input component` (not in Russian)
+- ❌ `feat(PW-016): описание\n\nCo-Authored-By: ...` (no authorship lines)
+
 ## Testing
 
 - **Frontend**: Vitest + Testing Library
@@ -148,6 +164,8 @@ Primary content language is **Russian**. All user-facing text, comments, and doc
 ## Key Files
 
 - `turbo.json` - Turborepo task configuration
-- `apps/web/src/app/[slug]/page.tsx` - Unified dynamic route handler
-- `apps/web/src/lib/mock-api.ts` - Mock data layer
+- `apps/web/src/app/[slug]/page.tsx` - Unified dynamic route handler (categories + articles + 404)
+- `apps/web/src/lib/mock-api.ts` - Mock data layer for frontend-first development
+- `apps/web/src/utils/seo.ts` - JSON-LD structured data generators
+- `apps/web/src/styles/themes/` - Light/dark theme definitions
 - `packages/types/` - Shared TypeScript types
