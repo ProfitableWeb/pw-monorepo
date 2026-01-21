@@ -4,56 +4,56 @@ import React, { forwardRef } from 'react';
 import './Input.scss';
 
 /**
- * Props for the Input component
- * Extends standard HTML input attributes for full compatibility
+ * Пропсы для компонента Input
+ * Расширяет стандартные HTML атрибуты input для полной совместимости
  */
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /**
-   * Error message string or boolean flag for error state
-   * When string: displays the error message below the input
-   * When true: shows error styling without message
+   * Сообщение об ошибке или булев флаг для состояния ошибки
+   * Если строка: показывает сообщение об ошибке под input
+   * Если true: показывает стиль ошибки без сообщения
    */
   error?: string | boolean;
 
   /**
-   * Optional label text displayed above the input
-   * Connected to input via htmlFor for accessibility
+   * Опциональный текст label, отображаемый над input
+   * Связан с input через htmlFor для accessibility
    */
   label?: string;
 
   /**
-   * Helper text displayed below the input (separate from error)
-   * Useful for providing additional context or instructions
+   * Вспомогательный текст, отображаемый под input (отдельно от ошибки)
+   * Полезен для предоставления дополнительного контекста или инструкций
    */
   helperText?: string;
 
   /**
-   * Make the container full width
+   * Делает контейнер на всю ширину
    */
   fullWidth?: boolean;
 
   /**
-   * Additional CSS class names
+   * Дополнительные CSS классы
    */
   className?: string;
 }
 
 /**
- * Input - Universal input component with theme support
+ * Input - Универсальный компонент ввода с поддержкой тем
  *
- * Features:
- * - Supports all standard HTML input attributes
- * - Error, disabled, and loading states
- * - Dark/light theme support via CSS variables
- * - Full accessibility (WCAG 2.1 AA)
- * - Optional label and helper text
+ * Возможности:
+ * - Поддерживает все стандартные HTML атрибуты input
+ * - Состояния error, disabled и loading
+ * - Поддержка тёмной/светлой темы через CSS переменные
+ * - Полная accessibility (WCAG 2.1 AA)
+ * - Опциональный label и вспомогательный текст
  *
  * @example
- * // Basic usage
+ * // Базовое использование
  * <Input type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
  *
  * @example
- * // With label and error
+ * // С label и ошибкой
  * <Input
  *   type="email"
  *   label="Email адрес"
@@ -64,7 +64,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
  * />
  *
  * @example
- * // With helper text
+ * // С вспомогательным текстом
  * <Input
  *   type="password"
  *   label="Пароль"
@@ -86,12 +86,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    // Generate unique ID for input if not provided
+    // Генерируем уникальный ID для input, если не предоставлен
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
     const errorId = `${inputId}-error`;
     const helperId = `${inputId}-helper`;
 
-    // Collect aria-describedby IDs
+    // Собираем IDs для aria-describedby
     const ariaDescribedBy = [
       error && typeof error === 'string' ? errorId : null,
       helperText ? helperId : null,
@@ -99,7 +99,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       .filter(Boolean)
       .join(' ');
 
-    // Build class names
+    // Формируем имена классов
     const classNames = [
       'input',
       error && 'input--error',

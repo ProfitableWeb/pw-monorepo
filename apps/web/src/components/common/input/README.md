@@ -25,21 +25,16 @@ import { Input } from '@/components/common/input';
 ```tsx
 // С сообщением об ошибке
 <Input
-  type="email"
-  label="Email адрес"
+  type='email'
+  label='Email адрес'
   value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  error="Пожалуйста, введите корректный email"
+  onChange={e => setEmail(e.target.value)}
+  error='Пожалуйста, введите корректный email'
   required
 />
 
 // Или просто визуальное состояние ошибки (без сообщения)
-<Input
-  type="email"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  error={hasError}
-/>
+<Input type='email' value={email} onChange={e => setEmail(e.target.value)} error={hasError} />
 ```
 
 ### С вспомогательным текстом
@@ -59,17 +54,13 @@ import { Input } from '@/components/common/input';
 
 ```tsx
 // Неактивное поле
-<Input
-  type="text"
-  value={value}
-  disabled
-/>
+<Input type='text' value={value} disabled />
 
 // Или условно
 <Input
-  type="email"
+  type='email'
   value={email}
-  onChange={(e) => setEmail(e.target.value)}
+  onChange={e => setEmail(e.target.value)}
   disabled={isLoading || status === 'success'}
 />
 ```
@@ -101,9 +92,9 @@ import { Input } from '@/components/common/input';
 
 ```tsx
 // Строка - показывает сообщение об ошибке
-<Input error="Email должен быть корректным" />
+<Input error='Email должен быть корректным' />
 
-// Boolean - показывает только визуальное состояние ошибки
+// Булев - показывает только визуальное состояние ошибки
 <Input error={hasError} />
 ```
 
@@ -127,7 +118,7 @@ import { Input } from '@/components/common/input';
 Автоматически адаптируется под светлую и тёмную темы через CSS переменные:
 
 ```scss
-// Темные цвета (data-theme="dark")
+// Тёмные цвета (data-theme="dark")
 background: var(--input-background); // #262626
 border: var(--input-border); // #525252
 color: var(--input-text); // #f5f5f5
@@ -269,7 +260,7 @@ const focusInput = () => {
 
 - `aria-invalid` - когда есть ошибка
 - `aria-describedby` - связывает input с helper text и error message
-- `role="alert"` - для error message
+- `role='alert'` - для error message
 
 ### TypeScript
 
