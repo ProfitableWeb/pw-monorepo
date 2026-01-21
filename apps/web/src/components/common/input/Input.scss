@@ -46,8 +46,6 @@
   // Basic styles
   display: block;
   width: 100%;
-  font-size: 16px;
-  line-height: 1.5;
   border-radius: 8px;
   border: 2px solid var(--input-border);
   background: var(--input-background);
@@ -92,16 +90,19 @@
   &--sm {
     padding: 8px 16px;
     font-size: 13px;
+    line-height: 1;
   }
 
   &--md {
-    padding: 12px 16px;
+    padding: 12px 20px;
     font-size: 14px;
+    line-height: 1;
   }
 
   &--lg {
     padding: 14px 16px;
     font-size: 15px;
+    line-height: 1;
   }
 }
 
@@ -135,8 +136,20 @@
 
 @include mobile-only {
   .input {
-    font-size: 16px; // Prevent iOS zoom on focus
-    padding: 12px 14px;
+    &--sm {
+      font-size: 16px; // Prevent iOS zoom on focus
+      padding: 8px 14px;
+    }
+
+    &--md {
+      font-size: 16px; // Prevent iOS zoom on focus
+      padding: 12px 14px;
+    }
+
+    &--lg {
+      font-size: 16px; // Prevent iOS zoom on focus
+      padding: 14px 14px;
+    }
   }
 
   .input__label {
