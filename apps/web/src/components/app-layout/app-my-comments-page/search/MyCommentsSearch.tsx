@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { HiSearch } from 'react-icons/hi';
 import { IoClose } from 'react-icons/io5';
-import { motion, AnimatePresence } from 'framer-motion';
 import './MyCommentsSearch.scss';
 
 interface MyCommentsSearchProps {
@@ -54,49 +53,33 @@ export const MyCommentsSearch: React.FC<MyCommentsSearchProps> = ({
             className='my-comments-search__input'
             placeholder='Поиск по комментариям...'
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
             aria-label='Поиск по комментариям'
           />
-          <AnimatePresence>
-            {hasValue && (
-              <motion.button
-                className='my-comments-search__clear'
-                onClick={handleClear}
-                aria-label='Очистить поиск'
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.15 }}
-              >
-                <IoClose />
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {hasValue && (
+            <button
+              className='my-comments-search__clear'
+              onClick={handleClear}
+              aria-label='Очистить поиск'
+            >
+              <IoClose />
+            </button>
+          )}
         </div>
 
-        <AnimatePresence>
-          {(hasValue || isLoading) && (
-            <motion.div
-              className='my-comments-search__result'
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isLoading ? (
-                <span className='my-comments-search__result-text'>
-                  Поиск...
-                </span>
-              ) : (
-                <span className='my-comments-search__result-text'>
-                  {(resultCount ?? 0) === 0
-                    ? 'Поиск не дал результатов'
-                    : `Найдено: ${resultCount} ${getCommentNoun(resultCount ?? 0)}`}
-                </span>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {(hasValue || isLoading) && (
+          <div className='my-comments-search__result'>
+            {isLoading ? (
+              <span className='my-comments-search__result-text'>Поиск...</span>
+            ) : (
+              <span className='my-comments-search__result-text'>
+                {(resultCount ?? 0) === 0
+                  ? 'Поиск не дал результатов'
+                  : `Найдено: ${resultCount} ${getCommentNoun(resultCount ?? 0)}`}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

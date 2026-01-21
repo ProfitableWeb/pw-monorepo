@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useMemo, useEffect, memo } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { LuMessageSquare } from 'react-icons/lu';
 import { Comment } from '@profitable-web/types';
+import { useAuth } from '@/contexts/auth';
 import './CommentCard.scss';
 
 interface CommentCardProps {
@@ -13,54 +12,52 @@ interface CommentCardProps {
 }
 
 /**
- * Утилита для форматирования относительного времени
+ * Утилита для форматирования даты с годом и временем
+ * Использует локальное время пользователя
  */
-function formatRelativeTime(dateString: string): string {
+function formatDateTime(dateString: string): string {
   const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'только что';
-  if (diffMins < 60) return `${diffMins} мин. назад`;
-  if (diffHours < 24) return `${diffHours} ч. назад`;
-  if (diffDays === 1) return 'вчера';
-  if (diffDays < 7) return `${diffDays} дн. назад`;
-
-  return date.toLocaleDateString('ru-RU', {
+  return date.toLocaleString('ru-RU', {
     day: 'numeric',
     month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 /**
  * CommentCard - карточка комментария
  */
-export const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {
+export const CommentCard: React.FC<CommentCardProps> = memo(({ comment }) => {
+  const { user } = useAuth();
   const [avatarError, setAvatarError] = useState(false);
   const avatarInitial = comment.userName.charAt(0).toUpperCase();
 
+  const avatarUrl = useMemo(() => {
+    return user?.avatar || comment.userAvatar;
+  }, [user?.avatar, comment.userAvatar]);
+
+  // Сбрасываем ошибку при изменении URL аватарки
+  useEffect(() => {
+    setAvatarError(false);
+  }, [avatarUrl]);
+
   return (
-    <motion.article
-      className='comment-card'
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      whileHover={{ y: -2 }}
-    >
+    <article className='comment-card'>
       <div className='comment-card__header'>
         <div className='comment-card__author'>
           <div className='comment-card__avatar-wrapper'>
-            {comment.userAvatar && !avatarError ? (
-              <Image
-                src={comment.userAvatar}
+            {avatarUrl && !avatarError ? (
+              <img
+                src={avatarUrl}
                 alt={comment.userName}
                 width={28}
                 height={28}
                 className='comment-card__avatar'
                 onError={() => setAvatarError(true)}
+                loading='lazy'
               />
             ) : (
               <div className='comment-card__avatar-fallback'>
@@ -75,7 +72,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {
           dateTime={comment.createdAt}
           title={new Date(comment.createdAt).toLocaleString('ru-RU')}
         >
-          {formatRelativeTime(comment.createdAt)}
+          {formatDateTime(comment.createdAt)}
         </time>
       </div>
 
@@ -95,6 +92,8 @@ export const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {
           </Link>
         </span>
       </div>
-    </motion.article>
+    </article>
   );
-};
+});
+
+CommentCard.displayName = 'CommentCard';
