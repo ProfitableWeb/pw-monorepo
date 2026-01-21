@@ -16,31 +16,6 @@
     margin-bottom: 16px;
   }
 
-  &__input {
-    padding: 14px 16px;
-    font-size: 16px;
-    border: 2px solid var(--color-border);
-    border-radius: 8px;
-    background: var(--color-background);
-    color: var(--color-text-primary);
-    transition: border-color 0.2s ease-in-out;
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-primary);
-    }
-
-    &::placeholder {
-      color: var(--color-text-muted);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-
-
   &__social {
     padding-top: 24px;
     text-align: center;

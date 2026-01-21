@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Modal } from '@/components/common/modal';
 import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
 import SocialIcons from '@/components/common/social-icons';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import { toast } from '@/components/common/toast';
@@ -84,13 +85,14 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
           className='newsletter-form__form'
           noValidate
         >
-          <input
+          <Input
             type='email'
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder='your@email.com'
-            className='newsletter-form__input'
             disabled={isLoading || status === 'success'}
+            error={errorMessage || undefined}
+            fullWidth
           />
 
           <Button
