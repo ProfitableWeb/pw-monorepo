@@ -93,6 +93,7 @@ export const NewsletterForm: React.FC<NewsletterFormProps> = ({
             disabled={isLoading || status === 'success'}
             error={errorMessage || undefined}
             fullWidth
+            size='md'
           />
 
           <Button

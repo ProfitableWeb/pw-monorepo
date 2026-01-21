@@ -9,15 +9,15 @@
 ```tsx
 import { Input } from '@/components/common/input';
 
-// Простое поле ввода
-<Input type='email' placeholder='your@email.com' value={email} onChange={e => setEmail(e.target.value)} />;
+// Простое поле ввода (размер по умолчанию - md)
+<Input type='email' placeholder='your@email.com' value={email} onChange={e => setEmail(e.target.value)} size='md' />;
 ```
 
 ### С label
 
 ```tsx
 // С заголовком поля
-<Input type='email' label='Email адрес' value={email} onChange={e => setEmail(e.target.value)} required />
+<Input type='email' label='Email адрес' value={email} onChange={e => setEmail(e.target.value)} required size='md' />
 ```
 
 ### С ошибкой
@@ -31,10 +31,11 @@ import { Input } from '@/components/common/input';
   onChange={e => setEmail(e.target.value)}
   error='Пожалуйста, введите корректный email'
   required
+  size='md'
 />
 
 // Или просто визуальное состояние ошибки (без сообщения)
-<Input type='email' value={email} onChange={e => setEmail(e.target.value)} error={hasError} />
+<Input type='email' value={email} onChange={e => setEmail(e.target.value)} error={hasError} size='md' />
 ```
 
 ### С вспомогательным текстом
@@ -47,6 +48,7 @@ import { Input } from '@/components/common/input';
   helperText='Минимум 8 символов'
   value={password}
   onChange={e => setPassword(e.target.value)}
+  size='md'
 />
 ```
 
@@ -54,7 +56,7 @@ import { Input } from '@/components/common/input';
 
 ```tsx
 // Неактивное поле
-<Input type='text' value={value} disabled />
+<Input type='text' value={value} disabled size='md' />
 
 // Или условно
 <Input
@@ -62,14 +64,45 @@ import { Input } from '@/components/common/input';
   value={email}
   onChange={e => setEmail(e.target.value)}
   disabled={isLoading || status === 'success'}
+  size='md'
 />
+```
+
+### Размеры
+
+#### Маленький размер (sm)
+
+```tsx
+// Маленькое поле ввода
+<Input type='text' label='Имя' value={name} onChange={e => setName(e.target.value)} size='sm' />
+```
+
+#### Средний размер (md) - по умолчанию
+
+```tsx
+// Среднее поле ввода
+<Input type='email' label='Email адрес' value={email} onChange={e => setEmail(e.target.value)} size='md' />
+```
+
+#### Большой размер (lg)
+
+```tsx
+// Большое поле ввода
+<Input type='text' label='Сообщение' value={message} onChange={e => setMessage(e.target.value)} size='lg' />
 ```
 
 ### Полная ширина
 
 ```tsx
 // На всю ширину контейнера
-<Input type='email' fullWidth placeholder='your@email.com' value={email} onChange={e => setEmail(e.target.value)} />
+<Input
+  type='email'
+  fullWidth
+  placeholder='your@email.com'
+  value={email}
+  onChange={e => setEmail(e.target.value)}
+  size='md'
+/>
 ```
 
 ## API

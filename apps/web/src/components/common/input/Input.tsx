@@ -7,7 +7,10 @@ import './Input.scss';
  * Пропсы для компонента Input
  * Расширяет стандартные HTML атрибуты input для полной совместимости
  */
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'size'
+> {
   /**
    * Сообщение об ошибке или булев флаг для состояния ошибки
    * Если строка: показывает сообщение об ошибке под input
@@ -36,6 +39,14 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
    * Дополнительные CSS классы
    */
   className?: string;
+
+  /**
+   * Размер компонента
+   * sm - маленький (как .button--sm)
+   * md - средний (как .button--md)
+   * lg - большой (как .button--lg)
+   */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 /**
@@ -71,6 +82,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
  *   helperText="Минимум 8 символов"
  *   value={password}
  *   onChange={(e) => setPassword(e.target.value)}
+ *   size="md"
  * />
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -81,6 +93,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       helperText,
       fullWidth = false,
       className = '',
+      size = 'md',
       id,
       ...props
     },
@@ -105,6 +118,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       error && 'input--error',
       props.disabled && 'input--disabled',
       fullWidth && 'input--full-width',
+      size && `input--${size}`,
       className,
     ]
       .filter(Boolean)
