@@ -24,11 +24,14 @@
     color: var(--color-text-muted);
   }
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     color: var(--color-primary);
+    outline: none;
   }
 
-  &:hover:visited {
+  &:hover:visited,
+  &:focus-visible:visited {
     color: var(--color-primary);
   }
 
@@ -55,8 +58,9 @@
   }
 }
 
-// Hover увеличивает fill-opacity для более яркого отображения
-.social-icons__link:hover .social-icons__icon svg path {
+// Hover и focus увеличивают fill-opacity для более яркого отображения
+.social-icons__link:hover .social-icons__icon svg path,
+.social-icons__link:focus-visible .social-icons__icon svg path {
   fill-opacity: 1;
 }
 
@@ -126,11 +130,13 @@
     color: var(--color-text-muted);
   }
   
-  &:hover {
+  &:hover,
+  &:focus-visible {
     color: var(--color-primary);
   }
   
-  &:hover:visited {
+  &:hover:visited,
+  &:focus-visible:visited {
     color: var(--color-primary);
   }
 }
@@ -144,11 +150,13 @@
       color: var(--color-text-muted);
     }
     
-    &:hover {
+    &:hover,
+    &:focus-visible {
       color: var(--color-primary);
     }
     
-    &:hover:visited {
+    &:hover:visited,
+    &:focus-visible:visited {
       color: var(--color-primary);
     }
   }
@@ -162,11 +170,13 @@
     color: var(--color-text-muted);
   }
   
-  &:hover {
+  &:hover,
+  &:focus-visible {
     color: var(--color-text-primary);
   }
   
-  &:hover:visited {
+  &:hover:visited,
+  &:focus-visible:visited {
     color: var(--color-text-primary);
   }
 }
@@ -179,11 +189,13 @@
     color: var(--color-text-muted);
   }
   
-  &:hover {
+  &:hover,
+  &:focus-visible {
     color: var(--color-primary);
   }
   
-  &:hover:visited {
+  &:hover:visited,
+  &:focus-visible:visited {
     color: var(--color-primary);
   }
 }
