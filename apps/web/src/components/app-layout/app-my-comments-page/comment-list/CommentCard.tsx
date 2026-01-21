@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -39,6 +39,9 @@ function formatRelativeTime(dateString: string): string {
  * CommentCard - карточка комментария
  */
 export const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {
+  const [avatarError, setAvatarError] = useState(false);
+  const avatarInitial = comment.userName.charAt(0).toUpperCase();
+
   return (
     <motion.article
       className='comment-card'
@@ -49,20 +52,23 @@ export const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {
     >
       <div className='comment-card__header'>
         <div className='comment-card__author'>
-          {comment.userAvatar && (
-            <div className='comment-card__avatar-wrapper'>
+          <div className='comment-card__avatar-wrapper'>
+            {comment.userAvatar && !avatarError ? (
               <Image
                 src={comment.userAvatar}
                 alt={comment.userName}
                 width={28}
                 height={28}
                 className='comment-card__avatar'
+                onError={() => setAvatarError(true)}
               />
-            </div>
-          )}
-          <span className='comment-card__author-name'>
-            {comment.userName}
-          </span>
+            ) : (
+              <div className='comment-card__avatar-fallback'>
+                {avatarInitial}
+              </div>
+            )}
+          </div>
+          <span className='comment-card__author-name'>{comment.userName}</span>
         </div>
         <time
           className='comment-card__time'
