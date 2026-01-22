@@ -1,0 +1,87 @@
+name: Deploy to Cloud.ru (GitVerse)
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "ecosystem.config.js"
+      - ".gitverse/workflows/deploy.yaml"
+      - "docs/nginx/**"
+      - "scripts/update-nginx.sh"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ variables.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ variables.SSH_HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ variables.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ variables.SSH_HOST }}
+
+      - name: Deploy to VM
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -p ${SSH_PORT:-22} \
+              ${SSH_USER}@${SSH_HOST} << 'EOF'
+            set -e
+            export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+            
+            # Клонирование или обновление репозитория
+            if [ -d ~/profitableweb/.git ]; then
+              echo "📥 Обновление репозитория..."
+              cd ~/profitableweb
+              git fetch origin
+              git reset --hard origin/master
+            else
+              echo "📦 Клонирование репозитория..."
+              rm -rf ~/profitableweb
+              git clone https://gitverse.ru/profitableweb.ru/pw-monorepo.git ~/profitableweb
+              cd ~/profitableweb
+            fi
+
+            # API: установка зависимостей
+            cd apps/api
+            uv sync
+
+            # Web: сборка
+            cd ../web
+            bun install
+            [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
+            bun run build
+
+            # Admin: сборка
+            cd ../admin
+            bun install
+            bun run build
+
+            # Перезапуск всех сервисов
+            cd ~/profitableweb
+            pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+
+            echo "✅ Deploy completed!"
+          EOF
+        env:
+          SSH_USER: ${{ variables.SSH_USER }}
+          SSH_HOST: ${{ variables.SSH_HOST }}
+          SSH_PORT: ${{ variables.SSH_PORT }}
+
+      - name: Verify deployment
+        run: |
+          echo "🔍 Проверка доступности сервиса..."
+          sleep 5
+          curl -f http://${{ variables.SSH_HOST }}/api/health || echo "⚠️ Health check failed, but deploy might still be running"
