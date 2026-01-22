@@ -8,6 +8,7 @@ on:
       - "apps/**"
       - "packages/**"
       - "ecosystem.config.js"
+      - ".github/workflows/deploy-gitverse-only.yml"
       - ".gitverse/workflows/deploy.yaml"
       - "docs/nginx/**"
       - "scripts/update-nginx.sh"
@@ -25,12 +26,12 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY || variables.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SSH_HOST || variables.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY || variables.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ secrets.SSH_HOST || variables.SSH_HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Deploy to VM
         run: |
@@ -76,12 +77,12 @@ jobs:
             echo "✅ Deploy completed!"
           EOF
         env:
-          SSH_USER: ${{ secrets.SSH_USER || variables.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST || variables.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT || variables.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
 
       - name: Verify deployment
         run: |
           echo "🔍 Проверка доступности сервиса..."
           sleep 5
-          curl -f http://${{ secrets.SSH_HOST || variables.SSH_HOST }}/api/health || echo "⚠️ Health check failed, but deploy might still be running"
+          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "⚠️ Health check failed, but deploy might still be running"
