@@ -31,7 +31,7 @@ sudo nano /etc/nginx/sites-available/profitableweb
 
 ### Шаг 2: Заменить содержимое файла
 
-Скопировать содержимое из `docs/nginx/profitableweb.conf` в файл на сервере.
+Скопировать содержимое из `infra/nginx/profitableweb.conf` в файл на сервере.
 
 ### Шаг 3: Проверить и перезапустить nginx
 
@@ -160,8 +160,8 @@ proxy_read_timeout 60s;
   run: |
     ssh -i ~/.ssh/deploy_key ${SSH_USER}@${SSH_HOST} << 'EOF'
       # Обновить nginx конфиг если изменился
-      if [ -f ~/profitableweb/docs/nginx/profitableweb.conf ]; then
-        sudo cp ~/profitableweb/docs/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
+      if [ -f ~/profitableweb/infra/nginx/profitableweb.conf ]; then
+        sudo cp ~/profitableweb/infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
         sudo nginx -t && sudo systemctl reload nginx
       fi
     EOF

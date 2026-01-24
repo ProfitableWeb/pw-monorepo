@@ -15,7 +15,7 @@ cd ~/profitableweb
 git pull origin master
 
 # Запустить скрипт обновления
-./scripts/update-nginx.sh
+./infra/scripts/update-nginx.sh
 ```
 
 ### Вариант 2: Ручной
@@ -30,7 +30,7 @@ sudo cp /etc/nginx/sites-available/profitableweb \
 
 # Скопировать новый конфиг
 cd ~/profitableweb
-sudo cp docs/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
+sudo cp infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
 
 # Проверить синтаксис
 sudo nginx -t
@@ -77,8 +77,8 @@ curl -I http://127.0.0.1/_next/static/
 ## 📚 Документация
 
 - **Полная инструкция:** [DEPLOY_FIX.md](./DEPLOY_FIX.md)
-- **Исправленный конфиг:** [profitableweb.conf](./profitableweb.conf)
-- **Скрипт обновления:** `scripts/update-nginx.sh`
+- **Исправленный конфиг:** [profitableweb.conf](../../infra/nginx/profitableweb.conf)
+- **Скрипт обновления:** [update-nginx.sh](../../infra/scripts/update-nginx.sh)
 
 ## 🆘 Если не помогло
 
@@ -119,7 +119,7 @@ pm2 restart web
   run: |
     ssh ${SSH_USER}@${SSH_HOST} << 'EOF'
       cd ~/profitableweb
-      ./scripts/update-nginx.sh
+      ./infra/scripts/update-nginx.sh
     EOF
 ```
 

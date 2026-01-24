@@ -29,9 +29,9 @@
 
 ### Что сделано
 
-- [x] Создан исправленный nginx конфиг → `docs/nginx/profitableweb.conf`
+- [x] Создан исправленный nginx конфиг → `infra/nginx/profitableweb.conf`
 - [x] Написана подробная инструкция → `docs/nginx/DEPLOY_FIX.md`
-- [x] Создан скрипт автоматического обновления → `scripts/update-nginx.sh`
+- [x] Создан скрипт автоматического обновления → `infra/scripts/update-nginx.sh`
 - [x] Обновлена документация → `docs/tasks/2026/01/PW-005.md`
 - [x] Создана краткая инструкция → `docs/nginx/README.md`
 
@@ -48,7 +48,7 @@ git pull origin master
 ssh user@213.171.25.187
 cd ~/profitableweb
 git pull origin master
-sudo cp docs/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
+sudo cp infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -135,9 +135,9 @@ sudo systemctl status nginx
 
 ## 📚 Связанные документы
 
-- **Nginx конфиг:** `docs/nginx/profitableweb.conf`
+- **Nginx конфиг:** `infra/nginx/profitableweb.conf`
 - **Инструкция:** `docs/nginx/DEPLOY_FIX.md`
-- **Скрипт:** `scripts/update-nginx.sh`
+- **Скрипт:** `infra/scripts/update-nginx.sh`
 - **Быстрый старт:** `docs/nginx/README.md`
 - **Начальная настройка:** `docs/tasks/2026/01/PW-005.md`
 
@@ -151,8 +151,8 @@ sudo systemctl status nginx
   run: |
     ssh ${SSH_USER}@${SSH_HOST} << 'EOF'
       cd ~/profitableweb
-      if git diff --name-only HEAD@{1} HEAD | grep -q "docs/nginx/profitableweb.conf"; then
-        ./scripts/update-nginx.sh
+      if git diff --name-only HEAD@{1} HEAD | grep -q "infra/nginx/profitableweb.conf"; then
+        ./infra/scripts/update-nginx.sh
       fi
     EOF
 ```

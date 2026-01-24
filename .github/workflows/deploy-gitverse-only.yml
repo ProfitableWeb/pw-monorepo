@@ -10,8 +10,8 @@ on:
       - "ecosystem.config.js"
       - ".github/workflows/deploy-gitverse-only.yml"
       - ".gitverse/workflows/deploy.yaml"
-      - "docs/nginx/**"
-      - "scripts/update-nginx.sh"
+      - "infra/nginx/**"
+      - "infra/scripts/**"
   workflow_dispatch:
 
 jobs:
