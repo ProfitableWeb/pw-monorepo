@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { LuLogOut, LuMessageSquare, LuSettings } from 'react-icons/lu';
 import { useAuth } from '@/contexts/auth';
 import { toast } from '@/components/common/toast';
+import { SettingsModal } from '@/components/common/settings-modal';
 import './UserMenu.scss';
 
 export const UserMenu: React.FC = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Закрытие по клику вне меню
@@ -99,15 +101,17 @@ export const UserMenu: React.FC = () => {
             <LuMessageSquare />
             <span>Мои комментарии</span>
           </Link>
-          <Link
-            href='/settings'
+          <button
             className='user-menu__item'
+            onClick={() => {
+              setIsOpen(false);
+              setIsSettingsOpen(true);
+            }}
             role='menuitem'
-            onClick={() => setIsOpen(false)}
           >
             <LuSettings />
             <span>Настройки</span>
-          </Link>
+          </button>
           <button
             className='user-menu__item'
             onClick={handleLogout}
@@ -118,6 +122,11 @@ export const UserMenu: React.FC = () => {
           </button>
         </div>
       )}
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 };

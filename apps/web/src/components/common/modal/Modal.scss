@@ -158,6 +158,12 @@
     }
   }
 
+  &__divider {
+    height: 1px;
+    background: var(--color-border-divider, var(--color-border));
+    margin: 0;
+  }
+
   // Content
   &__content {
     flex: 1;

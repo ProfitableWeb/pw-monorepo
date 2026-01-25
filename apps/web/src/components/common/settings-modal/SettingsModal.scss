@@ -1,0 +1,440 @@
+@import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/mixins';
+
+.settings-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+
+  @include sm {
+    flex-direction: row;
+    min-height: 600px;
+  }
+}
+
+// Sidebar с навигацией
+.settings-modal__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-right: 1px solid var(--color-border-divider, var(--color-border));
+
+  @include mobile-only {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-divider, var(--color-border));
+    padding: 16px;
+  }
+
+  @include sm {
+    width: 240px;
+    flex-shrink: 0;
+    padding: 24px;
+  }
+}
+
+// Навигация (tabs)
+.settings-modal__nav {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding-bottom: 16px;
+
+  @include sm {
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 20px;
+  }
+}
+
+.settings-modal__nav-item {
+  @include button-reset;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+  flex-shrink: 0;
+
+  @include mobile-only {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+
+  &.active {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+
+    @include mobile-only {
+      background: var(--color-surface-hover);
+      color: var(--color-text-primary);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.settings-modal__nav-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+
+  @include mobile-only {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.settings-modal__nav-label {
+  font-weight: 500;
+}
+
+// Кнопки действий (Сохранить/Отмена)
+.settings-modal__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+
+  @include mobile-only {
+    position: sticky;
+    bottom: 0;
+    padding: 12px 0 0;
+    background: transparent;
+    border-top: 1px solid var(--color-border);
+  }
+
+  @include sm {
+    flex-direction: column;
+    padding-top: 20px;
+  }
+}
+
+// Область контента
+.settings-modal__content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.settings-modal__panel {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Секции
+.settings-modal__section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+
+  @include sm {
+    padding: 24px;
+  }
+}
+
+// Секция профиля
+.settings-modal__section--profile {
+  .settings-modal__avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+
+  .settings-modal__avatar-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .settings-modal__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Формы
+.settings-modal__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-modal__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+// Секция уведомлений
+.settings-modal__section--notifications {
+  .settings-modal__setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    gap: 16px;
+
+    @include mobile-only {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+
+  .settings-modal__setting-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .settings-modal__setting-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .settings-modal__setting-description {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Секция email подписки
+.settings-modal__section--email {
+  .settings-modal__subscription-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--color-surface);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    gap: 16px;
+  }
+
+  .settings-modal__subscription-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+}
+
+// Toggle переключатель
+.settings-modal__toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background: var(--color-border);
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 2px;
+
+  &:hover {
+    background: var(--color-border-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    background: var(--color-primary);
+  }
+
+  &--large {
+    width: 64px;
+    height: 36px;
+    border-radius: 18px;
+    padding: 4px;
+  }
+
+  @include mobile-only {
+    width: 48px;
+    height: 26px;
+
+    &--large {
+      width: 60px;
+      height: 34px;
+    }
+  }
+}
+
+.settings-modal__toggle-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  color: var(--color-text-secondary);
+
+  .settings-modal__toggle.active & {
+    transform: translateX(24px);
+    color: var(--color-primary);
+  }
+
+  .settings-modal__toggle--large.active & {
+    transform: translateX(28px);
+    width: 28px;
+    height: 28px;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+
+    .settings-modal__toggle--large & {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  @include mobile-only {
+    width: 22px;
+    height: 22px;
+
+    .settings-modal__toggle.active & {
+      transform: translateX(22px);
+    }
+
+    .settings-modal__toggle--large.active & {
+      transform: translateX(24px);
+      width: 26px;
+      height: 26px;
+    }
+  }
+}
+
+// Radio group для частоты рассылки
+.settings-modal__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-modal__radio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border-hover);
+  }
+
+  &.active {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border);
+
+    .settings-modal__radio-label {
+      color: var(--color-text-primary);
+      font-weight: 500;
+    }
+  }
+
+  input[type='radio'] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 10px;
+      height: 10px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    &:checked {
+      border-color: var(--color-primary);
+
+      &::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.settings-modal__radio-label {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  transition: all 0.2s ease-in-out;
+}

@@ -21,6 +21,7 @@ interface ModalProps {
   children: ReactNode;
   size?: 'small' | 'medium' | 'large';
   contentPadding?: ContentPadding;
+  showDivider?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -31,6 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   size = 'medium',
   contentPadding,
+  showDivider = false,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -242,6 +244,8 @@ export const Modal: React.FC<ModalProps> = ({
                 <HiX />
               </button>
             </div>
+
+            {showDivider && <div className='modal__divider' />}
 
             {/* Content */}
             <div
