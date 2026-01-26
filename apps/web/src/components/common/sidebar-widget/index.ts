@@ -1,1 +1,0 @@
-export { SidebarWidget } from './SidebarWidget';
