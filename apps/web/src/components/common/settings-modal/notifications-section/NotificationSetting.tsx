@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Toggle } from '../shared-components/Toggle';
+import { Toggle } from '@/components/common/form-controls';
 
 interface NotificationSettingProps {
   label: string;

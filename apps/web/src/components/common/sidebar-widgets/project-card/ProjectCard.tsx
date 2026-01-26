@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/common/button';
+import { Button } from '@/components/common/form-controls';
 import './ProjectCard.scss';
 
 interface ProjectCardProps {

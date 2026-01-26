@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/common/modal';
-import { Input } from '@/components/common/input';
-import { Button } from '@/components/common/button';
+import { Input, Button } from '@/components/common/form-controls';
 import { LuUser, LuBell, LuMail, LuCheck, LuX, LuSave } from 'react-icons/lu';
 import { useAuth } from '@/contexts/auth';
 import { toast } from '@/components/common/toast';

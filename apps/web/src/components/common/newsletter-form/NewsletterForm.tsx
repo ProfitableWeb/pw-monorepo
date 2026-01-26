@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/common/modal';
-import { Button } from '@/components/common/button';
-import { Input } from '@/components/common/input';
+import { Button, Input } from '@/components/common/form-controls';
 import SocialIcons from '@/components/common/social-icons';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import { toast } from '@/components/common/toast';

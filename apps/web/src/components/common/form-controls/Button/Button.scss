@@ -1,0 +1,229 @@
+/**
+ * Button - универсальный компонент кнопки
+ * Стиль взят из дизайна кнопок социальных сетей в футере
+ * с толстой границей, градиентным и теневым эффектом при наведении
+ */
+
+@import '../../../styles/utils/variables';
+@import '../../../styles/utils/mixins';
+@import '../../../styles/utils/breakpoints';
+
+.button {
+  // Базовые стили
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  white-space: nowrap;
+  position: relative;
+  // Не используем overflow: hidden, чтобы тень не обрезалась при поднятии кнопки
+  
+  // Плавные transitions только для интерактивных свойств
+  // color и border-color НЕ анимируются, чтобы избежать конфликтов при смене темы
+  transition: 
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease,
+    opacity 0.2s ease;
+
+  // Контент кнопки поверх градиента
+  &__content {
+    position: relative;
+    z-index: 1; // Поверх градиента (который будет z-index: 0)
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  // Все дочерние элементы контента тоже поверх градиента
+  &__content > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Disabled state
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Active state
+  &:active:not(&--disabled) {
+    opacity: 0.7;
+    transform: translateY(5px);
+  }
+
+  // Focus state
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// ============================================================
+// VARIANTS
+// ============================================================
+
+// Outline variant (как "Подписаться на PW" и кнопки социальных сетей)
+.button--outline {
+  background: var(--color-background);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-primary);
+
+  // Градиентный фон при hover (используем ::after, чтобы он был под контентом)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0; // Под контентом
+    pointer-events: none;
+    border-radius: inherit; // Наследуем скругление углов от кнопки
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-light) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    // Убеждаемся, что градиент не перекрывает контент
+    mix-blend-mode: normal;
+  }
+
+  &:hover:not(.button--disabled),
+  &:focus-visible:not(.button--disabled) {
+    // Цвет текста не меняется, остаётся var(--color-text-primary)
+    // Добавляем transition только для hover и focus состояния
+    border-color: var(--color-primary);
+    transition: 
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
+
+    &::after {
+      opacity: 1;
+      z-index: 0; // Убеждаемся, что градиент под контентом
+    }
+  }
+}
+
+// Solid variant (заливка)
+.button--solid {
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  color: #ffffff;
+
+  // Градиентный фон при hover (используем ::after)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit; // Наследуем скругление углов от кнопки
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  &:hover:not(.button--disabled),
+  &:focus-visible:not(.button--disabled) {
+    background: var(--color-primary-hover, var(--color-primary));
+    border-color: var(--color-primary-hover, var(--color-primary));
+    // Добавляем transition только для hover и focus состояния
+    transition: 
+      background 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+// Ghost variant (без фона)
+.button--ghost {
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--color-text-primary);
+
+  // Градиентный фон при hover (используем ::after)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit; // Наследуем скругление углов от кнопки
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-light) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  &:hover:not(.button--disabled),
+  &:focus-visible:not(.button--disabled) {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    // Добавляем transition только для hover и focus состояния
+    transition: 
+      border-color 0.3s ease,
+      background 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+// ============================================================
+// SIZES
+// ============================================================
+
+.button--sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.button--md {
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+.button--lg {
+  padding: 14px 24px;
+  font-size: 15px;
+}
+
+// ============================================================
+// MODIFIERS
+// ============================================================
+
+.button--full-width {
+  width: 100%;
+}
+
+// Включение hover-эффекта приподнятия и тени (по умолчанию отключен)
+.button--hover-elevation {
+  &:hover:not(.button--disabled) {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}

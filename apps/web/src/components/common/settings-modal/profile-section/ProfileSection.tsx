@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Input } from '@/components/common/input';
-import { Button } from '@/components/common/button';
+import { Input, Button } from '@/components/common/form-controls';
 import { useAuth } from '@/contexts/auth';
 import type { UserSettings } from '@profitable-web/types';
 import './ProfileSection.scss';
