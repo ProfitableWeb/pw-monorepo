@@ -201,3 +201,7 @@ MIT License - см. [LICENSE](./LICENSE)
 - **GitVerse**: https://gitverse.ru/profitableweb.ru/
 - **GitHub**: https://github.com/ProfitableWeb/pw-monorepo
 - **Организация**: profitableweb.ru
+
+---
+
+_Последнее обновление: январь 2026_
