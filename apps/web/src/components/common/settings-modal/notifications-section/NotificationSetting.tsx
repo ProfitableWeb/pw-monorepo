@@ -24,7 +24,12 @@ export const NotificationSetting: React.FC<NotificationSettingProps> = ({
         <span className='notification-setting__title'>{label}</span>
         <span className='notification-setting__description'>{description}</span>
       </div>
-      <Toggle checked={checked} onChange={onChange} ariaLabel={ariaLabel} />
+      <Toggle
+        checked={checked}
+        onChange={onChange}
+        label={label}
+        ariaLabel={ariaLabel}
+      />
     </div>
   );
 };
