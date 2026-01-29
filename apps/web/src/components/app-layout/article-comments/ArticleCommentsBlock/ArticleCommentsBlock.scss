@@ -1,0 +1,111 @@
+@import "../../../../styles/utils/variables";
+
+.article-comments-block {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-lg);
+  border-top: 2px solid var(--color-border);
+
+  [data-theme="light"] &,
+  :root:not([data-theme]) & {
+    border-top-color: #f0f0f0;
+  }
+
+  [data-theme="dark"] & {
+    border-top-color: #2a2a2a;
+  }
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  &__list {
+    margin-bottom: var(--space-xl);
+  }
+
+  &__empty {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+  }
+
+  &__thread {
+    margin-bottom: var(--space-md);
+  }
+
+  // Форма ответа под комментарием (разворачивается с анимацией, место схлопывается плавно)
+  &__inline-reply {
+    margin-top: 0.75rem;
+    overflow: hidden;
+    max-height: 600px;
+    animation: article-comments-block-reply-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+    &--closing {
+      animation: article-comments-block-reply-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+  }
+
+  &__form-section {
+    margin-top: var(--space-lg);
+  }
+
+  &__guest-cta {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  &__guest-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    transition:
+      color 0.2s ease,
+      text-decoration-color 0.2s ease;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+@keyframes article-comments-block-reply-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 600px;
+  }
+}
+
+@keyframes article-comments-block-reply-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 600px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+    max-height: 0;
+  }
+}

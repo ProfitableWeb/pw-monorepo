@@ -1,0 +1,121 @@
+@import "../../../../styles/utils/variables";
+
+.article-comments-block-skeleton {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  &__item {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-surface-active);
+    flex-shrink: 0;
+  }
+
+  &__name {
+    width: 100px;
+    height: 1rem;
+    border-radius: 4px;
+    background: var(--color-surface-active);
+  }
+
+  &__time {
+    width: 60px;
+    height: 0.875rem;
+    border-radius: 4px;
+    background: var(--color-surface-active);
+    flex-shrink: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: var(--space-sm);
+  }
+
+  &__line {
+    height: 0.875rem;
+    border-radius: 4px;
+    background: var(--color-surface-active);
+
+    &--full {
+      width: 100%;
+    }
+
+    &--medium {
+      width: 75%;
+    }
+
+    &--short {
+      width: 40%;
+    }
+  }
+
+  &__reply {
+    width: 60px;
+    height: 0.875rem;
+    border-radius: 4px;
+    background: var(--color-surface-active);
+    margin-top: var(--space-sm);
+  }
+
+  // Shimmer-анимация
+  &__avatar,
+  &__name,
+  &__time,
+  &__line,
+  &__reply {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+      animation: article-comments-block-skeleton-shimmer 1.5s ease-in-out infinite;
+    }
+  }
+
+  [data-theme="dark"] &__avatar::after,
+  [data-theme="dark"] &__name::after,
+  [data-theme="dark"] &__time::after,
+  [data-theme="dark"] &__line::after,
+  [data-theme="dark"] &__reply::after {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 50%, transparent 100%);
+  }
+}
+
+@keyframes article-comments-block-skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

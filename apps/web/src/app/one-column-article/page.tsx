@@ -1,14 +1,38 @@
 import { Metadata } from 'next';
 import { ArticlePageOneColumn } from '@/components/app-layout/app-article-page-one-column';
+import { getArticleCommentThreads } from '@/lib/mock-api';
+import { generateBlogPostingWithCommentsJsonLd } from '@/utils/seo';
+import { oneColumnArticleContent } from '@/config/one-column-article-content';
+
+const ARTICLE_URL = 'https://profitableweb.ru/one-column-article';
 
 /**
  * Тестовая страница для одноколоночного лейаута статьи
  *
- * Демонстрирует использование одноколоночного лейаута с блоками 100% ширины.
- * Доступна по адресу /one-column-article
+ * Демонстрирует использование одноколоночного лейаута с блоками 100% ширины
+ * и блоком комментариев. Доступна по адресу /one-column-article
  */
-export default function OneColumnArticlePage() {
-  return <ArticlePageOneColumn />;
+export default async function OneColumnArticlePage() {
+  const initialThreads = await getArticleCommentThreads('one-column-article');
+  const blogPostingJsonLd = generateBlogPostingWithCommentsJsonLd(
+    {
+      title: oneColumnArticleContent.title,
+      description: oneColumnArticleContent.subtitle,
+      datePublished: oneColumnArticleContent.publishedAt,
+      url: ARTICLE_URL,
+    },
+    initialThreads
+  );
+
+  return (
+    <>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
+      />
+      <ArticlePageOneColumn initialThreads={initialThreads} />
+    </>
+  );
 }
 
 export const metadata: Metadata = {

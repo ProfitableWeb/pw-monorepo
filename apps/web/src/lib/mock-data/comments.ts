@@ -1,5 +1,101 @@
 import { Comment } from '@profitable-web/types';
 
+/** Slug статьи для одноколоночной демо-страницы */
+export const ONE_COLUMN_ARTICLE_SLUG = 'one-column-article';
+
+/**
+ * Mock комментарии под статьёй one-column-article (корневые и ответы)
+ * Для проверки блока комментариев и сворачивания ответов (5+ под одним корнем)
+ */
+export const mockArticleCommentsOneColumn: Comment[] = [
+  {
+    id: 'ac-1',
+    userId: 'u-1',
+    userName: 'Алексей',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Статья полезная, но хотелось бы больше примеров по разделу X.',
+    createdAt: '2025-01-20T12:00:00Z',
+  },
+  {
+    id: 'ac-2',
+    userId: 'u-2',
+    userName: 'Мария',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content:
+      'Согласна с предыдущим оратором. Ещё вопрос: поддерживается ли Y в текущей версии?',
+    createdAt: '2025-01-20T13:00:00Z',
+  },
+  {
+    id: 'ac-2-1',
+    userId: 'u-3',
+    userName: 'Ольга',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Да, с версии 2.1.',
+    createdAt: '2025-01-20T13:30:00Z',
+    parentId: 'ac-2',
+  },
+  {
+    id: 'ac-2-2',
+    userId: 'u-4',
+    userName: 'Дмитрий',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Документация здесь: …',
+    createdAt: '2025-01-20T14:00:00Z',
+    parentId: 'ac-2',
+  },
+  {
+    id: 'ac-2-3',
+    userId: 'u-2',
+    userName: 'Мария',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Спасибо!',
+    createdAt: '2025-01-20T14:15:00Z',
+    parentId: 'ac-2',
+  },
+  {
+    id: 'ac-2-4',
+    userId: 'u-5',
+    userName: 'Николай',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Добавлю в статью ссылку.',
+    createdAt: '2025-01-20T14:30:00Z',
+    parentId: 'ac-2',
+  },
+  {
+    id: 'ac-2-5',
+    userId: 'u-3',
+    userName: 'Ольга',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Отлично, буду ждать.',
+    createdAt: '2025-01-20T15:00:00Z',
+    parentId: 'ac-2',
+  },
+  {
+    id: 'ac-3',
+    userId: 'u-6',
+    userName: 'Игорь',
+    articleId: 'one-column-article',
+    articleSlug: ONE_COLUMN_ARTICLE_SLUG,
+    articleTitle: 'Пример одноколоночной статьи',
+    content: 'Спасибо за материал.',
+    createdAt: '2025-01-20T16:00:00Z',
+  },
+];
+
 /**
  * Mock данные комментариев пользователя
  * В будущем будут заменены на данные из API

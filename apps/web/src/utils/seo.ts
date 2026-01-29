@@ -1,6 +1,7 @@
 import { AUTHOR_SCHEMA } from '@/config/author';
 import { Article } from '@/components/common/masonry/types';
 import { Category } from '@/types';
+import type { ArticleCommentThread } from '@profitable-web/types';
 
 /**
  * Форматирует дату в формат DD.MM.YYYY
@@ -38,6 +39,75 @@ export function generateArticleJsonLd(article: Article) {
     ...(article.readTime && {
       timeRequired: `PT${article.readTime}M`,
     }),
+  };
+}
+
+/**
+ * Разворачивает ветки комментариев в плоский список (корень + ответы по порядку)
+ */
+function flattenThreadsToComments(
+  threads: ArticleCommentThread[]
+): Array<{ userName: string; createdAt: string; content: string }> {
+  const list: Array<{ userName: string; createdAt: string; content: string }> =
+    [];
+  for (const { root, replies } of threads) {
+    list.push({
+      userName: root.userName,
+      createdAt: root.createdAt,
+      content: root.content,
+    });
+    for (const r of replies) {
+      list.push({
+        userName: r.userName,
+        createdAt: r.createdAt,
+        content: r.content,
+      });
+    }
+  }
+  return list;
+}
+
+/**
+ * Строит массив Schema.org Comment из веток комментариев
+ */
+export function buildSchemaOrgComments(threads: ArticleCommentThread[]): Array<{
+  '@type': 'Comment';
+  author: { '@type': 'Person'; name: string };
+  datePublished: string;
+  text: string;
+}> {
+  return flattenThreadsToComments(threads).map(c => ({
+    '@type': 'Comment' as const,
+    author: { '@type': 'Person' as const, name: c.userName },
+    datePublished: c.createdAt,
+    text: c.content,
+  }));
+}
+
+/**
+ * Генерирует JSON-LD BlogPosting с комментариями (Schema.org) для страницы статьи
+ */
+export function generateBlogPostingWithCommentsJsonLd(
+  articleLike: {
+    title: string;
+    description?: string;
+    datePublished: string;
+    url: string;
+  },
+  threads: ArticleCommentThread[]
+) {
+  const commentList = buildSchemaOrgComments(threads);
+  const count = threads.reduce((acc, t) => acc + 1 + t.replies.length, 0);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: articleLike.title,
+    ...(articleLike.description && { description: articleLike.description }),
+    datePublished: articleLike.datePublished,
+    url: articleLike.url,
+    author: AUTHOR_SCHEMA,
+    commentCount: count,
+    comment: commentList,
   };
 }
 

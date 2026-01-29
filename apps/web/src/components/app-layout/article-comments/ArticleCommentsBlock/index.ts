@@ -1,0 +1,1 @@
+export { ArticleCommentsBlock } from './ArticleCommentsBlock';

@@ -13,6 +13,14 @@ export interface Comment {
   content: string;
   createdAt: string;
   updatedAt?: string;
+  /** ID родительского комментария (для ответов) */
+  parentId?: string;
+}
+
+/** Корневой комментарий и его ответы для отображения под статьёй */
+export interface ArticleCommentThread {
+  root: Comment;
+  replies: Comment[];
 }
 
 export interface CommentSearchParams {

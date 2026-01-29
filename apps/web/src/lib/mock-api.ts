@@ -1,9 +1,17 @@
 import { Category } from '@/types';
 import { Article } from '@/components/common/masonry/types';
-import { Comment, CommentSearchParams } from '@profitable-web/types';
+import {
+  Comment,
+  CommentSearchParams,
+  ArticleCommentThread,
+} from '@profitable-web/types';
 import { mockCategories } from './mock-data/categories';
 import { mockArticles } from '@/components/common/masonry/data/mock-articles';
-import { mockComments, filterComments as filterCommentsUtil } from './mock-data/comments';
+import {
+  mockComments,
+  mockArticleCommentsOneColumn,
+  filterComments as filterCommentsUtil,
+} from './mock-data/comments';
 
 /**
  * Mock-функции для получения данных
@@ -104,4 +112,49 @@ export async function getUserComments(
   const offset = params?.offset ?? 0;
 
   return comments.slice(offset, offset + limit);
+}
+
+/**
+ * Собирает комментарии статьи в ветки (корень + ответы)
+ * @param comments - плоский список комментариев с parentId у ответов
+ * @returns массив веток в порядке корней по createdAt
+ */
+function buildCommentThreads(comments: Comment[]): ArticleCommentThread[] {
+  const roots = comments
+    .filter(c => !c.parentId)
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  const byParent = new Map<string, Comment[]>();
+  for (const c of comments) {
+    if (!c.parentId) continue;
+    const list = byParent.get(c.parentId) ?? [];
+    list.push(c);
+    byParent.set(c.parentId, list);
+  }
+  for (const list of byParent.values()) {
+    list.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }
+  return roots.map(root => ({
+    root,
+    replies: byParent.get(root.id) ?? [],
+  }));
+}
+
+/**
+ * Получает комментарии статьи (ветки: корень + ответы) для one-column-article
+ * @param articleSlug - slug статьи
+ * @returns массив веток комментариев
+ */
+export async function getArticleCommentThreads(
+  articleSlug: string
+): Promise<ArticleCommentThread[]> {
+  if (articleSlug === 'one-column-article') {
+    return buildCommentThreads(mockArticleCommentsOneColumn);
+  }
+  return [];
 }
