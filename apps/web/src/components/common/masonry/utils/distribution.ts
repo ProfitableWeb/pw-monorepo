@@ -66,6 +66,3 @@ function estimateArticleHeight(article: Article): number {
 
   return height;
 }
-
-
-

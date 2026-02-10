@@ -14,9 +14,11 @@
 
 ### Описание
 
-Заменить пункт меню "Контакты" в выезжающем мобильном меню (AppBarMenuSidebar) на полноценный информационный блок с контактной информацией и социальными сетями.
+Заменить пункт меню "Контакты" в выезжающем мобильном меню (AppBarMenuSidebar) на полноценный информационный блок с
+контактной информацией и социальными сетями.
 
-**Контекст:** Пункт "Контакты" сейчас ведёт на отдельную страницу, хотя контактную информацию удобнее показывать прямо в меню для быстрого доступа.
+**Контекст:** Пункт "Контакты" сейчас ведёт на отдельную страницу, хотя контактную информацию удобнее показывать прямо в
+меню для быстрого доступа.
 
 ### Цель
 
@@ -29,7 +31,8 @@
 
 ### ✅ Что реализовано:
 
-**Файл:** `apps/web/src/components/app-layout/app-bar/app-bar-left/app-bar-menu-sidebar/app-bar-menu-sidebar/AppBarMenuSidebar.tsx`
+**Файл:**
+`apps/web/src/components/app-layout/app-bar/app-bar-left/app-bar-menu-sidebar/app-bar-menu-sidebar/AppBarMenuSidebar.tsx`
 
 1. **Функциональность:**
    - Выезжающее меню слева
@@ -48,17 +51,17 @@
    ```tsx
    <ul>
      <li>
-       <Link href="/">Главная</Link>
+       <Link href='/'>Главная</Link>
      </li>
      <li>
-       <Link href="/rubrics">Рубрики</Link>
+       <Link href='/rubrics'>Рубрики</Link>
      </li>
      <li>
-       <Link href="/about">О проекте</Link>
+       <Link href='/about'>О проекте</Link>
      </li>
      <li>
-       <Link href="/contacts">Контакты</Link>
-     </li>{" "}
+       <Link href='/contacts'>Контакты</Link>
+     </li>{' '}
      {/* ← Заменить */}
    </ul>
    ```
@@ -71,7 +74,7 @@
 
 ```tsx
 <li>
-  <Link href="/contacts" className="app-bar-menu-sidebar__nav-item">
+  <Link href='/contacts' className='app-bar-menu-sidebar__nav-item'>
     Контакты
   </Link>
 </li>
@@ -115,12 +118,12 @@ apps/web/src/
 **Новый компонент:** `AppBarMenuContacts.tsx`
 
 ```tsx
-"use client";
+'use client';
 
-import React from "react";
-import { SocialLinks } from "@/components/common/social-links";
-import { SOCIAL_LINKS_AUTHOR } from "@/config/socialLinks";
-import "./AppBarMenuContacts.scss";
+import React from 'react';
+import { SocialLinks } from '@/components/common/social-links';
+import { SOCIAL_LINKS_AUTHOR } from '@/config/socialLinks';
+import './AppBarMenuContacts.scss';
 
 /**
  * AppBarMenuContacts - блок контактов в мобильном меню
@@ -130,19 +133,13 @@ import "./AppBarMenuContacts.scss";
  */
 export const AppBarMenuContacts: React.FC = () => {
   return (
-    <div className="app-bar-menu-contacts">
-      <h3 className="app-bar-menu-contacts__title">Контакты</h3>
+    <div className='app-bar-menu-contacts'>
+      <h3 className='app-bar-menu-contacts__title'>Контакты</h3>
 
-      <div className="app-bar-menu-contacts__info">
-        <p className="app-bar-menu-contacts__text">
-          Следите за обновлениями в социальных сетях:
-        </p>
+      <div className='app-bar-menu-contacts__info'>
+        <p className='app-bar-menu-contacts__text'>Следите за обновлениями в социальных сетях:</p>
 
-        <SocialLinks
-          links={SOCIAL_LINKS_AUTHOR}
-          variant="horizontal"
-          size="md"
-        />
+        <SocialLinks links={SOCIAL_LINKS_AUTHOR} variant='horizontal' size='md' />
       </div>
     </div>
   );
@@ -154,8 +151,8 @@ export default AppBarMenuContacts;
 **Стили:** `AppBarMenuContacts.scss`
 
 ```scss
-@import "@/styles/utils/variables";
-@import "@/styles/utils/mixins";
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
 
 .app-bar-menu-contacts {
   margin-top: var(--space-lg);
@@ -186,7 +183,7 @@ export default AppBarMenuContacts;
 }
 
 // Темная тема
-[data-theme="dark"] .app-bar-menu-contacts {
+[data-theme='dark'] .app-bar-menu-contacts {
   border-top-color: rgba(255, 255, 255, 0.05);
 }
 ```
@@ -213,24 +210,24 @@ export default AppBarMenuContacts;
 **Обновить:** `AppBarMenuSidebar.tsx`
 
 ```tsx
-import AppBarMenuContacts from "../app-bar-menu-contacts";
+import AppBarMenuContacts from '../app-bar-menu-contacts';
 
 // ...
 
-<nav className="app-bar-menu-sidebar__nav">
+<nav className='app-bar-menu-sidebar__nav'>
   <ul>
     <li>
-      <Link href="/" className="app-bar-menu-sidebar__nav-item">
+      <Link href='/' className='app-bar-menu-sidebar__nav-item'>
         Главная
       </Link>
     </li>
     <li>
-      <Link href="/rubrics" className="app-bar-menu-sidebar__nav-item">
+      <Link href='/rubrics' className='app-bar-menu-sidebar__nav-item'>
         Рубрики
       </Link>
     </li>
     <li>
-      <Link href="/about" className="app-bar-menu-sidebar__nav-item">
+      <Link href='/about' className='app-bar-menu-sidebar__nav-item'>
         О проекте
       </Link>
     </li>

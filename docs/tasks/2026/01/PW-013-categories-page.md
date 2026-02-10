@@ -13,11 +13,15 @@
 
 ### Описание
 
-Разработать страницу рубрик (`/categories`) — каталог всех категорий проекта. Страница должна отображать все доступные категории в удобном формате с возможностью перехода на страницу каждой категории. В меню нужно обновить ссылку на `/categories` (сейчас может быть `/rubrics`).
+Разработать страницу рубрик (`/categories`) — каталог всех категорий проекта. Страница должна отображать все доступные
+категории в удобном формате с возможностью перехода на страницу каждой категории. В меню нужно обновить ссылку на
+`/categories` (сейчас может быть `/rubrics`).
 
-**Контекст:** Пользователи должны иметь возможность просмотреть все доступные рубрики в одном месте, чтобы быстро найти интересующую категорию и перейти к статьям по ней.
+**Контекст:** Пользователи должны иметь возможность просмотреть все доступные рубрики в одном месте, чтобы быстро найти
+интересующую категорию и перейти к статьям по ней.
 
-**Важно:** Разработка ведётся на фронтенде с использованием mock-данных, так как бекенд API ещё не реализован. Функция `getAllCategories()` уже существует в `lib/mock-api.ts` и будет использована для получения списка категорий.
+**Важно:** Разработка ведётся на фронтенде с использованием mock-данных, так как бекенд API ещё не реализован. Функция
+`getAllCategories()` уже существует в `lib/mock-api.ts` и будет использована для получения списка категорий.
 
 ### Цель
 
@@ -78,7 +82,8 @@
 
 - [ ] Тип `Category` из `packages/types/category.ts` (нужно добавить поле `subtitle?: string`)
 - [x] Функция `getAllCategories()` из `lib/mock-api.ts` (уже существует)
-- [ ] Mock-данные категорий из `lib/mock-data/categories.ts` (нужно обновить: добавить `subtitle`, использовать `description` для полного описания)
+- [ ] Mock-данные категорий из `lib/mock-data/categories.ts` (нужно обновить: добавить `subtitle`, использовать
+      `description` для полного описания)
 - [x] Компонент `AppPageWrapper` (уже существует)
 - [x] Компонент `AppBar` (уже существует)
 - [x] Компонент `AppFooter` (уже существует, содержит иконки соцсетей)
@@ -233,8 +238,8 @@ export default CategoriesPageHeader;
 **Стили:** `CategoriesPageHeader.scss`
 
 ```scss
-@import "@/styles/utils/variables";
-@import "@/styles/utils/mixins";
+@import '@/styles/utils/variables';
+@import '@/styles/utils/mixins';
 
 .categories-page-header {
   text-align: center;
@@ -329,9 +334,9 @@ export default CategoryCard;
 Минималистичный дизайн в стиле `ArticleCard` - без рамок и фона:
 
 ```scss
-@import "@/styles/utils/variables";
-@import "@/styles/utils/breakpoints";
-@import "@/styles/utils/mixins";
+@import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/mixins';
 
 .category-card {
   background: transparent;
@@ -352,7 +357,7 @@ export default CategoryCard;
   }
 
   &__title {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
     font-size: 20px;
     line-height: 1.2;
@@ -365,11 +370,7 @@ export default CategoryCard;
     // Техника: https://nickymeuleman.netlify.app/blog/css-animated-wrapping-underline
     background:
       linear-gradient(to right, transparent, transparent),
-      linear-gradient(
-        to right,
-        var(--masonry-marker-bg),
-        var(--masonry-marker-bg)
-      );
+      linear-gradient(to right, var(--masonry-marker-bg), var(--masonry-marker-bg));
     background-size:
       100% 0.6em,
       0 0.6em; // Толстая линия как у маркера
@@ -397,7 +398,7 @@ export default CategoryCard;
   }
 
   &__subtitle {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: var(--font-weight-subheading);
     font-size: 16px;
     color: var(--masonry-subtitle-color);
@@ -407,11 +408,7 @@ export default CategoryCard;
     // Аналогичное подчёркивание маркером с задержкой
     background:
       linear-gradient(to right, transparent, transparent),
-      linear-gradient(
-        to right,
-        var(--masonry-marker-bg),
-        var(--masonry-marker-bg)
-      );
+      linear-gradient(to right, var(--masonry-marker-bg), var(--masonry-marker-bg));
     background-size:
       100% 1em,
       0 1em; // Чуть меньше чем у заголовка
@@ -434,7 +431,7 @@ export default CategoryCard;
   }
 
   &__description {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 15px;
     line-height: 1.5;
@@ -551,9 +548,9 @@ export default AppCategoriesPage;
 Используем masonry-сетку как на главной странице (аналогично `MasonryGrid`):
 
 ```scss
-@import "@/styles/utils/variables";
-@import "@/styles/utils/breakpoints";
-@import "@/styles/utils/mixins";
+@import '@/styles/utils/variables';
+@import '@/styles/utils/breakpoints';
+@import '@/styles/utils/mixins';
 
 .categories-page {
   &__content {
@@ -599,21 +596,21 @@ export default AppCategoriesPage;
  * Генерирует JSON-LD разметку для страницы категорий
  */
 export function generateCategoriesJsonLd(categories: Category[]) {
-  const baseUrl = "https://profitableweb.ru";
+  const baseUrl = 'https://profitableweb.ru';
 
   return {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "Рубрики",
-    description: "Каталог всех рубрик и категорий статей проекта ProfitableWeb",
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Рубрики',
+    description: 'Каталог всех рубрик и категорий статей проекта ProfitableWeb',
     url: `${baseUrl}/categories`,
     mainEntity: {
-      "@type": "ItemList",
+      '@type': 'ItemList',
       itemListElement: categories.map((category, index) => ({
-        "@type": "ListItem",
+        '@type': 'ListItem',
         position: index + 1,
         item: {
-          "@type": "CollectionPage",
+          '@type': 'CollectionPage',
           name: category.name,
           description: category.description,
           url: `${baseUrl}/${category.slug}`,
@@ -627,22 +624,22 @@ export function generateCategoriesJsonLd(categories: Category[]) {
  * Генерирует JSON-LD разметку BreadcrumbList для страницы категорий
  */
 export function generateCategoriesBreadcrumbJsonLd() {
-  const baseUrl = "https://profitableweb.ru";
+  const baseUrl = 'https://profitableweb.ru';
 
   return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
     itemListElement: [
       {
-        "@type": "ListItem",
+        '@type': 'ListItem',
         position: 1,
-        name: "Главная",
+        name: 'Главная',
         item: baseUrl,
       },
       {
-        "@type": "ListItem",
+        '@type': 'ListItem',
         position: 2,
-        name: "Рубрики",
+        name: 'Рубрики',
         item: `${baseUrl}/rubrics`,
       },
     ],
@@ -750,21 +747,21 @@ export interface Category {
 ```typescript
 export const mockCategories: Category[] = [
   {
-    id: "1",
-    name: "Экономика внимания",
-    slug: "attention-economy",
-    subtitle: "Как привлекать и удерживать внимание аудитории",
+    id: '1',
+    name: 'Экономика внимания',
+    slug: 'attention-economy',
+    subtitle: 'Как привлекать и удерживать внимание аудитории',
     description:
-      "<p>В цифровую эпоху внимание стало самым ценным ресурсом. В этом разделе мы исследуем стратегии привлечения и удержания внимания аудитории через контент, дизайн и технологии.</p>",
+      '<p>В цифровую эпоху внимание стало самым ценным ресурсом. В этом разделе мы исследуем стратегии привлечения и удержания внимания аудитории через контент, дизайн и технологии.</p>',
     articleCount: 5,
   },
   {
-    id: "2",
-    name: "ИИ-автоматизация",
-    slug: "ai-automation",
-    subtitle: "Использование искусственного интеллекта для автоматизации",
+    id: '2',
+    name: 'ИИ-автоматизация',
+    slug: 'ai-automation',
+    subtitle: 'Использование искусственного интеллекта для автоматизации',
     description:
-      "<p>Искусственный интеллект открывает новые возможности для автоматизации рутинных задач. Изучаем практические применения ИИ в различных сферах деятельности.</p>",
+      '<p>Искусственный интеллект открывает новые возможности для автоматизации рутинных задач. Изучаем практические применения ИИ в различных сферах деятельности.</p>',
     articleCount: 3,
   },
   // ...

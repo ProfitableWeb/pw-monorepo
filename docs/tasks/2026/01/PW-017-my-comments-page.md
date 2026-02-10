@@ -2,7 +2,8 @@
 
 ## Обзор
 
-Страница для просмотра и поиска всех комментариев авторизованного пользователя. Открывается через меню пользователя или по прямому пути `/my-comments`.
+Страница для просмотра и поиска всех комментариев авторизованного пользователя. Открывается через меню пользователя или
+по прямому пути `/my-comments`.
 
 ## UX требования
 
@@ -11,6 +12,7 @@
 Когда у пользователя нет комментариев:
 
 **Визуал:**
+
 - Центрированное содержимое по вертикали и горизонтали
 - Иконка комментария (LuMessageSquare или аналогичная)
 - Заголовок "У вас пока нет комментариев"
@@ -18,6 +20,7 @@
 - Кнопка "Перейти к статьям" (ссылка на `/` или `/categories`)
 
 **Стили:**
+
 - Использовать CSS переменные темы
 - Минимальная высота контейнера: 400px (или 60vh)
 - Анимация появления (fade-in + slide-up через Framer Motion)
@@ -25,11 +28,13 @@
 ### 2. Header страницы
 
 **Шапка с информацией:**
+
 - Заголовок H1: "Мои комментарии"
 - Информер с количеством: "Всего комментариев: <badge>42</badge>"
   - Badge с primary цветом, скруглённый, компактный
 
 **Стили:**
+
 - Padding сверху: 80px (как у AuthorPage)
 - Выравнивание по левому краю
 - На мобильных: центрирование
@@ -37,6 +42,7 @@
 ### 3. Поиск
 
 **Функциональность:**
+
 - Инпут поиска с плейсхолдером "Поиск по комментариям..."
 - Фильтрация в реальном времени (debounce: 300ms)
 - Поиск по:
@@ -45,11 +51,13 @@
   - Имени автора статьи
 
 **Интерфейс:**
+
 - Иконка поиска внутри инпута (слева)
 - Кнопка очистки (×) появляется при вводе текста
 - Под инпутом: результат "Найдено: X комментариев"
 
 **Состояния:**
+
 - Empty: "Поиск не дал результатов"
 - Loading: спиннер при загрузке (для реального API)
 
@@ -72,6 +80,7 @@
 ```
 
 **Элементы карточки:**
+
 - Аватар пользователя (28px)
 - Имя пользователя (bold)
 - Время публикации (относительное: "2 часа назад", "вчера")
@@ -81,6 +90,7 @@
 - Кнопка/ссылка "Перейти к обсуждению"
 
 **Стили:**
+
 - Фон карточки: `var(--color-bg-secondary)`
 - Border: 1px solid `var(--color-border)`
 - Border-radius: `var(--radius-xl)`
@@ -89,6 +99,7 @@
 - Gap между карточками: 1.5rem
 
 **Адаптивность:**
+
 - Мобильные (<768px):
   - Аватар: 24px
   - Padding: 1rem
@@ -97,6 +108,7 @@
 ### 5. Пагинация
 
 **Опционально (для большого количества):**
+
 - Кнопка "Загрузить ещё" внизу списка
 - Или infinite scroll
 
@@ -146,7 +158,7 @@ export interface Comment {
   articleSlug: string;
   articleTitle: string;
   content: string;
-  createdAt: string;  // ISO datetime
+  createdAt: string; // ISO datetime
   updatedAt?: string;
 }
 
@@ -165,10 +177,7 @@ export interface CommentSearchParams {
  * @param userId - ID пользователя
  * @param params - Параметры фильтрации и пагинации
  */
-export async function getUserComments(
-  userId: string,
-  params?: CommentSearchParams
-): Promise<Comment[]> {
+export async function getUserComments(userId: string, params?: CommentSearchParams): Promise<Comment[]> {
   // Mock implementation
   // В будущем: API endpoint `/api/users/[userId]/comments`
 }
@@ -181,7 +190,7 @@ export async function getUserComments(
 export const metadata: Metadata = {
   title: 'Мои комментарии',
   description: 'Все ваши комментарии на сайте',
-  robots: 'noindex, nofollow',  // Приватная страница
+  robots: 'noindex, nofollow', // Приватная страница
 };
 ```
 
@@ -197,11 +206,7 @@ export const MyCommentsPage: React.FC<MyCommentsPageProps> = ({ comments }) => {
         <main>
           <MyCommentsPageHeader count={comments.length} />
           <MyCommentsSearch onSearch={handleSearch} />
-          {comments.length === 0 ? (
-            <MyCommentsEmptyState />
-          ) : (
-            <MyCommentsList comments={comments} />
-          )}
+          {comments.length === 0 ? <MyCommentsEmptyState /> : <MyCommentsList comments={comments} />}
         </main>
         <AppFooter />
       </AppPageWrapper>

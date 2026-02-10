@@ -42,7 +42,9 @@ export const AboutPageClient: React.FC = () => {
             sidebar={
               <>
                 <AuthorCard />
-                <ProjectCard onSubscribeClick={() => setIsNewsletterModalOpen(true)} />
+                <ProjectCard
+                  onSubscribeClick={() => setIsNewsletterModalOpen(true)}
+                />
               </>
             }
           >

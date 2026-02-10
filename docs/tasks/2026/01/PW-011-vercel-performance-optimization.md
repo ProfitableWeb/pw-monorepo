@@ -14,9 +14,12 @@
 
 ### Описание
 
-Оптимизировать production производительность проекта ProfitableWeb согласно передовым практикам Vercel React Best Practices (2024-2025). Устранить критические проблемы, которые влияют на bundle size, re-renders, security и SSR performance.
+Оптимизировать production производительность проекта ProfitableWeb согласно передовым практикам Vercel React Best
+Practices (2024-2025). Устранить критические проблемы, которые влияют на bundle size, re-renders, security и SSR
+performance.
 
-**Контекст:** При аудите кодовой базы через призму Vercel performance-правил были выявлены критические проблемы в article layouts, которые негативно влияют на производительность приложения.
+**Контекст:** При аудите кодовой базы через призму Vercel performance-правил были выявлены критические проблемы в
+article layouts, которые негативно влияют на производительность приложения.
 
 ### Цель
 
@@ -38,10 +41,10 @@
 **Проблема:**
 
 ```typescript
-import { ArticleLayoutThreeColumn } from "./ArticleLayoutThreeColumn";
-import { ArticleLayoutTwoColumn } from "./ArticleLayoutTwoColumn";
-import { ArticleLayoutFullWidth } from "./ArticleLayoutFullWidth";
-import { ArticleLayoutOneColumn } from "./ArticleLayoutOneColumn";
+import { ArticleLayoutThreeColumn } from './ArticleLayoutThreeColumn';
+import { ArticleLayoutTwoColumn } from './ArticleLayoutTwoColumn';
+import { ArticleLayoutFullWidth } from './ArticleLayoutFullWidth';
+import { ArticleLayoutOneColumn } from './ArticleLayoutOneColumn';
 ```
 
 - Все 4 layout компонента импортируются синхронно
@@ -599,19 +602,19 @@ $breakpoint-xl: 1600px; // Wide desktop
 ///     }
 ///   }
 @mixin respond-to($breakpoint) {
-  @if $breakpoint == "sm" {
+  @if $breakpoint == 'sm' {
     @media (min-width: $breakpoint-sm) {
       @content;
     }
-  } @else if $breakpoint == "md" {
+  } @else if $breakpoint == 'md' {
     @media (min-width: $breakpoint-md) {
       @content;
     }
-  } @else if $breakpoint == "lg" {
+  } @else if $breakpoint == 'lg' {
     @media (min-width: $breakpoint-lg) {
       @content;
     }
-  } @else if $breakpoint == "xl" {
+  } @else if $breakpoint == 'xl' {
     @media (min-width: $breakpoint-xl) {
       @content;
     }
@@ -631,23 +634,23 @@ $breakpoint-xl: 1600px; // Wide desktop
   $min: null;
   $max: null;
 
-  @if $min-breakpoint == "sm" {
+  @if $min-breakpoint == 'sm' {
     $min: $breakpoint-sm;
-  } @else if $min-breakpoint == "md" {
+  } @else if $min-breakpoint == 'md' {
     $min: $breakpoint-md;
-  } @else if $min-breakpoint == "lg" {
+  } @else if $min-breakpoint == 'lg' {
     $min: $breakpoint-lg;
-  } @else if $min-breakpoint == "xl" {
+  } @else if $min-breakpoint == 'xl' {
     $min: $breakpoint-xl;
   }
 
-  @if $max-breakpoint == "sm" {
+  @if $max-breakpoint == 'sm' {
     $max: $breakpoint-sm - 1;
-  } @else if $max-breakpoint == "md" {
+  } @else if $max-breakpoint == 'md' {
     $max: $breakpoint-md - 1;
-  } @else if $max-breakpoint == "lg" {
+  } @else if $max-breakpoint == 'lg' {
     $max: $breakpoint-lg - 1;
-  } @else if $max-breakpoint == "xl" {
+  } @else if $max-breakpoint == 'xl' {
     $max: $breakpoint-xl - 1;
   }
 
@@ -710,7 +713,7 @@ $breakpoint-xl: 1600px; // Wide desktop
 **После:**
 
 ```scss
-@import "@/styles/breakpoints";
+@import '@/styles/breakpoints';
 
 .article-layout-one-column {
   // Mobile: базовые значения
@@ -721,7 +724,7 @@ $breakpoint-xl: 1600px; // Wide desktop
   }
 
   // Tablet Small (>=640px)
-  @include respond-to("sm") {
+  @include respond-to('sm') {
     padding: 20px 24px 50px;
 
     &__content {
@@ -731,17 +734,17 @@ $breakpoint-xl: 1600px; // Wide desktop
   }
 
   // Tablet (>=900px)
-  @include respond-to("md") {
+  @include respond-to('md') {
     padding: 20px 32px 60px;
   }
 
   // Desktop (>=1200px)
-  @include respond-to("lg") {
+  @include respond-to('lg') {
     padding: 25px 40px 80px;
   }
 
   // Wide Desktop (>=1600px)
-  @include respond-to("xl") {
+  @include respond-to('xl') {
     padding: 25px 48px 100px;
   }
 }
@@ -1047,7 +1050,7 @@ ArticleLayoutOneColumn.displayName = 'ArticleLayoutOneColumn';
 
 ```typescript
 const sanitizedHtml = useMemo(() => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return html; // SSR: skip sanitization
   }
   return DOMPurify.sanitize(html, config);
@@ -1066,11 +1069,11 @@ const sanitizedHtml = useMemo(() => {
 
 ```javascript
 // next.config.js
-const path = require("path");
+const path = require('path');
 
 module.exports = {
   sassOptions: {
-    includePaths: [path.join(__dirname, "src/styles")],
+    includePaths: [path.join(__dirname, 'src/styles')],
     additionalData: `@import '@/styles/breakpoints';`,
   },
 };
@@ -1079,7 +1082,7 @@ module.exports = {
 Или использовать относительные пути:
 
 ```scss
-@import "../../styles/breakpoints";
+@import '../../styles/breakpoints';
 ```
 
 ### 4. Memo: Children Changes
@@ -1122,8 +1125,8 @@ bun add -D @next/bundle-analyzer
 
 ```javascript
 // next.config.js
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
 });
 
 module.exports = withBundleAnalyzer({
@@ -1284,8 +1287,10 @@ ANALYZE=true bun run build
 
 ### 🐛 Исправленные баги:
 
-1. **Hydration mismatch** - санитизация HTML на SSR и client давала разный HTML. Исправлено через `useEffect` для post-hydration sanitization.
-2. **Уродливые SCSS paths** - вместо `@import '../../../../styles/breakpoints'` используется чистый `@import 'breakpoints'` через `includePaths`.
+1. **Hydration mismatch** - санитизация HTML на SSR и client давала разный HTML. Исправлено через `useEffect` для
+   post-hydration sanitization.
+2. **Уродливые SCSS paths** - вместо `@import '../../../../styles/breakpoints'` используется чистый
+   `@import 'breakpoints'` через `includePaths`.
 
 ### 📊 Метрики (ожидаемые):
 

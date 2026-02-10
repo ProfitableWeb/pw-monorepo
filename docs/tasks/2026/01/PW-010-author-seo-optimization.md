@@ -13,9 +13,12 @@
 
 ### Описание
 
-Оптимизировать блок автора статьи под передовые практики SEO (2024-2025), добавить Schema.org разметку `Person`, исправить использование `Organization` вместо `Person` в разметке статей, и создать страницу автора `/author` с полной информацией.
+Оптимизировать блок автора статьи под передовые практики SEO (2024-2025), добавить Schema.org разметку `Person`,
+исправить использование `Organization` вместо `Person` в разметке статей, и создать страницу автора `/author` с полной
+информацией.
 
-**Контекст:** В рамках задачи PW-009 был создан блок автора статьи (`ArticleAuthorBlock`), но он не содержит Schema.org разметки и не соответствует передовым практикам SEO для авторов контента.
+**Контекст:** В рамках задачи PW-009 был создан блок автора статьи (`ArticleAuthorBlock`), но он не содержит Schema.org
+разметки и не соответствует передовым практикам SEO для авторов контента.
 
 ### Цель
 
@@ -160,20 +163,20 @@ apps/web/src/
 
 ```typescript
 const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "@id": "https://profitableweb.ru/author#person",
-  name: "Николай Егоров",
-  jobTitle: "Фуллстек-разработчик и дизайнер",
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://profitableweb.ru/author#person',
+  name: 'Николай Егоров',
+  jobTitle: 'Фуллстек-разработчик и дизайнер',
   description:
-    "Фуллстек-разработчик и дизайнер с опытом более 15 лет. Исследователь агентных систем, AI-автоматизации.",
-  url: "https://profitableweb.ru/author",
-  image: "https://profitableweb.ru/images/author/avatar.jpg", // Когда будет готово
+    'Фуллстек-разработчик и дизайнер с опытом более 15 лет. Исследователь агентных систем, AI-автоматизации.',
+  url: 'https://profitableweb.ru/author',
+  image: 'https://profitableweb.ru/images/author/avatar.jpg', // Когда будет готово
   sameAs: [
-    "https://vk.com/profitableweb.ru",
-    "https://t.me/ProfitableWeb_ru",
-    "https://dzen.ru/profitableWeb_ru",
-    "https://github.com/profitableweb",
+    'https://vk.com/profitableweb.ru',
+    'https://t.me/ProfitableWeb_ru',
+    'https://dzen.ru/profitableWeb_ru',
+    'https://github.com/profitableweb',
   ],
 };
 ```

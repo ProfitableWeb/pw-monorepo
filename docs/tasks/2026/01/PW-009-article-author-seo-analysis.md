@@ -83,19 +83,19 @@
 ```typescript
 // В ArticleAuthorBlock.tsx
 const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "@id": "https://profitableweb.ru/author#person",
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://profitableweb.ru/author#person',
   name: name,
-  jobTitle: "Фуллстек-разработчик и дизайнер",
+  jobTitle: 'Фуллстек-разработчик и дизайнер',
   description: description,
-  url: "https://profitableweb.ru/author",
-  image: "https://profitableweb.ru/images/author/avatar.jpg", // Когда будет готово
+  url: 'https://profitableweb.ru/author',
+  image: 'https://profitableweb.ru/images/author/avatar.jpg', // Когда будет готово
   sameAs: [
-    "https://vk.com/profitableweb.ru",
-    "https://t.me/ProfitableWeb_ru",
-    "https://dzen.ru/profitableWeb_ru",
-    "https://github.com/profitableweb",
+    'https://vk.com/profitableweb.ru',
+    'https://t.me/ProfitableWeb_ru',
+    'https://dzen.ru/profitableWeb_ru',
+    'https://github.com/profitableweb',
   ],
 };
 ```

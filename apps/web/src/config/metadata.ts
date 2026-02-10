@@ -129,12 +129,20 @@ export const metadata: Metadata = {
   verification: verificationTokens,
   icons: {
     icon: [
-      { url: '/imgs/favicon/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
+      {
+        url: '/imgs/favicon/favicon-16x16.svg',
+        sizes: '16x16',
+        type: 'image/svg+xml',
+      },
       { url: '/imgs/favicon/favicon.svg', type: 'image/svg+xml' },
       { url: '/imgs/favicon/favicon.ico', sizes: 'any' },
     ],
     apple: [
-      { url: '/imgs/favicon/apple-touch-icon.svg', sizes: '180x180', type: 'image/svg+xml' },
+      {
+        url: '/imgs/favicon/apple-touch-icon.svg',
+        sizes: '180x180',
+        type: 'image/svg+xml',
+      },
     ],
     other: [
       {

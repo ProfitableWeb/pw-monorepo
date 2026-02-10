@@ -25,9 +25,8 @@ export const MyCommentsPage: React.FC<MyCommentsPageProps> = ({
 }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>(initialComments);
-  const [filteredComments, setFilteredComments] = useState<Comment[]>(
-    initialComments
-  );
+  const [filteredComments, setFilteredComments] =
+    useState<Comment[]>(initialComments);
   const [isSearching, setIsSearching] = useState(false);
 
   // Загружаем комментарии при монтировании (если не переданы initial)

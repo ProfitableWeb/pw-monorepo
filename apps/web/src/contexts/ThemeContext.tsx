@@ -34,10 +34,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Инициализация темы из localStorage
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') as Theme | null;
-    const initialTheme = storedTheme && (storedTheme === 'light' || storedTheme === 'dark') 
-      ? storedTheme 
-      : defaultTheme;
-    
+    const initialTheme =
+      storedTheme && (storedTheme === 'light' || storedTheme === 'dark')
+        ? storedTheme
+        : defaultTheme;
+
     setThemeState(initialTheme);
     document.documentElement.setAttribute('data-theme', initialTheme);
   }, [defaultTheme]);
@@ -60,4 +61,3 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     </ThemeContext.Provider>
   );
 };
-

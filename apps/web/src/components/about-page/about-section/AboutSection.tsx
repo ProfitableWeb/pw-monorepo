@@ -15,9 +15,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   children,
 }) => {
   return (
-    <section id={id} className="about-section">
-      {heading && <h2 className="about-section__heading">{heading}</h2>}
-      <div className="about-section__content">{children}</div>
+    <section id={id} className='about-section'>
+      {heading && <h2 className='about-section__heading'>{heading}</h2>}
+      <div className='about-section__content'>{children}</div>
     </section>
   );
 };

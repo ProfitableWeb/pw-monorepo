@@ -9,9 +9,9 @@ interface WindowSize {
 
 /**
  * Hook для отслеживания размера окна браузера
- * 
+ *
  * @returns Объект с текущими width и height
- * 
+ *
  * @example
  * ```tsx
  * const { width, height } = useWindowSize();
@@ -43,6 +43,3 @@ export function useWindowSize(): WindowSize {
 
   return size;
 }
-
-
-

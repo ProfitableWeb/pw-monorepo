@@ -5,6 +5,7 @@
 ## 📖 Обзор
 
 Вместо хардкод значений и `!important` используем CSS переменные для:
+
 - ✅ Единообразия анимаций
 - ✅ Легкого изменения глобальных таймингов
 - ✅ Автоматической поддержки `prefers-reduced-motion`
@@ -15,12 +16,12 @@
 ### Duration (Длительность)
 
 ```scss
---duration-instant: 0.1s   // Мгновенно
---duration-fast: 0.15s      // Быстро
---duration-normal: 0.2s     // Нормально
---duration-medium: 0.3s     // Средне
---duration-slow: 0.5s       // Медленно
---duration-slower: 0.8s     // Очень медленно
+--duration-instant: 0.1s // Мгновенно
+  --duration-fast: 0.15s // Быстро
+  --duration-normal: 0.2s // Нормально
+  --duration-medium: 0.3s // Средне
+  --duration-slow: 0.5s // Медленно
+  --duration-slower: 0.8s; // Очень медленно
 ```
 
 ### Easing (Плавность)
@@ -37,9 +38,7 @@
 ### Theme Transitions (Переходы темы)
 
 ```scss
---theme-transition-duration: 0.3s
---theme-transition-timing: ease
---theme-transition: 0.3s ease  // Полная строка
+--theme-transition-duration: 0.3s --theme-transition-timing: ease --theme-transition: 0.3s ease; // Полная строка
 ```
 
 ### Component Transitions (Готовые переходы)
@@ -63,9 +62,7 @@
 ### Delays (Задержки)
 
 ```scss
---delay-short: 0.1s
---delay-medium: 0.35s
---delay-long: 0.5s
+--delay-short: 0.1s --delay-medium: 0.35s --delay-long: 0.5s;
 ```
 
 ## 💡 Примеры использования
@@ -89,7 +86,7 @@
 ```scss
 // ❌ Плохо
 .my-card {
-  transition: 
+  transition:
     background-color 0.3s ease,
     color 0.3s ease,
     border-color 0.3s ease,
@@ -98,11 +95,8 @@
 
 // ✅ Хорошо
 .my-card {
-  transition: 
-    var(--transition-background),
-    var(--transition-color),
-    var(--transition-border),
-    var(--transition-transform);
+  transition:
+    var(--transition-background), var(--transition-color), var(--transition-border), var(--transition-transform);
 }
 ```
 
@@ -111,10 +105,10 @@
 ```scss
 .my-element {
   // Transition для цветов темы + hover эффект
-  transition: 
+  transition:
     var(--transition-color),
     opacity var(--transition-hover);
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -127,7 +121,7 @@
 .my-animation {
   // Используем duration переменные
   transition: transform var(--duration-medium) var(--ease-smooth);
-  
+
   &:hover {
     // С задержкой
     transition: transform var(--duration-slow) var(--ease-bounce) var(--delay-short);
@@ -141,7 +135,7 @@
 .article-title {
   // Быстрое исчезновение
   transition: background-size var(--duration-fast) ease-in-out;
-  
+
   &:hover {
     // Плавное появление с задержкой
     transition: background-size var(--duration-medium) ease-in-out var(--delay-medium);
@@ -155,16 +149,13 @@
 
 ```scss
 .button {
-  transition: 
-    var(--transition-background),
-    var(--transition-color),
-    var(--transition-border),
-    var(--transition-transform);
-  
+  transition:
+    var(--transition-background), var(--transition-color), var(--transition-border), var(--transition-transform);
+
   &:hover {
     transform: scale(1.02);
   }
-  
+
   &:active {
     transform: scale(0.98);
   }
@@ -176,10 +167,10 @@
 ```scss
 .card {
   // Переходы темы + shadow для hover
-  transition: 
+  transition:
     var(--transition-theme-all),
     box-shadow var(--duration-normal) var(--ease-smooth);
-  
+
   &:hover {
     box-shadow: var(--shadow-lg);
   }
@@ -191,15 +182,15 @@
 ```scss
 .modal {
   // Быстрое появление
-  transition: 
+  transition:
     opacity var(--duration-fast) var(--ease-smooth),
     transform var(--duration-fast) var(--ease-smooth);
-  
+
   &--entering {
     opacity: 0;
     transform: scale(0.95);
   }
-  
+
   &--entered {
     opacity: 1;
     transform: scale(1);
@@ -213,9 +204,9 @@
 .icon {
   // Автоматические переходы для fill/stroke
   transition: var(--transition-svg);
-  
+
   // Или кастомно
-  transition: 
+  transition:
     fill var(--theme-transition),
     stroke var(--theme-transition),
     transform var(--transition-hover);
@@ -282,9 +273,15 @@ transition: var(--transition-opacity);
 
 ```scss
 // Плохо - дублирование
-.element-1 { transition: color 0.3s ease; }
-.element-2 { transition: color 0.3s ease; }
-.element-3 { transition: color 0.3s ease; }
+.element-1 {
+  transition: color 0.3s ease;
+}
+.element-2 {
+  transition: color 0.3s ease;
+}
+.element-3 {
+  transition: color 0.3s ease;
+}
 
 // Хорошо - переиспользование
 .element-1,
@@ -296,14 +293,14 @@ transition: var(--transition-opacity);
 
 ## 📊 Когда использовать какую длительность
 
-| Duration | Использование | Пример |
-|----------|---------------|---------|
-| `instant` | Мгновенный фидбек | Клик кнопки |
-| `fast` | Быстрые эффекты | Исчезновение подчёркивания |
-| `normal` | Стандартные hover | Opacity, transform |
-| `medium` | Переходы темы | Смена светлая/тёмная |
-| `slow` | Плавные анимации | Появление модалок |
-| `slower` | Декоративные | Специальные эффекты |
+| Duration  | Использование     | Пример                     |
+| --------- | ----------------- | -------------------------- |
+| `instant` | Мгновенный фидбек | Клик кнопки                |
+| `fast`    | Быстрые эффекты   | Исчезновение подчёркивания |
+| `normal`  | Стандартные hover | Opacity, transform         |
+| `medium`  | Переходы темы     | Смена светлая/тёмная       |
+| `slow`    | Плавные анимации  | Появление модалок          |
+| `slower`  | Декоративные      | Специальные эффекты        |
 
 ## 🔄 Миграция старого кода
 
@@ -318,7 +315,7 @@ transition: var(--transition-opacity);
 ```scss
 // Было:
 .old-component {
-  transition: 
+  transition:
     background-color 0.3s ease,
     color 0.3s ease,
     border-color 0.3s ease !important;
@@ -341,5 +338,3 @@ transition: var(--transition-opacity);
 **Создано**: October 2025  
 **Версия**: 1.0  
 **Статус**: Production Ready
-
-

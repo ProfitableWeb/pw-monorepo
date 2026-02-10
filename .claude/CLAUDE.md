@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 ProfitableWeb is a **Turborepo monorepo** with three applications:
+
 - `apps/web` - Next.js 15 frontend (research blog about AI-automated labor transformation)
 - `apps/admin` - Next.js 15 admin panel
 - `apps/api` - FastAPI Python backend
@@ -14,6 +15,7 @@ ProfitableWeb is a **Turborepo monorepo** with three applications:
 ## Common Commands
 
 ### Development
+
 ```bash
 # Run all applications
 bun turbo dev
@@ -25,6 +27,7 @@ bun turbo dev --filter=@profitable-web/api
 ```
 
 ### Build & Quality
+
 ```bash
 bun turbo build          # Build all apps
 bun turbo lint           # Lint all apps
@@ -34,6 +37,7 @@ bun run format           # Format with Prettier
 ```
 
 ### Frontend-specific (apps/web)
+
 ```bash
 bun run dev              # Start Next.js dev server (port 3000)
 bun run build            # Production build
@@ -45,6 +49,7 @@ bun run test:watch       # Watch mode
 ```
 
 ### Backend-specific (apps/api)
+
 ```bash
 cd apps/api
 uv sync                  # Install Python dependencies
@@ -58,6 +63,7 @@ uv run mypy .            # Type check
 ## Architecture
 
 ### Monorepo Structure
+
 - **Turborepo** orchestrates builds with dependency awareness
 - **Bun Workspaces** links packages (e.g., `@profitable-web/types`)
 - Shared types in `packages/types/` used by both frontends
@@ -65,6 +71,7 @@ uv run mypy .            # Type check
 ### Frontend (apps/web)
 
 #### Tech Stack
+
 - Next.js 15 with App Router (React 19)
 - TypeScript (strict mode)
 - SCSS modules (NO UI framework - clean CSS only)
@@ -73,13 +80,16 @@ uv run mypy .            # Type check
 - Framer Motion for animations
 
 #### Routing Architecture
+
 **Single dynamic route** `[slug]/page.tsx` handles multiple content types:
+
 1. Static pages (about, contact, etc.) - handled by Next.js automatically
 2. Categories - checked first via `getCategoryBySlug()`
 3. Articles - checked second via `getArticleBySlug()`
 4. 404 fallback
 
 #### Component Organization
+
 ```
 src/components/
 ├── app-layout/     # Page layouts (ArticlePage, CategoryPage)
@@ -88,17 +98,20 @@ src/components/
 ```
 
 #### CSS Architecture
+
 - **SCSS modules** only - import styles as `import styles from './component.module.scss'`
 - **Theme system**: `styles/themes/{light,dark}/` with separate files for buttons, cards, forms, etc.
 - **Utility mixins**: `styles/utils/` for animations, breakpoints, colors, spacing, typography
 - No Tailwind, no CSS-in-JS
 
 #### State Management
+
 - **Server State**: TanStack React Query
 - **Client State**: Zustand stores
 - **Auth/Theme**: React Context with localStorage persistence
 
 ### Backend (apps/api)
+
 - **FastAPI** with async/await
 - **SQLAlchemy 2.0** with async support
 - **Pydantic** for validation
@@ -107,11 +120,13 @@ src/components/
 
 ## Mock-First Development
 
-The frontend uses mock data for development (`src/lib/mock-api.ts`). API calls return simulated data, allowing frontend work without backend dependency. Real API integration happens later by replacing mock implementations.
+The frontend uses mock data for development (`src/lib/mock-api.ts`). API calls return simulated data, allowing frontend
+work without backend dependency. Real API integration happens later by replacing mock implementations.
 
 ## SEO Architecture
 
 All content pages use unified SEO pattern:
+
 - Dynamic metadata via `generateMetadata()` in page files
 - JSON-LD structured data (Category, Article, Breadcrumb schemas)
 - OpenGraph and Twitter cards
@@ -127,6 +142,7 @@ All content pages use unified SEO pattern:
 ## Git Workflow
 
 **Dual repository hosting**:
+
 - Primary: GitVerse (`origin`)
 - Secondary: GitHub (`github`)
 
@@ -137,6 +153,7 @@ git pushall       # Push to both (custom alias)
 ```
 
 **Commit message format** (REQUIRED):
+
 - Format: `type(PW-XXXX): subject` (на русском языке)
 - Task number `(PW-XXXX)` must exist in `docs/tasks/`
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
@@ -144,6 +161,7 @@ git pushall       # Push to both (custom alias)
 - **НЕ добавлять** `Co-Authored-By:` или другие строки авторства
 
 Examples:
+
 - ✅ `feat(PW-011): рефакторинг и оптимизация`
 - ✅ `fix(PW-016): исправление высоты инпута`
 - ❌ `feat: add component` (missing task number)
@@ -159,7 +177,8 @@ Examples:
 
 ## Content Language
 
-Primary content language is **Russian**. All user-facing text, comments, and documentation should be in Russian unless technical terms require English.
+Primary content language is **Russian**. All user-facing text, comments, and documentation should be in Russian unless
+technical terms require English.
 
 ## Key Files
 

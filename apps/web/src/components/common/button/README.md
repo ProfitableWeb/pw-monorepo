@@ -78,18 +78,21 @@ import { Button } from '@/components/common/button';
 ## Варианты (Variants)
 
 ### outline (по умолчанию)
+
 - Белый/черный фон
 - Граница `var(--color-border)`
 - Hover: изменение фона и границы
 - **Используется**: subscribe buttons, secondary actions
 
 ### solid
+
 - Цветной фон `var(--color-primary)`
 - Белый текст
 - Hover: более темный фон
 - **Используется**: primary actions, CTAs
 
 ### ghost
+
 - Прозрачный фон
 - Без границы
 - Hover: легкий фон
@@ -97,54 +100,43 @@ import { Button } from '@/components/common/button';
 
 ## Размеры (Sizes)
 
-| Size | Padding | Font Size | Когда использовать |
-|------|---------|-----------|-------------------|
-| sm | 8px 16px | 13px | Компактные кнопки |
-| md | 12px 20px | 14px | Стандартные кнопки |
-| lg | 14px 24px | 15px | Важные действия |
+| Size | Padding   | Font Size | Когда использовать |
+| ---- | --------- | --------- | ------------------ |
+| sm   | 8px 16px  | 13px      | Компактные кнопки  |
+| md   | 12px 20px | 14px      | Стандартные кнопки |
+| lg   | 14px 24px | 15px      | Важные действия    |
 
 ## API
 
 ### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| children | ReactNode | - | Содержимое кнопки |
-| variant | 'outline' \| 'solid' \| 'ghost' | 'outline' | Вариант кнопки |
-| size | 'sm' \| 'md' \| 'lg' | 'md' | Размер кнопки |
-| fullWidth | boolean | false | Полная ширина |
-| href | string | - | Ссылка (рендерит `<a>`) |
-| target | '_blank' \| '_self' | - | Открытие ссылки |
-| onClick | () => void | - | Обработчик клика |
-| disabled | boolean | false | Disabled состояние |
-| className | string | '' | Дополнительный класс |
-| type | 'button' \| 'submit' \| 'reset' | 'button' | Тип кнопки |
+| Prop      | Type                            | Default   | Description             |
+| --------- | ------------------------------- | --------- | ----------------------- |
+| children  | ReactNode                       | -         | Содержимое кнопки       |
+| variant   | 'outline' \| 'solid' \| 'ghost' | 'outline' | Вариант кнопки          |
+| size      | 'sm' \| 'md' \| 'lg'            | 'md'      | Размер кнопки           |
+| fullWidth | boolean                         | false     | Полная ширина           |
+| href      | string                          | -         | Ссылка (рендерит `<a>`) |
+| target    | '\_blank' \| '\_self'           | -         | Открытие ссылки         |
+| onClick   | () => void                      | -         | Обработчик клика        |
+| disabled  | boolean                         | false     | Disabled состояние      |
+| className | string                          | ''        | Дополнительный класс    |
+| type      | 'button' \| 'submit' \| 'reset' | 'button'  | Тип кнопки              |
 
 ## Примеры из проекта
 
 ### AuthorCard - "Подписаться на PW"
 
 ```tsx
-<Button
-  href={subscribeLink}
-  variant="outline"
-  size="md"
-  fullWidth
-  target="_blank"
->
-  Подписаться на <span className="author-card__subscribe-btn-accent">PW</span>
+<Button href={subscribeLink} variant='outline' size='md' fullWidth target='_blank'>
+  Подписаться на <span className='author-card__subscribe-btn-accent'>PW</span>
 </Button>
 ```
 
 ### NewsletterForm - Submit button
 
 ```tsx
-<Button
-  type="submit"
-  variant="solid"
-  fullWidth
-  disabled={isLoading}
->
+<Button type='submit' variant='solid' fullWidth disabled={isLoading}>
   {isLoading ? 'Отправка...' : 'Подписаться'}
 </Button>
 ```
@@ -156,9 +148,7 @@ import { Button } from '@/components/common/button';
 Можно добавить дополнительные классы через prop `className`:
 
 ```tsx
-<Button className="my-custom-button">
-  Кнопка
-</Button>
+<Button className='my-custom-button'>Кнопка</Button>
 ```
 
 ### Акцентные элементы внутри

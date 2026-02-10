@@ -20,7 +20,11 @@ const AppBarLeft: React.FC<AppBarLeftProps> = ({ onMenuClick }) => {
 
   return (
     <div className='app-bar__left'>
-      <Link href='/' className='app-bar__logo-link' aria-label='Перейти на главную страницу'>
+      <Link
+        href='/'
+        className='app-bar__logo-link'
+        aria-label='Перейти на главную страницу'
+      >
         <Logo size='md' />
       </Link>
       <AppBarMenu isOpen={isMenuOpen} onMenuClick={handleMenuClick} />

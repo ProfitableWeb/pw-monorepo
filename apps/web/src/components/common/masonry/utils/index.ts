@@ -1,4 +1,1 @@
 export { distributeArticles } from './distribution';
-
-
-

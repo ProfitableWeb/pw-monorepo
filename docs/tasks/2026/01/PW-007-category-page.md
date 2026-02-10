@@ -13,9 +13,14 @@
 
 ### Описание
 
-Разработать страницу категории на основе главной страницы и реализовать единую маршрутизацию `/[slug]` для категорий и статей. Страница категории должна быть практически идентична главной, но с упрощенной шапкой (заголовок, подзаголовок и описание вместо сложной hero-секции). Статьи также должны использовать короткие URL на первом уровне вместо `/articles/[slug]`.
+Разработать страницу категории на основе главной страницы и реализовать единую маршрутизацию `/[slug]` для категорий и
+статей. Страница категории должна быть практически идентична главной, но с упрощенной шапкой (заголовок, подзаголовок и
+описание вместо сложной hero-секции). Статьи также должны использовать короткие URL на первом уровне вместо
+`/articles/[slug]`.
 
-**Важно:** Разработка ведётся на фронтенде с использованием mock-данных, так как бекенд API ещё не реализован. Все функции получения данных (`getCategoryBySlug`, `getArticlesByCategory`, `getArticleBySlug`) должны быть реализованы с mock-данными, которые в будущем будут заменены на реальные API-вызовы.
+**Важно:** Разработка ведётся на фронтенде с использованием mock-данных, так как бекенд API ещё не реализован. Все
+функции получения данных (`getCategoryBySlug`, `getArticlesByCategory`, `getArticleBySlug`) должны быть реализованы с
+mock-данными, которые в будущем будут заменены на реальные API-вызовы.
 
 ### Цель
 
@@ -341,61 +346,56 @@ interface Category {
 **1. Категории** — создать `apps/web/src/lib/mock-data/categories.ts`:
 
 ```typescript
-import { Category } from "@/types";
+import { Category } from '@/types';
 
 export const mockCategories: Category[] = [
   {
-    id: "1",
-    name: "Экономика внимания",
-    slug: "attention-economy",
-    description:
-      "Как привлекать и удерживать внимание аудитории в цифровую эпоху",
+    id: '1',
+    name: 'Экономика внимания',
+    slug: 'attention-economy',
+    description: 'Как привлекать и удерживать внимание аудитории в цифровую эпоху',
     articleCount: 5,
   },
   {
-    id: "2",
-    name: "ИИ-автоматизация",
-    slug: "ai-automation",
-    description:
-      "Использование искусственного интеллекта для автоматизации рутинных задач",
+    id: '2',
+    name: 'ИИ-автоматизация',
+    slug: 'ai-automation',
+    description: 'Использование искусственного интеллекта для автоматизации рутинных задач',
     articleCount: 3,
   },
   {
-    id: "3",
-    name: "UI/UX дизайн",
-    slug: "ui-ux-design",
-    description: "Принципы создания удобных и красивых интерфейсов",
+    id: '3',
+    name: 'UI/UX дизайн',
+    slug: 'ui-ux-design',
+    description: 'Принципы создания удобных и красивых интерфейсов',
     articleCount: 4,
   },
   // ... другие категории из FeatureCategoryBlock
 ];
 ```
 
-**2. Статьи** — использовать существующие `mockArticles` из `apps/web/src/components/common/masonry/data.ts`, добавив поле `category` (slug категории) для связи.
+**2. Статьи** — использовать существующие `mockArticles` из `apps/web/src/components/common/masonry/data.ts`, добавив
+поле `category` (slug категории) для связи.
 
 **3. Mock-функции** — создать `apps/web/src/lib/mock-api.ts`:
 
 ```typescript
-import { Category, Article } from "@/types";
-import { mockCategories } from "./mock-data/categories";
-import { mockArticles } from "@/components/common/masonry/data";
+import { Category, Article } from '@/types';
+import { mockCategories } from './mock-data/categories';
+import { mockArticles } from '@/components/common/masonry/data';
 
-export async function getCategoryBySlug(
-  slug: string,
-): Promise<Category | null> {
-  return mockCategories.find((c) => c.slug === slug) || null;
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  return mockCategories.find(c => c.slug === slug) || null;
 }
 
-export async function getArticlesByCategory(
-  categoryId: string,
-): Promise<Article[]> {
-  const category = mockCategories.find((c) => c.id === categoryId);
+export async function getArticlesByCategory(categoryId: string): Promise<Article[]> {
+  const category = mockCategories.find(c => c.id === categoryId);
   if (!category) return [];
-  return mockArticles.filter((a) => a.category === category.slug);
+  return mockArticles.filter(a => a.category === category.slug);
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  return mockArticles.find((a) => a.slug === slug) || null;
+  return mockArticles.find(a => a.slug === slug) || null;
 }
 ```
 
@@ -440,18 +440,18 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
 ```typescript
 const categoryJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
   name: category.name,
   description: category.description,
   url: `${baseUrl}/${category.slug}`,
   mainEntity: {
-    "@type": "ItemList",
+    '@type': 'ItemList',
     itemListElement: articles.map((article, index) => ({
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: index + 1,
       item: {
-        "@type": "BlogPosting",
+        '@type': 'BlogPosting',
         headline: article.title,
         url: `${baseUrl}/${article.slug}`,
       },
@@ -464,15 +464,15 @@ const categoryJsonLd = {
 
 ```typescript
 const articleJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
   headline: article.title,
   description: article.excerpt,
   datePublished: article.publishedAt.toISOString(), // ISO 8601 формат
   url: `${baseUrl}/${article.slug}`, // БЕЗ /articles/
   author: {
-    "@type": "Organization",
-    name: "ProfitableWeb",
+    '@type': 'Organization',
+    name: 'ProfitableWeb',
   },
   // ... остальные поля из существующей функции generateArticleJsonLd
 };
@@ -483,17 +483,17 @@ const articleJsonLd = {
 ```typescript
 // Для категории
 const categoryBreadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
   itemListElement: [
     {
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: 1,
-      name: "Главная",
+      name: 'Главная',
       item: baseUrl,
     },
     {
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: 2,
       name: category.name,
       item: `${baseUrl}/${category.slug}`,
@@ -503,23 +503,23 @@ const categoryBreadcrumbJsonLd = {
 
 // Для статьи (с категорией)
 const articleBreadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
   itemListElement: [
     {
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: 1,
-      name: "Главная",
+      name: 'Главная',
       item: baseUrl,
     },
     {
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: 2,
       name: article.category, // название категории
       item: `${baseUrl}/${article.category}`, // slug категории
     },
     {
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: 3,
       name: article.title,
       item: `${baseUrl}/${article.slug}`,
@@ -539,7 +539,8 @@ const articleBreadcrumbJsonLd = {
 3. **На уровне API:** Валидация slug перед сохранением
 4. **Документация:** Четко указать в документации, что slug должны быть уникальными
 
-**Рекомендация:** Использовать префиксы или суффиксы для категорий (например, `cat-programming`), но это ухудшит SEO. Лучше - строгая валидация уникальности.
+**Рекомендация:** Использовать префиксы или суффиксы для категорий (например, `cat-programming`), но это ухудшит SEO.
+Лучше - строгая валидация уникальности.
 
 ## ✅ Чеклист выполнения
 
@@ -641,8 +642,11 @@ const articleBreadcrumbJsonLd = {
 
 ### Особенности реализации
 
-- **Единая маршрутизация**: Используется динамический роут `[slug]` на первом уровне для категорий И статей. Это позволяет иметь короткие URL типа `/programming` (категория) и `/react-tips` (статья) вместо `/category/programming` и `/articles/react-tips`.
-- **Разрешение конфликтов**: Реализована приоритетная проверка - сначала проверяется категория, затем статья. Если slug совпадает, приоритет у категории. **Важно:** Необходимо гарантировать уникальность slug на уровне БД/валидации.
+- **Единая маршрутизация**: Используется динамический роут `[slug]` на первом уровне для категорий И статей. Это
+  позволяет иметь короткие URL типа `/programming` (категория) и `/react-tips` (статья) вместо `/category/programming` и
+  `/articles/react-tips`.
+- **Разрешение конфликтов**: Реализована приоритетная проверка - сначала проверяется категория, затем статья. Если slug
+  совпадает, приоритет у категории. **Важно:** Необходимо гарантировать уникальность slug на уровне БД/валидации.
 - **Переиспользование**: Максимальное переиспользование компонентов главной страницы для консистентности UI/UX.
 - **SEO**:
   - Шапка категории содержит семантический H1 с названием категории
@@ -650,14 +654,20 @@ const articleBreadcrumbJsonLd = {
   - Schema.org разметка `BlogPosting` для статей
   - Breadcrumbs для улучшения навигации и SEO
   - Короткие URL с ключевыми словами ближе к домену
-- **Обновление ссылок**: Все существующие ссылки на статьи (`/articles/[slug]`) должны быть обновлены на `/[slug]` в компонентах `ArticleCard`, `MasonryGrid`, `utils/seo.ts`.
+- **Обновление ссылок**: Все существующие ссылки на статьи (`/articles/[slug]`) должны быть обновлены на `/[slug]` в
+  компонентах `ArticleCard`, `MasonryGrid`, `utils/seo.ts`.
 
 ### Возможные риски
 
-- ⚠️ **Конфликты slug**: Если категория и статья имеют одинаковый slug, приоритет у категории. Необходима строгая валидация уникальности на уровне БД/API.
-- ⚠️ **Статические страницы**: Нужно убедиться, что slug категорий и статей не конфликтуют со статическими страницами (`/about`, `/contact`, etc.). Next.js автоматически обработает статические роуты, но лучше вести список зарезервированных slug.
-- ⚠️ **Масштабируемость**: Если в будущем появятся другие типы контента на первом уровне (теги, авторы), может потребоваться middleware для разрешения маршрутов или пересмотр архитектуры.
-- ⚠️ **Миграция**: Если уже есть статьи с маршрутами `/articles/[slug]`, нужно настроить редиректы (301) на новые URL для сохранения SEO.
+- ⚠️ **Конфликты slug**: Если категория и статья имеют одинаковый slug, приоритет у категории. Необходима строгая
+  валидация уникальности на уровне БД/API.
+- ⚠️ **Статические страницы**: Нужно убедиться, что slug категорий и статей не конфликтуют со статическими страницами
+  (`/about`, `/contact`, etc.). Next.js автоматически обработает статические роуты, но лучше вести список
+  зарезервированных slug.
+- ⚠️ **Масштабируемость**: Если в будущем появятся другие типы контента на первом уровне (теги, авторы), может
+  потребоваться middleware для разрешения маршрутов или пересмотр архитектуры.
+- ⚠️ **Миграция**: Если уже есть статьи с маршрутами `/articles/[slug]`, нужно настроить редиректы (301) на новые URL
+  для сохранения SEO.
 - ⚠️ **Обратная совместимость**: Если есть внешние ссылки на старые URL (`/articles/[slug]`), нужно настроить редиректы.
 
 ### Рекомендации

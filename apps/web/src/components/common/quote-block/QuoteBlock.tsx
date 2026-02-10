@@ -9,11 +9,15 @@ interface QuoteBlockProps {
   children?: React.ReactNode;
 }
 
-export const QuoteBlock: React.FC<QuoteBlockProps> = ({ title, text, children }) => {
+export const QuoteBlock: React.FC<QuoteBlockProps> = ({
+  title,
+  text,
+  children,
+}) => {
   return (
-    <div className="quote-block">
-      {title && <h4 className="quote-block__title">{title}</h4>}
-      {text && <p className="quote-block__text">{text}</p>}
+    <div className='quote-block'>
+      {title && <h4 className='quote-block__title'>{title}</h4>}
+      {text && <p className='quote-block__text'>{text}</p>}
       {children}
     </div>
   );

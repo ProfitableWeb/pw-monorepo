@@ -21,11 +21,15 @@ body {
   font-weight: var(--font-weight-body);
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: var(--font-weight-heading);
 }
 
-h4, h5, h6 {
+h4,
+h5,
+h6 {
   font-weight: var(--font-weight-subheading);
 }
 
@@ -67,11 +71,11 @@ button {
 Мы компенсируем это, используя **на ~50-70 единиц меньший font-weight** в тёмной теме:
 
 | Переменная | Светлая | Тёмная | Разница |
-|-----------|---------|--------|---------|
-| normal    | 400     | 350    | -50     |
-| medium    | 500     | 450    | -50     |
-| semibold  | 600     | 550    | -50     |
-| bold      | 700     | 650    | -50     |
+| ---------- | ------- | ------ | ------- |
+| normal     | 400     | 350    | -50     |
+| medium     | 500     | 450    | -50     |
+| semibold   | 600     | 550    | -50     |
+| bold       | 700     | 650    | -50     |
 
 Результат: **визуально одинаковая толщина** в обеих темах!
 
@@ -111,15 +115,15 @@ button {
 ```scss
 .article-card {
   &__title {
-    font-weight: var(--font-weight-heading);  // 700 / 650
+    font-weight: var(--font-weight-heading); // 700 / 650
   }
 
   &__subtitle {
-    font-weight: var(--font-weight-medium);   // 500 / 450
+    font-weight: var(--font-weight-medium); // 500 / 450
   }
 
   &__date {
-    font-weight: var(--font-weight-body);     // 400 / 350
+    font-weight: var(--font-weight-body); // 400 / 350
   }
 }
 ```
@@ -128,10 +132,10 @@ button {
 
 ```scss
 .button {
-  font-weight: var(--font-weight-button);  // 500 / 450
-  
+  font-weight: var(--font-weight-button); // 500 / 450
+
   &--bold {
-    font-weight: var(--font-weight-semibold);  // 600 / 550
+    font-weight: var(--font-weight-semibold); // 600 / 550
   }
 }
 ```
@@ -171,5 +175,3 @@ button {
 
 **Создано**: October 2025  
 **Версия**: 1.0
-
-

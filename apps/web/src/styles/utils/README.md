@@ -21,6 +21,7 @@ utils/
 ### `_animations.scss`
 
 Централизованная система управления анимациями:
+
 - Duration переменные (`--duration-fast`, `--duration-medium`, etc.)
 - Easing функции (`--ease-smooth`, `--ease-bounce`, etc.)
 - Готовые transitions (`--transition-background`, `--transition-color`, etc.)
@@ -33,6 +34,7 @@ utils/
 ### `_breakpoints.scss`
 
 Responsive design система:
+
 - Миксины для медиа-запросов (`@include sm`, `@include md`, etc.)
 - Breakpoint константы
 - Утилиты для адаптивности
@@ -42,6 +44,7 @@ Responsive design система:
 ### `_mixins.scss`
 
 Переиспользуемые SCSS миксины:
+
 - Flexbox утилиты
 - Button resets
 - Truncate text
@@ -52,6 +55,7 @@ Responsive design система:
 ### `_text-decorations.scss`
 
 Специальные эффекты для текста:
+
 - Gradient подчёркивания
 - Hover эффекты
 - Маркерные highlight'ы
@@ -61,6 +65,7 @@ Responsive design система:
 ### `_variables.scss`
 
 Глобальные константы и переменные:
+
 - Z-index значения
 - Размеры
 - Legacy font-weights (deprecated, используйте theme variables)
@@ -82,7 +87,7 @@ Responsive design система:
 
 .my-component {
   @include flex-center;
-  
+
   @include md {
     flex-direction: column;
   }
@@ -95,7 +100,7 @@ Responsive design система:
 .my-element {
   // Анимационные переменные доступны глобально
   transition: var(--transition-background);
-  
+
   // Breakpoints через миксины
   @include lg {
     padding: var(--space-xl);
@@ -120,17 +125,19 @@ Responsive design система:
 ## 📝 Порядок импорта
 
 В `globals.scss`:
+
 ```scss
 // 1. Темы (содержат переменные)
-@import "./themes/light/index";
-@import "./themes/dark/index";
+@import './themes/light/index';
+@import './themes/dark/index';
 
 // 2. Утилиты (используют переменные тем)
-@import "./utils/animations";
-@import "./utils/text-decorations";
+@import './utils/animations';
+@import './utils/text-decorations';
 ```
 
 В компонентах:
+
 ```scss
 // 1. Утилиты
 @import '@/styles/utils/variables';
@@ -146,5 +153,3 @@ Responsive design система:
 ---
 
 **Обновлено**: October 2025
-
-

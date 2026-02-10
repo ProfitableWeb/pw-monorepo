@@ -14,7 +14,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 
   useEffect(() => {
     const container = document.querySelector('.main-layout');
-    
+
     const handleScroll = () => {
       const scrollTop = container ? container.scrollTop : window.scrollY;
       setIsScrolled(scrollTop > 0);
