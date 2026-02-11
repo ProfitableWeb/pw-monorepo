@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { cn } from "@/app/components/ui/utils";
-import { useTheme } from "@/app/components/theme-provider";
-import { Button } from "@/app/components/ui/button";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { IconButton } from "@/app/components/icons";
-import { useAuthStore } from "@/app/store/auth-store";
-import { PwLogo } from "@/app/components/pw-logo";
+import { useState } from 'react';
+import { cn } from '@/app/components/ui/utils';
+import { useTheme } from '@/app/components/theme-provider';
+import { Button } from '@/app/components/ui/button';
+import { ScrollArea } from '@/app/components/ui/scroll-area';
+import { IconButton } from '@/app/components/icons';
+import { useAuthStore } from '@/app/store/auth-store';
+import { PwLogo } from '@/app/components/pw-logo';
 import {
   LayoutDashboard,
   FileText,
@@ -28,7 +28,7 @@ import {
   SearchCheck,
   PanelLeftClose,
   LogOut,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -43,40 +43,88 @@ interface NavSection {
 
 const navSections: NavSection[] = [
   {
-    title: "Главное",
+    title: 'Главное',
     items: [
-      { id: "dashboard", title: "Дашборд", icon: <LayoutDashboard className="h-5 w-5" /> },
-      { id: "ai-center", title: "AI центр", icon: <Sparkles className="h-5 w-5" /> },
+      {
+        id: 'dashboard',
+        title: 'Дашборд',
+        icon: <LayoutDashboard className='h-5 w-5' />,
+      },
+      {
+        id: 'ai-center',
+        title: 'AI центр',
+        icon: <Sparkles className='h-5 w-5' />,
+      },
     ],
   },
   {
-    title: "Контент",
+    title: 'Контент',
     items: [
-      { id: "articles", title: "Статьи", icon: <FileText className="h-5 w-5" /> },
-      { id: "calendar", title: "Календарь", icon: <Calendar className="h-5 w-5" /> },
-      { id: "categories", title: "Категории", icon: <FolderOpen className="h-5 w-5" /> },
-      { id: "tags", title: "Метки", icon: <Tag className="h-5 w-5" /> },
-      { id: "media", title: "Медиа", icon: <Image className="h-5 w-5" /> },
+      {
+        id: 'articles',
+        title: 'Статьи',
+        icon: <FileText className='h-5 w-5' />,
+      },
+      {
+        id: 'calendar',
+        title: 'Календарь',
+        icon: <Calendar className='h-5 w-5' />,
+      },
+      {
+        id: 'categories',
+        title: 'Категории',
+        icon: <FolderOpen className='h-5 w-5' />,
+      },
+      { id: 'tags', title: 'Метки', icon: <Tag className='h-5 w-5' /> },
+      { id: 'media', title: 'Медиа', icon: <Image className='h-5 w-5' /> },
     ],
   },
   {
-    title: "Редакция",
+    title: 'Редакция',
     items: [
-      { id: "manifest", title: "Манифест", icon: <BookOpen className="h-5 w-5" /> },
-      { id: "style", title: "Стиль", icon: <Palette className="h-5 w-5" /> },
-      { id: "formats", title: "Форматы", icon: <FileType className="h-5 w-5" /> },
-      { id: "socials", title: "Соцсети", icon: <Share2 className="h-5 w-5" /> },
+      {
+        id: 'manifest',
+        title: 'Манифест',
+        icon: <BookOpen className='h-5 w-5' />,
+      },
+      { id: 'style', title: 'Стиль', icon: <Palette className='h-5 w-5' /> },
+      {
+        id: 'formats',
+        title: 'Форматы',
+        icon: <FileType className='h-5 w-5' />,
+      },
+      { id: 'socials', title: 'Соцсети', icon: <Share2 className='h-5 w-5' /> },
     ],
   },
   {
-    title: "Система",
+    title: 'Система',
     items: [
-      { id: "settings", title: "Настройки", icon: <Settings className="h-5 w-5" /> },
-      { id: "users", title: "Пользователи", icon: <Users className="h-5 w-5" /> },
-      { id: "promotion", title: "Продвижение", icon: <TrendingUp className="h-5 w-5" /> },
-      { id: "analytics", title: "Аналитика", icon: <BarChart className="h-5 w-5" /> },
-      { id: "ads", title: "Реклама", icon: <LayoutPanelTop className="h-5 w-5" /> },
-      { id: "seo", title: "SEO", icon: <SearchCheck className="h-5 w-5" /> },
+      {
+        id: 'settings',
+        title: 'Настройки',
+        icon: <Settings className='h-5 w-5' />,
+      },
+      {
+        id: 'users',
+        title: 'Пользователи',
+        icon: <Users className='h-5 w-5' />,
+      },
+      {
+        id: 'promotion',
+        title: 'Продвижение',
+        icon: <TrendingUp className='h-5 w-5' />,
+      },
+      {
+        id: 'analytics',
+        title: 'Аналитика',
+        icon: <BarChart className='h-5 w-5' />,
+      },
+      {
+        id: 'ads',
+        title: 'Реклама',
+        icon: <LayoutPanelTop className='h-5 w-5' />,
+      },
+      { id: 'seo', title: 'SEO', icon: <SearchCheck className='h-5 w-5' /> },
     ],
   },
 ];
@@ -88,55 +136,57 @@ interface SidebarNavProps {
   onToggleSidebar?: () => void;
 }
 
-export function SidebarNav({ activeSection, onSectionChange, collapsed = false, onToggleSidebar }: SidebarNavProps) {
+export function SidebarNav({
+  activeSection,
+  onSectionChange,
+  collapsed = false,
+  onToggleSidebar,
+}: SidebarNavProps) {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuthStore();
 
   return (
-    <div className="flex h-full flex-col border-r bg-card">
-      <div className={cn(
-        "flex h-14 items-center transition-all duration-300 flex-shrink-0",
-        collapsed ? "justify-center px-2" : "justify-between px-4"
-      )}>
-        <div className="flex items-center gap-2">
-          <PwLogo size={collapsed ? "sm" : "md"} accentClass="fill-[#5ADC5A]" />
-          <h2 className={cn(
-            "text-lg font-bold transition-all duration-300",
-            collapsed ? "opacity-0 w-0 overflow-hidden" : ""
-          )}>ProfitableWeb</h2>
+    <div className='flex h-full flex-col border-r bg-card'>
+      <div
+        className={cn(
+          'flex h-14 items-center transition-all duration-300 flex-shrink-0',
+          collapsed ? 'justify-center px-2' : 'justify-between px-4'
+        )}
+      >
+        <div className='flex items-center'>
+          <PwLogo size={collapsed ? 'md' : 'lg'} accentClass='fill-[#5ADC5A]' />
         </div>
         {!collapsed && onToggleSidebar && (
-          <IconButton 
-            onClick={onToggleSidebar}
-            size="sm"
-          >
-            <PanelLeftClose className="h-5 w-5" />
+          <IconButton onClick={onToggleSidebar} size='sm'>
+            <PanelLeftClose className='h-5 w-5' />
           </IconButton>
         )}
       </div>
-      <ScrollArea className="flex-1 min-h-0 border-t">
-        <nav className={cn(
-          "space-y-6 transition-all duration-300",
-          collapsed ? "p-2" : "p-4"
-        )}>
-          {navSections.map((section) => (
+      <ScrollArea className='flex-1 min-h-0 border-t'>
+        <nav
+          className={cn(
+            'space-y-6 transition-all duration-300',
+            collapsed ? 'p-2' : 'p-4'
+          )}
+        >
+          {navSections.map(section => (
             <div key={section.title}>
               {!collapsed && (
-                <h3 className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted-foreground/60">
+                <h3 className='mb-2 px-3 text-xs font-semibold tracking-wide text-muted-foreground/60'>
                   {section.title}
                 </h3>
               )}
-              <div className="space-y-1">
-                {section.items.map((item) => (
+              <div className='space-y-1'>
+                {section.items.map(item => (
                   <button
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-lg text-sm transition-colors",
-                      collapsed ? "justify-center px-3 py-3" : "px-3 py-2",
+                      'flex w-full items-center gap-3 rounded-lg text-sm transition-colors',
+                      collapsed ? 'justify-center px-3 py-3' : 'px-3 py-2',
                       activeSection === item.id
-                        ? "bg-accent/50 text-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        ? 'bg-accent/50 text-foreground'
+                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     )}
                     title={collapsed ? item.title : undefined}
                   >
@@ -149,69 +199,85 @@ export function SidebarNav({ activeSection, onSectionChange, collapsed = false, 
           ))}
         </nav>
       </ScrollArea>
-      <div className={cn(
-        "border-t transition-all duration-300 flex-shrink-0",
-        collapsed ? "p-2" : "p-4"
-      )}>
-        <div className={cn(
-          "flex items-center gap-3",
-          collapsed ? "justify-center px-0" : "justify-between px-3 py-2"
-        )}>
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium">
-                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+      <div
+        className={cn(
+          'border-t transition-all duration-300 flex-shrink-0',
+          collapsed ? 'p-2' : 'p-4'
+        )}
+      >
+        <div
+          className={cn(
+            'flex items-center gap-3',
+            collapsed ? 'justify-center px-0' : 'justify-between px-3 py-2'
+          )}
+        >
+          <div className='flex items-center gap-3'>
+            <div className='h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0'>
+              <span className='text-sm font-medium'>
+                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
             {!collapsed && (
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{user?.name || "Пользователь"}</span>
-                <span className="text-xs text-muted-foreground capitalize">{user?.role || "admin"}</span>
+              <div className='flex flex-col'>
+                <span className='text-sm font-medium'>
+                  {user?.name || 'Пользователь'}
+                </span>
+                <span className='text-xs text-muted-foreground capitalize'>
+                  {user?.role || 'admin'}
+                </span>
               </div>
             )}
           </div>
           {!collapsed && (
-            <div className="flex items-center gap-1">
+            <div className='flex items-center gap-1'>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
               >
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === 'dark' ? (
+                  <Sun className='h-4 w-4' />
+                ) : (
+                  <Moon className='h-4 w-4' />
+                )}
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-muted-foreground hover:text-destructive'
                 onClick={logout}
-                title="Выйти"
+                title='Выйти'
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className='h-4 w-4' />
               </Button>
             </div>
           )}
         </div>
         {collapsed && (
-          <div className="flex flex-col items-center gap-1 mt-2">
+          <div className='flex flex-col items-center gap-1 mt-2'>
             <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
             >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === 'dark' ? (
+                <Sun className='h-4 w-4' />
+              ) : (
+                <Moon className='h-4 w-4' />
+              )}
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8 text-muted-foreground hover:text-destructive'
               onClick={logout}
-              title="Выйти"
+              title='Выйти'
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className='h-4 w-4' />
             </Button>
           </div>
         )}
