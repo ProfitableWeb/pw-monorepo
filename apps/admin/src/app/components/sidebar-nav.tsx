@@ -4,6 +4,8 @@ import { useTheme } from "@/app/components/theme-provider";
 import { Button } from "@/app/components/ui/button";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { IconButton } from "@/app/components/icons";
+import { useAuthStore } from "@/app/store/auth-store";
+import { PwLogo } from "@/app/components/pw-logo";
 import {
   LayoutDashboard,
   FileText,
@@ -25,6 +27,7 @@ import {
   LayoutPanelTop,
   SearchCheck,
   PanelLeftClose,
+  LogOut,
 } from "lucide-react";
 
 interface NavItem {
@@ -87,6 +90,7 @@ interface SidebarNavProps {
 
 export function SidebarNav({ activeSection, onSectionChange, collapsed = false, onToggleSidebar }: SidebarNavProps) {
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuthStore();
 
   return (
     <div className="flex h-full flex-col border-r bg-card">
@@ -95,13 +99,11 @@ export function SidebarNav({ activeSection, onSectionChange, collapsed = false, 
         collapsed ? "justify-center px-2" : "justify-between px-4"
       )}>
         <div className="flex items-center gap-2">
+          <PwLogo size={collapsed ? "sm" : "md"} accentClass="fill-[#5ADC5A]" />
           <h2 className={cn(
             "text-lg font-bold transition-all duration-300",
-            collapsed ? "opacity-0 w-0 overflow-hidden" : "pl-2"
-          )}>BlogDash</h2>
-          {collapsed && (
-            <span className="text-lg font-bold -ml-[3px]">BD</span>
-          )}
+            collapsed ? "opacity-0 w-0 overflow-hidden" : ""
+          )}>ProfitableWeb</h2>
         </div>
         {!collapsed && onToggleSidebar && (
           <IconButton 
@@ -157,25 +159,62 @@ export function SidebarNav({ activeSection, onSectionChange, collapsed = false, 
         )}>
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium">Н</span>
+              <span className="text-sm font-medium">
+                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+              </span>
             </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <span className="text-sm font-medium">Николай</span>
-                <span className="text-xs text-muted-foreground">Админ</span>
+                <span className="text-sm font-medium">{user?.name || "Пользователь"}</span>
+                <span className="text-xs text-muted-foreground capitalize">{user?.role || "admin"}</span>
               </div>
             )}
           </div>
           {!collapsed && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={logout}
+                title="Выйти"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           )}
         </div>
+        {collapsed && (
+          <div className="flex flex-col items-center gap-1 mt-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              onClick={logout}
+              title="Выйти"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

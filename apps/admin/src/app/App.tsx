@@ -27,15 +27,23 @@ import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { cn } from "@/app/components/ui/utils";
 import { useIsMobile } from "@/app/components/ui/use-mobile";
 import { useNavigationStore } from "@/app/store/navigation-store";
+import { useAuthStore } from "@/app/store/auth-store";
+import { LoginPage } from "@/app/components/login-page";
 import { Drawer } from "vaul";
 
 function App() {
   const { currentPage, navigateTo } = useNavigationStore();
+  const { isAuthenticated, checkAuth } = useAuthStore();
   const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aiSidebarOpen, setAiSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // Проверка авторизации при загрузке
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   // Sync navigation store with local state
   useEffect(() => {
@@ -140,6 +148,11 @@ function App() {
   // Ensure we always render something
   if (!activeSection) {
     return null;
+  }
+
+  // Auth guard — показываем login page если не авторизован
+  if (!isAuthenticated) {
+    return <LoginPage />;
   }
 
   return (
