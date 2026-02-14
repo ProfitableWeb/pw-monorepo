@@ -42,5 +42,21 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  }
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/apps/api/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": ["${workspaceFolder}/apps/api/src"],
+  "python.linting.enabled": false,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": false,
+  "pylint.enabled": false,
+  "ruff.enable": true,
+  "ruff.lint.enable": true,
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+  "ruff.path": ["${workspaceFolder}/apps/api/.venv/Scripts/ruff.exe"]
 }
