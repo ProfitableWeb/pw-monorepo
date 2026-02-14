@@ -1,5 +1,4 @@
-@import '@/styles/utils/breakpoints';
-@import '@/styles/utils/variables';
+@use 'utils' as *;
 
 // ===== APP PAGE WRAPPER COMPONENT =====
 // Адаптивная обёртка для контента страниц приложения

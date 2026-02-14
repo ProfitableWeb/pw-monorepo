@@ -2,10 +2,10 @@
 // Reusable mixins for common UI patterns and functionality
 
 // Import dependencies (абсолютные пути через loadPaths для совместимости с Turbopack)
-@import "utils/colors";
-@import "utils/spacing";
-@import "utils/typography";
-@import "utils/breakpoints";
+@use "utils/colors" as *;
+@use "utils/spacing" as *;
+@use "utils/typography" as *;
+@use "utils/breakpoints" as *;
 
 // ===== BUTTON MIXINS =====
 // Consistent button styling across the application

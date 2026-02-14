@@ -7,7 +7,9 @@
  * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
  */
 
-@import './shared-typography';
+@use './shared-typography' as *;
+@use './responsive-typography';
+@use './responsive-spacing';
 
 .article-content {
   // Базовая типографика (размер и line-height в _responsive-typography.scss)
@@ -124,7 +126,3 @@
     @include article-section;
   }
 }
-
-// Импортируем адаптивные настройки
-@import './responsive-typography';  // Типографика: font-size, line-height
-@import './responsive-spacing';     // Отступы: margin, padding

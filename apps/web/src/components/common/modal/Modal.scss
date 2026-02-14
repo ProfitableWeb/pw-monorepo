@@ -1,5 +1,4 @@
-@import '@/styles/utils/variables';
-@import '@/styles/utils/breakpoints';
+@use 'utils' as *;
 
 // Overlay (backdrop)
 .modal-overlay {

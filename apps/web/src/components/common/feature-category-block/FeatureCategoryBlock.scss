@@ -1,5 +1,4 @@
-@import '@/styles/utils/breakpoints';
-@import '@/styles/utils/variables';
+@use 'utils' as *;
 
 // ===== FEATURE CATEGORY BLOCK COMPONENT =====
 // Блок категорий-тегов с фирменным синим цветом

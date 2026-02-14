@@ -1,22 +1,22 @@
 // Light Theme - Main Entry Point
 // Imports all light theme partials
 
-@import 'brand';
-@import 'surfaces';
-@import 'text';
-@import 'typography';
-@import 'status';
-@import 'interactive';
-@import 'semantic';
-@import 'shadows';
-@import 'components/nav';
-@import 'components/sidebar';
-@import 'components/cards';
-@import 'components/forms';
-@import 'components/buttons';
-@import 'components/code';
-@import 'components/feature-category-block';
-@import 'components/hero';
-@import 'components/masonry';
-@import 'overrides';
-@import 'media';
+@use 'brand';
+@use 'surfaces';
+@use 'text';
+@use 'typography';
+@use 'status';
+@use 'interactive';
+@use 'semantic';
+@use 'shadows';
+@use 'components/nav';
+@use 'components/sidebar';
+@use 'components/cards';
+@use 'components/forms';
+@use 'components/buttons';
+@use 'components/code';
+@use 'components/feature-category-block';
+@use 'components/hero';
+@use 'components/masonry';
+@use 'overrides';
+@use 'media';

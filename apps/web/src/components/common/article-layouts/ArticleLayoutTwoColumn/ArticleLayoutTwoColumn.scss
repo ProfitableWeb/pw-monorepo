@@ -1,9 +1,12 @@
 /**
  * Two Column Layout (Content | Sidebar)
- * 
+ *
  * Базовые стили компонента.
  * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
  */
+
+@use './responsive-layout';
+@use './responsive-sizing';
 
 .article-layout-two-column {
   // Базовая структура
@@ -36,7 +39,3 @@
     }
   }
 }
-
-// Импортируем адаптивные настройки
-@import './responsive-layout';  // Структура: grid, display, position
-@import './responsive-sizing';   // Размеры: gap, padding, margin

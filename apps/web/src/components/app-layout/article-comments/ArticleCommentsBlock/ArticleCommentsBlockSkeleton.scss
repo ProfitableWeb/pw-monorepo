@@ -1,4 +1,4 @@
-@import "../../../../styles/utils/variables";
+@use 'utils' as *;
 
 .article-comments-block-skeleton {
   &__list {

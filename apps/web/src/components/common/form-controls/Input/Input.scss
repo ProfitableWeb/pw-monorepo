@@ -3,9 +3,7 @@
  * Supports dark/light themes via CSS variables
  */
 
-@import '@/styles/utils/variables';
-@import '@/styles/utils/mixins';
-@import '@/styles/utils/breakpoints';
+@use 'utils' as *;
 
 // ============================================================
 // WRAPPER

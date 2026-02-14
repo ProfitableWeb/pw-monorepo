@@ -1,6 +1,4 @@
-@import '@/styles/utils/variables';
-@import '@/styles/utils/breakpoints';
-@import '@/styles/utils/mixins';
+@use 'utils' as *;
 
 .category-card {
   background: transparent;

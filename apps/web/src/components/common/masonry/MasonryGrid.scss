@@ -1,4 +1,4 @@
-@import '@/styles/utils/variables';
+@use 'utils' as *;
 
 .masonry-grid {
   width: 100%;

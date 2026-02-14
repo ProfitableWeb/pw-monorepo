@@ -1,9 +1,12 @@
 /**
  * Three Column Layout (TOC | Content | Sidebar)
- * 
+ *
  * Базовые стили компонента.
  * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
  */
+
+@use './responsive-layout';
+@use './responsive-sizing';
 
 .article-layout-three-column {
   // Базовая структура
@@ -60,7 +63,3 @@
     padding-bottom: 16px;
   }
 }
-
-// Импортируем адаптивные настройки
-@import './responsive-layout';  // Структура: grid, display, position
-@import './responsive-sizing';   // Размеры: gap, padding, margin

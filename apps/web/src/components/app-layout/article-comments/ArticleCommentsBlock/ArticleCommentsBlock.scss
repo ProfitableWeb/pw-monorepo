@@ -1,4 +1,4 @@
-@import "../../../../styles/utils/variables";
+@use 'utils' as *;
 
 .article-comments-block {
   margin-top: var(--space-2xl);

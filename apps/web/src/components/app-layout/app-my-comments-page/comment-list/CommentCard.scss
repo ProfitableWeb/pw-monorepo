@@ -1,4 +1,4 @@
-@import '../../../../styles/utils/variables';
+@use 'utils' as *;
 
 .comment-card {
   background: var(--color-bg-secondary);

@@ -1,4 +1,4 @@
-@import "../../../../styles/utils/variables";
+@use 'utils' as *;
 
 .article-comment-item {
   background: var(--color-surface);

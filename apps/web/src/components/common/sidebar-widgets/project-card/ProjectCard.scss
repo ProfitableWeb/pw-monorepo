@@ -1,4 +1,4 @@
-@import '../../../../styles/utils/variables';
+@use 'utils' as *;
 
 .project-card {
   // Отступ сверху, если карточка следует после другой карточки в sidebar

@@ -1,4 +1,4 @@
-@import "../../../../styles/utils/variables";
+@use 'utils' as *;
 
 .article-comment-replies {
   margin-left: var(--space-lg);

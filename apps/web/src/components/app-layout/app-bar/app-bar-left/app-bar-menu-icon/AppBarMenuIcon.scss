@@ -1,5 +1,4 @@
-@import '../../../../../styles/utils/variables';
-@import '../../../../../styles/utils/mixins';
+@use 'utils' as *;
 
 .app-bar-menu-icon {
   @include button-reset;

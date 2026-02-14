@@ -1,4 +1,4 @@
-@import '../../../../styles/utils/variables';
+@use 'utils' as *;
 
 .my-comments-list {
   padding: 0 var(--spacing-xl) var(--spacing-lg);

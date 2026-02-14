@@ -1,9 +1,12 @@
 /**
  * Full Width Layout (только Content)
- * 
+ *
  * Базовые стили компонента.
  * Адаптивность и брейкпоинты вынесены в отдельный файл _responsive.scss
  */
+
+@use './responsive-layout';
+@use './responsive-sizing';
 
 .article-layout-full-width {
   // Базовая структура
@@ -14,7 +17,3 @@
     width: 100%;
   }
 }
-
-// Импортируем адаптивные настройки
-@import './responsive-layout';  // Структура: вспомогательные классы
-@import './responsive-sizing';   // Размеры: padding

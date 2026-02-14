@@ -14,7 +14,6 @@ const nextConfig = {
   // Enable SCSS support (loadPaths replaces includePaths in sass-loader v16)
   sassOptions: {
     loadPaths: [path.join(__dirname, 'src', 'styles')],
-    additionalData: `@import "${path.join(__dirname, 'src', 'styles', 'utils', '_variables.scss').replace(/\\/g, '/')}"; @import "${path.join(__dirname, 'src', 'styles', 'utils', '_breakpoints.scss').replace(/\\/g, '/')}";`,
   },
 
   // TypeScript configuration

@@ -1,5 +1,4 @@
-@import '@/styles/utils/variables';
-@import '@/styles/utils/breakpoints';
+@use 'utils' as *;
 
 .newsletter-form {
   &__description {

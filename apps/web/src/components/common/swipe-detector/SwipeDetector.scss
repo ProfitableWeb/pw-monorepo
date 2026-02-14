@@ -1,4 +1,4 @@
-@import '@/styles/utils/variables';
+@use 'utils' as *;
 
 .swipe-detector {
   position: relative;

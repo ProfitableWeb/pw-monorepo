@@ -1,0 +1,12 @@
+// Utils - единая точка входа
+// Все утилиты доступны через: @use 'utils' as *;
+//
+// Примечание: _variables.scss НЕ форвардится, т.к. все его SCSS-переменные
+// уже определены в colors/spacing/typography. Его :root{} блок с CSS custom
+// properties подключается отдельно в globals.scss.
+
+@forward 'colors';
+@forward 'spacing';
+@forward 'typography';
+@forward 'breakpoints';
+@forward 'mixins';

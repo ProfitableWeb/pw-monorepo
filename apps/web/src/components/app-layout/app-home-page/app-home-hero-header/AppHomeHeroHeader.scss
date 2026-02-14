@@ -1,5 +1,4 @@
-@import '@/styles/utils/breakpoints';
-@import '@/styles/utils/variables';
+@use 'utils' as *;
 
 // ===== HERO HEADER COMPONENT =====
 // Философская секция главной страницы с манифестом проекта

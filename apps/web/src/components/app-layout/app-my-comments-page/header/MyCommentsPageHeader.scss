@@ -1,4 +1,4 @@
-@import '../../../../styles/utils/variables';
+@use 'utils' as *;
 
 .my-comments-page-header {
   padding: 80px var(--spacing-xl) 40px;

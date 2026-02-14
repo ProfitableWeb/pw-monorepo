@@ -4,9 +4,7 @@
  * с толстой границей, градиентным и теневым эффектом при наведении
  */
 
-@import '@/styles/utils/variables';
-@import '@/styles/utils/mixins';
-@import '@/styles/utils/breakpoints';
+@use 'utils' as *;
 
 .button {
   // Базовые стили
