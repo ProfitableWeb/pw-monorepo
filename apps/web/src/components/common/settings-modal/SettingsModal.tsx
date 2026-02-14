@@ -23,10 +23,7 @@ const TABS = [
   { id: 'email' as SettingsTab, label: 'Email', icon: LuMail },
 ];
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);

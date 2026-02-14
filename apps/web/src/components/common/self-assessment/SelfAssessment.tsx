@@ -61,10 +61,10 @@ interface SelfAssessmentProps {
  * ]} />
  * ```
  */
-export const SelfAssessment: React.FC<SelfAssessmentProps> = ({
+export const SelfAssessment = ({
   questions,
   className = '',
-}) => {
+}: SelfAssessmentProps) => {
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(
     new Set()
   );

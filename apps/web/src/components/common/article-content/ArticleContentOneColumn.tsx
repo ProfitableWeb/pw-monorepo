@@ -36,9 +36,10 @@ interface ArticleContentOneColumnProps {
  * <ArticleContentOneColumn html={article.content} />
  * ```
  */
-export const ArticleContentOneColumn: React.FC<
-  ArticleContentOneColumnProps
-> = ({ html, className }) => {
+export const ArticleContentOneColumn = ({
+  html,
+  className,
+}: ArticleContentOneColumnProps) => {
   // Start with unsanitized HTML to match SSR
   const [sanitizedHtml, setSanitizedHtml] = useState(html);
 

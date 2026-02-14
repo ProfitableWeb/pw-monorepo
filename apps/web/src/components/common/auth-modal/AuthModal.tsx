@@ -35,7 +35,7 @@ const PROVIDERS: { id: AuthProvider; name: string }[] = [
   { id: 'telegram', name: 'Telegram' },
 ];
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const { login } = useAuth();
 
   const handleLogin = (provider: AuthProvider) => {

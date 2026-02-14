@@ -48,10 +48,10 @@ export interface CategoryPageHeaderProps {
  * @param {CategoryPageHeaderProps} props - Свойства компонента
  * @returns {JSX.Element} Анимированная шапка категории
  */
-const CategoryPageHeader: React.FC<CategoryPageHeaderProps> = ({
+const CategoryPageHeader = ({
   category,
   className = '',
-}) => {
+}: CategoryPageHeaderProps) => {
   return (
     <motion.section
       className={`category-page-header ${className}`}

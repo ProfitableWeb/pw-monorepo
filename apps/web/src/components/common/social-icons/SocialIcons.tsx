@@ -11,12 +11,12 @@ interface SocialIconsProps {
   links?: SocialLink[]; // Кастомный список иконок
 }
 
-const SocialIcons: React.FC<SocialIconsProps> = ({
+const SocialIcons = ({
   className = '',
   size = 'md',
   showLabels = false,
   links,
-}) => {
+}: SocialIconsProps) => {
   const displayLinks = links || SOCIAL_LINKS;
 
   return (

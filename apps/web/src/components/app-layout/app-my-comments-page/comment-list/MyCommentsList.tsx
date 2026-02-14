@@ -12,7 +12,7 @@ interface MyCommentsListProps {
 /**
  * MyCommentsList - контейнер списка комментариев
  */
-export const MyCommentsList: React.FC<MyCommentsListProps> = ({ comments }) => {
+export const MyCommentsList = ({ comments }: MyCommentsListProps) => {
   if (comments.length === 0) {
     return (
       <div className='my-comments-list my-comments-list--empty'>

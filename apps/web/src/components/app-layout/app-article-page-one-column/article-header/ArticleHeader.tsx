@@ -24,13 +24,13 @@ export interface ArticleHeaderProps {
  * @param {ArticleHeaderProps} props - Пропсы компонента
  * @returns {JSX.Element} Шапка статьи
  */
-export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
+export const ArticleHeader = ({
   title,
   subtitle,
   publishedAt,
   categorySlug,
   categoryName,
-}) => {
+}: ArticleHeaderProps) => {
   return (
     <header className='article-header'>
       <h1 className='article-header__title'>{title}</h1>

@@ -8,7 +8,7 @@ import './MyCommentsEmptyState.scss';
 /**
  * MyCommentsEmptyState - компонент для состояния "нет комментариев"
  */
-export const MyCommentsEmptyState: React.FC = () => {
+export const MyCommentsEmptyState = () => {
   return (
     <section className='my-comments-empty-state'>
       <div className='my-comments-empty-state__icon'>

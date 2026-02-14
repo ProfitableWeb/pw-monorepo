@@ -10,7 +10,7 @@ interface AppBarLeftProps {
   onMenuClick?: () => void;
 }
 
-const AppBarLeft: React.FC<AppBarLeftProps> = ({ onMenuClick }) => {
+const AppBarLeft = ({ onMenuClick }: AppBarLeftProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuClick = () => {

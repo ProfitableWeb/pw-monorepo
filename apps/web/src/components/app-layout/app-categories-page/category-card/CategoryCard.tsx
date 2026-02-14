@@ -17,10 +17,7 @@ interface CategoryCardProps {
  * Отображает информацию о категории без рамок и карточек,
  * в стиле статей на главной странице (ArticleCard).
  */
-export const CategoryCard: React.FC<CategoryCardProps> = ({
-  category,
-  index,
-}) => {
+export const CategoryCard = ({ category, index }: CategoryCardProps) => {
   return (
     <motion.article
       className='category-card'

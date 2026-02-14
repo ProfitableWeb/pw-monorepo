@@ -30,12 +30,12 @@ export interface ArticleMetaProps {
  * Дата и категория отображаются мелким светло-серым шрифтом.
  * Ссылка на категорию: подчёркивание через border 1px, при наведении — прозрачно.
  */
-export const ArticleMeta: React.FC<ArticleMetaProps> = ({
+export const ArticleMeta = ({
   publishedAt,
   categorySlug,
   categoryName,
   className = '',
-}) => {
+}: ArticleMetaProps) => {
   const formatDate = (date: Date): string =>
     date.toLocaleDateString('ru-RU', {
       day: 'numeric',

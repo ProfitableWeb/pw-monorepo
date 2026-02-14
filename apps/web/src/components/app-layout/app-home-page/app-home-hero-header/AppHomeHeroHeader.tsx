@@ -35,9 +35,7 @@ interface AppHomeHeroHeaderProps {
  * @param {AppHomeHeroHeaderProps} props - Свойства компонента
  * @returns {JSX.Element} Анимированная секция с hero-контентом
  */
-const AppHomeHeroHeader: React.FC<AppHomeHeroHeaderProps> = ({
-  className = '',
-}) => {
+const AppHomeHeroHeader = ({ className = '' }: AppHomeHeroHeaderProps) => {
   return (
     <motion.section
       className={`hero-header ${className}`}

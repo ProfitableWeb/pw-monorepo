@@ -16,7 +16,7 @@ interface AppHomePageProps {
  * Client Component для главной страницы
  * Получает данные статей из Server Component
  */
-const AppHomePage: React.FC<AppHomePageProps> = ({ articles }) => {
+const AppHomePage = ({ articles }: AppHomePageProps) => {
   return (
     <div className='home-page'>
       <AppBar />

@@ -7,11 +7,11 @@ interface SidebarWidgetProps {
   className?: string;
 }
 
-export const SidebarWidget: React.FC<SidebarWidgetProps> = ({
+export const SidebarWidget = ({
   title,
   children,
   className = '',
-}) => {
+}: SidebarWidgetProps) => {
   return (
     <div className={`sidebar-widget ${className}`}>
       {title && <h3 className='sidebar-widget__title'>{title}</h3>}

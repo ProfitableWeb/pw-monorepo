@@ -13,7 +13,7 @@ interface TableOfContentsProps {
   items: TocItem[];
 }
 
-export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
+export const TableOfContents = ({ items }: TableOfContentsProps) => {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {

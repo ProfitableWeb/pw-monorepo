@@ -67,10 +67,10 @@ interface ArticleResourcesProps {
  * ]} />
  * ```
  */
-export const ArticleResources: React.FC<ArticleResourcesProps> = ({
+export const ArticleResources = ({
   resources,
   className = '',
-}) => {
+}: ArticleResourcesProps) => {
   // Генерируем schema.org ItemList разметку для SEO
   const itemListSchema = {
     '@context': 'https://schema.org',

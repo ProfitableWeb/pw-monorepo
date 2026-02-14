@@ -11,10 +11,7 @@ interface ProfileSectionProps {
   onUpdate: (updates: Partial<UserSettings['profile']>) => void;
 }
 
-export const ProfileSection: React.FC<ProfileSectionProps> = ({
-  settings,
-  onUpdate,
-}) => {
+export const ProfileSection = ({ settings, onUpdate }: ProfileSectionProps) => {
   const { user } = useAuth();
 
   return (

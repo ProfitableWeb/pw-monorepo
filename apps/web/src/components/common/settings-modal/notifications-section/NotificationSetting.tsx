@@ -11,13 +11,13 @@ interface NotificationSettingProps {
   ariaLabel?: string;
 }
 
-export const NotificationSetting: React.FC<NotificationSettingProps> = ({
+export const NotificationSetting = ({
   label,
   description,
   checked,
   onChange,
   ariaLabel,
-}) => {
+}: NotificationSettingProps) => {
   return (
     <div className='notification-setting'>
       <div className='notification-setting__info'>

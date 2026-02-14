@@ -21,7 +21,7 @@ import { aboutContent } from '@/config/about-content';
  * - TableOfContents: оглавление слева
  * - AuthorCard: информация об авторе справа
  */
-export const AboutPageClient: React.FC = () => {
+export const AboutPageClient = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false);
 
   return (

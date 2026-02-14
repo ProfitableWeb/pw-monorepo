@@ -9,7 +9,7 @@ interface LogoProps {
   text?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ size = 'md', className = '' }) => {
+const Logo = ({ size = 'md', className = '' }: LogoProps) => {
   return (
     <div className={`logo logo--${size} ${className}`}>
       <div className='logo__icon'>

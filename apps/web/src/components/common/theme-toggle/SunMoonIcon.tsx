@@ -15,12 +15,12 @@ interface SunMoonIconProps {
  * SVG иконка солнышко-луна с анимацией переходов
  * Основано на https://github.com/argyleink/gui-challenges/tree/main/theme-switch
  */
-export const SunMoonIcon: React.FC<SunMoonIconProps> = ({
+export const SunMoonIcon = ({
   theme,
   size = 20,
   className,
   disableAnimations = false,
-}) => {
+}: SunMoonIconProps) => {
   // Уникальный ID для маски (чтобы избежать конфликтов при нескольких иконках на странице)
   const maskId = React.useMemo(
     () => `moon-mask-${Math.random().toString(36).substr(2, 9)}`,

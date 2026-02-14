@@ -21,11 +21,11 @@ interface ArticleAuthorAvatarProps {
 /**
  * ArticleAuthorAvatar - компонент аватара автора
  */
-export const ArticleAuthorAvatar: React.FC<ArticleAuthorAvatarProps> = ({
+export const ArticleAuthorAvatar = ({
   src,
   alt,
   className = '',
-}) => {
+}: ArticleAuthorAvatarProps) => {
   return (
     <div className={`article-author-avatar ${className}`}>
       <img src={src} alt={alt} className='article-author-avatar__img' />

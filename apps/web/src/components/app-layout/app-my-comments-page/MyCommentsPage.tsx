@@ -20,9 +20,9 @@ interface MyCommentsPageProps {
 /**
  * MyCommentsPage - главная страница "Мои комментарии"
  */
-export const MyCommentsPage: React.FC<MyCommentsPageProps> = ({
+export const MyCommentsPage = ({
   initialComments = [],
-}) => {
+}: MyCommentsPageProps) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [filteredComments, setFilteredComments] =

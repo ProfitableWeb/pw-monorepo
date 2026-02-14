@@ -9,11 +9,11 @@ interface AboutLayoutProps {
   sidebar?: ReactNode;
 }
 
-export const AboutLayout: React.FC<AboutLayoutProps> = ({
+export const AboutLayout = ({
   children,
   tableOfContents,
   sidebar,
-}) => {
+}: AboutLayoutProps) => {
   return (
     <div className='about-layout'>
       {/* Sticky Table of Contents - слева */}

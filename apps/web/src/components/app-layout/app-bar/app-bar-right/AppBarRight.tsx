@@ -6,7 +6,7 @@ import { SOCIAL_LINKS_APPBAR } from '@/components/common/social-icons';
 import AppBarActions from './app-bar-actions/';
 import './AppBarRight.scss';
 
-const AppBarRight: React.FC = () => {
+const AppBarRight = () => {
   return (
     <div className='app-bar__right'>
       {/* Социальные иконки */}

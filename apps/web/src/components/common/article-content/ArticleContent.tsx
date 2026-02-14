@@ -33,10 +33,7 @@ interface ArticleContentProps {
  * <ArticleContent html={article.content} />
  * ```
  */
-export const ArticleContent: React.FC<ArticleContentProps> = ({
-  html,
-  className,
-}) => {
+export const ArticleContent = ({ html, className }: ArticleContentProps) => {
   // Start with unsanitized HTML to match SSR
   const [sanitizedHtml, setSanitizedHtml] = useState(html);
 

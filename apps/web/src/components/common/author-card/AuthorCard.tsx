@@ -9,10 +9,7 @@ interface AuthorCardProps {
   description: string;
 }
 
-export const AuthorCard: React.FC<AuthorCardProps> = ({
-  name,
-  description,
-}) => {
+export const AuthorCard = ({ name, description }: AuthorCardProps) => {
   return (
     <div className='author-card'>
       <h3 className='author-card__title'>Автор</h3>

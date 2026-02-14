@@ -11,7 +11,7 @@ import './AppBarMenuContacts.scss';
  * Отображает контактную информацию и социальные сети
  * вместо ссылки на страницу контактов.
  */
-export const AppBarMenuContacts: React.FC = () => {
+export const AppBarMenuContacts = () => {
   return (
     <div className='app-bar-menu-contacts'>
       <h3 className='app-bar-menu-contacts__title'>Контакты</h3>

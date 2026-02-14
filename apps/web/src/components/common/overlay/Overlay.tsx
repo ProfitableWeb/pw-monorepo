@@ -11,12 +11,7 @@ interface OverlayProps {
   zIndex?: number;
 }
 
-const Overlay: React.FC<OverlayProps> = ({
-  isVisible,
-  onClick,
-  children,
-  zIndex,
-}) => {
+const Overlay = ({ isVisible, onClick, children, zIndex }: OverlayProps) => {
   return (
     <AnimatePresence>
       {isVisible && (

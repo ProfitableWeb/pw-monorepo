@@ -46,13 +46,13 @@ const DEFAULT_AUTHOR = {
  * Содержит аватар, имя, социальные сети и описание автора.
  * Включает JSON-LD разметку Person для SEO.
  */
-export const ArticleAuthorBlock: React.FC<ArticleAuthorBlockProps> = ({
+export const ArticleAuthorBlock = ({
   name = DEFAULT_AUTHOR.name,
   description = DEFAULT_AUTHOR.description,
   jobTitle = DEFAULT_AUTHOR.jobTitle,
   avatarSrc = DEFAULT_AUTHOR.avatarSrc,
   className = '',
-}) => {
+}: ArticleAuthorBlockProps) => {
   // Формируем JSON-LD разметку для автора
   const jsonLd = {
     ...AUTHOR_SCHEMA,

@@ -16,11 +16,11 @@ interface LoadMoreButtonProps {
  * @param isLoading - Состояние загрузки
  * @param disabled - Отключена ли кнопка
  */
-const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
+const LoadMoreButton = ({
   onClick,
   isLoading,
   disabled = false,
-}) => {
+}: LoadMoreButtonProps) => {
   return (
     <div className='load-more'>
       <button

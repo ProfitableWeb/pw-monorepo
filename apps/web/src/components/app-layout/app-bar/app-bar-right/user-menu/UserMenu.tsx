@@ -9,7 +9,7 @@ import { toast } from '@/components/common/toast';
 import { SettingsModal } from '@/components/common/settings-modal';
 import './UserMenu.scss';
 
-export const UserMenu: React.FC = () => {
+export const UserMenu = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

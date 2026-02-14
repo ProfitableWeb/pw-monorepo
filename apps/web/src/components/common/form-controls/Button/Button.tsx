@@ -38,7 +38,7 @@ interface ButtonProps {
  * <Button variant="outline" enableHoverElevation>С поднятием</Button>
  * ```
  */
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   children,
   variant = 'outline',
   size = 'md',
@@ -50,7 +50,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   type = 'button',
   enableHoverElevation = false,
-}) => {
+}: ButtonProps) => {
   const classNames = [
     'button',
     `button--${variant}`,

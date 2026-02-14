@@ -9,11 +9,7 @@ interface AboutSectionProps {
   children: React.ReactNode;
 }
 
-export const AboutSection: React.FC<AboutSectionProps> = ({
-  id,
-  heading,
-  children,
-}) => {
+export const AboutSection = ({ id, heading, children }: AboutSectionProps) => {
   return (
     <section id={id} className='about-section'>
       {heading && <h2 className='about-section__heading'>{heading}</h2>}

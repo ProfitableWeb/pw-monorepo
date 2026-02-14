@@ -13,14 +13,14 @@ interface ToggleProps {
   disabled?: boolean;
 }
 
-export const Toggle: React.FC<ToggleProps> = ({
+export const Toggle = ({
   checked,
   onChange,
   label,
   description,
   ariaLabel,
   disabled = false,
-}) => {
+}: ToggleProps) => {
   return (
     <button
       className={`toggle ${checked ? 'active' : ''} ${disabled ? 'disabled' : ''}`}

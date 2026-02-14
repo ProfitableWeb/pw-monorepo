@@ -93,11 +93,11 @@ const DEFAULT_CATEGORIES: Category[] = [
  * @param {FeatureCategoryBlockProps} props - Свойства компонента
  * @returns {JSX.Element} Блок с категориями
  */
-const FeatureCategoryBlock: React.FC<FeatureCategoryBlockProps> = ({
+const FeatureCategoryBlock = ({
   categories = DEFAULT_CATEGORIES,
   className = '',
   categoryBasePath = '',
-}) => {
+}: FeatureCategoryBlockProps) => {
   return (
     <div className={`feature-category-block ${className}`}>
       {categories.map(category => {

@@ -16,7 +16,7 @@ const SmoothTransition = cssTransition({
   collapseDuration: 300,
 });
 
-export const ToastProvider: React.FC = () => {
+export const ToastProvider = () => {
   const { theme } = useTheme();
   const toastOptions: ToastContainerProps = {
     position: 'top-center',

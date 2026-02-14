@@ -25,10 +25,10 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+export const ThemeProvider = ({
   children,
   defaultTheme = 'light',
-}) => {
+}: ThemeProviderProps) => {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
 
   // Инициализация темы из localStorage

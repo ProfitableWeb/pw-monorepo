@@ -17,10 +17,7 @@ interface MasonryGridProps {
  * @param articles - Массив статей для отображения
  * @param className - Дополнительный CSS класс
  */
-const MasonryGrid: React.FC<MasonryGridProps> = ({
-  articles,
-  className = '',
-}) => {
+const MasonryGrid = ({ articles, className = '' }: MasonryGridProps) => {
   return (
     <section className={`masonry-grid ${className}`} aria-label='Статьи блога'>
       {/* Fallback для ботов без JS */}

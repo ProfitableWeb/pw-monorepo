@@ -14,7 +14,7 @@ import './AuthorPageHeader.scss';
 /**
  * Шапка страницы автора (аналог CategoryPageHeader)
  */
-const AuthorPageHeader: React.FC = () => {
+const AuthorPageHeader = () => {
   return (
     <motion.section
       className='author-page-header'

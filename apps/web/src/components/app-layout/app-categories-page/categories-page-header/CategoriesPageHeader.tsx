@@ -10,7 +10,7 @@ import './CategoriesPageHeader.scss';
  * Отображает заголовок и описание страницы
  * Оптимизировано для SEO с ключевыми словами и структурированной информацией
  */
-export const CategoriesPageHeader: React.FC = () => {
+export const CategoriesPageHeader = () => {
   return (
     <motion.header
       className='categories-page-header'

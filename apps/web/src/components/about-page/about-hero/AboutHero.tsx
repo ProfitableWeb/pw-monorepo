@@ -8,7 +8,7 @@ interface AboutHeroProps {
   subtitle: string;
 }
 
-export const AboutHero: React.FC<AboutHeroProps> = ({ title, subtitle }) => {
+export const AboutHero = ({ title, subtitle }: AboutHeroProps) => {
   return (
     <section className='about-hero'>
       <div className='about-hero__container'>

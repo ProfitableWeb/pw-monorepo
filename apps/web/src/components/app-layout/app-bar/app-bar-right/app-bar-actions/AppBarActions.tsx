@@ -9,7 +9,7 @@ import { UserMenu } from '../user-menu';
 import { useAuth } from '@/contexts/auth';
 import './AppBarActions.scss';
 
-const AppBarActions: React.FC = () => {
+const AppBarActions = () => {
   const { isAuthenticated } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 

@@ -9,7 +9,7 @@ interface AppBarMenuIconProps {
   onClick?: () => void;
 }
 
-const AppBarMenuIcon: React.FC<AppBarMenuIconProps> = ({ isOpen, onClick }) => {
+const AppBarMenuIcon = ({ isOpen, onClick }: AppBarMenuIconProps) => {
   return (
     <button
       className={`app-bar-menu-icon ${isOpen ? 'app-bar-menu-icon--open' : ''}`}

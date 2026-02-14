@@ -27,11 +27,11 @@ interface ArticleListProps {
  * - Поддержка prefers-reduced-motion
  * - Кнопка "Загрузить ещё" с имитацией загрузки
  */
-const ArticleList: React.FC<ArticleListProps> = ({
+const ArticleList = ({
   articles,
   initialCount = 12,
   loadMoreCount = 12,
-}) => {
+}: ArticleListProps) => {
   const columnCount = useResponsiveColumns(100);
   const prefersReducedMotion = usePreferReducedMotion();
 

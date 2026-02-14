@@ -25,14 +25,12 @@ interface ArticleAuthorDescriptionProps {
 /**
  * ArticleAuthorDescription - компонент описания автора
  */
-export const ArticleAuthorDescription: React.FC<
-  ArticleAuthorDescriptionProps
-> = ({
+export const ArticleAuthorDescription = ({
   description,
   linkUrl = '/author',
   linkText = 'Подробнее',
   className = '',
-}) => {
+}: ArticleAuthorDescriptionProps) => {
   return (
     <div className={`article-author-description ${className}`}>
       <p className='article-author-description__text'>{description}</p>

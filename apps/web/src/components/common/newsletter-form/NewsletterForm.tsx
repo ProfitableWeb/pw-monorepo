@@ -13,10 +13,7 @@ interface NewsletterFormProps {
   onClose: () => void;
 }
 
-export const NewsletterForm: React.FC<NewsletterFormProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const NewsletterForm = ({ isOpen, onClose }: NewsletterFormProps) => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');

@@ -20,12 +20,12 @@ const DEFAULT_PROJECT = {
   subscribeLink: '#',
 };
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({
+export const ProjectCard = ({
   definition = DEFAULT_PROJECT.definition,
   description = DEFAULT_PROJECT.description,
   subscribeLink = DEFAULT_PROJECT.subscribeLink,
   onSubscribeClick,
-}) => {
+}: ProjectCardProps) => {
   return (
     <div className='project-card'>
       <h3 className='project-card__title'>О сайте</h3>

@@ -36,10 +36,7 @@ interface AppPageWrapperProps {
  * @param {AppPageWrapperProps} props - Свойства компонента
  * @returns {JSX.Element} Обёртка с адаптивной шириной
  */
-const AppPageWrapper: React.FC<AppPageWrapperProps> = ({
-  children,
-  className = '',
-}) => {
+const AppPageWrapper = ({ children, className = '' }: AppPageWrapperProps) => {
   return (
     <div className={`app-page-wrapper ${className}`} suppressHydrationWarning>
       {children}

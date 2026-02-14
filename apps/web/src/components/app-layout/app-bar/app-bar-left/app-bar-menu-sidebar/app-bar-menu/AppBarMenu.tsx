@@ -11,7 +11,7 @@ interface AppBarMenuProps {
   onMenuClick?: () => void;
 }
 
-const AppBarMenu: React.FC<AppBarMenuProps> = ({ isOpen, onMenuClick }) => {
+const AppBarMenu = ({ isOpen, onMenuClick }: AppBarMenuProps) => {
   return (
     <div className='app-bar-menu'>
       <AppBarMenuIcon isOpen={isOpen} onClick={onMenuClick} />

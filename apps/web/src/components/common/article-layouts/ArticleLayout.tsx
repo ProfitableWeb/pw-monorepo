@@ -81,13 +81,13 @@ interface ArticleLayoutProps {
  * </ArticleLayout>
  * ```
  */
-export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
+export const ArticleLayout = ({
   layout,
   children,
   toc,
   sidebar,
   className,
-}) => {
+}: ArticleLayoutProps) => {
   const renderLayout = () => {
     switch (layout) {
       case 'three-column':

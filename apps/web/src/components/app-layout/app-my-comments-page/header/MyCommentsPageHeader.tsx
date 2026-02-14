@@ -10,9 +10,7 @@ interface MyCommentsPageHeaderProps {
 /**
  * MyCommentsPageHeader - шапка страницы с количеством комментариев
  */
-export const MyCommentsPageHeader: React.FC<MyCommentsPageHeaderProps> = ({
-  count,
-}) => {
+export const MyCommentsPageHeader = ({ count }: MyCommentsPageHeaderProps) => {
   return (
     <header className='my-comments-page-header'>
       <div className='my-comments-page-header__container'>

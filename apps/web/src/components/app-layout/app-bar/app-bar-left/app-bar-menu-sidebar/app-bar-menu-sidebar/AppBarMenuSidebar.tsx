@@ -14,10 +14,7 @@ interface AppBarMenuSidebarProps {
   onClose?: () => void;
 }
 
-const AppBarMenuSidebar: React.FC<AppBarMenuSidebarProps> = ({
-  isOpen,
-  onClose,
-}) => {
+const AppBarMenuSidebar = ({ isOpen, onClose }: AppBarMenuSidebarProps) => {
   return (
     <>
       <Overlay isVisible={isOpen} onClick={onClose} zIndex={1040} />

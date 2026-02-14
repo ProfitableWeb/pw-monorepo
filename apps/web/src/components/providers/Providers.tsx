@@ -13,7 +13,7 @@ interface ProvidersProps {
  * Клиентский компонент-обёртка для всех провайдеров
  * Используется в layout.tsx для обеспечения доступа к контекстам
  */
-export const Providers: React.FC<ProvidersProps> = ({ children }) => {
+export const Providers = ({ children }: ProvidersProps) => {
   return (
     <ThemeProvider defaultTheme='light'>
       <AuthProvider>

@@ -7,7 +7,7 @@ import './AppFooter.scss';
 /**
  * Компонент крупных иконок социальных сетей для футера
  */
-const FooterSocialIcons: React.FC = () => {
+const FooterSocialIcons = () => {
   return (
     <div className='footer-social-icons'>
       {SOCIAL_LINKS_FOOTER.map(link => (
@@ -37,7 +37,7 @@ const FooterSocialIcons: React.FC = () => {
 /**
  * Компонент футера приложения
  */
-const AppFooter: React.FC = () => {
+const AppFooter = () => {
   return (
     <footer className='app-footer'>
       <div className='app-footer__container'>

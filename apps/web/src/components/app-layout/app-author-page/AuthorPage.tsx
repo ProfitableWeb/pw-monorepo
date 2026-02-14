@@ -19,7 +19,7 @@ interface AuthorPageProps {
 /**
  * AuthorPage - компонент страницы автора
  */
-export const AuthorPage: React.FC<AuthorPageProps> = ({ articles }) => {
+export const AuthorPage = ({ articles }: AuthorPageProps) => {
   return (
     <div className='author-page'>
       <AppBar />

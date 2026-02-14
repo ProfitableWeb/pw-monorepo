@@ -9,7 +9,7 @@ interface AppBarProps {
   className?: string;
 }
 
-const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
+const AppBar = ({ className = '' }: AppBarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {

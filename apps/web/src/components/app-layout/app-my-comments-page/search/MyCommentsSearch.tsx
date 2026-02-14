@@ -14,11 +14,11 @@ interface MyCommentsSearchProps {
 /**
  * MyCommentsSearch - компонент поиска по комментариям
  */
-export const MyCommentsSearch: React.FC<MyCommentsSearchProps> = ({
+export const MyCommentsSearch = ({
   onSearch,
   resultCount,
   isLoading = false,
-}) => {
+}: MyCommentsSearchProps) => {
   const [query, setQuery] = useState('');
 
   // Debounce функция

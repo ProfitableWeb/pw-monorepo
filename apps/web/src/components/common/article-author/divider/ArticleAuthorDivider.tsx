@@ -13,9 +13,9 @@ interface ArticleAuthorDividerProps {
 /**
  * ArticleAuthorDivider - компонент разделителя между блоками
  */
-export const ArticleAuthorDivider: React.FC<ArticleAuthorDividerProps> = ({
+export const ArticleAuthorDivider = ({
   className = '',
-}) => {
+}: ArticleAuthorDividerProps) => {
   return (
     <span
       className={`article-author-divider ${className}`}

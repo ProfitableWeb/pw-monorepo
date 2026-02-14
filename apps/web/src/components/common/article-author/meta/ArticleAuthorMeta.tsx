@@ -27,12 +27,12 @@ interface ArticleAuthorMetaProps {
 /**
  * ArticleAuthorMeta - компонент мета-информации автора (метка, имя, социальные сети)
  */
-export const ArticleAuthorMeta: React.FC<ArticleAuthorMetaProps> = ({
+export const ArticleAuthorMeta = ({
   name,
   label = 'Автор статьи',
   showSocials = true,
   className = '',
-}) => {
+}: ArticleAuthorMetaProps) => {
   return (
     <div className={`article-author-meta ${className}`}>
       {label && <span className='article-author-meta__label'>{label}</span>}

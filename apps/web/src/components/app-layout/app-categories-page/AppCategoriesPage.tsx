@@ -61,9 +61,7 @@ function getColumnCount(): number {
  * Client Component для страницы категорий
  * Получает данные категорий из Server Component
  */
-const AppCategoriesPage: React.FC<AppCategoriesPageProps> = ({
-  categories,
-}) => {
+const AppCategoriesPage = ({ categories }: AppCategoriesPageProps) => {
   const [columnCount, setColumnCount] = useState(3);
   const [isMounted, setIsMounted] = useState(false);
 

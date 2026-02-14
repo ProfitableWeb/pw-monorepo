@@ -30,7 +30,7 @@ function formatDateTime(dateString: string): string {
 /**
  * CommentCard - карточка комментария
  */
-export const CommentCard: React.FC<CommentCardProps> = memo(({ comment }) => {
+export const CommentCard = memo(({ comment }: CommentCardProps) => {
   const { user } = useAuth();
   const [avatarError, setAvatarError] = useState(false);
   const avatarInitial = comment.userName.charAt(0).toUpperCase();

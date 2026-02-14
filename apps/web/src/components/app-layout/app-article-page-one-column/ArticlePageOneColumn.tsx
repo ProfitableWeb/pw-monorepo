@@ -32,9 +32,9 @@ interface ArticlePageOneColumnProps {
  * @component
  * @returns {JSX.Element} Страница статьи с одноколоночным лейаутом
  */
-export const ArticlePageOneColumn: React.FC<ArticlePageOneColumnProps> = ({
+export const ArticlePageOneColumn = ({
   initialThreads,
-}) => {
+}: ArticlePageOneColumnProps) => {
   const { user } = useAuth();
   const [threads, setThreads] =
     useState<ArticleCommentThread[]>(initialThreads);

@@ -6,7 +6,7 @@ import { SunMoonIcon } from './SunMoonIcon';
 import './SunMoonIcon.scss';
 import './ThemeToggle.scss';
 
-const ThemeToggle: React.FC = () => {
+const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
 

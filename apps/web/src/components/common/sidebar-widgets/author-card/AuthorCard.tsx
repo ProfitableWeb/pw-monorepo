@@ -17,10 +17,10 @@ const DEFAULT_AUTHOR = {
     'Исследую веб-разработку, AI-автоматизацию, цифровой дизайн и экономику.',
 };
 
-export const AuthorCard: React.FC<AuthorCardProps> = ({
+export const AuthorCard = ({
   name = DEFAULT_AUTHOR.name,
   description = DEFAULT_AUTHOR.description,
-}) => {
+}: AuthorCardProps) => {
   return (
     <div className='author-card'>
       <div className='author-card__header'>

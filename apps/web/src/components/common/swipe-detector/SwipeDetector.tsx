@@ -12,7 +12,7 @@ interface SwipeDetectorProps {
   className?: string;
 }
 
-const SwipeDetector: React.FC<SwipeDetectorProps> = ({
+const SwipeDetector = ({
   onSwipeLeft,
   onSwipeRight,
   onSwipeUp,
@@ -20,7 +20,7 @@ const SwipeDetector: React.FC<SwipeDetectorProps> = ({
   threshold = 50,
   children,
   className = '',
-}) => {
+}: SwipeDetectorProps) => {
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
     null
   );

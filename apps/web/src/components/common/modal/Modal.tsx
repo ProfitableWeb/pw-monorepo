@@ -24,7 +24,7 @@ interface ModalProps {
   showDivider?: boolean;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const Modal = ({
   isOpen,
   onClose,
   title,
@@ -33,7 +33,7 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'medium',
   contentPadding,
   showDivider = false,
-}) => {
+}: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);

@@ -25,10 +25,7 @@ interface ArticleCardProps {
  * - Semantic HTML
  * - Правильные meta-теги
  */
-const ArticleCard: React.FC<ArticleCardProps> = ({
-  article,
-  isPriority = false,
-}) => {
+const ArticleCard = ({ article, isPriority = false }: ArticleCardProps) => {
   const isMobile = useMediaQuery('(max-width: 767px)');
   const jsonLd = generateArticleJsonLd(article);
 
