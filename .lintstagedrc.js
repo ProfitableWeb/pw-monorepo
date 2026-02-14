@@ -7,6 +7,10 @@ module.exports = {
       `bun --cwd apps/web run type-check`,
     ];
   },
+  'apps/admin/**/*.{ts,tsx}': (filenames) => {
+    const files = filenames.map((f) => f.replace(/\\/g, '/')).join(' ');
+    return [`prettier --write ${files}`];
+  },
   // Проверка типов при изменении конфигурационных файлов, которые могут повлиять на типы
   'apps/web/package.json': () => {
     return `bun --cwd apps/web run type-check`;
