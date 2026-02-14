@@ -1,6 +1,7 @@
 # Old repositories (ignored)
 # Dependencies
 node_modules/
+apps/*/bun.lock
 .pnp
 .pnp.js
 

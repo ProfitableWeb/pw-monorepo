@@ -54,19 +54,20 @@ jobs:
               cd ~/profitableweb
             fi
 
+            # Установка JS-зависимостей из корня монорепо (единый lockfile)
+            bun install
+
             # API: установка зависимостей
             cd apps/api
             uv sync
 
             # Web: сборка
             cd ../web
-            bun install
             [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
             bun run build
 
             # Admin: сборка
             cd ../admin
-            bun install
             bun run build
 
             # Перезапуск всех сервисов
