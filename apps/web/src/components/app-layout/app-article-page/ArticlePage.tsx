@@ -25,7 +25,7 @@ export interface ArticlePageProps {
  * @param {ArticlePageProps} props - Свойства компонента
  * @returns {JSX.Element} Заглушка страницы статьи
  */
-const ArticlePage: React.FC<ArticlePageProps> = ({ article, category }) => {
+const ArticlePage = ({ article, category }: ArticlePageProps) => {
   return (
     <div className='article-page'>
       <AppBar />

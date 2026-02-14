@@ -18,10 +18,7 @@ export interface AppCategoryPageProps {
  * Client Component для страницы категории
  * Получает данные категории и статей из Server Component
  */
-const AppCategoryPage: React.FC<AppCategoryPageProps> = ({
-  category,
-  articles,
-}) => {
+const AppCategoryPage = ({ category, articles }: AppCategoryPageProps) => {
   return (
     <div className='category-page'>
       <AppBar />
