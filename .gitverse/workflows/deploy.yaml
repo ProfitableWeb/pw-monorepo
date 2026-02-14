@@ -61,8 +61,9 @@ jobs:
             cd apps/api
             uv sync
 
-            # Web: сборка
+            # Web: проверка типов + сборка
             cd ../web
+            bun run type-check
             [ -f vitest.config.ts ] && mv vitest.config.ts vitest.config.ts.bak
             bun run build
 

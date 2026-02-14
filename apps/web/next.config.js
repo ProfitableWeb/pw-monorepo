@@ -15,9 +15,10 @@ const nextConfig = {
     additionalData: `@import "utils/_variables.scss"; @import "utils/_breakpoints.scss";`,
   },
 
-  // TypeScript configuration
+  // TypeScript: проверка типов выполняется через tsc --noEmit (pre-commit + CI),
+  // next build type checker конфликтует с @types/react в монорепо
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 
   // ESLint configuration
