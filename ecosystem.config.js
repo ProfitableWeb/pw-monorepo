@@ -25,11 +25,10 @@ module.exports = {
       name: "admin",
       cwd: "./apps/admin",
       script: "bun",
-      args: "run start -- -p 3001",
+      args: "run preview",
       interpreter: "none",
       env: {
         NODE_ENV: "production",
-        PORT: 3001,
       },
     },
   ],
