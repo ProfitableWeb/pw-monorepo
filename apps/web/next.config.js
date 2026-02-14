@@ -1,6 +1,8 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable experimental features for Next.js 15+ with React 19
+  // Experimental features
   experimental: {
     optimizePackageImports: ['framer-motion', '@tanstack/react-query'],
     // React Compiler requires babel-plugin-react-compiler, disable for now
@@ -9,24 +11,16 @@ const nextConfig = {
     // allowedDevOrigins: ['10.66.130.47']
   },
 
-  // Enable SCSS support
+  // Enable SCSS support (loadPaths replaces includePaths in sass-loader v16)
   sassOptions: {
-    includePaths: ['./src/styles'],
-    additionalData: `@import "utils/_variables.scss"; @import "utils/_breakpoints.scss";`,
+    loadPaths: [path.join(__dirname, 'src', 'styles')],
+    additionalData: `@import "${path.join(__dirname, 'src', 'styles', 'utils', '_variables.scss').replace(/\\/g, '/')}"; @import "${path.join(__dirname, 'src', 'styles', 'utils', '_breakpoints.scss').replace(/\\/g, '/')}";`,
   },
 
   // TypeScript configuration
   typescript: {
     ignoreBuildErrors: false,
   },
-
-  // ESLint configuration
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-
-  // Performance optimizations
-  // swcMinify is now enabled by default in Next.js 15+
 
   // SEO-friendly static exports for better performance (commented out for dev)
   // output: 'export',
