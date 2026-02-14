@@ -1,8 +1,23 @@
 import { useHeaderStore } from "@/app/store/header-store";
 import { breadcrumbPresets } from "@/app/utils/breadcrumbs-helper";
 import { useState, useEffect } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/app/components/ui/utils";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -110,9 +125,11 @@ const initialCategories: Category[] = [
   },
 ];
 
-interface DragItem {
-  id: string;
-  type: string;
+type DropPosition = "before" | "after" | "child";
+
+interface DropIndicator {
+  targetId: string;
+  position: DropPosition;
 }
 
 interface CategoryCardProps {
@@ -120,85 +137,48 @@ interface CategoryCardProps {
   level: number;
   onEdit: (category: Category) => void;
   onDelete: (id: string) => void;
-  onMove: (draggedId: string, targetId: string | null, position: "before" | "after" | "child") => void;
+  dropIndicator: DropIndicator | null;
+  isDragOverlay?: boolean;
 }
 
-function CategoryCard({ category, level, onEdit, onDelete, onMove }: CategoryCardProps) {
-  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
-    type: "CATEGORY",
-    item: { id: category.id },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
+function SortableCategoryCard({
+  category,
+  level,
+  onEdit,
+  onDelete,
+  dropIndicator,
+}: CategoryCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
 
-  const [{ isOverTop, isOverBottom, isOverCenter }, drop] = useDrop<
-    DragItem,
-    void,
-    { isOverTop: boolean; isOverBottom: boolean; isOverCenter: boolean }
-  >(() => ({
-    accept: "CATEGORY",
-    drop: (item, monitor) => {
-      if (item.id === category.id) return;
-      
-      const hoverBoundingRect = monitor.getClientOffset();
-      if (!hoverBoundingRect) return;
-
-      const dropZone = getDropZone(monitor);
-      if (dropZone === "top") {
-        onMove(item.id, category.id, "before");
-      } else if (dropZone === "bottom") {
-        onMove(item.id, category.id, "after");
-      } else if (dropZone === "center") {
-        onMove(item.id, category.id, "child");
-      }
-    },
-    collect: (monitor) => {
-      if (!monitor.isOver() || !monitor.canDrop()) {
-        return { isOverTop: false, isOverBottom: false, isOverCenter: false };
-      }
-
-      const dropZone = getDropZone(monitor);
-      return {
-        isOverTop: dropZone === "top",
-        isOverBottom: dropZone === "bottom",
-        isOverCenter: dropZone === "center",
-      };
-    },
-  }));
-
-  const getDropZone = (monitor: any): "top" | "center" | "bottom" => {
-    const hoverBoundingRect = (monitor.getClientOffset() as { y: number }) || { y: 0 };
-    const targetElement = document.getElementById(`category-${category.id}`);
-    
-    if (!targetElement) return "center";
-    
-    const targetRect = targetElement.getBoundingClientRect();
-    const hoverY = hoverBoundingRect.y - targetRect.top;
-    const height = targetRect.height;
-
-    if (hoverY < height * 0.25) return "top";
-    if (hoverY > height * 0.75) return "bottom";
-    return "center";
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginLeft: level * 32,
+    marginTop: dropIndicator?.targetId === category.id && dropIndicator.position === "before" ? 32 : 0,
+    marginBottom: dropIndicator?.targetId === category.id && dropIndicator.position === "after" ? 32 : 2,
   };
+
+  const isOverTop = dropIndicator?.targetId === category.id && dropIndicator.position === "before";
+  const isOverBottom = dropIndicator?.targetId === category.id && dropIndicator.position === "after";
+  const isOverCenter = dropIndicator?.targetId === category.id && dropIndicator.position === "child";
 
   return (
     <div
-      ref={(node) => {
-        drag(node);
-        drop(node);
-        dragPreview(node);
-      }}
+      ref={setNodeRef}
+      style={style}
       id={`category-${category.id}`}
       className={cn(
         "relative group transition-all duration-200",
         isDragging && "opacity-50"
       )}
-      style={{ 
-        marginLeft: level * 32,
-        marginTop: isOverTop ? 32 : 0,
-        marginBottom: isOverBottom ? 32 : 2
-      }}
+      {...attributes}
     >
       {/* Drop indicators */}
       {isOverTop && (
@@ -224,7 +204,7 @@ function CategoryCard({ category, level, onEdit, onDelete, onMove }: CategoryCar
         {/* Drag Handle */}
         <div
           className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-          ref={drag}
+          {...listeners}
         >
           <GripVertical className="h-5 w-5" />
         </div>
@@ -283,10 +263,35 @@ function CategoryCard({ category, level, onEdit, onDelete, onMove }: CategoryCar
   );
 }
 
+function DragOverlayCard({ category }: { category: Category }) {
+  return (
+    <div className="flex items-center gap-3 p-4 rounded-lg border bg-card shadow-xl opacity-90 w-[400px]">
+      <div className="text-muted-foreground">
+        <GripVertical className="h-5 w-5" />
+      </div>
+      <div className={cn("p-2 rounded-lg", category.color)}>
+        <FolderOpen className="h-4 w-4 text-white" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium truncate">{category.name}</h3>
+          <Badge variant="secondary" className="text-xs">
+            <FileText className="h-3 w-3 mr-1" />
+            {category.articlesCount}
+          </Badge>
+        </div>
+        <p className="text-xs text-muted-foreground">/{category.slug}</p>
+      </div>
+    </div>
+  );
+}
+
 export function CategoriesSection() {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
     slug: string;
@@ -309,25 +314,116 @@ export function CategoriesSection() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  );
+
   const rootCategories = categories.filter((c) => c.parentId === null).sort((a, b) => a.order - b.order);
 
   const getChildCategories = (parentId: string) => {
     return categories.filter((c) => c.parentId === parentId).sort((a, b) => a.order - b.order);
   };
 
-  const handleMove = (draggedId: string, targetId: string | null, position: "before" | "after" | "child") => {
+  // Build flat list of all category IDs in render order (for SortableContext)
+  const allItemIds = rootCategories.flatMap((cat) => [
+    cat.id,
+    ...getChildCategories(cat.id).map((child) => child.id),
+  ]);
+
+  const getDropPosition = (overId: string, event: DragOverEvent): DropPosition => {
+    const overElement = document.getElementById(`category-${overId}`);
+    if (!overElement) return "after";
+
+    const rect = overElement.getBoundingClientRect();
+    const activatorEvent = event.activatorEvent as PointerEvent | undefined;
+    const overEvent = event.over;
+
+    // Use the delta from the drag to estimate cursor position
+    if (overEvent?.rect) {
+      const overRect = overEvent.rect;
+      const pointerY = activatorEvent
+        ? activatorEvent.clientY + (event.delta?.y ?? 0)
+        : rect.top + rect.height / 2;
+
+      const relativeY = pointerY - rect.top;
+      const height = rect.height;
+
+      if (relativeY < height * 0.25) return "before";
+      if (relativeY > height * 0.75) return "after";
+      return "child";
+    }
+
+    return "after";
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) {
+      setDropIndicator(null);
+      return;
+    }
+
+    const overId = over.id as string;
+    const overCategory = categories.find((c) => c.id === overId);
+
+    if (!overCategory) {
+      setDropIndicator(null);
+      return;
+    }
+
+    const position = getDropPosition(overId, event);
+
+    // Don't allow nesting deeper than 1 level
+    if (position === "child" && overCategory.parentId !== null) {
+      setDropIndicator({ targetId: overId, position: "after" });
+      return;
+    }
+
+    setDropIndicator({ targetId: overId, position });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    setActiveId(null);
+
+    if (!over || active.id === over.id || !dropIndicator) {
+      setDropIndicator(null);
+      return;
+    }
+
+    const draggedId = active.id as string;
+    const targetId = dropIndicator.targetId;
+    const position = dropIndicator.position;
+
+    setDropIndicator(null);
+    handleMove(draggedId, targetId, position);
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+    setDropIndicator(null);
+  };
+
+  const handleMove = (draggedId: string, targetId: string | null, position: DropPosition) => {
     setCategories((prev) => {
       const newCategories = [...prev];
       const draggedIndex = newCategories.findIndex((c) => c.id === draggedId);
       const draggedItem = newCategories[draggedIndex];
-      
+
       if (!draggedItem) return prev;
-      
+
       if (position === "child") {
         // Make it a child of target
         const oldParentId = draggedItem.parentId;
         const childrenCount = newCategories.filter((c) => c.parentId === targetId && c.id !== draggedId).length;
-        
+
         // Update dragged item
         const updatedCategories = newCategories.map((c) => {
           if (c.id === draggedId) {
@@ -339,25 +435,25 @@ export function CategoriesSection() {
           }
           return c;
         });
-        
+
         return updatedCategories;
       } else {
         const targetIndex = newCategories.findIndex((c) => c.id === targetId);
         const targetItem = newCategories[targetIndex];
-        
+
         if (!targetItem) return prev;
-        
+
         const oldParentId = draggedItem.parentId;
         const newParentId = targetItem.parentId;
         const targetOrder = targetItem.order;
         const newOrder = position === "before" ? targetOrder : targetOrder + 1;
-        
+
         // Update all affected categories
         const updatedCategories = newCategories.map((c) => {
           if (c.id === draggedId) {
             return { ...c, parentId: newParentId, order: newOrder };
           }
-          
+
           // If moving within same parent
           if (oldParentId === newParentId) {
             if (c.parentId === newParentId && c.id !== draggedId) {
@@ -385,10 +481,10 @@ export function CategoriesSection() {
               return { ...c, order: c.order + 1 };
             }
           }
-          
+
           return c;
         });
-        
+
         return updatedCategories;
       }
     });
@@ -444,9 +540,17 @@ export function CategoriesSection() {
   };
 
   const totalArticles = categories.reduce((sum, cat) => sum + cat.articlesCount, 0);
+  const activeCategory = activeId ? categories.find((c) => c.id === activeId) : null;
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -473,30 +577,36 @@ export function CategoriesSection() {
         </div>
 
         {/* Categories List */}
-        <div className="space-y-1">
-          {rootCategories.map((category) => (
-            <div key={category.id}>
-              <CategoryCard
-                category={category}
-                level={0}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onMove={handleMove}
-              />
-              {/* Child categories */}
-              {getChildCategories(category.id).map((child) => (
-                <CategoryCard
-                  key={child.id}
-                  category={child}
-                  level={1}
+        <SortableContext items={allItemIds} strategy={verticalListSortingStrategy}>
+          <div className="space-y-1">
+            {rootCategories.map((category) => (
+              <div key={category.id}>
+                <SortableCategoryCard
+                  category={category}
+                  level={0}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
-                  onMove={handleMove}
+                  dropIndicator={dropIndicator}
                 />
-              ))}
-            </div>
-          ))}
-        </div>
+                {/* Child categories */}
+                {getChildCategories(category.id).map((child) => (
+                  <SortableCategoryCard
+                    key={child.id}
+                    category={child}
+                    level={1}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    dropIndicator={dropIndicator}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </SortableContext>
+
+        <DragOverlay>
+          {activeCategory ? <DragOverlayCard category={activeCategory} /> : null}
+        </DragOverlay>
 
         {/* Add/Edit Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={handleCloseDialog}>
@@ -596,6 +706,6 @@ export function CategoriesSection() {
           </DialogContent>
         </Dialog>
       </div>
-    </DndProvider>
+    </DndContext>
   );
 }
