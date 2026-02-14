@@ -1,11 +1,11 @@
 // SCSS Mixins and Utility Functions
 // Reusable mixins for common UI patterns and functionality
 
-// Import dependencies
-@import "./colors";
-@import "./spacing";
-@import "./typography";
-@import "./breakpoints";
+// Import dependencies (абсолютные пути через loadPaths для совместимости с Turbopack)
+@import "utils/colors";
+@import "utils/spacing";
+@import "utils/typography";
+@import "utils/breakpoints";
 
 // ===== BUTTON MIXINS =====
 // Consistent button styling across the application

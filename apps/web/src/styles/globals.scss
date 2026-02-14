@@ -2,12 +2,12 @@
 // Only essential styles needed right now
 
 // ===== IMPORT THEMES =====
-@import "./themes/light/index";
-@import "./themes/dark/index";
+@import "themes/light/index";
+@import "themes/dark/index";
 
 // ===== IMPORT UTILITIES =====
-@import "./utils/animations";
-@import "./utils/text-decorations";
+@import "utils/animations";
+@import "utils/text-decorations";
 
 // ===== FONTS =====
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
