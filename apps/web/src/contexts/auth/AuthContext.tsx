@@ -69,7 +69,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [checkAuth]);
 
   const login = useCallback((provider: AuthProvider) => {
-    // Для OAuth — редирект на URL провайдера
+    if (provider === 'telegram') {
+      // Telegram использует Login Widget, не OAuth redirect
+      return;
+    }
     getOAuthUrl(provider).then(url => {
       window.location.href = url;
     });

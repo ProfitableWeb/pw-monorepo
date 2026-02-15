@@ -33,10 +33,10 @@ const PROVIDER_ICONS: Record<AuthProvider, React.ReactNode> = {
   ),
 };
 
-const PROVIDERS: { id: AuthProvider; name: string }[] = [
+// Telegram использует Login Widget (не OAuth redirect), поэтому обрабатывается отдельно
+const OAUTH_PROVIDERS: { id: AuthProvider; name: string }[] = [
   { id: 'yandex', name: 'Яндекс' },
   { id: 'google', name: 'Google' },
-  { id: 'telegram', name: 'Telegram' },
 ];
 
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
@@ -60,7 +60,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     >
       <div className='auth-modal'>
         <div className='auth-modal__providers'>
-          {PROVIDERS.map(provider => (
+          {OAUTH_PROVIDERS.map(provider => (
             <button
               key={provider.id}
               className='auth-modal__provider'
