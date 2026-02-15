@@ -1,6 +1,7 @@
-import { useHeaderStore } from "@/app/store/header-store";
-import { breadcrumbPresets } from "@/app/utils/breadcrumbs-helper";
-import { useState, useEffect } from "react";
+import { useHeaderStore } from '@/app/store/header-store';
+import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
+import { useCategories } from '@/hooks/api';
+import { useState, useEffect, useRef } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -11,17 +12,17 @@ import {
   type DragStartEvent,
   type DragEndEvent,
   type DragOverEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { cn } from "@/app/components/ui/utils";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { cn } from '@/app/components/ui/utils';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
+import { Badge } from '@/app/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -29,13 +30,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/components/ui/dialog";
+} from '@/app/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+} from '@/app/components/ui/dropdown-menu';
 import {
   GripVertical,
   FolderOpen,
@@ -44,8 +45,8 @@ import {
   Pencil,
   Trash2,
   Plus,
-} from "lucide-react";
-import { Label } from "@/app/components/ui/label";
+} from 'lucide-react';
+import { Label } from '@/app/components/ui/label';
 
 interface Category {
   id: string;
@@ -58,74 +59,26 @@ interface Category {
 }
 
 const COLORS = [
-  { name: "Серый", value: "bg-gray-500" },
-  { name: "Красный", value: "bg-red-500" },
-  { name: "Оранжевый", value: "bg-orange-500" },
-  { name: "Желтый", value: "bg-yellow-500" },
-  { name: "Зеленый", value: "bg-green-500" },
-  { name: "Синий", value: "bg-blue-500" },
-  { name: "Фиолетовый", value: "bg-purple-500" },
-  { name: "Розовый", value: "bg-pink-500" },
+  { name: 'Серый', value: 'bg-gray-500' },
+  { name: 'Красный', value: 'bg-red-500' },
+  { name: 'Оранжевый', value: 'bg-orange-500' },
+  { name: 'Желтый', value: 'bg-yellow-500' },
+  { name: 'Зеленый', value: 'bg-green-500' },
+  { name: 'Синий', value: 'bg-blue-500' },
+  { name: 'Фиолетовый', value: 'bg-purple-500' },
+  { name: 'Розовый', value: 'bg-pink-500' },
 ];
 
-const initialCategories: Category[] = [
-  {
-    id: "1",
-    name: "Технологии",
-    slug: "tech",
-    color: "bg-blue-500",
-    articlesCount: 45,
-    parentId: null,
-    order: 0,
-  },
-  {
-    id: "2",
-    name: "Веб-разработка",
-    slug: "web-dev",
-    color: "bg-green-500",
-    articlesCount: 28,
-    parentId: "1",
-    order: 0,
-  },
-  {
-    id: "3",
-    name: "Мобильная разработка",
-    slug: "mobile-dev",
-    color: "bg-purple-500",
-    articlesCount: 17,
-    parentId: "1",
-    order: 1,
-  },
-  {
-    id: "4",
-    name: "Дизайн",
-    slug: "design",
-    color: "bg-pink-500",
-    articlesCount: 32,
-    parentId: null,
-    order: 1,
-  },
-  {
-    id: "5",
-    name: "UI/UX",
-    slug: "ui-ux",
-    color: "bg-orange-500",
-    articlesCount: 24,
-    parentId: "4",
-    order: 0,
-  },
-  {
-    id: "6",
-    name: "Маркетинг",
-    slug: "marketing",
-    color: "bg-red-500",
-    articlesCount: 19,
-    parentId: null,
-    order: 2,
-  },
+const FALLBACK_COLORS = [
+  'bg-blue-500',
+  'bg-green-500',
+  'bg-purple-500',
+  'bg-pink-500',
+  'bg-orange-500',
+  'bg-red-500',
 ];
 
-type DropPosition = "before" | "after" | "child";
+type DropPosition = 'before' | 'after' | 'child';
 
 interface DropIndicator {
   targetId: string;
@@ -161,13 +114,27 @@ function SortableCategoryCard({
     transform: CSS.Transform.toString(transform),
     transition,
     marginLeft: level * 32,
-    marginTop: dropIndicator?.targetId === category.id && dropIndicator.position === "before" ? 32 : 0,
-    marginBottom: dropIndicator?.targetId === category.id && dropIndicator.position === "after" ? 32 : 2,
+    marginTop:
+      dropIndicator?.targetId === category.id &&
+      dropIndicator.position === 'before'
+        ? 32
+        : 0,
+    marginBottom:
+      dropIndicator?.targetId === category.id &&
+      dropIndicator.position === 'after'
+        ? 32
+        : 2,
   };
 
-  const isOverTop = dropIndicator?.targetId === category.id && dropIndicator.position === "before";
-  const isOverBottom = dropIndicator?.targetId === category.id && dropIndicator.position === "after";
-  const isOverCenter = dropIndicator?.targetId === category.id && dropIndicator.position === "child";
+  const isOverTop =
+    dropIndicator?.targetId === category.id &&
+    dropIndicator.position === 'before';
+  const isOverBottom =
+    dropIndicator?.targetId === category.id &&
+    dropIndicator.position === 'after';
+  const isOverCenter =
+    dropIndicator?.targetId === category.id &&
+    dropIndicator.position === 'child';
 
   return (
     <div
@@ -175,85 +142,85 @@ function SortableCategoryCard({
       style={style}
       id={`category-${category.id}`}
       className={cn(
-        "relative group transition-all duration-200",
-        isDragging && "opacity-50"
+        'relative group transition-all duration-200',
+        isDragging && 'opacity-50'
       )}
       {...attributes}
     >
       {/* Drop indicators */}
       {isOverTop && (
-        <div className="absolute -top-4 left-0 right-0 h-0.5 bg-blue-500 z-10 shadow-lg shadow-blue-500/50" />
+        <div className='absolute -top-4 left-0 right-0 h-0.5 bg-blue-500 z-10 shadow-lg shadow-blue-500/50' />
       )}
       {isOverCenter && level < 1 && (
         <>
-          <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none z-10 bg-blue-500/5" />
-          <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none z-10 animate-pulse" />
+          <div className='absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none z-10 bg-blue-500/5' />
+          <div className='absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none z-10 animate-pulse' />
         </>
       )}
       {isOverBottom && (
-        <div className="absolute -bottom-4 left-0 right-0 h-0.5 bg-blue-500 z-10 shadow-lg shadow-blue-500/50" />
+        <div className='absolute -bottom-4 left-0 right-0 h-0.5 bg-blue-500 z-10 shadow-lg shadow-blue-500/50' />
       )}
 
       <div
         className={cn(
-          "flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-all duration-200",
-          isOverCenter && level < 1 && "bg-accent/50 scale-[0.98]",
-          (isOverTop || isOverBottom) && "scale-[0.98]"
+          'flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-all duration-200',
+          isOverCenter && level < 1 && 'bg-accent/50 scale-[0.98]',
+          (isOverTop || isOverBottom) && 'scale-[0.98]'
         )}
       >
         {/* Drag Handle */}
         <div
-          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+          className='cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground'
           {...listeners}
         >
-          <GripVertical className="h-5 w-5" />
+          <GripVertical className='h-5 w-5' />
         </div>
 
         {/* Hierarchy indicator */}
         {level > 0 && (
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <div className="w-6 h-px bg-border" />
+          <div className='flex items-center gap-2 text-muted-foreground'>
+            <div className='w-6 h-px bg-border' />
           </div>
         )}
 
         {/* Category Icon with Color */}
-        <div className={cn("p-2 rounded-lg", category.color)}>
-          <FolderOpen className="h-4 w-4 text-white" />
+        <div className={cn('p-2 rounded-lg', category.color)}>
+          <FolderOpen className='h-4 w-4 text-white' />
         </div>
 
         {/* Category Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium truncate">{category.name}</h3>
-            <Badge variant="secondary" className="text-xs">
-              <FileText className="h-3 w-3 mr-1" />
+        <div className='flex-1 min-w-0'>
+          <div className='flex items-center gap-2'>
+            <h3 className='font-medium truncate'>{category.name}</h3>
+            <Badge variant='secondary' className='text-xs'>
+              <FileText className='h-3 w-3 mr-1' />
               {category.articlesCount}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground">/{category.slug}</p>
+          <p className='text-xs text-muted-foreground'>/{category.slug}</p>
         </div>
 
         {/* Actions */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
-              className="opacity-0 group-hover:opacity-100"
+              variant='ghost'
+              size='icon'
+              className='opacity-0 group-hover:opacity-100'
             >
-              <MoreVertical className="h-4 w-4" />
+              <MoreVertical className='h-4 w-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={() => onEdit(category)}>
-              <Pencil className="h-4 w-4 mr-2" />
+              <Pencil className='h-4 w-4 mr-2' />
               Редактировать
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDelete(category.id)}
-              className="text-destructive"
+              className='text-destructive'
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className='h-4 w-4 mr-2' />
               Удалить
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -265,42 +232,65 @@ function SortableCategoryCard({
 
 function DragOverlayCard({ category }: { category: Category }) {
   return (
-    <div className="flex items-center gap-3 p-4 rounded-lg border bg-card shadow-xl opacity-90 w-[400px]">
-      <div className="text-muted-foreground">
-        <GripVertical className="h-5 w-5" />
+    <div className='flex items-center gap-3 p-4 rounded-lg border bg-card shadow-xl opacity-90 w-[400px]'>
+      <div className='text-muted-foreground'>
+        <GripVertical className='h-5 w-5' />
       </div>
-      <div className={cn("p-2 rounded-lg", category.color)}>
-        <FolderOpen className="h-4 w-4 text-white" />
+      <div className={cn('p-2 rounded-lg', category.color)}>
+        <FolderOpen className='h-4 w-4 text-white' />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="font-medium truncate">{category.name}</h3>
-          <Badge variant="secondary" className="text-xs">
-            <FileText className="h-3 w-3 mr-1" />
+      <div className='flex-1 min-w-0'>
+        <div className='flex items-center gap-2'>
+          <h3 className='font-medium truncate'>{category.name}</h3>
+          <Badge variant='secondary' className='text-xs'>
+            <FileText className='h-3 w-3 mr-1' />
             {category.articlesCount}
           </Badge>
         </div>
-        <p className="text-xs text-muted-foreground">/{category.slug}</p>
+        <p className='text-xs text-muted-foreground'>/{category.slug}</p>
       </div>
     </div>
   );
 }
 
 export function CategoriesSection() {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const { data: apiCategories, isLoading } = useCategories();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const initialized = useRef(false);
+
+  // Sync API data → local state (preserves DnD reordering)
+  useEffect(() => {
+    if (apiCategories && !initialized.current) {
+      initialized.current = true;
+      setCategories(
+        apiCategories.map((cat, i) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          color: FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+          articlesCount: cat.articleCount,
+          parentId: null,
+          order: i,
+        }))
+      );
+    }
+  }, [apiCategories]);
+
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(null);
+  const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(
+    null
+  );
   const [formData, setFormData] = useState<{
     name: string;
     slug: string;
     color: string;
     parentId: string | null;
   }>({
-    name: "",
-    slug: "",
-    color: "bg-gray-500",
+    name: '',
+    slug: '',
+    color: 'bg-gray-500',
     parentId: null,
   });
 
@@ -320,21 +310,28 @@ export function CategoriesSection() {
     })
   );
 
-  const rootCategories = categories.filter((c) => c.parentId === null).sort((a, b) => a.order - b.order);
+  const rootCategories = categories
+    .filter(c => c.parentId === null)
+    .sort((a, b) => a.order - b.order);
 
   const getChildCategories = (parentId: string) => {
-    return categories.filter((c) => c.parentId === parentId).sort((a, b) => a.order - b.order);
+    return categories
+      .filter(c => c.parentId === parentId)
+      .sort((a, b) => a.order - b.order);
   };
 
   // Build flat list of all category IDs in render order (for SortableContext)
-  const allItemIds = rootCategories.flatMap((cat) => [
+  const allItemIds = rootCategories.flatMap(cat => [
     cat.id,
-    ...getChildCategories(cat.id).map((child) => child.id),
+    ...getChildCategories(cat.id).map(child => child.id),
   ]);
 
-  const getDropPosition = (overId: string, event: DragOverEvent): DropPosition => {
+  const getDropPosition = (
+    overId: string,
+    event: DragOverEvent
+  ): DropPosition => {
     const overElement = document.getElementById(`category-${overId}`);
-    if (!overElement) return "after";
+    if (!overElement) return 'after';
 
     const rect = overElement.getBoundingClientRect();
     const activatorEvent = event.activatorEvent as PointerEvent | undefined;
@@ -350,12 +347,12 @@ export function CategoriesSection() {
       const relativeY = pointerY - rect.top;
       const height = rect.height;
 
-      if (relativeY < height * 0.25) return "before";
-      if (relativeY > height * 0.75) return "after";
-      return "child";
+      if (relativeY < height * 0.25) return 'before';
+      if (relativeY > height * 0.75) return 'after';
+      return 'child';
     }
 
-    return "after";
+    return 'after';
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -370,7 +367,7 @@ export function CategoriesSection() {
     }
 
     const overId = over.id as string;
-    const overCategory = categories.find((c) => c.id === overId);
+    const overCategory = categories.find(c => c.id === overId);
 
     if (!overCategory) {
       setDropIndicator(null);
@@ -380,8 +377,8 @@ export function CategoriesSection() {
     const position = getDropPosition(overId, event);
 
     // Don't allow nesting deeper than 1 level
-    if (position === "child" && overCategory.parentId !== null) {
-      setDropIndicator({ targetId: overId, position: "after" });
+    if (position === 'child' && overCategory.parentId !== null) {
+      setDropIndicator({ targetId: overId, position: 'after' });
       return;
     }
 
@@ -411,21 +408,27 @@ export function CategoriesSection() {
     setDropIndicator(null);
   };
 
-  const handleMove = (draggedId: string, targetId: string | null, position: DropPosition) => {
-    setCategories((prev) => {
+  const handleMove = (
+    draggedId: string,
+    targetId: string | null,
+    position: DropPosition
+  ) => {
+    setCategories(prev => {
       const newCategories = [...prev];
-      const draggedIndex = newCategories.findIndex((c) => c.id === draggedId);
+      const draggedIndex = newCategories.findIndex(c => c.id === draggedId);
       const draggedItem = newCategories[draggedIndex];
 
       if (!draggedItem) return prev;
 
-      if (position === "child") {
+      if (position === 'child') {
         // Make it a child of target
         const oldParentId = draggedItem.parentId;
-        const childrenCount = newCategories.filter((c) => c.parentId === targetId && c.id !== draggedId).length;
+        const childrenCount = newCategories.filter(
+          c => c.parentId === targetId && c.id !== draggedId
+        ).length;
 
         // Update dragged item
-        const updatedCategories = newCategories.map((c) => {
+        const updatedCategories = newCategories.map(c => {
           if (c.id === draggedId) {
             return { ...c, parentId: targetId, order: childrenCount };
           }
@@ -438,7 +441,7 @@ export function CategoriesSection() {
 
         return updatedCategories;
       } else {
-        const targetIndex = newCategories.findIndex((c) => c.id === targetId);
+        const targetIndex = newCategories.findIndex(c => c.id === targetId);
         const targetItem = newCategories[targetIndex];
 
         if (!targetItem) return prev;
@@ -446,10 +449,10 @@ export function CategoriesSection() {
         const oldParentId = draggedItem.parentId;
         const newParentId = targetItem.parentId;
         const targetOrder = targetItem.order;
-        const newOrder = position === "before" ? targetOrder : targetOrder + 1;
+        const newOrder = position === 'before' ? targetOrder : targetOrder + 1;
 
         // Update all affected categories
-        const updatedCategories = newCategories.map((c) => {
+        const updatedCategories = newCategories.map(c => {
           if (c.id === draggedId) {
             return { ...c, parentId: newParentId, order: newOrder };
           }
@@ -492,12 +495,8 @@ export function CategoriesSection() {
 
   const handleSave = () => {
     if (editingCategory) {
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.id === editingCategory.id
-            ? { ...c, ...formData }
-            : c
-        )
+      setCategories(prev =>
+        prev.map(c => (c.id === editingCategory.id ? { ...c, ...formData } : c))
       );
     } else {
       const newCategory: Category = {
@@ -511,15 +510,19 @@ export function CategoriesSection() {
           ? getChildCategories(formData.parentId).length
           : rootCategories.length,
       };
-      setCategories((prev) => [...prev, newCategory]);
+      setCategories(prev => [...prev, newCategory]);
     }
     handleCloseDialog();
   };
 
   const handleDelete = (id: string) => {
     // Also delete children
-    const childrenIds = categories.filter((c) => c.parentId === id).map((c) => c.id);
-    setCategories((prev) => prev.filter((c) => c.id !== id && !childrenIds.includes(c.id)));
+    const childrenIds = categories
+      .filter(c => c.parentId === id)
+      .map(c => c.id);
+    setCategories(prev =>
+      prev.filter(c => c.id !== id && !childrenIds.includes(c.id))
+    );
   };
 
   const handleEdit = (category: Category) => {
@@ -536,11 +539,16 @@ export function CategoriesSection() {
   const handleCloseDialog = () => {
     setIsAddDialogOpen(false);
     setEditingCategory(null);
-    setFormData({ name: "", slug: "", color: "bg-gray-500", parentId: null });
+    setFormData({ name: '', slug: '', color: 'bg-gray-500', parentId: null });
   };
 
-  const totalArticles = categories.reduce((sum, cat) => sum + cat.articlesCount, 0);
-  const activeCategory = activeId ? categories.find((c) => c.id === activeId) : null;
+  const totalArticles = categories.reduce(
+    (sum, cat) => sum + cat.articlesCount,
+    0
+  );
+  const activeCategory = activeId
+    ? categories.find(c => c.id === activeId)
+    : null;
 
   return (
     <DndContext
@@ -551,61 +559,73 @@ export function CategoriesSection() {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="p-6 space-y-6">
+      <div className='p-6 space-y-6'>
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className='flex items-center justify-between'>
           <div>
-            <h1 className="text-3xl font-bold">
+            <h1 className='text-3xl font-bold'>
               Управление категориями статей
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className='text-muted-foreground mt-1'>
               {categories.length} категорий • {totalArticles} статей • 0 тегов
             </p>
           </div>
           <Button onClick={() => setIsAddDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className='h-4 w-4 mr-2' />
             Новая категория
           </Button>
         </div>
 
         {/* Info Card */}
-        <div className="p-4 border rounded-lg bg-muted/50">
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>Подсказка:</strong> Перетаскивайте категории для изменения порядка.
-            Перетащите на другую категорию, чтобы делать её подкатегорией (только один уровень вложенности).
+        <div className='p-4 border rounded-lg bg-muted/50'>
+          <p className='text-sm text-muted-foreground'>
+            💡 <strong>Подсказка:</strong> Перетаскивайте категории для
+            изменения порядка. Перетащите на другую категорию, чтобы делать её
+            подкатегорией (только один уровень вложенности).
           </p>
         </div>
 
         {/* Categories List */}
-        <SortableContext items={allItemIds} strategy={verticalListSortingStrategy}>
-          <div className="space-y-1">
-            {rootCategories.map((category) => (
-              <div key={category.id}>
-                <SortableCategoryCard
-                  category={category}
-                  level={0}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  dropIndicator={dropIndicator}
-                />
-                {/* Child categories */}
-                {getChildCategories(category.id).map((child) => (
+        {isLoading && categories.length === 0 ? (
+          <div className='text-center py-8 text-muted-foreground'>
+            Загрузка категорий...
+          </div>
+        ) : (
+          <SortableContext
+            items={allItemIds}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className='space-y-1'>
+              {rootCategories.map(category => (
+                <div key={category.id}>
                   <SortableCategoryCard
-                    key={child.id}
-                    category={child}
-                    level={1}
+                    category={category}
+                    level={0}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     dropIndicator={dropIndicator}
                   />
-                ))}
-              </div>
-            ))}
-          </div>
-        </SortableContext>
+                  {/* Child categories */}
+                  {getChildCategories(category.id).map(child => (
+                    <SortableCategoryCard
+                      key={child.id}
+                      category={child}
+                      level={1}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      dropIndicator={dropIndicator}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </SortableContext>
+        )}
 
         <DragOverlay>
-          {activeCategory ? <DragOverlayCard category={activeCategory} /> : null}
+          {activeCategory ? (
+            <DragOverlayCard category={activeCategory} />
+          ) : null}
         </DragOverlay>
 
         {/* Add/Edit Dialog */}
@@ -613,56 +633,62 @@ export function CategoriesSection() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingCategory ? "Редактировать категорию" : "Новая категория"}
+                {editingCategory
+                  ? 'Редактировать категорию'
+                  : 'Новая категория'}
               </DialogTitle>
               <DialogDescription>
                 {editingCategory
-                  ? "Измените данные категории"
-                  : "Создайте новую категорию для организации контента"}
+                  ? 'Измените данные категории'
+                  : 'Создайте новую категорию для организации контента'}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Название</Label>
+            <div className='space-y-4 py-4'>
+              <div className='space-y-2'>
+                <Label htmlFor='name'>Название</Label>
                 <Input
-                  id="name"
+                  id='name'
                   value={formData.name}
-                  onChange={(e) => {
+                  onChange={e => {
                     const name = e.target.value;
-                    setFormData((prev) => ({
+                    setFormData(prev => ({
                       ...prev,
                       name,
-                      slug: prev.slug || name.toLowerCase().replace(/\s+/g, "-"),
+                      slug:
+                        prev.slug || name.toLowerCase().replace(/\s+/g, '-'),
                     }));
                   }}
-                  placeholder="Например: Веб-разработка"
+                  placeholder='Например: Веб-разработка'
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="slug">URL (slug)</Label>
+              <div className='space-y-2'>
+                <Label htmlFor='slug'>URL (slug)</Label>
                 <Input
-                  id="slug"
+                  id='slug'
                   value={formData.slug}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, slug: e.target.value }))
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, slug: e.target.value }))
                   }
-                  placeholder="web-development"
+                  placeholder='web-development'
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <Label>Цвет</Label>
-                <div className="flex gap-2 flex-wrap">
-                  {COLORS.map((color) => (
+                <div className='flex gap-2 flex-wrap'>
+                  {COLORS.map(color => (
                     <button
                       key={color.value}
-                      onClick={() => setFormData((prev) => ({ ...prev, color: color.value }))}
+                      onClick={() =>
+                        setFormData(prev => ({ ...prev, color: color.value }))
+                      }
                       className={cn(
-                        "w-10 h-10 rounded-lg transition-all",
+                        'w-10 h-10 rounded-lg transition-all',
                         color.value,
-                        formData.color === color.value && "ring-2 ring-offset-2 ring-foreground scale-110"
+                        formData.color === color.value &&
+                          'ring-2 ring-offset-2 ring-foreground scale-110'
                       )}
                       title={color.name}
                     />
@@ -670,23 +696,23 @@ export function CategoriesSection() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="parent">Родительская категория</Label>
+              <div className='space-y-2'>
+                <Label htmlFor='parent'>Родительская категория</Label>
                 <select
-                  id="parent"
-                  value={formData.parentId || ""}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
+                  id='parent'
+                  value={formData.parentId || ''}
+                  onChange={e =>
+                    setFormData(prev => ({
                       ...prev,
                       parentId: e.target.value || null,
                     }))
                   }
-                  className="w-full p-2 border rounded-lg bg-background"
+                  className='w-full p-2 border rounded-lg bg-background'
                 >
-                  <option value="">Без родителя (корневая)</option>
+                  <option value=''>Без родителя (корневая)</option>
                   {rootCategories
-                    .filter((c) => c.id !== editingCategory?.id)
-                    .map((cat) => (
+                    .filter(c => c.id !== editingCategory?.id)
+                    .map(cat => (
                       <option key={cat.id} value={cat.id}>
                         {cat.name}
                       </option>
@@ -696,11 +722,14 @@ export function CategoriesSection() {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={handleCloseDialog}>
+              <Button variant='outline' onClick={handleCloseDialog}>
                 Отмена
               </Button>
-              <Button onClick={handleSave} disabled={!formData.name || !formData.slug}>
-                {editingCategory ? "Сохранить" : "Создать"}
+              <Button
+                onClick={handleSave}
+                disabled={!formData.name || !formData.slug}
+              >
+                {editingCategory ? 'Сохранить' : 'Создать'}
               </Button>
             </DialogFooter>
           </DialogContent>

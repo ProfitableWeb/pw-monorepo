@@ -3,7 +3,7 @@
 ## 📋 Информация о задаче
 
 - **ID**: PW-029
-- **Статус**: TODO
+- **Статус**: DONE
 - **Создано**: 2026-02-15
 - **Приоритет**: High ⚡
 - **Компонент**: ⚙️ Admin (apps/admin)
@@ -23,31 +23,31 @@
 
 ### Критерии приемки
 
-- [ ] @tanstack/react-query установлен и настроен
-- [ ] QueryClientProvider обёрнут вокруг <App /> в main.tsx
-- [ ] React Query DevTools подключены (dev mode)
-- [ ] API-клиент создан (src/lib/api-client.ts)
-- [ ] React Query hooks для всех GET-эндпоинтов:
-  - [ ] useCategories() → GET /api/categories
-  - [ ] useArticles(params) → GET /api/articles (пагинация + фильтры)
-  - [ ] useArticle(slug) → GET /api/articles/{slug}
-  - [ ] useArticleComments(slug) → GET /api/articles/{slug}/comments
-  - [ ] useUserComments(userId) → GET /api/users/{id}/comments
-- [ ] Компоненты обновлены:
-  - [ ] categories-section.tsx — реальные категории
-  - [ ] articles-section.tsx — реальные статьи + пагинация
-  - [ ] posts-table.tsx — реальные данные
-  - [ ] dashboard-section.tsx — актуальные stats
-- [ ] Loading states (Skeleton) во всех компонентах
-- [ ] Error states (retry / fallback UI)
-- [ ] VITE_API_URL в .env.local
-- [ ] bun run build проходит без ошибок
+- [x] @tanstack/react-query установлен и настроен
+- [x] QueryClientProvider обёрнут вокруг <App /> в main.tsx
+- [x] React Query DevTools подключены (dev mode)
+- [x] API-клиент создан (src/lib/api-client.ts)
+- [x] React Query hooks для всех GET-эндпоинтов:
+  - [x] useCategories() → GET /api/categories
+  - [x] useArticles(params) → GET /api/articles (пагинация + фильтры)
+  - [x] useArticle(slug) → GET /api/articles/{slug}
+  - [x] useArticleComments(slug) → GET /api/articles/{slug}/comments
+  - [x] useUserComments(userId) → GET /api/users/{id}/comments
+- [x] Компоненты обновлены:
+  - [x] categories-section.tsx — реальные категории
+  - [x] articles-section.tsx — реальные статьи
+  - [x] posts-table.tsx — реальные данные
+  - [x] dashboard-section.tsx (blog-stats) — актуальные stats
+- [x] Loading states во всех компонентах
+- [ ] Error states (retry / fallback UI) — базовый retry через React Query
+- [x] VITE_API_URL в .env.local
+- [x] bun run build проходит без ошибок
 
 ### Зависимости
 
 - [x] PW-027: Backend Content API (завершена)
 - [x] PW-024: BlogDash интеграция в admin (завершена)
-- [ ] API сервер доступен на localhost:8000
+- [x] API сервер доступен на localhost:8000
 
 ### Что НЕ входит
 
@@ -174,6 +174,7 @@ const MOCK_ADMIN = { id: '1', name: 'Admin', role: 'admin' };
 ### История изменений
 
 - 2026-02-15: Задача создана
+- 2026-02-15: Реализация завершена
 
 ---
 
