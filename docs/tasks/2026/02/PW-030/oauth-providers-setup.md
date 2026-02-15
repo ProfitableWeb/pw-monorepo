@@ -2,6 +2,8 @@
 
 > Инструкции по получению `client_id` / `client_secret` для каждого провайдера. После регистрации добавить значения в
 > `apps/api/.env`.
+>
+> **Примечание**: VK ID временно убран из списка провайдеров (требуется регистрация как юрлицо).
 
 ---
 
@@ -41,7 +43,7 @@ YANDEX_CLIENT_SECRET=<Client secret>
 
 ## 2. VK ID
 
-**Консоль**: https://id.vk.com/about/business/go/accounts
+[пока неподдерживаем, т.к. не юридического лица] **Консоль**: https://id.vk.com/about/business/go/accounts
 
 ### Шаги
 
@@ -184,14 +186,12 @@ GOOGLE_CLIENT_SECRET=<Client secret>
 | Провайдер | Консоль                  | Redirect URI (dev)                        | Время получения |
 | --------- | ------------------------ | ----------------------------------------- | --------------- |
 | Yandex ID | oauth.yandex.ru          | `localhost:8000/api/auth/yandex/callback` | ~5 мин          |
-| VK ID     | id.vk.com                | `localhost:8000/api/auth/vk/callback`     | ~10 мин         |
 | Telegram  | @BotFather               | — (виджет, без redirect)                  | ~2 мин          |
 | Google    | console.cloud.google.com | `localhost:8000/api/auth/google/callback` | ~10 мин         |
 
 ## Чеклист
 
 - [ ] Yandex: `YANDEX_CLIENT_ID` + `YANDEX_CLIENT_SECRET` получены
-- [ ] VK: `VK_CLIENT_ID` + `VK_CLIENT_SECRET` получены
 - [ ] Telegram: `TELEGRAM_BOT_TOKEN` получен, домен настроен
 - [ ] Google: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` получены
 - [ ] Все значения добавлены в `apps/api/.env`

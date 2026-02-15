@@ -13,7 +13,7 @@
 
 ### Описание
 
-Реализация полноценной аутентификации: JWT-токены на бэкенде, OAuth-провайдеры (Yandex, VK, Telegram, Google), защита
+Реализация полноценной аутентификации: JWT-токены на бэкенде, OAuth-провайдеры (Yandex, Telegram, Google), защита
 эндпоинтов, интеграция с фронтом и админкой.
 
 Сейчас на фронте mock-авторизация (AuthContext с захардкоженным пользователем), на бэкенде — модель User без
@@ -39,7 +39,6 @@ email/пароль или OAuth и получают доступ к админк
   - [ ] GET `/api/auth/{provider}/callback` — обработка OAuth callback
 - [ ] OAuth-провайдеры:
   - [ ] Yandex ID
-  - [ ] VK ID
   - [ ] Telegram Login Widget
   - [ ] Google (для админки)
 - [ ] POST `/api/articles/{slug}/comments` — защищённый эндпоинт создания комментария
@@ -98,7 +97,7 @@ Refresh Token: { sub: user_id, exp: 7d, jti: unique_id }
 ```python
 # apps/api/src/models/user.py — новые поля
 password_hash: Mapped[str | None]         # bcrypt, null для OAuth-only
-oauth_provider: Mapped[str | None]        # "yandex" | "vk" | "telegram" | "google"
+oauth_provider: Mapped[str | None]        # "yandex" | "telegram" | "google"
 oauth_id: Mapped[str | None]              # ID у провайдера
 ```
 
@@ -122,7 +121,6 @@ apps/api/src/
 │   ├── dependencies.py     # get_current_user, get_current_admin
 │   ├── oauth/
 │   │   ├── yandex.py       # Yandex ID OAuth
-│   │   ├── vk.py           # VK ID OAuth
 │   │   ├── telegram.py     # Telegram Login Widget
 │   │   └── google.py       # Google OAuth
 │   └── passwords.py        # hash/verify password
@@ -155,10 +153,6 @@ JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
 # Yandex ID
 YANDEX_CLIENT_ID=
 YANDEX_CLIENT_SECRET=
-
-# VK ID
-VK_CLIENT_ID=
-VK_CLIENT_SECRET=
 
 # Telegram
 TELEGRAM_BOT_TOKEN=
@@ -200,7 +194,6 @@ GOOGLE_CLIENT_SECRET=
 ### Фаза 2: Backend OAuth
 
 - [ ] OAuth модуль Yandex ID
-- [ ] OAuth модуль VK ID
 - [ ] Telegram Login Widget verification
 - [ ] OAuth модуль Google
 - [ ] GET /auth/{provider}/url, GET /auth/{provider}/callback
