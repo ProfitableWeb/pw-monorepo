@@ -427,7 +427,8 @@ export async function authRefresh(): Promise<boolean> {
 }
 
 export async function getOAuthUrl(provider: string): Promise<string> {
-  const origin = window.location.origin;
+  // Передаём base path (/admin) чтобы после OAuth вернуться в админку
+  const origin = window.location.origin + '/admin';
   const res = await fetch(
     `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}`,
     { credentials: 'include' }

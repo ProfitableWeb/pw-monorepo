@@ -43,15 +43,15 @@ function App() {
   // Проверка авторизации при загрузке + обработка OAuth callback
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (url.pathname === '/auth/callback') {
+    if (url.pathname.endsWith('/auth/callback')) {
       const success = url.searchParams.get('success');
       if (success === 'true') {
         // Cookies уже установлены бэкендом — проверяем auth
         checkAuth().then(() => {
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/admin/');
         });
       } else {
-        window.history.replaceState({}, '', '/');
+        window.history.replaceState({}, '', '/admin/');
       }
     } else {
       checkAuth();
