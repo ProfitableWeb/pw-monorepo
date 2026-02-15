@@ -1,8 +1,9 @@
 /**
- * Типизированный API-клиент для Backend Content API (PW-027).
+ * PW-030 | Типизированный API-клиент для Backend Content API.
  *
  * Все функции повторяют контракт mock-api.ts, чтобы замена была прозрачной.
  * snake_case ответов API преобразуется в camelCase фронтенд-типов.
+ * credentials: 'include' для httpOnly cookies аутентификации.
  */
 
 import { Category } from '@/types';
@@ -135,7 +136,7 @@ function mapCommentThread(raw: CommentThreadRaw): ArticleCommentThread {
 // Базовый fetch
 // ---------------------------------------------------------------------------
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     public status: number,
     message: string
@@ -147,16 +148,41 @@ class ApiError extends Error {
 
 async function apiFetch<T>(
   path: string,
-  options?: { next?: NextFetchRequestConfig }
+  options?: { next?: NextFetchRequestConfig; method?: string; body?: string }
 ): Promise<T | null> {
   const url = `${API_BASE}${path}`;
 
   const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    headers: {
+      Accept: 'application/json',
+      ...(options?.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    credentials: 'include',
     ...options,
   });
 
   if (res.status === 404) return null;
+
+  // 401 — пробуем refresh один раз
+  if (res.status === 401 && !path.startsWith('/auth/')) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      // Повторяем оригинальный запрос
+      const retry = await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+          ...(options?.body ? { 'Content-Type': 'application/json' } : {}),
+        },
+        credentials: 'include',
+        ...options,
+      });
+      if (retry.ok) {
+        const json: ApiResponseRaw<T> = await retry.json();
+        return json.data ?? null;
+      }
+    }
+    throw new ApiError(401, 'Не авторизован');
+  }
 
   if (!res.ok) {
     throw new ApiError(res.status, `API error ${res.status}: ${url}`);
@@ -266,4 +292,130 @@ export async function getArticleCommentThreads(
     `/articles/${encodeURIComponent(articleSlug)}/comments`
   );
   return (data ?? []).map(mapCommentThread);
+}
+
+// ---------------------------------------------------------------------------
+// Auth API
+// ---------------------------------------------------------------------------
+
+interface AuthUserRaw {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string | null;
+  role: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: string;
+}
+
+function mapAuthUser(raw: AuthUserRaw): AuthUser {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar ?? undefined,
+    role: raw.role,
+  };
+}
+
+export async function authLogin(
+  email: string,
+  password: string
+): Promise<AuthUser> {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка авторизации');
+  }
+  const raw: AuthUserRaw = await res.json();
+  return mapAuthUser(raw);
+}
+
+export async function authRegister(
+  email: string,
+  password: string,
+  name: string
+): Promise<AuthUser> {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password, name }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка регистрации');
+  }
+  const raw: AuthUserRaw = await res.json();
+  return mapAuthUser(raw);
+}
+
+export async function authLogout(): Promise<void> {
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+}
+
+export async function authGetMe(): Promise<AuthUser | null> {
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const raw: AuthUserRaw = await res.json();
+    return mapAuthUser(raw);
+  } catch {
+    return null;
+  }
+}
+
+export async function authRefresh(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function getOAuthUrl(provider: string): Promise<string> {
+  const origin = window.location.origin;
+  const res = await fetch(
+    `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}`,
+    { credentials: 'include' }
+  );
+  if (!res.ok) throw new ApiError(res.status, 'Ошибка получения OAuth URL');
+  const json = await res.json();
+  return json.url;
+}
+
+export async function createComment(
+  articleSlug: string,
+  content: string,
+  parentId?: string
+): Promise<Comment> {
+  const body: Record<string, string> = { content };
+  if (parentId) body.parent_id = parentId;
+
+  const data = await apiFetch<CommentRaw>(
+    `/articles/${encodeURIComponent(articleSlug)}/comments`,
+    { method: 'POST', body: JSON.stringify(body) }
+  );
+  if (!data) throw new ApiError(500, 'Не удалось создать комментарий');
+  return mapComment(data);
 }

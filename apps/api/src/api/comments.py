@@ -1,16 +1,23 @@
 """
-PW-027 | Комментарии: треды для статей + список по пользователю (для админки).
+PW-030 | Комментарии: треды для статей + список по пользователю (для админки).
 _build_threads() собирает плоский список в структуру {root, replies[]} на стороне Python.
+POST /articles/{slug}/comments — создание комментария (protected).
 """
 
 from collections.abc import Sequence
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from src.auth.dependencies import get_current_user
 from src.core.database import get_db
 from src.models.comment import Comment
-from src.schemas.comment import CommentResponse, CommentThreadResponse
+from src.models.user import User
+from src.schemas.comment import (
+    CommentCreateRequest,
+    CommentResponse,
+    CommentThreadResponse,
+)
 from src.schemas.common import ApiMeta, ApiResponse
 from src.services import comment as comment_service
 
@@ -58,6 +65,32 @@ def _build_threads(comments: Sequence[Comment]) -> list[CommentThreadResponse]:
             )
         )
     return threads
+
+
+@router.post(
+    "/articles/{slug}/comments",
+    response_model=ApiResponse[CommentResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+def create_comment(
+    slug: str,
+    body: CommentCreateRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ApiResponse[CommentResponse]:
+    try:
+        comment = comment_service.create_comment(
+            db,
+            user_id=str(user.id),
+            article_slug=slug,
+            content=body.content,
+            parent_id=body.parent_id,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(e)
+        )
+    return ApiResponse(success=True, data=_comment_to_response(comment))
 
 
 @router.get(

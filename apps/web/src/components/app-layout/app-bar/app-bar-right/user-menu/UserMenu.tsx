@@ -68,7 +68,7 @@ export const UserMenu = () => {
       >
         <span className='user-menu__avatar-wrapper'>
           <Image
-            src={user.avatar}
+            src={user.avatar || '/imgs/author/avatar.jpg'}
             alt={user.name}
             width={28}
             height={28}
@@ -82,7 +82,7 @@ export const UserMenu = () => {
           <div className='user-menu__header'>
             <span className='user-menu__avatar-wrapper user-menu__avatar-wrapper--large'>
               <Image
-                src={user.avatar}
+                src={user.avatar || '/imgs/author/avatar.jpg'}
                 alt={user.name}
                 width={40}
                 height={40}

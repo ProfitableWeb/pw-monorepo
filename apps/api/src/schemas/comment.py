@@ -1,5 +1,5 @@
 """
-PW-027 | Комментарии: CommentResponse (плоский) + CommentThreadResponse (root + replies).
+PW-030 | Комментарии: CommentResponse (плоский) + CommentThreadResponse (root + replies).
 user_name/avatar и article_slug/title подтягиваются из связей, не хранятся отдельно.
 """
 
@@ -27,3 +27,8 @@ class CommentResponse(BaseModel):
 class CommentThreadResponse(BaseModel):
     root: CommentResponse
     replies: list[CommentResponse] = []
+
+
+class CommentCreateRequest(BaseModel):
+    content: str
+    parent_id: str | None = None

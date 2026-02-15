@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { ArticleCommentThread, Comment } from '@profitable-web/types';
+import { ArticleCommentThread } from '@profitable-web/types';
 import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
@@ -12,6 +12,7 @@ import { ArticleResources } from '@/components/common/article-resources';
 import { ArticleCommentsBlock } from '@/components/app-layout/article-comments';
 import { ArticleHeader } from './article-header';
 import { useAuth } from '@/contexts/auth';
+import { createComment } from '@/lib/api-client';
 import { oneColumnArticleContent } from '@/config/one-column-article-content';
 import { exampleSelfAssessmentQuestions } from '@/config/self-assessment-questions';
 import { exampleArticleResources } from '@/config/article-resources';
@@ -23,15 +24,6 @@ interface ArticlePageOneColumnProps {
   initialThreads: ArticleCommentThread[];
 }
 
-/**
- * ArticlePageOneColumn - пример страницы с одноколоночным лейаутом
- *
- * Демонстрирует использование одноколоночного лейаута для статей
- * с блоками 100% ширины и блоком комментариев.
- *
- * @component
- * @returns {JSX.Element} Страница статьи с одноколоночным лейаутом
- */
 export const ArticlePageOneColumn = ({
   initialThreads,
 }: ArticlePageOneColumnProps) => {
@@ -40,31 +32,25 @@ export const ArticlePageOneColumn = ({
     useState<ArticleCommentThread[]>(initialThreads);
 
   const handleAddComment = useCallback(
-    (content: string, parentId?: string) => {
+    async (content: string, parentId?: string) => {
       if (!user) return;
-      const now = new Date().toISOString();
-      const newComment: Comment = {
-        id: `temp-${Date.now()}`,
-        userId: 'current-user',
-        userName: user.name,
-        userAvatar: user.avatar,
-        articleId: ARTICLE_SLUG,
-        articleSlug: ARTICLE_SLUG,
-        articleTitle: oneColumnArticleContent.title,
-        content,
-        createdAt: now,
-        ...(parentId && { parentId }),
-      };
-      if (parentId) {
-        setThreads(prev =>
-          prev.map(t =>
-            t.root.id === parentId
-              ? { ...t, replies: [...t.replies, newComment] }
-              : t
-          )
-        );
-      } else {
-        setThreads(prev => [...prev, { root: newComment, replies: [] }]);
+
+      try {
+        const newComment = await createComment(ARTICLE_SLUG, content, parentId);
+
+        if (parentId) {
+          setThreads(prev =>
+            prev.map(t =>
+              t.root.id === parentId
+                ? { ...t, replies: [...t.replies, newComment] }
+                : t
+            )
+          );
+        } else {
+          setThreads(prev => [...prev, { root: newComment, replies: [] }]);
+        }
+      } catch {
+        // Ошибка авторизации обрабатывается в api-client (refresh + retry)
       }
     },
     [user]
@@ -75,7 +61,6 @@ export const ArticlePageOneColumn = ({
       <AppBar />
       <AppPageWrapper>
         <main>
-          {/* Заголовок статьи */}
           <ArticleHeader
             title={oneColumnArticleContent.title}
             subtitle={oneColumnArticleContent.subtitle}
@@ -84,17 +69,11 @@ export const ArticlePageOneColumn = ({
             categoryName={oneColumnArticleContent.categoryName}
           />
 
-          {/* Одноколоночный лейаут с контентом */}
           <ArticleLayout layout='one-column'>
             <ArticleContentOneColumn html={oneColumnArticleContent.content} />
-
-            {/* Блок самопроверки */}
             <SelfAssessment questions={exampleSelfAssessmentQuestions} />
-
-            {/* Блок ресурсов */}
             <ArticleResources resources={exampleArticleResources} />
 
-            {/* Блок комментариев */}
             <ArticleCommentsBlock
               threads={threads}
               onAddComment={handleAddComment}

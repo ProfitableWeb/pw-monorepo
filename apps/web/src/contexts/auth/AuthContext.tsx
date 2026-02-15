@@ -1,42 +1,44 @@
 'use client';
 
 import React, { createContext, useEffect, useState, useCallback } from 'react';
+import {
+  authGetMe,
+  authLogout,
+  getOAuthUrl,
+  type AuthUser,
+} from '@/lib/api-client';
 
 export interface User {
+  id: string;
   name: string;
-  avatar: string;
+  email: string;
+  avatar?: string;
+  role: string;
 }
 
-export type AuthProvider = 'vk' | 'telegram';
+export type AuthProvider = 'yandex' | 'telegram' | 'google';
 
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (provider: AuthProvider) => void;
+  loginWithTelegram: (data: Record<string, unknown>) => Promise<void>;
   logout: () => void;
+  checkAuth: () => Promise<void>;
+  /** Обновить user после логина (вызывается из callback page) */
+  refreshUser: () => Promise<void>;
 }
 
-const STORAGE_KEY = 'auth_user';
-
-// Моковые данные для генерации пользователей
-const MOCK_NAMES = [
-  'Алексей',
-  'Мария',
-  'Дмитрий',
-  'Анна',
-  'Сергей',
-  'Екатерина',
-  'Иван',
-  'Ольга',
-];
-
-const MOCK_AVATARS = ['/imgs/author/avatar.jpg'];
-
-const generateMockUser = (): User => {
-  const name = 'Николай';
-  const avatar = '/imgs/author/avatar.jpg';
-  return { name, avatar };
-};
+function mapAuthUserToUser(raw: AuthUser): User {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar,
+    role: raw.role,
+  };
+}
 
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
@@ -48,42 +50,67 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Восстановление из localStorage при инициализации
-  useEffect(() => {
+  const checkAuth = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsedUser = JSON.parse(stored) as User;
-        if (parsedUser.name && parsedUser.avatar) {
-          setUser(parsedUser);
-        }
-      }
+      const me = await authGetMe();
+      setUser(me ? mapAuthUserToUser(me) : null);
     } catch {
-      // Если данные повреждены, просто игнорируем
-      localStorage.removeItem(STORAGE_KEY);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
+  // Проверка auth при монтировании (httpOnly cookie)
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   const login = useCallback((provider: AuthProvider) => {
-    // В будущем здесь будет реальная OAuth логика
-    // Пока просто генерируем mock-пользователя
-    console.log(`[Auth] Login via ${provider}`);
-    const newUser = generateMockUser();
-    setUser(newUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+    // Для OAuth — редирект на URL провайдера
+    getOAuthUrl(provider).then(url => {
+      window.location.href = url;
+    });
   }, []);
 
-  const logout = useCallback(() => {
+  const loginWithTelegram = useCallback(
+    async (data: Record<string, unknown>) => {
+      const API_BASE =
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const res = await fetch(`${API_BASE}/auth/telegram/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Ошибка входа через Telegram');
+      const raw = await res.json();
+      setUser(mapAuthUserToUser(raw));
+    },
+    []
+  );
+
+  const logout = useCallback(async () => {
+    await authLogout();
     setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    const me = await authGetMe();
+    setUser(me ? mapAuthUserToUser(me) : null);
   }, []);
 
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
+    isLoading,
     login,
+    loginWithTelegram,
     logout,
+    checkAuth,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

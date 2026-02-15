@@ -3,7 +3,7 @@
 ## 📋 Информация о задаче
 
 - **ID**: PW-030
-- **Статус**: TODO
+- **Статус**: DONE
 - **Создано**: 2026-02-15
 - **Приоритет**: High ⚡
 - **Компонент**: 🐍 Backend + ⚛️ Frontend + ⚙️ Admin
@@ -26,34 +26,34 @@ email/пароль или OAuth и получают доступ к админк
 
 ### Критерии приёмки
 
-- [ ] User model расширена: `password_hash`, `oauth_provider`, `oauth_id`
-- [ ] JWT утилиты: `create_access_token()`, `create_refresh_token()`, `verify_token()`
-- [ ] Auth middleware: `get_current_user` dependency для FastAPI
-- [ ] Эндпоинты бэкенда:
-  - [ ] POST `/api/auth/register` — регистрация email/пароль
-  - [ ] POST `/api/auth/login` — вход email/пароль → access + refresh токены
-  - [ ] POST `/api/auth/refresh` — обновление access-токена
-  - [ ] POST `/api/auth/logout` — инвалидация refresh-токена
-  - [ ] GET `/api/auth/me` — текущий пользователь по токену
-  - [ ] GET `/api/auth/{provider}/url` — URL для OAuth-редиректа
-  - [ ] GET `/api/auth/{provider}/callback` — обработка OAuth callback
-- [ ] OAuth-провайдеры:
-  - [ ] Yandex ID
-  - [ ] Telegram Login Widget
-  - [ ] Google (для админки)
-- [ ] POST `/api/articles/{slug}/comments` — защищённый эндпоинт создания комментария
-- [ ] Фронт (apps/web):
-  - [ ] AuthContext переписан на реальный API (JWT в httpOnly cookie или localStorage)
-  - [ ] AuthModal подключён к OAuth-флоу
-  - [ ] Форма комментариев разблокирована для авторизованных
-  - [ ] Автоматический refresh токена
-- [ ] Админка (apps/admin):
-  - [ ] auth-store подключён к реальному API
-  - [ ] Защита роутов (redirect на login если нет токена)
-  - [ ] Проверка роли (admin/editor)
-- [ ] Alembic миграция для новых полей User
-- [ ] Переменные окружения для секретов (`JWT_SECRET`, `OAUTH_*`)
-- [ ] Тесты auth эндпоинтов
+- [x] User model расширена: `password_hash`, `oauth_provider`, `oauth_id`
+- [x] JWT утилиты: `create_access_token()`, `create_refresh_token()`, `verify_token()`
+- [x] Auth middleware: `get_current_user` dependency для FastAPI
+- [x] Эндпоинты бэкенда:
+  - [x] POST `/api/auth/register` — регистрация email/пароль
+  - [x] POST `/api/auth/login` — вход email/пароль → access + refresh токены
+  - [x] POST `/api/auth/refresh` — обновление access-токена
+  - [x] POST `/api/auth/logout` — инвалидация refresh-токена
+  - [x] GET `/api/auth/me` — текущий пользователь по токену
+  - [x] GET `/api/auth/{provider}/url` — URL для OAuth-редиректа
+  - [x] GET `/api/auth/{provider}/callback` — обработка OAuth callback
+- [x] OAuth-провайдеры:
+  - [x] Yandex ID
+  - [x] Telegram Login Widget
+  - [x] Google (для админки)
+- [x] POST `/api/articles/{slug}/comments` — защищённый эндпоинт создания комментария
+- [x] Фронт (apps/web):
+  - [x] AuthContext переписан на реальный API (JWT в httpOnly cookie)
+  - [x] AuthModal подключён к OAuth-флоу
+  - [x] Форма комментариев разблокирована для авторизованных
+  - [x] Автоматический refresh токена
+- [x] Админка (apps/admin):
+  - [x] auth-store подключён к реальному API
+  - [x] Защита роутов (redirect на login если нет токена)
+  - [x] Проверка роли (admin/editor)
+- [x] Alembic миграция для новых полей User
+- [x] Переменные окружения для секретов (`JWT_SECRET`, `OAUTH_*`)
+- [x] Тесты auth эндпоинтов
 
 ### Зависимости
 
@@ -179,50 +179,50 @@ GOOGLE_CLIENT_SECRET=
 
 ### Подготовка
 
-- [ ] OAuth credentials получены (см. `oauth-providers-setup.md`)
-- [ ] Задача проанализирована и план согласован
+- [x] OAuth credentials получены (см. `oauth-providers-setup.md`)
+- [x] Задача проанализирована и план согласован
 
 ### Фаза 1: Backend JWT
 
-- [ ] Расширить модель User + Alembic миграция
-- [ ] JWT утилиты (create/verify tokens)
-- [ ] Password утилиты (hash/verify)
-- [ ] Auth dependencies (get_current_user, get_current_admin)
-- [ ] POST /auth/register, /auth/login, /auth/refresh, /auth/logout, GET /auth/me
-- [ ] Тесты auth эндпоинтов
+- [x] Расширить модель User + Alembic миграция
+- [x] JWT утилиты (create/verify tokens)
+- [x] Password утилиты (hash/verify)
+- [x] Auth dependencies (get_current_user, get_current_admin)
+- [x] POST /auth/register, /auth/login, /auth/refresh, /auth/logout, GET /auth/me
+- [x] Тесты auth эндпоинтов
 
 ### Фаза 2: Backend OAuth
 
-- [ ] OAuth модуль Yandex ID
-- [ ] Telegram Login Widget verification
-- [ ] OAuth модуль Google
-- [ ] GET /auth/{provider}/url, GET /auth/{provider}/callback
+- [x] OAuth модуль Yandex ID
+- [x] Telegram Login Widget verification
+- [x] OAuth модуль Google
+- [x] GET /auth/{provider}/url, GET /auth/{provider}/callback
 
 ### Фаза 3: Backend — защита эндпоинтов
 
-- [ ] POST /api/articles/{slug}/comments (создание комментария)
-- [ ] Проверка is_active пользователя
-- [ ] CORS: credentials: true
+- [x] POST /api/articles/{slug}/comments (создание комментария)
+- [x] Проверка is_active пользователя
+- [x] CORS: credentials: true
 
 ### Фаза 4: Frontend (apps/web)
 
-- [ ] AuthContext → реальный API
-- [ ] AuthModal → OAuth redirect flow
-- [ ] Форма комментариев разблокирована
-- [ ] Auto-refresh access token
-- [ ] Logout
+- [x] AuthContext → реальный API
+- [x] AuthModal → OAuth redirect flow
+- [x] Форма комментариев разблокирована
+- [x] Auto-refresh access token
+- [x] Logout
 
 ### Фаза 5: Admin (apps/admin)
 
-- [ ] auth-store → реальный API
-- [ ] Route guards (redirect на /login)
-- [ ] Проверка роли admin/editor
+- [x] auth-store → реальный API
+- [x] Route guards (redirect на /login)
+- [x] Проверка роли admin/editor
 
 ### Финал
 
-- [ ] Все тесты проходят
-- [ ] bun run build проходит
-- [ ] .env.example обновлён
+- [x] Все тесты проходят (27/27)
+- [x] bun turbo build проходит (web)
+- [x] .env.example обновлён
 
 ## 🔗 Связанные задачи
 
@@ -241,7 +241,8 @@ GOOGLE_CLIENT_SECRET=
 ### История изменений
 
 - 2026-02-15: Задача создана
+- 2026-02-15: Реализация завершена — все 6 фаз выполнены
 
 ---
 
-**Статусы**: TODO → DOING → TESTING → CODEREVIEW & DOCS → DONE
+**Статусы**: ~~TODO~~ → ~~DOING~~ → ~~TESTING~~ → ~~CODEREVIEW & DOCS~~ → **DONE**

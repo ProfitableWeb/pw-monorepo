@@ -1,7 +1,9 @@
 """
-PW-027 | Сервис комментариев. Возвращает плоский список — сборка в треды
+PW-030 | Сервис комментариев. Возвращает плоский список — сборка в треды
 (root + replies) выполняется в роутере через _build_threads().
 """
+
+import uuid
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
@@ -55,3 +57,30 @@ def get_user_comments(
     stmt = stmt.order_by(Comment.created_at.desc()).offset(offset).limit(limit)
     comments = list(db.scalars(stmt).unique().all())
     return comments, total
+
+
+def create_comment(
+    db: Session,
+    *,
+    user_id: str,
+    article_slug: str,
+    content: str,
+    parent_id: str | None = None,
+) -> Comment:
+    article = db.scalars(
+        select(Article).where(Article.slug == article_slug)
+    ).first()
+    if not article:
+        msg = f"Статья '{article_slug}' не найдена"
+        raise ValueError(msg)
+
+    comment = Comment(
+        user_id=uuid.UUID(user_id),
+        article_id=article.id,
+        content=content,
+        parent_id=uuid.UUID(parent_id) if parent_id else None,
+    )
+    db.add(comment)
+    db.commit()
+    db.refresh(comment, attribute_names=["user", "article"])
+    return comment

@@ -1,6 +1,7 @@
 /**
- * PW-029 | Типизированный API-клиент для админки.
+ * PW-030 | Типизированный API-клиент для админки.
  * Аналог apps/web/src/lib/api-client.ts, но для Vite (import.meta.env).
+ * credentials: 'include' для httpOnly cookies аутентификации.
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -132,6 +133,26 @@ export interface PaginatedResult<T> {
 }
 
 // ---------------------------------------------------------------------------
+// Auth types
+// ---------------------------------------------------------------------------
+
+interface AuthUserRaw {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string | null;
+  role: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: string;
+}
+
+// ---------------------------------------------------------------------------
 // Mappers
 // ---------------------------------------------------------------------------
 
@@ -190,11 +211,21 @@ function mapThread(raw: CommentThreadRaw): AdminCommentThread {
   };
 }
 
+function mapAuthUser(raw: AuthUserRaw): AuthUser {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar ?? undefined,
+    role: raw.role,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Base fetch
 // ---------------------------------------------------------------------------
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     public status: number,
     message: string
@@ -206,9 +237,29 @@ class ApiError extends Error {
 
 async function apiFetch<T>(path: string): Promise<T | null> {
   const url = `${API_BASE}${path}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    credentials: 'include',
+  });
 
   if (res.status === 404) return null;
+
+  // 401 — пробуем refresh один раз
+  if (res.status === 401 && !path.startsWith('/auth/')) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      const retry = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        credentials: 'include',
+      });
+      if (retry.ok) {
+        const json: ApiResponseRaw<T> = await retry.json();
+        return json.data ?? null;
+      }
+    }
+    throw new ApiError(401, 'Не авторизован');
+  }
+
   if (!res.ok)
     throw new ApiError(res.status, `API error ${res.status}: ${url}`);
 
@@ -223,7 +274,10 @@ async function apiFetchWithMeta<T>(
   path: string
 ): Promise<{ data: T | null; meta: ApiMeta }> {
   const url = `${API_BASE}${path}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    credentials: 'include',
+  });
 
   if (!res.ok)
     throw new ApiError(res.status, `API error ${res.status}: ${url}`);
@@ -316,4 +370,69 @@ export async function getUserComments(
     `/users/${encodeURIComponent(userId)}/comments${qs ? `?${qs}` : ''}`
   );
   return (data ?? []).map(mapComment);
+}
+
+// ---------------------------------------------------------------------------
+// Auth API
+// ---------------------------------------------------------------------------
+
+export async function authLogin(
+  email: string,
+  password: string
+): Promise<AuthUser> {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка авторизации');
+  }
+  const raw: AuthUserRaw = await res.json();
+  return mapAuthUser(raw);
+}
+
+export async function authLogout(): Promise<void> {
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+}
+
+export async function authGetMe(): Promise<AuthUser | null> {
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const raw: AuthUserRaw = await res.json();
+    return mapAuthUser(raw);
+  } catch {
+    return null;
+  }
+}
+
+export async function authRefresh(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function getOAuthUrl(provider: string): Promise<string> {
+  const origin = window.location.origin;
+  const res = await fetch(
+    `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}`,
+    { credentials: 'include' }
+  );
+  if (!res.ok) throw new ApiError(res.status, 'Ошибка получения OAuth URL');
+  const json = await res.json();
+  return json.url;
 }

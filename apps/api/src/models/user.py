@@ -1,13 +1,12 @@
 """
-PW-027 | Минимальная модель пользователя (для FK в статьях и комментариях).
-Роли: admin/editor/author/viewer. Аутентификация НЕ реализована.
-TODO PW-028: добавить password_hash, OAuth, токены для аутентификации.
+PW-030 | Модель пользователя с поддержкой password_hash и OAuth.
+Роли: admin/editor/author/viewer.
 """
 
 import enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin, UUIDMixin
@@ -26,12 +25,19 @@ class UserRole(str, enum.Enum):
 
 class User(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint("oauth_provider", "oauth_id", name="uq_user_oauth"),
+    )
 
     name: Mapped[str] = mapped_column(String(200))
     email: Mapped[str] = mapped_column(String(200), unique=True)
     avatar: Mapped[str | None] = mapped_column(String(500))
     role: Mapped[UserRole] = mapped_column(default=UserRole.VIEWER)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    password_hash: Mapped[str | None] = mapped_column(String(200))
+    oauth_provider: Mapped[str | None] = mapped_column(String(50))
+    oauth_id: Mapped[str | None] = mapped_column(String(200))
 
     articles: Mapped[list["Article"]] = relationship(back_populates="author")
     comments: Mapped[list["Comment"]] = relationship(back_populates="user")
