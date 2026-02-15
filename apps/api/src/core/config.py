@@ -4,6 +4,9 @@ cors_origins включает оба фронтенда: web (:3000) и admin (:
 JWT + OAuth настройки для аутентификации.
 """
 
+import json
+
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -12,6 +15,20 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str = "postgresql://postgres:postgres@localhost:5432/profitableweb"
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: object) -> list[str]:
+        if isinstance(v, list):
+            return v
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return []
+            if v.startswith("["):
+                return json.loads(v)
+            return [s.strip() for s in v.split(",") if s.strip()]
+        return []
 
     # JWT
     jwt_secret: str = "change-me-in-production"
