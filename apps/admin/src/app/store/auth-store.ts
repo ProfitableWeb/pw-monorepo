@@ -17,6 +17,7 @@ export interface User {
 
 interface AuthState {
   isAuthenticated: boolean;
+  isAdmin: boolean;
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -37,8 +38,13 @@ function mapUser(raw: AuthUser): User {
   };
 }
 
+function isAdminRole(role: string): boolean {
+  return role === 'admin' || role === 'editor';
+}
+
 export const useAuthStore = create<AuthState>(set => ({
   isAuthenticated: false,
+  isAdmin: false,
   user: null,
   isLoading: false,
 
@@ -47,7 +53,12 @@ export const useAuthStore = create<AuthState>(set => ({
     try {
       const raw = await authLogin(email, password);
       const user = mapUser(raw);
-      set({ isAuthenticated: true, user, isLoading: false });
+      set({
+        isAuthenticated: true,
+        isAdmin: isAdminRole(user.role),
+        user,
+        isLoading: false,
+      });
     } catch {
       set({ isLoading: false });
       throw new Error('Неверный email или пароль');
@@ -66,19 +77,29 @@ export const useAuthStore = create<AuthState>(set => ({
 
   logout: async () => {
     await authLogout();
-    set({ isAuthenticated: false, user: null, isLoading: false });
+    set({
+      isAuthenticated: false,
+      isAdmin: false,
+      user: null,
+      isLoading: false,
+    });
   },
 
   checkAuth: async () => {
     try {
       const raw = await authGetMe();
       if (raw) {
-        set({ isAuthenticated: true, user: mapUser(raw) });
+        const user = mapUser(raw);
+        set({
+          isAuthenticated: true,
+          isAdmin: isAdminRole(user.role),
+          user,
+        });
       } else {
-        set({ isAuthenticated: false, user: null });
+        set({ isAuthenticated: false, isAdmin: false, user: null });
       }
     } catch {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, isAdmin: false, user: null });
     }
   },
 }));

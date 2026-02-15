@@ -49,6 +49,39 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
+      - name: Write API env file
+        if: steps.check-secrets.outputs.skip != 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -p ${SSH_PORT:-22} \
+              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/apps/api/.env" << ENVEOF
+          DATABASE_URL=${DATABASE_URL}
+          JWT_SECRET=${JWT_SECRET}
+          YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+          YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+          FRONTEND_URL=${FRONTEND_URL}
+          ADMIN_URL=${ADMIN_URL}
+          CORS_ORIGINS=${CORS_ORIGINS}
+          ENVEOF
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          YANDEX_CLIENT_ID: ${{ secrets.YANDEX_CLIENT_ID }}
+          YANDEX_CLIENT_SECRET: ${{ secrets.YANDEX_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          ADMIN_URL: ${{ secrets.ADMIN_URL }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+
       - name: Deploy to VM
         if: steps.check-secrets.outputs.skip != 'true'
         run: |
@@ -58,7 +91,7 @@ jobs:
               ${SSH_USER}@${SSH_HOST} << 'EOF'
             set -e
             export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
-            
+
             # Клонирование или обновление репозитория
             if [ -d ~/profitableweb/.git ]; then
               echo "📥 Обновление репозитория..."
@@ -75,9 +108,10 @@ jobs:
             # Установка JS-зависимостей из корня монорепо (единый lockfile)
             bun install
 
-            # API: установка зависимостей
+            # API: установка зависимостей + миграции БД
             cd apps/api
             uv sync
+            uv run alembic upgrade head
 
             # Web: проверка типов + сборка
             cd ../web

@@ -33,7 +33,7 @@ import { Drawer } from 'vaul';
 
 function App() {
   const { currentPage, navigateTo } = useNavigationStore();
-  const { isAuthenticated, checkAuth } = useAuthStore();
+  const { isAuthenticated, isAdmin, checkAuth, logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -168,6 +168,29 @@ function App() {
   // Auth guard — показываем login page если не авторизован
   if (!isAuthenticated) {
     return <LoginPage />;
+  }
+
+  // Role guard — только admin/editor имеют доступ к панели
+  if (!isAdmin) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-background p-6'>
+        <div className='max-w-sm text-center space-y-4'>
+          <h1 className='text-2xl font-bold text-foreground'>
+            Доступ запрещён
+          </h1>
+          <p className='text-muted-foreground'>
+            У вашей учётной записи недостаточно прав для доступа к панели
+            управления.
+          </p>
+          <button
+            onClick={() => logout()}
+            className='inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90'
+          >
+            Выйти
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
