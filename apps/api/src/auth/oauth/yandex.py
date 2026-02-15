@@ -14,24 +14,17 @@ TOKEN_URL = "https://oauth.yandex.ru/token"
 USERINFO_URL = "https://login.yandex.ru/info"
 
 
-def _callback_url() -> str:
-    """redirect_uri указывает на бэкенд (API сервер)."""
-    # Yandex требует redirect_uri зарегистрированный в приложении
-    # В dev: http://localhost:8000/api/auth/yandex/callback
-    return "http://localhost:8000/api/auth/yandex/callback"
-
-
-def get_authorization_url(state: str) -> str:
+def get_authorization_url(state: str, callback_url: str) -> str:
     params = {
         "response_type": "code",
         "client_id": settings.yandex_client_id,
-        "redirect_uri": _callback_url(),
+        "redirect_uri": callback_url,
         "state": state,
     }
     return f"{AUTHORIZE_URL}?{urlencode(params)}"
 
 
-def exchange_code(code: str) -> dict:
+def exchange_code(code: str, callback_url: str) -> dict:
     """Обменивает code на access_token, затем получает профиль пользователя."""
     token_resp = httpx.post(
         TOKEN_URL,
@@ -40,7 +33,7 @@ def exchange_code(code: str) -> dict:
             "code": code,
             "client_id": settings.yandex_client_id,
             "client_secret": settings.yandex_client_secret,
-            "redirect_uri": _callback_url(),
+            "redirect_uri": callback_url,
         },
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )

@@ -164,6 +164,12 @@ def me(user: User = Depends(get_current_user)) -> AuthUserResponse:
 # -----------------------------------------------------------------------
 
 
+def _build_callback_url(request: Request, provider: str) -> str:
+    """Формирует OAuth callback URL из текущего запроса."""
+    base = str(request.base_url).rstrip("/")
+    return f"{base}/api/auth/{provider}/callback"
+
+
 @router.get("/{provider}/url", response_model=OAuthUrlResponse)
 def get_oauth_url(
     provider: str,
@@ -171,16 +177,17 @@ def get_oauth_url(
 ) -> OAuthUrlResponse:
     # state содержит origin для определения, куда редиректить после OAuth
     origin = request.query_params.get("origin", settings.frontend_url)
+    callback_url = _build_callback_url(request, provider)
 
     if provider == "yandex":
         from src.auth.oauth.yandex import get_authorization_url
 
-        return OAuthUrlResponse(url=get_authorization_url(state=origin))
+        return OAuthUrlResponse(url=get_authorization_url(state=origin, callback_url=callback_url))
 
     if provider == "google":
         from src.auth.oauth.google import get_authorization_url
 
-        return OAuthUrlResponse(url=get_authorization_url(state=origin))
+        return OAuthUrlResponse(url=get_authorization_url(state=origin, callback_url=callback_url))
 
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -197,21 +204,23 @@ def get_oauth_url(
 def oauth_callback(
     provider: str,
     code: str,
+    request: Request,
     state: str = "",
     response: Response = Response(),  # noqa: B008
     db: Session = Depends(get_db),
 ) -> Response:
     redirect_base = state or settings.frontend_url
+    callback_url = _build_callback_url(request, provider)
 
     try:
         if provider == "yandex":
             from src.auth.oauth.yandex import exchange_code
 
-            profile = exchange_code(code)
+            profile = exchange_code(code, callback_url=callback_url)
         elif provider == "google":
             from src.auth.oauth.google import exchange_code
 
-            profile = exchange_code(code)
+            profile = exchange_code(code, callback_url=callback_url)
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

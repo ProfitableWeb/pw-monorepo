@@ -14,16 +14,11 @@ TOKEN_URL = "https://oauth2.googleapis.com/token"
 USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 
-def _callback_url() -> str:
-    """redirect_uri указывает на бэкенд (API сервер)."""
-    return "http://localhost:8000/api/auth/google/callback"
-
-
-def get_authorization_url(state: str) -> str:
+def get_authorization_url(state: str, callback_url: str) -> str:
     params = {
         "response_type": "code",
         "client_id": settings.google_client_id,
-        "redirect_uri": _callback_url(),
+        "redirect_uri": callback_url,
         "scope": "openid email profile",
         "state": state,
         "access_type": "offline",
@@ -32,7 +27,7 @@ def get_authorization_url(state: str) -> str:
     return f"{AUTHORIZE_URL}?{urlencode(params)}"
 
 
-def exchange_code(code: str) -> dict:
+def exchange_code(code: str, callback_url: str) -> dict:
     """Обменивает code на access_token, затем получает профиль пользователя."""
     token_resp = httpx.post(
         TOKEN_URL,
@@ -41,7 +36,7 @@ def exchange_code(code: str) -> dict:
             "code": code,
             "client_id": settings.google_client_id,
             "client_secret": settings.google_client_secret,
-            "redirect_uri": _callback_url(),
+            "redirect_uri": callback_url,
         },
     )
     token_resp.raise_for_status()

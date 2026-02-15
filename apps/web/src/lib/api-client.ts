@@ -14,7 +14,7 @@ import {
   ArticleCommentThread,
 } from '@profitable-web/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // ---------------------------------------------------------------------------
 // Внутренние типы ответов API (snake_case)
