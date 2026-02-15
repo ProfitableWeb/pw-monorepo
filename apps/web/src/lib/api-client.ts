@@ -14,7 +14,10 @@ import {
   ArticleCommentThread,
 } from '@profitable-web/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+// SSR: нужен абсолютный URL (сервер не знает про nginx), клиент: relative через nginx
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window === 'undefined' ? 'http://localhost:8000/api' : '/api');
 
 // ---------------------------------------------------------------------------
 // Внутренние типы ответов API (snake_case)
