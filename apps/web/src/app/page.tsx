@@ -1,5 +1,7 @@
 import { AppHomePage } from '@/components/app-layout/app-home-page';
-import { mockArticles } from '@/components/common/masonry/data';
+import { getAllArticles } from '@/lib/api-client';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * Главная страница с masonry-сеткой статей
@@ -8,9 +10,8 @@ import { mockArticles } from '@/components/common/masonry/data';
  * Данные загружаются на сервере и передаются в Client Component
  * для интерактивной отрисовки с анимациями
  */
-export default function HomePage() {
-  // В будущем здесь будет вызов API: const articles = await getArticles();
-  const articles = mockArticles;
+export default async function HomePage() {
+  const articles = await getAllArticles();
 
   return <AppHomePage articles={articles} />;
 }

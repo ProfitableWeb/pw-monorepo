@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { ArticlePageOneColumn } from '@/components/app-layout/app-article-page-one-column';
-import { getArticleCommentThreads } from '@/lib/mock-api';
+import { getArticleCommentThreads } from '@/lib/api-client';
+
+export const dynamic = 'force-dynamic';
 import { generateBlogPostingWithCommentsJsonLd } from '@/utils/seo';
 import { oneColumnArticleContent } from '@/config/one-column-article-content';
 

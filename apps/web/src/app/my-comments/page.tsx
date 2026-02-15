@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { MyCommentsPage } from '@/components/app-layout/app-my-comments-page';
-import { getUserComments } from '@/lib/mock-api';
+import { getUserComments } from '@/lib/api-client';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Мои комментарии',

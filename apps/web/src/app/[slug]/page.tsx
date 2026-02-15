@@ -2,11 +2,13 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import AppCategoryPage from '@/components/app-layout/app-category-page';
 import ArticlePage from '@/components/app-layout/app-article-page';
+
+export const dynamic = 'force-dynamic';
 import {
   getCategoryBySlug,
   getArticlesByCategory,
   getArticleBySlug,
-} from '@/lib/mock-api';
+} from '@/lib/api-client';
 import {
   generateCategoryJsonLd,
   generateArticleJsonLd,

@@ -14,13 +14,8 @@ import {
 } from './mock-data/comments';
 
 /**
- * Mock-функции для получения данных
- *
- * В будущем будут заменены на реальные API-вызовы:
- * - getCategoryBySlug(slug) → API endpoint `/api/categories/[slug]`
- * - getArticlesByCategory(categoryId) → API endpoint `/api/categories/[id]/articles`
- * - getArticleBySlug(slug) → API endpoint `/api/articles/[slug]`
- * - getUserComments(userId) → API endpoint `/api/users/[userId]/comments`
+ * @deprecated Используйте `@/lib/api-client` для реальных API-запросов (PW-028).
+ * Этот файл сохранён для справки и будет удалён в следующей задаче.
  */
 
 /**

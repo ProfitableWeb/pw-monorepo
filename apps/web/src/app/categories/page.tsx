@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import AppCategoriesPage from '@/components/app-layout/app-categories-page';
-import { getAllCategories } from '@/lib/mock-api';
+import { getAllCategories } from '@/lib/api-client';
+
+export const dynamic = 'force-dynamic';
 import {
   generateCategoriesJsonLd,
   generateCategoriesBreadcrumbJsonLd,

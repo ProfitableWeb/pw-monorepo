@@ -4,6 +4,7 @@ import React from 'react';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/auth';
 import { ToastProvider } from '@/components/common/toast';
+import { QueryProvider } from './QueryProvider';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -15,11 +16,13 @@ interface ProvidersProps {
  */
 export const Providers = ({ children }: ProvidersProps) => {
   return (
-    <ThemeProvider defaultTheme='light'>
-      <AuthProvider>
-        {children}
-        <ToastProvider />
-      </AuthProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider defaultTheme='light'>
+        <AuthProvider>
+          {children}
+          <ToastProvider />
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryProvider>
   );
 };

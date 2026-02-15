@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { AuthorPage } from '@/components/app-layout/app-author-page';
-import { getArticlesByAuthor } from '@/lib/mock-api';
+import { getArticlesByAuthor } from '@/lib/api-client';
 import { AUTHOR_DATA } from '@/config/author';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: `${AUTHOR_DATA.name} — ${AUTHOR_DATA.jobTitle}`,
