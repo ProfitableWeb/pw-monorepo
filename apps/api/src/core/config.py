@@ -6,29 +6,27 @@ JWT + OAuth настройки для аутентификации.
 
 import json
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings
+
+_DEFAULT_ORIGINS = ["http://localhost:3000", "http://localhost:3001"]
 
 
 class Settings(BaseSettings):
     app_name: str = "ProfitableWeb API"
     debug: bool = False
     database_url: str = "postgresql://postgres:postgres@localhost:5432/profitableweb"
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, v: object) -> list[str]:
-        if isinstance(v, list):
-            return v
-        if isinstance(v, str):
-            v = v.strip()
-            if not v:
-                return []
-            if v.startswith("["):
-                return json.loads(v)
-            return [s.strip() for s in v.split(",") if s.strip()]
-        return []
+    # str чтобы DotEnvSettingsSource не пытался json.loads() на пустой строке
+    cors_origins: str = ""
+
+    def get_cors_origins(self) -> list[str]:
+        """Парсит CORS_ORIGINS: JSON-массив, запятые или пустая строка → дефолты."""
+        raw = self.cors_origins.strip()
+        if not raw:
+            return _DEFAULT_ORIGINS
+        if raw.startswith("["):
+            return json.loads(raw)
+        return [s.strip() for s in raw.split(",") if s.strip()]
 
     # JWT
     jwt_secret: str = "change-me-in-production"

@@ -34,21 +34,23 @@ jobs:
 
       - name: Write API env file
         run: |
-          ssh -i ~/.ssh/deploy_key \
+          # Собираем .env — пустые переменные не записываем (используются дефолты)
+          ENV_CONTENT=""
+          [ -n "$DATABASE_URL" ]        && ENV_CONTENT="${ENV_CONTENT}DATABASE_URL=${DATABASE_URL}\n"
+          [ -n "$JWT_SECRET" ]          && ENV_CONTENT="${ENV_CONTENT}JWT_SECRET=${JWT_SECRET}\n"
+          [ -n "$YANDEX_CLIENT_ID" ]    && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}\n"
+          [ -n "$YANDEX_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}\n"
+          [ -n "$GOOGLE_CLIENT_ID" ]    && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}\n"
+          [ -n "$GOOGLE_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}\n"
+          [ -n "$TELEGRAM_BOT_TOKEN" ]  && ENV_CONTENT="${ENV_CONTENT}TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}\n"
+          [ -n "$FRONTEND_URL" ]        && ENV_CONTENT="${ENV_CONTENT}FRONTEND_URL=${FRONTEND_URL}\n"
+          [ -n "$ADMIN_URL" ]           && ENV_CONTENT="${ENV_CONTENT}ADMIN_URL=${ADMIN_URL}\n"
+          [ -n "$CORS_ORIGINS" ]        && ENV_CONTENT="${ENV_CONTENT}CORS_ORIGINS=${CORS_ORIGINS}\n"
+
+          echo -e "$ENV_CONTENT" | ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/apps/api/.env" << ENVEOF
-          DATABASE_URL=${DATABASE_URL}
-          JWT_SECRET=${JWT_SECRET}
-          YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
-          YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}
-          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-          FRONTEND_URL=${FRONTEND_URL}
-          ADMIN_URL=${ADMIN_URL}
-          CORS_ORIGINS=${CORS_ORIGINS}
-          ENVEOF
+              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/apps/api/.env"
         env:
           SSH_USER: ${{ secrets.SSH_USER || variables.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST || variables.SSH_HOST }}
