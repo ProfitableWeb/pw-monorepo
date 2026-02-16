@@ -33,6 +33,7 @@ import {
   SearchCheck,
   PanelLeftClose,
   LogOut,
+  FlaskConical,
 } from 'lucide-react';
 
 interface NavItem {
@@ -82,6 +83,11 @@ const navSections: NavSection[] = [
       },
       { id: 'tags', title: 'Метки', icon: <Tag className='h-5 w-5' /> },
       { id: 'media', title: 'Медиа', icon: <Image className='h-5 w-5' /> },
+      {
+        id: 'research',
+        title: 'Исследования',
+        icon: <FlaskConical className='h-5 w-5' />,
+      },
     ],
   },
   {

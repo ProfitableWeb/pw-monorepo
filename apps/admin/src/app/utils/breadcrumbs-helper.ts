@@ -1,17 +1,18 @@
-import { 
-  LayoutDashboard, 
-  Layers, 
-  Pencil, 
-  FileText, 
-  Calendar, 
-  FolderOpen, 
-  Tag, 
+import {
+  LayoutDashboard,
+  Layers,
+  Pencil,
+  FileText,
+  Calendar,
+  FolderOpen,
+  Tag,
   Image,
   FileHeart,
   Palette,
   Layout,
   Share2,
-  type LucideIcon
+  FlaskConical,
+  type LucideIcon,
 } from 'lucide-react';
 import { BreadcrumbItem } from '@/app/store/header-store';
 
@@ -20,22 +21,23 @@ import { BreadcrumbItem } from '@/app/store/header-store';
  */
 const iconMap: Record<string, LucideIcon> = {
   // Главные разделы
-  'Дашборд': LayoutDashboard,
-  'Контент': Layers,
-  'Редакция': Pencil,
-  
+  Дашборд: LayoutDashboard,
+  Контент: Layers,
+  Редакция: Pencil,
+
   // Контент
-  'Статьи': FileText,
-  'Календарь': Calendar,
-  'Категории': FolderOpen,
-  'Метки': Tag,
-  'Медиа': Image,
-  
+  Статьи: FileText,
+  Календарь: Calendar,
+  Категории: FolderOpen,
+  Метки: Tag,
+  Медиа: Image,
+  Исследования: FlaskConical,
+
   // Редакция
-  'Манифест': FileHeart,
-  'Стиль': Palette,
-  'Форматы': Layout,
-  'Соцсети': Share2,
+  Манифест: FileHeart,
+  Стиль: Palette,
+  Форматы: Layout,
+  Соцсети: Share2,
 };
 
 /**
@@ -45,8 +47,8 @@ const iconMap: Record<string, LucideIcon> = {
  * @param icon - опциональная иконка (если не указана, будет найдена автоматически)
  */
 export function createBreadcrumb(
-  label: string, 
-  href?: string, 
+  label: string,
+  href?: string,
   icon?: LucideIcon
 ): BreadcrumbItem {
   return {
@@ -71,69 +73,95 @@ export function createBreadcrumbs(
  */
 export const breadcrumbPresets = {
   // Контент
-  articles: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент', href: 'content-hub' },
-    { label: 'Статьи' },
-  ]),
-  
-  calendar: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент', href: 'content-hub' },
-    { label: 'Календарь' },
-  ]),
-  
-  categories: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент', href: 'content-hub' },
-    { label: 'Категории' },
-  ]),
-  
-  tags: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент', href: 'content-hub' },
-    { label: 'Метки' },
-  ]),
-  
-  media: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент', href: 'content-hub' },
-    { label: 'Медиа' },
-  ]),
-  
+  articles: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Статьи' },
+    ]),
+
+  calendar: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Календарь' },
+    ]),
+
+  categories: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Категории' },
+    ]),
+
+  tags: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Метки' },
+    ]),
+
+  media: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Медиа' },
+    ]),
+
+  research: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Исследования' },
+    ]),
+
+  researchWorkspace: (researchTitle: string) =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент', href: 'content-hub' },
+      { label: 'Исследования', href: 'research' },
+      { label: researchTitle },
+    ]),
+
   // Редакция
-  manifest: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Редакция', href: 'editorial-hub' },
-    { label: 'Манифест' },
-  ]),
-  
-  style: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Редакция', href: 'editorial-hub' },
-    { label: 'Стиль' },
-  ]),
-  
-  formats: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Редакция', href: 'editorial-hub' },
-    { label: 'Форматы' },
-  ]),
-  
-  socials: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Редакция', href: 'editorial-hub' },
-    { label: 'Соцсети' },
-  ]),
-  
+  manifest: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Редакция', href: 'editorial-hub' },
+      { label: 'Манифест' },
+    ]),
+
+  style: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Редакция', href: 'editorial-hub' },
+      { label: 'Стиль' },
+    ]),
+
+  formats: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Редакция', href: 'editorial-hub' },
+      { label: 'Форматы' },
+    ]),
+
+  socials: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Редакция', href: 'editorial-hub' },
+      { label: 'Соцсети' },
+    ]),
+
   // Хабы
-  contentHub: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Контент' },
-  ]),
-  
-  editorialHub: () => createBreadcrumbs([
-    { label: 'Дашборд', href: 'dashboard' },
-    { label: 'Редакция' },
-  ]),
+  contentHub: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Контент' },
+    ]),
+
+  editorialHub: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Редакция' },
+    ]),
 };

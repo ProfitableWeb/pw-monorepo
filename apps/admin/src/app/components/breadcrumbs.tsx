@@ -1,10 +1,10 @@
-import { ChevronRight, ChevronDown } from "lucide-react";
-import { BreadcrumbItem } from "@/app/store/header-store";
-import { cn } from "@/app/components/ui/utils";
-import { EditorialDropdown } from "@/app/components/editorial-dropdown";
-import { ContentDropdown } from "@/app/components/content-dropdown";
-import { SystemDropdown } from "@/app/components/system-dropdown";
-import { useNavigationStore } from "@/app/store/navigation-store";
+import { ChevronRight, ChevronDown } from 'lucide-react';
+import { BreadcrumbItem } from '@/app/store/header-store';
+import { cn } from '@/app/components/ui/utils';
+import { EditorialDropdown } from '@/app/components/editorial-dropdown';
+import { ContentDropdown } from '@/app/components/content-dropdown';
+import { SystemDropdown } from '@/app/components/system-dropdown';
+import { useNavigationStore } from '@/app/store/navigation-store';
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
@@ -21,34 +21,34 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   };
 
   return (
-    <nav className={cn("flex items-center gap-1.5 text-sm", className)}>
+    <nav className={cn('flex items-center gap-1.5 text-sm', className)}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         const Icon = item.icon;
-        
+
         // Специальная обработка для "Редакция" и "Контент"
         const isEditorialSection = item.label === 'Редакция';
         const isContentSection = item.label === 'Контент';
         const isSystemSection = item.label === 'Система';
-        
+
         return (
-          <div key={index} className="flex items-center gap-1.5">
+          <div key={index} className='flex items-center gap-1.5'>
             {index > 0 && (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className='h-4 w-4 text-muted-foreground' />
             )}
-            
+
             {isEditorialSection && !isLast ? (
               <EditorialDropdown onNavigate={handleBreadcrumbClick}>
                 <button
                   onClick={() => handleBreadcrumbClick('editorial-hub')}
                   className={cn(
-                    "flex items-center gap-1 transition-colors hover:text-foreground",
-                    "text-muted-foreground"
+                    'flex items-center gap-1 text-sm transition-colors hover:text-foreground',
+                    'text-muted-foreground'
                   )}
                 >
-                  {Icon && <Icon className="h-4 w-4" />}
+                  {Icon && <Icon className='h-4 w-4' />}
                   <span>{item.label}</span>
-                  <ChevronDown className="h-3 w-3 opacity-60" />
+                  <ChevronDown className='h-3 w-3 opacity-60' />
                 </button>
               </EditorialDropdown>
             ) : isContentSection && !isLast ? (
@@ -56,13 +56,13 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 <button
                   onClick={() => handleBreadcrumbClick('content-hub')}
                   className={cn(
-                    "flex items-center gap-1 transition-colors hover:text-foreground",
-                    "text-muted-foreground"
+                    'flex items-center gap-1 text-sm transition-colors hover:text-foreground',
+                    'text-muted-foreground'
                   )}
                 >
-                  {Icon && <Icon className="h-4 w-4" />}
+                  {Icon && <Icon className='h-4 w-4' />}
                   <span>{item.label}</span>
-                  <ChevronDown className="h-3 w-3 opacity-60" />
+                  <ChevronDown className='h-3 w-3 opacity-60' />
                 </button>
               </ContentDropdown>
             ) : isSystemSection && !isLast ? (
@@ -70,13 +70,13 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 <button
                   onClick={() => handleBreadcrumbClick('system-hub')}
                   className={cn(
-                    "flex items-center gap-1 transition-colors hover:text-foreground",
-                    "text-muted-foreground"
+                    'flex items-center gap-1 text-sm transition-colors hover:text-foreground',
+                    'text-muted-foreground'
                   )}
                 >
-                  {Icon && <Icon className="h-4 w-4" />}
+                  {Icon && <Icon className='h-4 w-4' />}
                   <span>{item.label}</span>
-                  <ChevronDown className="h-3 w-3 opacity-60" />
+                  <ChevronDown className='h-3 w-3 opacity-60' />
                 </button>
               </SystemDropdown>
             ) : item.href || item.onClick ? (
@@ -86,25 +86,21 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                   handleBreadcrumbClick(item.href);
                 }}
                 className={cn(
-                  "flex items-center gap-1.5 transition-colors hover:text-foreground",
-                  isLast 
-                    ? "text-foreground font-medium" 
-                    : "text-muted-foreground"
+                  'flex items-center gap-1.5 text-sm transition-colors hover:text-foreground',
+                  isLast ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
-                {Icon && <Icon className="h-4 w-4" />}
+                {Icon && <Icon className='h-4 w-4' />}
                 <span>{item.label}</span>
               </button>
             ) : (
               <div
                 className={cn(
-                  "flex items-center gap-1.5",
-                  isLast 
-                    ? "text-foreground font-semibold" 
-                    : "text-muted-foreground"
+                  'flex items-center gap-1.5 text-sm',
+                  isLast ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
-                {Icon && <Icon className="h-4 w-4" />}
+                {Icon && <Icon className='h-4 w-4' />}
                 <span>{item.label}</span>
               </div>
             )}

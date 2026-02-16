@@ -23,6 +23,8 @@ import { AnalyticsPage } from '@/app/components/analytics-page';
 import { AdsPage } from '@/app/components/ads-page';
 import { SEOPage } from '@/app/components/seo-page';
 import { CommandPalette } from '@/app/components/command-palette';
+import { ResearchListPage } from '@/app/components/research-list-page';
+import { ResearchWorkspace } from '@/app/components/research-workspace';
 import { AiSidebar } from '@/app/components/ai-sidebar';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { cn } from '@/app/components/ui/utils';
@@ -107,6 +109,10 @@ function App() {
         return 'Аналитика';
       case 'ads':
         return 'Реклама';
+      case 'research':
+        return 'Исследования';
+      case 'research-workspace':
+        return 'Рабочее пространство';
       case 'seo':
         return 'SEO';
       default:
@@ -252,61 +258,73 @@ function App() {
         </aside>
 
         {/* Main Content */}
-        <div className='flex flex-1 flex-col overflow-hidden min-h-0'>
-          <Header
-            title={getSectionTitle()}
-            sidebarCollapsed={sidebarCollapsed}
-            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-            onMobileMenuToggle={() => setMobileMenuOpen(true)}
-            aiSidebarOpen={aiSidebarOpen}
-            onToggleAiSidebar={() => setAiSidebarOpen(!aiSidebarOpen)}
-            showAISessionSelector={activeSection === 'ai-center'}
-          />
-
-          {activeSection === 'ai-center' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <AICenter />
-            </div>
-          ) : activeSection === 'manifest' ? (
-            <ManifestPage
-              onNavigateToAI={() => setActiveSection('ai-center')}
+        <>
+          <div className='flex flex-1 flex-col overflow-hidden min-h-0'>
+            <Header
+              title={getSectionTitle()}
+              sidebarCollapsed={sidebarCollapsed}
+              onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onMobileMenuToggle={() => setMobileMenuOpen(true)}
+              aiSidebarOpen={aiSidebarOpen}
+              onToggleAiSidebar={() => setAiSidebarOpen(!aiSidebarOpen)}
+              showAISessionSelector={activeSection === 'ai-center'}
             />
-          ) : activeSection === 'style' ? (
-            <StyleDashboard />
-          ) : activeSection === 'media' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <MediaSection />
-            </div>
-          ) : activeSection === 'categories' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <CategoriesSection />
-            </div>
-          ) : activeSection === 'settings' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <SettingsPage />
-            </div>
-          ) : activeSection === 'users' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <UsersPage />
-            </div>
-          ) : activeSection === 'seo' ? (
-            <div className='flex-1 min-h-0 overflow-hidden'>
-              <SEOPage />
-            </div>
-          ) : (
-            <ScrollArea className='flex-1 min-h-0'>
-              <div className='container mx-auto p-6'>{renderSection()}</div>
-            </ScrollArea>
-          )}
-        </div>
 
-        {/* AI Sidebar */}
-        <div className='hidden lg:block'>
-          <AiSidebar
-            isOpen={aiSidebarOpen}
-            onClose={() => setAiSidebarOpen(false)}
-          />
-        </div>
+            {activeSection === 'ai-center' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <AICenter />
+              </div>
+            ) : activeSection === 'manifest' ? (
+              <ManifestPage
+                onNavigateToAI={() => setActiveSection('ai-center')}
+              />
+            ) : activeSection === 'style' ? (
+              <StyleDashboard />
+            ) : activeSection === 'media' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <MediaSection />
+              </div>
+            ) : activeSection === 'categories' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <CategoriesSection />
+              </div>
+            ) : activeSection === 'settings' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <SettingsPage />
+              </div>
+            ) : activeSection === 'users' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <UsersPage />
+              </div>
+            ) : activeSection === 'seo' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <SEOPage />
+              </div>
+            ) : activeSection === 'research' ? (
+              <ScrollArea className='flex-1 min-h-0'>
+                <div className='container mx-auto p-6'>
+                  <ResearchListPage />
+                </div>
+              </ScrollArea>
+            ) : activeSection === 'research-workspace' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <ResearchWorkspace />
+              </div>
+            ) : (
+              <ScrollArea className='flex-1 min-h-0'>
+                <div className='container mx-auto p-6'>{renderSection()}</div>
+              </ScrollArea>
+            )}
+          </div>
+
+          {/* AI Sidebar */}
+          <div className='hidden lg:block'>
+            <AiSidebar
+              isOpen={aiSidebarOpen}
+              onClose={() => setAiSidebarOpen(false)}
+            />
+          </div>
+        </>
 
         {/* Command Palette */}
         <CommandPalette />
