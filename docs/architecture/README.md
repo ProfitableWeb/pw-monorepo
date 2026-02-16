@@ -35,6 +35,8 @@ GitVerse Workflows
 - [TEMPLATE](./decisions/TEMPLATE.md) — шаблон для новых решений
 - [ADR-001: База данных](./decisions/ADR-001-database.md) — PostgreSQL на VM
 - [ADR-002: Аутентификация](./decisions/ADR-002-auth.md) — JWT + OAuth
+- [ADR-003: Файловое хранилище](./decisions/ADR-003-file-storage.md) — локально на VM (nginx статика), абстракция для S3
+  на будущее
 
 ### [Инфраструктура](./infrastructure/)
 

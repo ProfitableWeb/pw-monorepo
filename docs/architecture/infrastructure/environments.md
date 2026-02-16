@@ -7,6 +7,7 @@
 | Домен    | localhost           | dev.profitableweb.ru      | TBD                           |
 | VM       | —                   | 213.171.25.187            | отдельная VM                  |
 | БД       | SQLite / PostgreSQL | PostgreSQL                | PostgreSQL                    |
+| Файлы    | uploads/ (локально) | uploads/ на VM (nginx)    | S3 (при необходимости)        |
 | Данные   | Mock / Seed         | Seed                      | Реальные                      |
 | CI/CD    | —                   | GitVerse → push to master | GitVerse → отдельный workflow |
 | SSL      | —                   | Let's Encrypt             | Let's Encrypt                 |
@@ -47,6 +48,7 @@ bun turbo dev  # Запуск всех приложений
 dev.profitableweb.ru/           → localhost:3000 (web)
 dev.profitableweb.ru/admin/     → localhost:3001 (admin)
 dev.profitableweb.ru/api/       → localhost:8000 (api)
+dev.profitableweb.ru/uploads/   → ~/profitableweb/uploads/ (статика)
 ```
 
 ## Prod
