@@ -3,10 +3,10 @@
 
 [data-theme="dark"] {
   // ===== STATUS COLORS =====
-  // Slightly brighter versions for better visibility on dark backgrounds
-  --color-success: #4ade80;
-  --color-success-light: #14532d;
-  --color-success-dark: #86efac;
+  // Приглушённые для тёмных фонов, без «неоновости»
+  --color-success: #38A462;
+  --color-success-light: #14392d;
+  --color-success-dark: #5BBF80;
 
   --color-warning: #fbbf24;
   --color-warning-light: #78350f;

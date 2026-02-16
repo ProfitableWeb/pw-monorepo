@@ -3,7 +3,10 @@ PW-030 | Auth router: register, login, refresh, logout, me, OAuth.
 Токены хранятся в httpOnly cookies (access_token: 15min, refresh_token: 7d).
 """
 
+import logging
 from urllib.parse import urlencode
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from jose import JWTError
@@ -177,17 +180,20 @@ def get_oauth_url(
 ) -> OAuthUrlResponse:
     # state содержит origin для определения, куда редиректить после OAuth
     origin = request.query_params.get("origin", settings.frontend_url)
+    mode = request.query_params.get("mode", "")
+    # Режим привязки: state = "link:{origin}"
+    state = f"link:{origin}" if mode == "link" else origin
     callback_url = _build_callback_url(request, provider)
 
     if provider == "yandex":
         from src.auth.oauth.yandex import get_authorization_url
 
-        return OAuthUrlResponse(url=get_authorization_url(state=origin, callback_url=callback_url))
+        return OAuthUrlResponse(url=get_authorization_url(state=state, callback_url=callback_url))
 
     if provider == "google":
         from src.auth.oauth.google import get_authorization_url
 
-        return OAuthUrlResponse(url=get_authorization_url(state=origin, callback_url=callback_url))
+        return OAuthUrlResponse(url=get_authorization_url(state=state, callback_url=callback_url))
 
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -200,6 +206,23 @@ def get_oauth_url(
 # -----------------------------------------------------------------------
 
 
+def _extract_oauth_profile(provider: str, code: str, callback_url: str) -> dict:
+    """Обмен кода на профиль OAuth-пользователя."""
+    if provider == "yandex":
+        from src.auth.oauth.yandex import exchange_code
+
+        return exchange_code(code, callback_url=callback_url)
+    if provider == "google":
+        from src.auth.oauth.google import exchange_code
+
+        return exchange_code(code, callback_url=callback_url)
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=f"Неизвестный провайдер: {provider}",
+    )
+
+
 @router.get("/{provider}/callback")
 def oauth_callback(
     provider: str,
@@ -209,24 +232,44 @@ def oauth_callback(
     response: Response = Response(),  # noqa: B008
     db: Session = Depends(get_db),
 ) -> Response:
-    redirect_base = state or settings.frontend_url
+    # Определяем режим: привязка или логин
+    is_link_mode = state.startswith("link:")
+    redirect_base = state[5:] if is_link_mode else (state or settings.frontend_url)
     callback_url = _build_callback_url(request, provider)
 
     try:
-        if provider == "yandex":
-            from src.auth.oauth.yandex import exchange_code
+        profile = _extract_oauth_profile(provider, code, callback_url)
 
-            profile = exchange_code(code, callback_url=callback_url)
-        elif provider == "google":
-            from src.auth.oauth.google import exchange_code
+        if is_link_mode:
+            # Режим привязки: берём текущего пользователя из JWT cookie
+            from src.auth.dependencies import get_optional_user
 
-            profile = exchange_code(code, callback_url=callback_url)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Неизвестный провайдер: {provider}",
+            current_user = get_optional_user(request, db)
+            if not current_user:
+                params = urlencode({"error": "not_authenticated"})
+                redirect_url = f"{redirect_base}/auth/callback?{params}"
+                return Response(
+                    status_code=status.HTTP_302_FOUND,
+                    headers={"Location": redirect_url},
+                )
+            try:
+                user_service.link_oauth(
+                    db, current_user, provider, profile["id"]
+                )
+            except ValueError:
+                params = urlencode({"error": "oauth_already_linked"})
+                redirect_url = f"{redirect_base}/auth/callback?{params}"
+                return Response(
+                    status_code=status.HTTP_302_FOUND,
+                    headers={"Location": redirect_url},
+                )
+            redirect_url = f"{redirect_base}/auth/callback?linked={provider}"
+            return Response(
+                status_code=status.HTTP_302_FOUND,
+                headers={"Location": redirect_url},
             )
 
+        # Обычный режим: логин/регистрация
         user = user_service.get_or_create_oauth_user(
             db,
             provider=provider,
@@ -245,6 +288,7 @@ def oauth_callback(
         return redirect_response
 
     except Exception:
+        logger.exception("OAuth callback error for provider=%s", provider)
         params = urlencode({"error": "oauth_failed"})
         redirect_url = f"{redirect_base}/auth/callback?{params}"
         return Response(

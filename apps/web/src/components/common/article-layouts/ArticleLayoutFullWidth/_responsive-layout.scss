@@ -1,6 +1,6 @@
 /**
  * Адаптивные настройки структуры для Full Width Layout
- * 
+ *
  * Этот файл содержит ТОЛЬКО структурные изменения.
  * Full-width layout не имеет колонок, поэтому структурные изменения минимальны.
  */
@@ -14,28 +14,28 @@
 // ============================================================
 
 // .text-block - стандартный текстовый блок
-:global(.text-block) {
+.text-block {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
 
 // .text-block--wide - широкий текстовый блок
-:global(.text-block--wide) {
+.text-block--wide {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
 
 // .text-block--narrow - узкий текстовый блок
-:global(.text-block--narrow) {
+.text-block--narrow {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
 
 // .column-layout - газетная вёрстка (многоколоночный текст)
-:global(.column-layout) {
+.column-layout {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -52,7 +52,7 @@
 }
 
 // .full-bleed - блок на всю ширину
-:global(.full-bleed) {
+.full-bleed {
   width: 100vw;
   position: relative;
   left: 50%;

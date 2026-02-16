@@ -6,6 +6,7 @@ import './Button.scss';
 interface ButtonProps {
   children: React.ReactNode;
   variant?: 'outline' | 'solid' | 'ghost';
+  mode?: 'primary' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   href?: string;
@@ -14,33 +15,25 @@ interface ButtonProps {
   disabled?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
-  enableHoverElevation?: boolean;
 }
 
 /**
- * Button - универсальный компонент кнопки
+ * Button - простая кнопка для форм и интерфейса
  *
- * Используется для: subscribe buttons, action buttons, links
- * Стиль взят из дизайна социальных сетей и кнопки "Подписаться на PW"
+ * Чистый стиль без градиентов и эффектов. Для эффектных CTA-кнопок
+ * используйте FancyButton.
  *
  * Примеры:
  * ```tsx
- * // Outline button (как "Подписаться на PW")
- * <Button variant="outline" fullWidth>Подписаться</Button>
- *
- * // Link button
- * <Button href="/subscribe" variant="outline">Подписаться</Button>
- *
- * // Action button
- * <Button variant="solid" onClick={handleClick}>Отправить</Button>
- *
- * // Button с hover-эффектом приподнятия (по умолчанию отключен)
- * <Button variant="outline" enableHoverElevation>С поднятием</Button>
+ * <Button variant="outline">Отмена</Button>
+ * <Button variant="solid" type="submit">Отправить</Button>
+ * <Button variant="outline" mode="secondary">Удалить</Button>
  * ```
  */
 export const Button = ({
   children,
   variant = 'outline',
+  mode = 'primary',
   size = 'md',
   fullWidth = false,
   href,
@@ -49,24 +42,19 @@ export const Button = ({
   disabled = false,
   className = '',
   type = 'button',
-  enableHoverElevation = false,
 }: ButtonProps) => {
   const classNames = [
     'button',
     `button--${variant}`,
     `button--${size}`,
+    mode === 'secondary' && 'button--secondary',
     fullWidth && 'button--full-width',
     disabled && 'button--disabled',
-    enableHoverElevation && 'button--hover-elevation',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
-  // Обёртка для контента, чтобы он был поверх градиента
-  const content = <span className='button__content'>{children}</span>;
-
-  // Если есть href - рендерим как ссылку
   if (href) {
     return (
       <a
@@ -77,12 +65,11 @@ export const Button = ({
         onClick={disabled ? undefined : onClick}
         aria-disabled={disabled}
       >
-        {content}
+        {children}
       </a>
     );
   }
 
-  // Иначе - как кнопку
   return (
     <button
       type={type}
@@ -90,7 +77,7 @@ export const Button = ({
       onClick={onClick}
       disabled={disabled}
     >
-      {content}
+      {children}
     </button>
   );
 };

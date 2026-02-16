@@ -3,12 +3,12 @@
 
 [data-theme="dark"] {
   // ===== BRAND COLORS =====
-  // Slightly adjusted for better contrast in dark mode
-  --color-primary: #5ADC5A;
-  --color-primary-hover: #6BE66B;
-  --color-primary-active: #7AF07A;
-  --color-primary-light: #1A4D1A;
-  --color-primary-text: #64be64; // Приглушённый зелёный для текста
+  // Приглушённые тона для тёмного фона (меньше насыщенности и яркости)
+  --color-primary: #69b969;
+  --color-primary-hover: #4ab34a;
+  --color-primary-active: #52c452;
+  --color-primary-light: #1a3d1a;
+  --color-primary-text: #4da64d;
 
   --color-secondary: #2dd4bf;
   --color-secondary-hover: #5eead4;
@@ -21,4 +21,3 @@
   --user-menu-item-color: var(--color-text-secondary);
   --user-menu-item-hover: var(--color-primary);
 }
-

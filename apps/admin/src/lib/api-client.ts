@@ -437,3 +437,170 @@ export async function getOAuthUrl(provider: string): Promise<string> {
   const json = await res.json();
   return json.url;
 }
+
+// ---------------------------------------------------------------------------
+// Profile API (PW-034)
+// ---------------------------------------------------------------------------
+
+interface ProfileRaw {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string | null;
+  role: string;
+  bio?: string | null;
+  links?: string[];
+  has_password: boolean;
+  oauth_provider?: string | null;
+  oauth_providers?: string[];
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: string;
+  bio?: string;
+  links?: string[];
+  hasPassword: boolean;
+  oauthProvider?: string;
+  oauthProviders: string[];
+}
+
+function mapProfile(raw: ProfileRaw): UserProfile {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar ?? undefined,
+    role: raw.role,
+    bio: raw.bio ?? undefined,
+    links: raw.links ?? [],
+    hasPassword: raw.has_password,
+    oauthProvider: raw.oauth_provider ?? undefined,
+    oauthProviders: raw.oauth_providers ?? [],
+  };
+}
+
+export async function getProfile(): Promise<UserProfile | null> {
+  const url = `${API_BASE}/users/me`;
+  const res = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    credentials: 'include',
+  });
+  if (!res.ok) return null;
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  return json.data ? mapProfile(json.data) : null;
+}
+
+export async function updateProfile(updates: {
+  name?: string;
+  bio?: string;
+  links?: string[];
+}): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/users/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка обновления профиля');
+  }
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}
+
+export async function setPassword(newPassword: string): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/users/me/password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ new_password: newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка установки пароля');
+  }
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}
+
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string
+): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/users/me/password/change`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      old_password: oldPassword,
+      new_password: newPassword,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка смены пароля');
+  }
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}
+
+export async function uploadAvatar(file: File): Promise<UserProfile> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${API_BASE}/users/me/avatar`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка загрузки аватара');
+  }
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}
+
+export async function deleteAvatar(): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/users/me/avatar`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new ApiError(res.status, 'Ошибка удаления аватара');
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}
+
+export async function getOAuthLinkUrl(provider: string): Promise<string> {
+  const origin = window.location.origin + '/admin';
+  const res = await fetch(
+    `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}&mode=link`,
+    { credentials: 'include' }
+  );
+  if (!res.ok) throw new ApiError(res.status, 'Ошибка получения OAuth URL');
+  const json = await res.json();
+  return json.url;
+}
+
+export async function unlinkOAuth(provider: string): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE}/users/me/oauth/${provider}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка отвязки провайдера');
+  }
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapProfile(json.data);
+}

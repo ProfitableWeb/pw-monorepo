@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:3000"
     admin_url: str = "http://localhost:3001"
 
+    # Файловое хранилище (ADR-003)
+    upload_dir: str = "~/profitableweb/uploads"
+    upload_base_url: str = "/uploads"
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 

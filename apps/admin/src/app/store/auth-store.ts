@@ -13,6 +13,8 @@ export interface User {
   email: string;
   avatar?: string;
   role: 'admin' | 'editor' | 'author';
+  bio?: string;
+  links?: string[];
 }
 
 interface AuthState {
@@ -26,6 +28,7 @@ interface AuthState {
   ) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 function mapUser(raw: AuthUser): User {
@@ -101,5 +104,11 @@ export const useAuthStore = create<AuthState>(set => ({
     } catch {
       set({ isAuthenticated: false, isAdmin: false, user: null });
     }
+  },
+
+  updateUser: updates => {
+    set(state => ({
+      user: state.user ? { ...state.user, ...updates } : null,
+    }));
   },
 }));

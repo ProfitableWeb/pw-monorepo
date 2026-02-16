@@ -29,7 +29,7 @@
   &__socials {
     margin: 0;
 
-    :global(.article-author-meta__socials-icons) {
+    .article-author-meta__socials-icons {
       gap: 0px;
     }
   }

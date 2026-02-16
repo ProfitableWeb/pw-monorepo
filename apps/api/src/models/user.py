@@ -14,6 +14,7 @@ from src.models.base import Base, TimestampMixin, UUIDMixin
 if TYPE_CHECKING:
     from src.models.article import Article
     from src.models.comment import Comment
+    from src.models.oauth_link import UserOAuthLink
 
 
 class UserRole(str, enum.Enum):
@@ -41,6 +42,9 @@ class User(UUIDMixin, TimestampMixin, Base):
 
     articles: Mapped[list["Article"]] = relationship(back_populates="author")
     comments: Mapped[list["Comment"]] = relationship(back_populates="user")
+    oauth_links: Mapped[list["UserOAuthLink"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

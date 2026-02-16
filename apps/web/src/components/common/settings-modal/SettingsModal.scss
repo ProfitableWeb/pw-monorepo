@@ -1,13 +1,15 @@
-@use 'utils' as *;
+@use "utils" as *;
 
 .settings-modal {
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+  height: 70vh;
+  max-height: 500px;
+  overflow: hidden;
 
   @include sm {
     flex-direction: row;
-    min-height: 600px;
+    max-height: 600px;
   }
 }
 
@@ -81,6 +83,10 @@
     background: var(--color-surface-hover);
     color: var(--color-text-primary);
 
+    [data-theme="light"] & {
+      background: var(--color-surface);
+    }
+
     @include mobile-only {
       background: var(--color-surface-hover);
       color: var(--color-text-primary);
@@ -134,8 +140,62 @@
 // Область контента
 .settings-modal__content {
   flex: 1;
+  min-height: 0; // Позволяет flex-child сжиматься для overflow
+  position: relative;
+  overflow: hidden;
+}
+
+// Скролл-зона (нативный скроллбар скрыт)
+.settings-modal__scroll {
+  height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Кастомный скроллбар (macOS-style)
+.settings-modal__scrollbar {
+  position: absolute;
+  top: 12px;
+  right: 4px;
+  bottom: 12px;
+  width: 6px;
+  border-radius: 100px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+
+  &.visible {
+    opacity: 1;
+  }
+
+  // На hover по всей области контента — показать
+  .settings-modal__content:hover & {
+    opacity: 1;
+  }
+}
+
+.settings-modal__scrollbar-thumb {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: var(--color-border);
+  border-radius: 100px;
+  transition: background 0.2s ease;
+  cursor: grab;
+
+  &:hover {
+    background: var(--color-text-secondary);
+  }
+
+  &.dragging {
+    background: var(--color-text-secondary);
+    cursor: grabbing;
+  }
 }
 
 .settings-modal__panel {
@@ -175,7 +235,6 @@
     padding: 20px;
     background: var(--color-surface);
     border-radius: 12px;
-    border: 1px solid var(--color-border);
   }
 
   .settings-modal__avatar-wrapper {
@@ -184,12 +243,233 @@
     border-radius: 50%;
     overflow: hidden;
     position: relative;
+
+    &--clickable {
+      cursor: pointer;
+
+      &:hover .settings-modal__avatar-overlay {
+        opacity: 1;
+      }
+    }
   }
 
   .settings-modal__avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .settings-modal__avatar-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .settings-modal__avatar-overlay-icon {
+    color: white;
+    width: 24px;
+    height: 24px;
+
+    &.spin {
+      animation: spinAvatar 1s linear infinite;
+    }
+  }
+
+  .settings-modal__avatar-upload-input {
+    display: none;
+  }
+
+  .settings-modal__avatar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .settings-modal__profile-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+@keyframes spinAvatar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Секция безопасности
+.settings-modal__section--security {
+  .settings-modal__password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    border-radius: 12px;
+
+    // Кнопка отправки — больше отступ от инпутов
+    > .fancy-button {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .settings-modal__password-info {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .settings-modal__oauth-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    border-radius: 12px;
+  }
+
+  .settings-modal__oauth-providers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .settings-modal__oauth-provider-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--color-surface) 50%, var(--color-background));
+    border: 1px solid transparent;
+    border-radius: 8px;
+    gap: 12px;
+
+    &.linked {
+      background: var(--color-background);
+    }
+
+    [data-theme="light"] & {
+      border-color: var(--color-border);
+
+      &.linked {
+        border-color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+      }
+    }
+  }
+
+  .settings-modal__oauth-provider-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-transform: capitalize;
+  }
+
+  .settings-modal__oauth-provider-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .settings-modal__oauth-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--color-surface);
+    border-radius: 8px;
+  }
+
+  .settings-modal__oauth-label {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  .settings-modal__oauth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-xl);
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+
+    &::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
+  }
+
+  .settings-modal__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+  }
+}
+
+// Password input с toggle видимости
+.settings-modal__password-input-wrapper {
+  position: relative;
+
+  .input-wrapper {
+    width: 100%;
+  }
+
+  .input {
+    padding-right: 44px;
+  }
+}
+
+.settings-modal__password-toggle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -198,6 +478,118 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+// Email verification
+.settings-modal__email-verify {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-modal__email-verify-hint {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.settings-modal__email-verify-link {
+  color: var(--color-primary) !important;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.settings-modal__email-verify-sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-primary);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Textarea «О себе»
+.settings-modal__bio-textarea {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+
+  &::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px var(--input-border-focus-light, rgba(90, 220, 90, 0.1));
+  }
+}
+
+.settings-modal__bio-counter {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+// Ссылки
+.settings-modal__links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-modal__link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-modal__link-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    color: var(--color-error);
+    background: var(--color-surface);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .settings-modal__label {
@@ -217,7 +609,6 @@
     padding: 16px;
     background: var(--color-surface);
     border-radius: 8px;
-    border: 1px solid var(--color-border);
     gap: 16px;
 
     @include mobile-only {
@@ -255,7 +646,6 @@
     padding: 20px;
     background: var(--color-surface);
     border-radius: 12px;
-    border: 1px solid var(--color-border);
     gap: 16px;
   }
 
@@ -275,7 +665,7 @@
   border-radius: 14px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 2px;
 
   &:hover {
@@ -289,6 +679,10 @@
 
   &.active {
     background: var(--color-primary);
+
+    &:hover {
+      background: var(--color-primary-hover);
+    }
   }
 
   &--large {
@@ -317,9 +711,9 @@
   height: 24px;
   background: white;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-  color: var(--color-text-secondary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: var(--color-border);
 
   .settings-modal__toggle.active & {
     transform: translateX(24px);
@@ -371,19 +765,16 @@
   gap: 12px;
   padding: 12px 16px;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
   &:hover {
     background: var(--color-surface-hover);
-    border-color: var(--color-border-hover);
   }
 
   &.active {
     background: var(--color-surface-hover);
-    border-color: var(--color-border);
 
     .settings-modal__radio-label {
       color: var(--color-text-primary);
@@ -391,7 +782,7 @@
     }
   }
 
-  input[type='radio'] {
+  input[type="radio"] {
     appearance: none;
     width: 18px;
     height: 18px;
@@ -404,7 +795,7 @@
     transition: all 0.2s ease-in-out;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;

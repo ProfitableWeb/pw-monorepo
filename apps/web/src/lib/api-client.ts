@@ -407,6 +407,140 @@ export async function getOAuthUrl(provider: string): Promise<string> {
   return json.url;
 }
 
+// ---------------------------------------------------------------------------
+// Profile API (PW-034)
+// ---------------------------------------------------------------------------
+
+interface ProfileRaw {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string | null;
+  role: string;
+  bio?: string | null;
+  links?: string[];
+  has_password: boolean;
+  oauth_provider?: string | null;
+  oauth_providers?: string[];
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: string;
+  bio?: string;
+  links?: string[];
+  hasPassword: boolean;
+  oauthProvider?: string;
+  oauthProviders: string[];
+}
+
+function mapProfile(raw: ProfileRaw): UserProfile {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar ?? undefined,
+    role: raw.role,
+    bio: raw.bio ?? undefined,
+    links: raw.links ?? [],
+    hasPassword: raw.has_password,
+    oauthProvider: raw.oauth_provider ?? undefined,
+    oauthProviders: raw.oauth_providers ?? [],
+  };
+}
+
+export async function getProfile(): Promise<UserProfile | null> {
+  const data = await apiFetch<ProfileRaw>('/users/me');
+  return data ? mapProfile(data) : null;
+}
+
+export async function updateProfile(updates: {
+  name?: string;
+  bio?: string;
+  links?: string[];
+}): Promise<UserProfile> {
+  const data = await apiFetch<ProfileRaw>('/users/me', {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
+  if (!data) throw new ApiError(500, 'Не удалось обновить профиль');
+  return mapProfile(data);
+}
+
+export async function setPassword(newPassword: string): Promise<UserProfile> {
+  const data = await apiFetch<ProfileRaw>('/users/me/password', {
+    method: 'POST',
+    body: JSON.stringify({ new_password: newPassword }),
+  });
+  if (!data) throw new ApiError(500, 'Не удалось установить пароль');
+  return mapProfile(data);
+}
+
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string
+): Promise<UserProfile> {
+  const data = await apiFetch<ProfileRaw>('/users/me/password/change', {
+    method: 'POST',
+    body: JSON.stringify({
+      old_password: oldPassword,
+      new_password: newPassword,
+    }),
+  });
+  if (!data) throw new ApiError(500, 'Не удалось сменить пароль');
+  return mapProfile(data);
+}
+
+export async function uploadAvatar(file: File): Promise<UserProfile> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${API_BASE}/users/me/avatar`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка загрузки аватара');
+  }
+
+  const json: ApiResponseRaw<ProfileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных профиля');
+  return mapProfile(json.data);
+}
+
+export async function deleteAvatar(): Promise<UserProfile> {
+  const data = await apiFetch<ProfileRaw>('/users/me/avatar', {
+    method: 'DELETE',
+  });
+  if (!data) throw new ApiError(500, 'Не удалось удалить аватар');
+  return mapProfile(data);
+}
+
+export async function getOAuthLinkUrl(provider: string): Promise<string> {
+  const origin = window.location.origin;
+  const res = await fetch(
+    `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}&mode=link`,
+    { credentials: 'include' }
+  );
+  if (!res.ok) throw new ApiError(res.status, 'Ошибка получения OAuth URL');
+  const json = await res.json();
+  return json.url;
+}
+
+export async function unlinkOAuth(provider: string): Promise<UserProfile> {
+  const data = await apiFetch<ProfileRaw>(`/users/me/oauth/${provider}`, {
+    method: 'DELETE',
+  });
+  if (!data) throw new ApiError(500, 'Не удалось отвязать провайдер');
+  return mapProfile(data);
+}
+
 export async function createComment(
   articleSlug: string,
   content: string,

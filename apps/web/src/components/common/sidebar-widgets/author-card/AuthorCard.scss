@@ -50,13 +50,13 @@
 
     // Уменьшаем отступы между иконками в блоке автора
     // Используем более специфичный селектор
-    > :global(.social-icons) {
+    > .social-icons {
       gap: 8px;
     }
   }
 
   // Альтернативный способ через переданный className
-  :global(.author-card__socials-icons) {
+  .author-card__socials-icons {
     gap: 8px !important;
   }
 

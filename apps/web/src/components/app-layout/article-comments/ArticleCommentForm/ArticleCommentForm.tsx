@@ -93,7 +93,6 @@ export function ArticleCommentForm({
             size='md'
             className='article-comment-form__submit'
             disabled={!content.trim()}
-            enableHoverElevation={false}
           >
             {replyingTo ? 'Ответить' : 'Отправить'}
           </Button>

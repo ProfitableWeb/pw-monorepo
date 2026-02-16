@@ -14,6 +14,8 @@ export interface User {
   email: string;
   avatar?: string;
   role: string;
+  bio?: string;
+  links?: string[];
 }
 
 export type AuthProvider = 'yandex' | 'telegram' | 'google';
@@ -28,6 +30,8 @@ export interface AuthContextType {
   checkAuth: () => Promise<void>;
   /** Обновить user после логина (вызывается из callback page) */
   refreshUser: () => Promise<void>;
+  /** Оптимистичное обновление user state (без сетевого запроса) */
+  updateUser: (updates: Partial<User>) => void;
 }
 
 function mapAuthUserToUser(raw: AuthUser): User {
@@ -104,6 +108,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(me ? mapAuthUserToUser(me) : null);
   }, []);
 
+  const updateUser = useCallback((updates: Partial<User>) => {
+    setUser(prev => (prev ? { ...prev, ...updates } : null));
+  }, []);
+
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
@@ -113,6 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     logout,
     checkAuth,
     refreshUser,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

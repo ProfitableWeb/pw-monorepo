@@ -2,7 +2,7 @@
  * User settings types for the application
  */
 
-export type SettingsTab = 'profile' | 'notifications' | 'email';
+export type SettingsTab = 'profile' | 'security' | 'notifications' | 'email';
 
 export interface UserProfileSettings {
   name: string;
