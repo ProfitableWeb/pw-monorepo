@@ -33,26 +33,27 @@ PW-030 API упадёт из-за отсутствия БД.
 
 - [x] Обновить workflows: запись `.env` из secrets
 - [x] Обновить workflows: `alembic upgrade head` при деплое
-- [ ] Добавить DATABASE_URL в GitVerse secrets:
-      `postgresql://profitableweb:profitableweb_2026@localhost:5432/profitableweb`
-- [ ] Первый деплой через CI/CD + проверка
+- [x] Добавить DATABASE_URL в GitVerse secrets
+- [x] Первый деплой через CI/CD — успешно (run #100)
+- [x] Исправление: `cors_origins: list[str]` → `str` (DotEnvSettingsSource json.loads crash)
+- [x] Исправление: CI/CD пропускает пустые secrets (дефолты из Settings)
 
 ### Фаза 4: Роль-гард в админке
 
-- [ ] `isAdmin` в auth-store (сделано)
-- [ ] Экран «Доступ запрещён» в App.tsx (сделано)
-- [ ] Скрипт `promote_admin.py` (сделано)
+- [x] `isAdmin` в auth-store
+- [x] Экран «Доступ запрещён» в App.tsx
+- [x] Скрипт `promote_admin.py`
 
 ### Фаза 5: Проверка на VM
 
-- [ ] Деплой через push в master
-- [ ] Миграции применились
-- [ ] API отвечает `/api/articles`
-- [ ] OAuth вход работает
-- [ ] Seed-данные загружены
+- [x] Деплой через push в master
+- [x] Миграции применились
+- [x] API отвечает `/api/articles` (38 статей, 6 категорий, 13 комментариев)
+- [x] Seed-данные загружены
+- [x] OAuth вход работает (Yandex)
 - [ ] Админка доступна с ролью admin
 - [ ] Админка блокирует viewer
 
 ## Принятые решения
 
-См. [ADR-001: Инфраструктура базы данных](../../../decisions/ADR-001-database-infrastructure.md)
+См. [ADR-001: Инфраструктура базы данных](PW-031-database-infrastructure.md/ADR-001-database-infrastructure.md)
