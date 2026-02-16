@@ -4,187 +4,142 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ProfitableWeb is a **Turborepo monorepo** with three applications:
+ProfitableWeb is a **Turborepo monorepo** — a research blog about AI-automated labor transformation.
 
-- `apps/web` - Next.js 15 frontend (research blog about AI-automated labor transformation)
-- `apps/admin` - Next.js 15 admin panel
-- `apps/api` - FastAPI Python backend
+- `apps/web` — Next.js 15 frontend (App Router, React 19, SCSS modules)
+- `apps/admin` — Vite SPA admin panel (React 19, Radix UI, Tailwind CSS)
+- `apps/api` — FastAPI Python backend (sync SQLAlchemy, PostgreSQL)
+- `packages/types` — Shared TypeScript types (`@profitable-web/types`)
 
-**Package Manager**: Bun (>=1.2.17) for JavaScript, uv for Python
+**Package managers**: Bun (>=1.2.17) for JavaScript, uv for Python
 
 ## Common Commands
 
-### Development
+### Monorepo (from root)
 
 ```bash
-# Run all applications
-bun turbo dev
-
-# Run specific app only
-bun turbo dev --filter=@profitable-web/web
-bun turbo dev --filter=@profitable-web/admin
-bun turbo dev --filter=@profitable-web/api
+bun turbo dev                                  # Run all apps
+bun turbo dev --filter=@profitable-web/web     # Web only (port 3000)
+bun turbo dev --filter=@profitable-web/admin   # Admin only (port 3001)
+bun turbo dev --filter=@profitable-web/api     # API only (port 8000)
+bun turbo build                                # Build all
+bun turbo lint                                 # Lint all
+bun turbo type-check                           # Type-check all
+bun turbo test                                 # Test all
+bun run format                                 # Prettier format
 ```
 
-### Build & Quality
+### Frontend (apps/web)
 
 ```bash
-bun turbo build          # Build all apps
-bun turbo lint           # Lint all apps
-bun turbo type-check     # Type check all apps
-bun turbo test           # Run all tests
-bun run format           # Format with Prettier
+bun --cwd apps/web run lint:fix       # Auto-fix lint issues
+bun --cwd apps/web run test           # Run Vitest
+bun --cwd apps/web run test:coverage  # Coverage report
+bun --cwd apps/web run test:watch     # Watch mode
 ```
 
-### Frontend-specific (apps/web)
-
-```bash
-bun run dev              # Start Next.js dev server (port 3000)
-bun run build            # Production build
-bun run lint:fix         # Auto-fix lint issues
-bun run type-check       # TypeScript check without emit
-bun run test:ui          # Vitest UI
-bun run test:coverage    # Coverage report
-bun run test:watch       # Watch mode
-```
-
-### Backend-specific (apps/api)
+### Backend (apps/api)
 
 ```bash
 cd apps/api
-uv sync                  # Install Python dependencies
-uv run pytest            # Run all tests
-uv run pytest tests/test_specific.py  # Run single test file
-uv run ruff check        # Lint
-uv run ruff check --fix  # Auto-fix lint issues
-uv run mypy .            # Type check
+uv sync                                # Install dependencies
+uv run pytest                          # All tests
+uv run pytest tests/test_specific.py   # Single test file
+uv run ruff check                      # Lint
+uv run ruff check --fix                # Auto-fix lint
+uv run mypy .                          # Type check
+uv run alembic upgrade head            # Apply migrations
+uv run alembic revision --autogenerate -m "description"  # Create migration
 ```
 
 ## Architecture
 
-### Monorepo Structure
+### apps/web — Next.js 15
 
-- **Turborepo** orchestrates builds with dependency awareness
-- **Bun Workspaces** links packages (e.g., `@profitable-web/types`)
-- Shared types in `packages/types/` used by both frontends
+**Routing**: Single dynamic route `[slug]/page.tsx` resolves content type by priority: static pages → categories
+(`getCategoryBySlug`) → articles (`getArticleBySlug`) → 404.
 
-### Frontend (apps/web)
+**Styling**: SCSS modules only (`component.module.scss`). Theme system in `styles/themes/{light,dark}/` with
+component-level overrides. Utility mixins in `styles/utils/`. No Tailwind, no CSS-in-JS.
 
-#### Tech Stack
+**State**: TanStack React Query for server state. React Context for auth (`contexts/auth/AuthContext.tsx`) and theme
+(`contexts/ThemeContext.tsx`). Query key factories in `lib/query-keys.ts`.
 
-- Next.js 15 with App Router (React 19)
-- TypeScript (strict mode)
-- SCSS modules (NO UI framework - clean CSS only)
-- TanStack React Query for server state
-- Zustand for client state
-- Framer Motion for animations
+**Provider stack** (in `components/providers/Providers.tsx`): QueryProvider → ThemeProvider → AuthProvider →
+ToastProvider.
 
-#### Routing Architecture
+**API client** (`lib/api-client.ts`): Fetch wrapper with `credentials: 'include'` for httpOnly cookies. Automatic
+snake_case→camelCase mapping of API responses. Auto-refresh on 401 (one retry via `authRefresh()`). SSR uses absolute
+URL (`http://localhost:8000/api`), client uses relative `/api` (nginx proxy).
 
-**Single dynamic route** `[slug]/page.tsx` handles multiple content types:
+**SEO**: `generateMetadata()` + JSON-LD structured data in every content page. Helpers in `utils/seo.ts`.
 
-1. Static pages (about, contact, etc.) - handled by Next.js automatically
-2. Categories - checked first via `getCategoryBySlug()`
-3. Articles - checked second via `getArticleBySlug()`
-4. 404 fallback
+### apps/admin — Vite SPA
 
-#### Component Organization
+**Different stack from web**: Vite (not Next.js), Tailwind CSS (not SCSS), Radix UI components, Zustand stores (not
+React Context).
 
-```
-src/components/
-├── app-layout/     # Page layouts (ArticlePage, CategoryPage)
-├── common/         # Reusable UI components (Button, Card, Modal)
-└── providers/      # Context providers (Auth, Theme)
-```
+**Routing**: Client-side via Zustand `navigation-store.ts` (no file-based routing). Base path: `/admin/`.
 
-#### CSS Architecture
+**Auth store**: `store/auth-store.ts` — `useAuthStore` with login, logout, checkAuth, OAuth.
 
-- **SCSS modules** only - import styles as `import styles from './component.module.scss'`
-- **Theme system**: `styles/themes/{light,dark}/` with separate files for buttons, cards, forms, etc.
-- **Utility mixins**: `styles/utils/` for animations, breakpoints, colors, spacing, typography
-- No Tailwind, no CSS-in-JS
+**API client**: Same pattern as web (`lib/api-client.ts`) but uses `import.meta.env.VITE_API_URL`.
 
-#### State Management
+### apps/api — FastAPI
 
-- **Server State**: TanStack React Query
-- **Client State**: Zustand stores
-- **Auth/Theme**: React Context with localStorage persistence
+**Database**: Sync PostgreSQL via SQLAlchemy 2.0 + psycopg2 (deliberate choice, not async). UUID primary keys.
+`TimestampMixin` for created_at/updated_at.
 
-### Backend (apps/api)
+**Service layer pattern**: Routers (`api/`) → Services (`services/`) → Models (`models/`). Pydantic schemas in
+`schemas/` (snake_case).
 
-- **FastAPI** with async/await
-- **SQLAlchemy 2.0** with async support
-- **Pydantic** for validation
-- **Alembic** for migrations
-- **Python 3.11+** required
+**Auth**: JWT access token (15min, Path=/api) + refresh token (7d, Path=/api/auth) in httpOnly cookies. OAuth: Yandex,
+Google, Telegram Login Widget. FastAPI dependencies: `get_current_user`, `get_current_admin`, `get_optional_user` in
+`auth/dependencies.py`.
 
-## Mock-First Development
+**User roles**: admin, editor, author, viewer.
 
-The frontend uses mock data for development (`src/lib/mock-api.ts`). API calls return simulated data, allowing frontend
-work without backend dependency. Real API integration happens later by replacing mock implementations.
+**File storage**: Local disk uploads served by nginx. Service abstraction in `services/storage.py`.
 
-## SEO Architecture
+**Migrations**: Alembic, auto-applied on deploy via CI/CD.
 
-All content pages use unified SEO pattern:
+### Deployment
 
-- Dynamic metadata via `generateMetadata()` in page files
-- JSON-LD structured data (Category, Article, Breadcrumb schemas)
-- OpenGraph and Twitter cards
-- Helper functions in `src/utils/seo.ts`
-
-## Type Safety
-
-- **Strict TypeScript** enabled in all frontend apps
-- Shared types package: `@profitable-web/types`
-- Python uses type hints with mypy enforcement
-- All API contracts should be typed in shared package
+nginx :80 proxies to: web :3000 (Next.js SSR), admin :3001 (Vite), api :8000 (uvicorn), uploads/ (static). PM2 manages
+all processes (`ecosystem.config.js`). Cloud.ru VM, CI/CD via GitHub Actions.
 
 ## Git Workflow
 
-**Dual repository hosting**:
-
-- Primary: GitVerse (`origin`)
-- Secondary: GitHub (`github`)
+**Dual repository**: GitVerse (`origin`, primary) + GitHub (`github`, mirror).
 
 ```bash
-git push          # Push to GitVerse only
-git push github   # Push to GitHub only
-git pushall       # Push to both (custom alias)
+git push            # GitVerse only
+git push github     # GitHub only
+git pushall         # Both (custom alias)
 ```
 
-**Commit message format** (REQUIRED):
+**Commit format** (REQUIRED): `type(PW-XXXX): описание на русском`
 
-- Format: `type(PW-XXXX): subject` (на русском языке)
-- Task number `(PW-XXXX)` must exist in `docs/tasks/`
+- Task number must exist in `docs/tasks/`
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
-- Subject: lowercase, imperative mood, in Russian
 - **НЕ добавлять** `Co-Authored-By:` или другие строки авторства
 
-Examples:
-
-- ✅ `feat(PW-011): рефакторинг и оптимизация`
-- ✅ `fix(PW-016): исправление высоты инпута`
-- ❌ `feat: add component` (missing task number)
-- ❌ `feat(PW-016): add input component` (not in Russian)
-- ❌ `feat(PW-016): описание\n\nCo-Authored-By: ...` (no authorship lines)
-
-## Testing
-
-- **Frontend**: Vitest + Testing Library
-- **Backend**: pytest + httpx for async tests
-- Tests located in `__tests__/` directories or `*.test.ts` files
-- Run coverage reports with `bun run test:coverage`
+**Pre-commit hooks**: Husky runs lint-staged — `apps/web` files get lint:fix + prettier + type-check, `apps/admin` gets
+prettier only.
 
 ## Content Language
 
-Primary content language is **Russian**. All user-facing text, comments, and documentation should be in Russian unless
-technical terms require English.
+Primary language is **Russian**. All user-facing text, commit messages, and documentation in Russian unless technical
+terms require English.
 
 ## Key Files
 
-- `turbo.json` - Turborepo task configuration
-- `apps/web/src/app/[slug]/page.tsx` - Unified dynamic route handler (categories + articles + 404)
-- `apps/web/src/lib/mock-api.ts` - Mock data layer for frontend-first development
-- `apps/web/src/utils/seo.ts` - JSON-LD structured data generators
-- `apps/web/src/styles/themes/` - Light/dark theme definitions
-- `packages/types/` - Shared TypeScript types
+- `apps/web/src/app/[slug]/page.tsx` — Unified dynamic route handler
+- `apps/web/src/lib/api-client.ts` — Frontend API client (fetch wrapper, auth refresh, snake→camel)
+- `apps/web/src/contexts/auth/AuthContext.tsx` — Auth context with OAuth support
+- `apps/web/src/styles/themes/` — Light/dark SCSS theme definitions
+- `apps/api/src/core/config.py` — Backend settings (Pydantic Settings from .env)
+- `apps/api/src/auth/` — JWT, OAuth providers, FastAPI auth dependencies
+- `packages/types/` — Shared TypeScript types for both frontends
+- `docs/architecture/decisions/` — ADRs (database, auth, file storage)
+- `docs/architecture/runbooks/` — Operational guides (deploy, db-sync, promote-admin)
