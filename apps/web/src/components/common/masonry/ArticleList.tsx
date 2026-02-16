@@ -10,6 +10,11 @@ import ArticleCard from './ArticleCard';
 import LoadMoreButton from './LoadMoreButton';
 import './ArticleList.scss';
 
+/** Задержка перед стартом анимации карточек (нахлёст с hero) */
+const BASE_DELAY = 0.5;
+/** Интервал между появлением карточек */
+const STAGGER_DELAY = 0.05;
+
 interface ArticleListProps {
   articles: Article[];
   initialCount?: number;
@@ -21,7 +26,7 @@ interface ArticleListProps {
  *
  * Особенности:
  * - Адаптивное количество колонок (1-6 в зависимости от разрешения)
- * - Staggered анимации появления
+ * - Staggered анимации появления с baseDelay для нахлёста с hero-секцией
  * - Layout animations при resize окна
  * - Debounced resize events для производительности
  * - Поддержка prefers-reduced-motion
@@ -77,7 +82,7 @@ const ArticleList = ({
 
   // Transition для карточек
   const cardTransition = {
-    duration: prefersReducedMotion ? 0 : 0.25,
+    duration: prefersReducedMotion ? 0 : 0.3,
     ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
   };
 
@@ -98,7 +103,9 @@ const ArticleList = ({
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{
                         ...cardTransition,
-                        delay: prefersReducedMotion ? 0 : globalIndex * 0.015,
+                        delay: prefersReducedMotion
+                          ? 0
+                          : BASE_DELAY + globalIndex * STAGGER_DELAY,
                       }}
                       layout
                     >

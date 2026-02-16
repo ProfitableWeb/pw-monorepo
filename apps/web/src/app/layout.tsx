@@ -45,6 +45,14 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Фолбэк: без JS контент не должен быть скрыт inline-стилями Framer Motion */}
+        <noscript>
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `[style*="opacity: 0"], [style*="opacity:0"] { opacity: 1 !important; transform: none !important; }`,
+            }}
+          />
+        </noscript>
       </head>
       <body>
         <Providers>

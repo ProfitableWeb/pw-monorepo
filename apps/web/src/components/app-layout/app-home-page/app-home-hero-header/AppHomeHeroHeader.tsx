@@ -9,32 +9,10 @@ import {
 } from './AppHomeHeroHeader.animations';
 import './AppHomeHeroHeader.scss';
 
-/**
- * Пропсы для компонента AppHomeHeroHeader
- */
 interface AppHomeHeroHeaderProps {
-  /**
-   * Дополнительный CSS класс для кастомизации стилей
-   * @default ''
-   */
   className?: string;
 }
 
-/**
- * Компонент героической секции главной страницы приложения
- *
- * Отображает вдохновляющий заголовок, описательные параграфы и блок категорий.
- * Использует Framer Motion для анимации появления элементов с эффектом stagger.
- *
- * @component
- * @example
- * ```tsx
- * <AppHomeHeroHeader className="custom-hero" />
- * ```
- *
- * @param {AppHomeHeroHeaderProps} props - Свойства компонента
- * @returns {JSX.Element} Анимированная секция с hero-контентом
- */
 const AppHomeHeroHeader = ({ className = '' }: AppHomeHeroHeaderProps) => {
   return (
     <motion.section
