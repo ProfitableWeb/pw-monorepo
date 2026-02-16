@@ -1,11 +1,16 @@
-import { useState } from 'react';
 import { cn } from '@/app/components/ui/utils';
 import { useTheme } from '@/app/components/theme-provider';
-import { Button } from '@/app/components/ui/button';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { IconButton } from '@/app/components/icons';
 import { useAuthStore } from '@/app/store/auth-store';
 import { PwLogo } from '@/app/components/pw-logo';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/app/components/ui/dropdown-menu';
 import {
   LayoutDashboard,
   FileText,
@@ -205,82 +210,53 @@ export function SidebarNav({
           collapsed ? 'p-2' : 'p-4'
         )}
       >
-        <div
-          className={cn(
-            'flex items-center gap-3',
-            collapsed ? 'justify-center px-0' : 'justify-between px-3 py-2'
-          )}
-        >
-          <div className='flex items-center gap-3'>
-            <div className='h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0'>
-              <span className='text-sm font-medium'>
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </span>
-            </div>
-            {!collapsed && (
-              <div className='flex flex-col'>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                'flex w-full items-center gap-3 rounded-md transition-colors hover:bg-accent',
+                collapsed ? 'justify-center p-2' : 'px-3 py-2'
+              )}
+            >
+              <div className='h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0'>
                 <span className='text-sm font-medium'>
-                  {user?.name || 'Пользователь'}
-                </span>
-                <span className='text-xs text-muted-foreground capitalize'>
-                  {user?.role || 'admin'}
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
-            )}
-          </div>
-          {!collapsed && (
-            <div className='flex items-center gap-1'>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
-              >
-                {theme === 'dark' ? (
-                  <Sun className='h-4 w-4' />
-                ) : (
-                  <Moon className='h-4 w-4' />
-                )}
-              </Button>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8 text-muted-foreground hover:text-destructive'
-                onClick={logout}
-                title='Выйти'
-              >
-                <LogOut className='h-4 w-4' />
-              </Button>
-            </div>
-          )}
-        </div>
-        {collapsed && (
-          <div className='flex flex-col items-center gap-1 mt-2'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
+              {!collapsed && (
+                <div className='flex flex-col text-left'>
+                  <span className='text-sm font-medium'>
+                    {user?.name || 'Пользователь'}
+                  </span>
+                  <span className='text-xs text-muted-foreground capitalize'>
+                    {user?.role || 'admin'}
+                  </span>
+                </div>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='top' align='start' className='w-48'>
+            <DropdownMenuItem onClick={() => onSectionChange('settings')}>
+              <Settings className='h-4 w-4' />
+              Настройки
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
             >
               {theme === 'dark' ? (
                 <Sun className='h-4 w-4' />
               ) : (
                 <Moon className='h-4 w-4' />
               )}
-            </Button>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8 text-muted-foreground hover:text-destructive'
-              onClick={logout}
-              title='Выйти'
-            >
+              {theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant='destructive' onClick={logout}>
               <LogOut className='h-4 w-4' />
-            </Button>
-          </div>
-        )}
+              Выйти
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
