@@ -1,0 +1,817 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "tdmpY",
+      "x": 0,
+      "y": 0,
+      "name": "Homepage [light, desktop]",
+      "clip": true,
+      "width": 1440,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "D80ZY",
+          "name": "header-desktop",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "7Helj",
+              "name": "header-left",
+              "gap": 10,
+              "padding": [
+                16,
+                20
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "I114w",
+                  "name": "logo",
+                  "fill": "#000000",
+                  "content": "PW",
+                  "fontFamily": "Inter",
+                  "fontSize": 22,
+                  "fontWeight": "bold"
+                },
+                {
+                  "type": "frame",
+                  "id": "I8pjv",
+                  "name": "menu-icon",
+                  "width": 23,
+                  "height": 22,
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "line1",
+                      "fill": "#999999",
+                      "width": 23,
+                      "height": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "line2",
+                      "fill": "#999999",
+                      "width": 16,
+                      "height": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "line3",
+                      "fill": "#999999",
+                      "width": 20,
+                      "height": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "line4",
+                      "fill": "#999999",
+                      "width": 21,
+                      "height": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "line5",
+                      "fill": "#999999",
+                      "width": 16,
+                      "height": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "line6",
+                      "fill": "#999999",
+                      "width": 16,
+                      "height": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ebDnu",
+              "name": "header-right",
+              "gap": 20,
+              "padding": [
+                16,
+                20
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gKFYE",
+                  "name": "social-nets",
+                  "gap": 9,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "icVk",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "share-2",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "icTg",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "send",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "icDz",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "compass",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DzJ6a",
+                  "name": "actions",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "icSun",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "sun",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "icSrch",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "search",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "icLogin",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "log-in",
+                      "iconFontFamily": "lucide",
+                      "fill": "#555555"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ZFwtl",
+          "name": "main-wrapper",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            20,
+            68,
+            0,
+            68
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "j4IZ3",
+              "name": "hero-text-section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BoYJg",
+                  "name": "hero-title",
+                  "fill": "#000000",
+                  "textGrowth": "fixed-width",
+                  "width": 900,
+                  "content": "ПРЕДСТАВЬТЕ ОБЩЕСТВО,\nГДЕ ТРУД — ФОРМА САМОРАСКРЫТИЯ,\nА ТЕХНОЛОГИИ — ПРОДОЛЖЕНИЕ СОЗНАНИЯ",
+                  "lineHeight": 1.45,
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "bold"
+                },
+                {
+                  "type": "text",
+                  "id": "g55sd",
+                  "name": "hero-desc",
+                  "fill": "#000000",
+                  "textGrowth": "fixed-width",
+                  "width": 900,
+                  "content": "Создание контента, сервисов и физических продуктов в сфере своих интересов — это самое увлекательное занятие, где соединяются страсть и труд.\nВ таком союзе рождается состояние потока, где работа становится сверх-эффективной.",
+                  "lineHeight": 1.55,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "regular"
+                },
+                {
+                  "type": "frame",
+                  "id": "F6Jrc",
+                  "name": "marked-text",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "RljOJ",
+                      "name": "mark",
+                      "fill": "#c5f3c5",
+                      "padding": [
+                        0,
+                        6
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WYXeu",
+                          "fill": "#000000",
+                          "content": "Как превратить хобби в доходное дело",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "uEzLb",
+                      "fill": "#000000",
+                      "content": " — этому и посвящён данный исследовательский проект.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "sRu8O",
+                  "name": "category-block",
+                  "gap": 12,
+                  "padding": [
+                    11,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "cat1",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 2,
+                        "fill": "#cfebff"
+                      },
+                      "padding": [
+                        3,
+                        9
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cat1t",
+                          "fill": "#009ce0",
+                          "content": "Экономика внимания",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cat2",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 2,
+                        "fill": "#cfebff"
+                      },
+                      "padding": [
+                        3,
+                        9
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cat2t",
+                          "fill": "#009ce0",
+                          "content": "ИИ-автоматизация",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cat3",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 2,
+                        "fill": "#cfebff"
+                      },
+                      "padding": [
+                        3,
+                        9
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cat3t",
+                          "fill": "#009ce0",
+                          "content": "Взгляд в будущее",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cat4",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 2,
+                        "fill": "#cfebff"
+                      },
+                      "padding": [
+                        3,
+                        9
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cat4t",
+                          "fill": "#009ce0",
+                          "content": "UI/UX дизайн",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cat5",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 2,
+                        "fill": "#cfebff"
+                      },
+                      "padding": [
+                        3,
+                        9
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cat5t",
+                          "fill": "#009ce0",
+                          "content": "Редакторская деятельность",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SgD7N",
+              "name": "masonry-block",
+              "width": "fill_container",
+              "gap": 40,
+              "padding": [
+                30,
+                0,
+                0,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "col1",
+                  "name": "column-1",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "id": "c1a1",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Психоинженерия — новое направление эпохи software 3.0"
+                        },
+                        "acSub": {
+                          "content": "Область на стыке психологии, когнитивных наук, нейронаук, дизайна человеко-машинных интерфейсов и разработки ИИ"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c1a2",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Figma для веб-дизайнеров"
+                        },
+                        "acSub": {
+                          "content": "От прототипа до передачи в разработку"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c1a3",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "API интеграции для автоматизации"
+                        },
+                        "acSub": {
+                          "content": "Zapier, Make, n8n — что выбрать?"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "col2",
+                  "name": "column-2",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "id": "c2a1",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Telegram-боты как источник дохода"
+                        },
+                        "acSub": {
+                          "content": "Разработка и масштабирование бизнеса"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c2a2",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Instagram Reels: алгоритм 2025"
+                        },
+                        "acSub": {
+                          "content": "Как попасть в рекомендации"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c2a3",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Пассивный доход на онлайн-курсах"
+                        },
+                        "acSub": {
+                          "content": "Платформы, цены и маркетинг"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "col3",
+                  "name": "column-3",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "id": "c3a1",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "NFT для художников: практическое руководство"
+                        },
+                        "acSub": {
+                          "content": "Как создать и продать свою первую коллекцию"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c3a2",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Email-маркетинг: построение базы подписчиков"
+                        },
+                        "acSub": {
+                          "content": "От 0 до 10 000 лояльных читателей"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c3a3",
+                      "type": "ref",
+                      "ref": "artCard",
+                      "width": "fill_container",
+                      "descendants": {
+                        "acTitle": {
+                          "content": "Подкасты в 2025: оборудование и софт"
+                        },
+                        "acSub": {
+                          "content": "Что нужно для профессионального звука"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TMLQJ",
+              "name": "load-more-wrap",
+              "width": "fill_container",
+              "padding": [
+                30,
+                0,
+                20,
+                0
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lmBtn",
+                  "name": "load-more-btn",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 2,
+                    "fill": "#00000021"
+                  },
+                  "padding": [
+                    16,
+                    37
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "lmTxt",
+                      "fill": "#000000",
+                      "content": "Загрузить ещё",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "bold"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sXuFx",
+              "name": "footer",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": [
+                50,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ftTxt",
+                  "fill": "#000000",
+                  "textGrowth": "fixed-width",
+                  "width": 400,
+                  "content": "Паблики проекта ProfitableWeb.ru\nв социальных сетях:",
+                  "lineHeight": 1.5,
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "ftIcons",
+                  "name": "social-nets",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "ftVk",
+                      "width": 34,
+                      "height": 20,
+                      "iconFontName": "share-2",
+                      "iconFontFamily": "lucide",
+                      "fill": "#000000"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "ftTg",
+                      "width": 26,
+                      "height": 22,
+                      "iconFontName": "send",
+                      "iconFontFamily": "lucide",
+                      "fill": "#000000"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "ftDz",
+                      "width": 23,
+                      "height": 23,
+                      "iconFontName": "compass",
+                      "iconFontFamily": "lucide",
+                      "fill": "#000000"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "artCard",
+      "x": 1600,
+      "y": 0,
+      "name": "article-card",
+      "reusable": true,
+      "width": 360,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "padding": [
+        0,
+        0,
+        30,
+        0
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "acTitle",
+          "name": "article-title",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Заголовок статьи",
+          "lineHeight": 1.2,
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "id": "acSub",
+          "name": "article-subtitle",
+          "fill": "#464646",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Подзаголовок статьи",
+          "lineHeight": 1.25,
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "medium"
+        },
+        {
+          "type": "frame",
+          "id": "x9Our",
+          "name": "wrapper-article-date",
+          "width": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "text",
+              "id": "acDate",
+              "name": "article-date",
+              "fill": "#b8b8b8",
+              "content": "15.03.2025",
+              "lineHeight": 1.6,
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "sTvzc",
+              "name": "spacer",
+              "width": "fill_container",
+              "height": 8
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QnSNM",
+          "name": "wrapper-article-summary",
+          "width": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "text",
+              "id": "acSum",
+              "name": "article-summary",
+              "fill": "#2c2c2c",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Краткое описание статьи.",
+              "lineHeight": 1.5,
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "gve58",
+              "name": "spacer",
+              "width": "fill_container",
+              "height": 8
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

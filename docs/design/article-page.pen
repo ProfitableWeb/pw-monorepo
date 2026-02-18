@@ -1,0 +1,399 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "artPage",
+      "x": 0,
+      "y": 0,
+      "name": "Article Page [light, desktop]",
+      "clip": true,
+      "width": 1440,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "hdr",
+          "name": "header-desktop",
+          "fill": "#FFFFFF",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame", "id": "hdrL", "name": "header-left", "gap": 10, "padding": [16, 20], "alignItems": "center",
+              "children": [
+                { "type": "text", "id": "logo", "content": "PW", "fontFamily": "Inter", "fontSize": 22, "fontWeight": "bold", "fill": "#000000" },
+                {
+                  "type": "frame", "id": "menuIc", "width": 23, "height": 22, "layout": "vertical", "gap": 2,
+                  "children": [
+                    { "type": "rectangle", "id": "ml1", "width": 23, "height": 2, "fill": "#999999" },
+                    { "type": "rectangle", "id": "ml2", "width": 16, "height": 2, "fill": "#999999" },
+                    { "type": "rectangle", "id": "ml3", "width": 20, "height": 2, "fill": "#999999" },
+                    { "type": "rectangle", "id": "ml4", "width": 21, "height": 2, "fill": "#999999" },
+                    { "type": "rectangle", "id": "ml5", "width": 16, "height": 2, "fill": "#999999" },
+                    { "type": "rectangle", "id": "ml6", "width": 16, "height": 2, "fill": "#999999" }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame", "id": "hdrR", "name": "header-right", "gap": 20, "padding": [16, 20], "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame", "id": "socNets", "gap": 9, "alignItems": "center",
+                  "children": [
+                    { "type": "icon_font", "id": "iVk", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "share-2", "fill": "#555555" },
+                    { "type": "icon_font", "id": "iTg", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "send", "fill": "#555555" },
+                    { "type": "icon_font", "id": "iDz", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "compass", "fill": "#555555" }
+                  ]
+                },
+                {
+                  "type": "frame", "id": "acts", "gap": 12, "alignItems": "center",
+                  "children": [
+                    { "type": "icon_font", "id": "iSun", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "sun", "fill": "#555555" },
+                    { "type": "icon_font", "id": "iSrch", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "search", "fill": "#555555" },
+                    { "type": "icon_font", "id": "iLog", "width": 20, "height": 20, "iconFontFamily": "lucide", "iconFontName": "log-in", "fill": "#555555" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "mainWrap",
+          "name": "main-wrapper",
+          "fill": "#FFFFFF",
+          "width": "fill_container",
+          "layout": "vertical",
+          "padding": [40, 68, 0, 68],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "artContent",
+              "name": "article-content",
+              "layout": "vertical",
+              "width": 800,
+              "gap": 0,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "artHeader",
+                  "name": "article-header",
+                  "layout": "vertical",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "padding": [0, 0, 30, 0],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "artTitle",
+                      "name": "article-title",
+                      "content": "Психоинженерия — новое направление эпохи software 3.0",
+                      "fontFamily": "Inter",
+                      "fontSize": 40,
+                      "fontWeight": "bold",
+                      "fill": "#000000",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "lineHeight": 1.15
+                    },
+                    {
+                      "type": "text",
+                      "id": "artSub",
+                      "name": "article-subtitle",
+                      "content": "Область на стыке психологии, когнитивных наук, нейронаук, дизайна человеко-машинных интерфейсов и разработки ИИ",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "normal",
+                      "fill": "#666666",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "lineHeight": 1.4
+                    },
+                    {
+                      "type": "frame",
+                      "id": "artMeta",
+                      "name": "article-meta",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "padding": [8, 0, 0, 0],
+                      "children": [
+                        { "type": "text", "id": "metaDate", "content": "15 октября 2025 г.", "fontFamily": "Inter", "fontSize": 13, "fill": "#999999", "lineHeight": 1.5 },
+                        { "type": "text", "id": "metaDot", "content": "•", "fontFamily": "Inter", "fontSize": 13, "fill": "#999999" },
+                        { "type": "text", "id": "metaCat", "content": "Экономика внимания", "fontFamily": "Inter", "fontSize": 13, "fill": "#009ce0", "lineHeight": 1.5 }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "artBody",
+                  "name": "article-body",
+                  "layout": "vertical",
+                  "width": "fill_container",
+                  "gap": 20,
+                  "padding": [20, 0, 40, 0],
+                  "children": [
+                    {
+                      "type": "text", "id": "p1",
+                      "content": "Гонка в сфере ИИ набирает обороты. Ведущие игроки осознали, что помимо очевидных критериев — объёма контекста, скорости, точности и релевантности — появляется ещё один ключевой фактор: эмоциональный интеллект.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    },
+                    {
+                      "type": "text", "id": "h2a",
+                      "content": "Эмоциональный интеллект как конкурентное преимущество",
+                      "fontFamily": "Inter", "fontSize": 24, "fontWeight": "bold", "fill": "#000000", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.3
+                    },
+                    {
+                      "type": "text", "id": "p2",
+                      "content": "Прирост скорости или расширение контекстного окна на 3–15% пользователи могут и не заметить. Но одно меткое слово, искусно встроенное в риторический приём, способно вызвать глубокий резонанс и симпатию.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    },
+                    {
+                      "type": "text", "id": "p3",
+                      "content": "В конечном счёте, конкуренция разворачивается на поле экономики внимания — новой валюты современности. Это сражение за сердце аудитории.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    },
+                    {
+                      "type": "frame", "id": "bquote", "name": "blockquote", "layout": "vertical", "width": "fill_container",
+                      "padding": [16, 24], "stroke": { "align": "inside", "thickness": { "top": 0, "right": 0, "bottom": 0, "left": 3 }, "fill": "#009ce0" },
+                      "children": [
+                        { "type": "text", "id": "bqText", "content": "«Гениальный стратег побеждает не на поле битвы, а в сердцах людей»", "fontFamily": "Inter", "fontSize": 16, "fontStyle": "italic", "fill": "#555555", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7 }
+                      ]
+                    },
+                    {
+                      "type": "text", "id": "h2b",
+                      "content": "Новая профессия: психоинженер",
+                      "fontFamily": "Inter", "fontSize": 24, "fontWeight": "bold", "fill": "#000000", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.3
+                    },
+                    {
+                      "type": "text", "id": "p4",
+                      "content": "Психоинженер — это специалист, который проектирует эмоциональные реакции в человеко-машинных интерфейсах. Он работает на стыке когнитивных наук, риторики, UX-дизайна и разработки ИИ. Его задача — сделать взаимодействие с системой не просто функциональным, а эмоционально резонансным.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    },
+                    {
+                      "type": "frame", "id": "imgPlaceholder", "name": "article-image", "width": "fill_container", "height": 400,
+                      "fill": "#f0f0f0", "cornerRadius": 8, "layout": "vertical", "justifyContent": "center", "alignItems": "center",
+                      "children": [
+                        { "type": "icon_font", "id": "imgIcon", "width": 48, "height": 48, "iconFontFamily": "lucide", "iconFontName": "image", "fill": "#cccccc" },
+                        { "type": "text", "id": "imgLabel", "content": "Изображение статьи", "fontFamily": "Inter", "fontSize": 14, "fill": "#bbbbbb", "lineHeight": 1.5 }
+                      ]
+                    },
+                    {
+                      "type": "text", "id": "p5",
+                      "content": "Ключевые компетенции психоинженера включают глубокое понимание когнитивных процессов, владение техниками убеждения и риторики, навыки промпт-инжиниринга и способность проектировать эмоциональные дуги взаимодействия.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    },
+                    {
+                      "type": "frame", "id": "codeBlock", "name": "code-block", "layout": "vertical", "width": "fill_container",
+                      "padding": [20, 24], "fill": "#1e1e1e", "cornerRadius": 8,
+                      "children": [
+                        { "type": "text", "id": "codeTxt", "content": "# Пример: эмоциональная калибровка промпта\nsystem_prompt = \"\"\"\nТы — эмпатичный ассистент.\nОтвечай с теплотой и заботой.\nИспользуй метафоры для сложных концепций.\n\"\"\"", "fontFamily": "JetBrains Mono", "fontSize": 13, "fill": "#d4d4d4", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.6 }
+                      ]
+                    },
+                    {
+                      "type": "text", "id": "p6",
+                      "content": "Будущее за теми, кто сможет проектировать не просто интерфейсы, а переживания. Психоинженерия открывает двери к совершенно новому классу продуктов — продуктов, которые понимают и чувствуют.",
+                      "fontFamily": "Inter", "fontSize": 16, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.7
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle", "id": "divider1", "width": "fill_container", "height": 1, "fill": "#e5e5e5"
+                },
+                {
+                  "type": "frame",
+                  "id": "authorBlock",
+                  "name": "author-block",
+                  "layout": "horizontal",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "padding": [30, 0],
+                  "alignItems": "start",
+                  "children": [
+                    {
+                      "type": "ellipse", "id": "authorAvatar", "width": 56, "height": 56, "fill": "#e0e0e0"
+                    },
+                    {
+                      "type": "frame", "id": "authorInfo", "layout": "vertical", "width": "fill_container", "gap": 4,
+                      "children": [
+                        { "type": "text", "id": "authorName", "content": "Никита Елисеев", "fontFamily": "Inter", "fontSize": 16, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.4 },
+                        { "type": "text", "id": "authorBio", "content": "Исследователь в области ИИ, автоматизации труда и экономики внимания. Основатель ProfitableWeb.", "fontFamily": "Inter", "fontSize": 14, "fill": "#666666", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.5 }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle", "id": "divider2", "width": "fill_container", "height": 1, "fill": "#e5e5e5"
+                },
+                {
+                  "type": "frame",
+                  "id": "resourcesBlock",
+                  "name": "resources",
+                  "layout": "vertical",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "padding": [30, 0],
+                  "children": [
+                    { "type": "text", "id": "resTitle", "content": "Источники и материалы", "fontFamily": "Inter", "fontSize": 20, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.3 },
+                    {
+                      "type": "frame", "id": "res1", "layout": "horizontal", "gap": 8, "alignItems": "center",
+                      "children": [
+                        { "type": "icon_font", "id": "res1ic", "width": 16, "height": 16, "iconFontFamily": "lucide", "iconFontName": "external-link", "fill": "#009ce0" },
+                        { "type": "text", "id": "res1t", "content": "Emotional AI: The Next Frontier — MIT Technology Review", "fontFamily": "Inter", "fontSize": 14, "fill": "#009ce0", "lineHeight": 1.5 }
+                      ]
+                    },
+                    {
+                      "type": "frame", "id": "res2", "layout": "horizontal", "gap": 8, "alignItems": "center",
+                      "children": [
+                        { "type": "icon_font", "id": "res2ic", "width": 16, "height": 16, "iconFontFamily": "lucide", "iconFontName": "external-link", "fill": "#009ce0" },
+                        { "type": "text", "id": "res2t", "content": "Attention Economy — Wikipedia", "fontFamily": "Inter", "fontSize": 14, "fill": "#009ce0", "lineHeight": 1.5 }
+                      ]
+                    },
+                    {
+                      "type": "frame", "id": "res3", "layout": "horizontal", "gap": 8, "alignItems": "center",
+                      "children": [
+                        { "type": "icon_font", "id": "res3ic", "width": 16, "height": 16, "iconFontFamily": "lucide", "iconFontName": "external-link", "fill": "#009ce0" },
+                        { "type": "text", "id": "res3t", "content": "Rhetoric and AI — Stanford Encyclopedia of Philosophy", "fontFamily": "Inter", "fontSize": 14, "fill": "#009ce0", "lineHeight": 1.5 }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle", "id": "divider3", "width": "fill_container", "height": 1, "fill": "#e5e5e5"
+                },
+                {
+                  "type": "frame",
+                  "id": "commentsBlock",
+                  "name": "comments",
+                  "layout": "vertical",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [30, 0, 40, 0],
+                  "children": [
+                    { "type": "text", "id": "cmtTitle", "content": "Комментарии (3)", "fontFamily": "Inter", "fontSize": 20, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.3 },
+                    {
+                      "type": "frame", "id": "cmtForm", "name": "comment-form", "layout": "horizontal", "width": "fill_container", "gap": 12, "alignItems": "start",
+                      "children": [
+                        { "type": "ellipse", "id": "cmtAvatar0", "width": 36, "height": 36, "fill": "#e0e0e0" },
+                        {
+                          "type": "frame", "id": "cmtInput", "layout": "vertical", "width": "fill_container", "gap": 10,
+                          "children": [
+                            {
+                              "type": "frame", "id": "cmtTextarea", "width": "fill_container", "height": 80, "cornerRadius": 8,
+                              "stroke": { "align": "inside", "thickness": 1, "fill": "#d0d0d0" }, "padding": [12, 14],
+                              "children": [
+                                { "type": "text", "id": "cmtPlaceholder", "content": "Написать комментарий...", "fontFamily": "Inter", "fontSize": 14, "fill": "#aaaaaa", "lineHeight": 1.5 }
+                              ]
+                            },
+                            {
+                              "type": "frame", "id": "cmtSubmit", "layout": "horizontal", "padding": [8, 20], "cornerRadius": 8, "fill": "#009ce0", "justifyContent": "center", "alignItems": "center",
+                              "children": [
+                                { "type": "text", "id": "cmtSubmitTxt", "content": "Отправить", "fontFamily": "Inter", "fontSize": 14, "fontWeight": "medium", "fill": "#FFFFFF", "lineHeight": 1.5 }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame", "id": "cmt1", "name": "comment-1", "layout": "horizontal", "width": "fill_container", "gap": 12, "alignItems": "start",
+                      "children": [
+                        { "type": "ellipse", "id": "cmtAv1", "width": 36, "height": 36, "fill": "#c8e6c9" },
+                        {
+                          "type": "frame", "id": "cmt1body", "layout": "vertical", "width": "fill_container", "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame", "id": "cmt1meta", "gap": 8, "alignItems": "center",
+                              "children": [
+                                { "type": "text", "id": "cmt1name", "content": "Алексей Морозов", "fontFamily": "Inter", "fontSize": 14, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.4 },
+                                { "type": "text", "id": "cmt1time", "content": "2 часа назад", "fontFamily": "Inter", "fontSize": 12, "fill": "#999999", "lineHeight": 1.4 }
+                              ]
+                            },
+                            { "type": "text", "id": "cmt1txt", "content": "Отличная статья! Тема психоинженерии действительно набирает обороты. Интересно, как это будет пересекаться с регулированием ИИ.", "fontFamily": "Inter", "fontSize": 14, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.5 },
+                            { "type": "text", "id": "cmt1reply", "content": "Ответить", "fontFamily": "Inter", "fontSize": 13, "fill": "#009ce0", "lineHeight": 1.5 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame", "id": "cmt2", "name": "comment-2", "layout": "horizontal", "width": "fill_container", "gap": 12, "alignItems": "start",
+                      "children": [
+                        { "type": "ellipse", "id": "cmtAv2", "width": 36, "height": 36, "fill": "#bbdefb" },
+                        {
+                          "type": "frame", "id": "cmt2body", "layout": "vertical", "width": "fill_container", "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame", "id": "cmt2meta", "gap": 8, "alignItems": "center",
+                              "children": [
+                                { "type": "text", "id": "cmt2name", "content": "Мария Иванова", "fontFamily": "Inter", "fontSize": 14, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.4 },
+                                { "type": "text", "id": "cmt2time", "content": "вчера", "fontFamily": "Inter", "fontSize": 12, "fill": "#999999", "lineHeight": 1.4 }
+                              ]
+                            },
+                            { "type": "text", "id": "cmt2txt", "content": "Наконец-то кто-то системно описал это направление. Давно слежу за эмоциональными аспектами ИИ — чувствуется, что это станет ключевым дифференциатором.", "fontFamily": "Inter", "fontSize": 14, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.5 },
+                            { "type": "text", "id": "cmt2reply", "content": "Ответить", "fontFamily": "Inter", "fontSize": 13, "fill": "#009ce0", "lineHeight": 1.5 },
+                            {
+                              "type": "frame", "id": "reply1", "name": "reply", "layout": "horizontal", "width": "fill_container", "gap": 12, "alignItems": "start",
+                              "padding": [12, 0, 0, 0],
+                              "stroke": { "align": "inside", "thickness": { "top": 0, "right": 0, "bottom": 0, "left": 2 }, "fill": "#e0e0e0" },
+                              "children": [
+                                { "type": "ellipse", "id": "replyAv", "width": 28, "height": 28, "fill": "#e0e0e0" },
+                                {
+                                  "type": "frame", "id": "reply1body", "layout": "vertical", "width": "fill_container", "gap": 4,
+                                  "children": [
+                                    {
+                                      "type": "frame", "id": "reply1meta", "gap": 8, "alignItems": "center",
+                                      "children": [
+                                        { "type": "text", "id": "reply1name", "content": "Никита Елисеев", "fontFamily": "Inter", "fontSize": 13, "fontWeight": "bold", "fill": "#000000", "lineHeight": 1.4 },
+                                        { "type": "text", "id": "reply1time", "content": "3 часа назад", "fontFamily": "Inter", "fontSize": 11, "fill": "#999999", "lineHeight": 1.4 }
+                                      ]
+                                    },
+                                    { "type": "text", "id": "reply1txt", "content": "Спасибо, Мария! Планирую развить тему в следующих статьях — особенно про практические методики калибровки.", "fontFamily": "Inter", "fontSize": 13, "fill": "#2c2c2c", "textGrowth": "fixed-width", "width": "fill_container", "lineHeight": 1.5 }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ftr",
+          "name": "footer",
+          "layout": "vertical",
+          "width": "fill_container",
+          "gap": 16,
+          "padding": [50, 0],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text", "id": "ftrTxt",
+              "content": "Паблики проекта ProfitableWeb.ru\nв социальных сетях:",
+              "fontFamily": "Inter", "fontSize": 18, "fill": "#000000", "lineHeight": 1.5,
+              "textAlign": "center", "textGrowth": "fixed-width", "width": 400
+            },
+            {
+              "type": "frame", "id": "ftrIc", "gap": 14, "alignItems": "center",
+              "children": [
+                { "type": "icon_font", "id": "fVk", "width": 34, "height": 20, "iconFontFamily": "lucide", "iconFontName": "share-2", "fill": "#000000" },
+                { "type": "icon_font", "id": "fTg", "width": 26, "height": 22, "iconFontFamily": "lucide", "iconFontName": "send", "fill": "#000000" },
+                { "type": "icon_font", "id": "fDz", "width": 23, "height": 23, "iconFontFamily": "lucide", "iconFontName": "compass", "fill": "#000000" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
