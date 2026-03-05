@@ -25,6 +25,7 @@ import { SEOPage } from '@/app/components/seo-page';
 import { CommandPalette } from '@/app/components/command-palette';
 import { ResearchListPage } from '@/app/components/research-list-page';
 import { ResearchWorkspace } from '@/app/components/research-workspace';
+import { ArticleWorkbench } from '@/app/components/article-workbench/ArticleWorkbench';
 import { AiSidebar } from '@/app/components/ai-sidebar';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { cn } from '@/app/components/ui/utils';
@@ -113,6 +114,8 @@ function App() {
         return 'Исследования';
       case 'research-workspace':
         return 'Рабочее пространство';
+      case 'article-editor':
+        return 'Редактор статьи';
       case 'seo':
         return 'SEO';
       default:
@@ -309,6 +312,10 @@ function App() {
             ) : activeSection === 'research-workspace' ? (
               <div className='flex-1 min-h-0 overflow-hidden'>
                 <ResearchWorkspace />
+              </div>
+            ) : activeSection === 'article-editor' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <ArticleWorkbench />
               </div>
             ) : (
               <ScrollArea className='flex-1 min-h-0'>

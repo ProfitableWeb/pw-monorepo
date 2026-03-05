@@ -1,0 +1,269 @@
+export interface KBArticle {
+  id: string;
+  title: string;
+  content: string;
+  categoryId: string;
+  updatedAt: string;
+  tags?: string[];
+}
+
+export interface KBCategory {
+  id: string;
+  label: string;
+  children: KBCategory[];
+  articles: KBArticle[];
+}
+
+// --- Моковые данные ---
+
+export const mockKBArticles: KBArticle[] = [
+  {
+    id: 'h1',
+    title: 'Заголовок H1',
+    categoryId: 'headings',
+    updatedAt: '2026-03-04',
+    tags: ['заголовки', 'on-page'],
+    content: `<h4>Назначение</h4>
+<p>Основной заголовок, отображаемый на странице статьи. Именно его видит читатель при открытии материала. Тег <code>&lt;h1&gt;</code> — один из важнейших on-page факторов ранжирования.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li><strong>Длина:</strong> 40–70 символов</li>
+  <li>Должен точно отражать содержание статьи</li>
+  <li>Допускается эмоциональная окраска и интригующие формулировки</li>
+  <li>Один <code>&lt;h1&gt;</code> на страницу — обязательное правило</li>
+  <li>Включайте основное ключевое слово естественно</li>
+</ul>
+
+<h4>Отличие от Title</h4>
+<p>H1 оптимизирован для <strong>читателя</strong>, Title — для <strong>поисковых систем</strong>. Они могут и должны отличаться, когда это помогает SEO. H1 может быть длиннее и эмоциональнее, Title — более сухим и keyword-ориентированным.</p>
+
+<h4>Распространённые ошибки</h4>
+<ul>
+  <li>Дублирование H1 и Title один-к-одному</li>
+  <li>Несколько <code>&lt;h1&gt;</code> на одной странице</li>
+  <li>Слишком общий заголовок без конкретики</li>
+  <li>Keyword stuffing — переспам ключевыми словами</li>
+</ul>`,
+  },
+  {
+    id: 'title',
+    title: 'Title (meta)',
+    categoryId: 'headings',
+    updatedAt: '2026-03-04',
+    tags: ['мета-теги', 'SERP', 'CTR'],
+    content: `<h4>Назначение</h4>
+<p>Тег <code>&lt;title&gt;</code> — отображается в поисковой выдаче и во вкладке браузера. Это первое, что видит пользователь в Google/Яндексе. Напрямую влияет на CTR (кликабельность) сниппета.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li><strong>Длина:</strong> 50–60 символов (Google обрезает после ~60)</li>
+  <li>Ключевые слова — ближе к началу</li>
+  <li>Включайте бренд через разделитель: <code>| ProfitableWeb</code></li>
+  <li>Избегайте дублирования с H1 — используйте синонимы</li>
+  <li>Каждая страница — уникальный Title</li>
+</ul>
+
+<h4>CTR-оптимизация</h4>
+<p>Добавляйте <strong>цифры</strong>, <strong>год</strong> или <strong>выгоду</strong> — это повышает кликабельность в выдаче на 20–30%. Примеры усилителей:</p>
+<ul>
+  <li>«7 способов…», «в 2026 году», «пошаговое руководство»</li>
+  <li>Квадратные скобки: <code>[Гайд]</code>, <code>[Обновлено]</code></li>
+  <li>Эмоциональные триггеры: «полный», «лучший», «проверенный»</li>
+</ul>
+
+<h4>Что проверять</h4>
+<ul>
+  <li>Не дублируется ли Title с другими страницами</li>
+  <li>Не обрезается ли в выдаче (>60 символов)</li>
+  <li>Содержит ли основной поисковый запрос</li>
+</ul>`,
+  },
+  {
+    id: 'meta-description',
+    title: 'Meta Description',
+    categoryId: 'headings',
+    updatedAt: '2026-03-03',
+    tags: ['мета-теги', 'SERP', 'CTR'],
+    content: `<h4>Назначение</h4>
+<p>Meta description — краткое описание страницы, отображаемое в сниппете поисковой выдачи под Title. Не является прямым фактором ранжирования, но критически влияет на <strong>CTR</strong>.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li><strong>Длина:</strong> 150–160 символов (Google) / до 200 (Яндекс)</li>
+  <li>Содержит основной поисковый запрос (будет выделен жирным)</li>
+  <li>Призыв к действию или обещание выгоды</li>
+  <li>Уникален для каждой страницы</li>
+</ul>
+
+<h4>Формула эффективного описания</h4>
+<p><strong>Проблема/вопрос</strong> + <strong>обещание решения</strong> + <strong>призыв к действию</strong>. Например: «Не знаете, какой AI-инструмент выбрать? Сравниваем 10 лучших решений 2026 года. Читайте подробный обзор.»</p>`,
+  },
+  {
+    id: 'open-graph',
+    title: 'Open Graph',
+    categoryId: 'headings',
+    updatedAt: '2026-03-01',
+    tags: ['мета-теги', 'соцсети'],
+    content: `<h4>Назначение</h4>
+<p>Open Graph теги управляют тем, как страница отображается при расшаривании в социальных сетях (Facebook, LinkedIn, Telegram, VK). Правильная настройка увеличивает вовлечённость.</p>
+
+<h4>Обязательные теги</h4>
+<ul>
+  <li><code>og:title</code> — заголовок (может отличаться от Title)</li>
+  <li><code>og:description</code> — описание</li>
+  <li><code>og:image</code> — картинка (рекомендуемый размер: 1200×630px)</li>
+  <li><code>og:url</code> — каноническый URL</li>
+  <li><code>og:type</code> — тип контента (article, website)</li>
+</ul>`,
+  },
+  {
+    id: 'readability',
+    title: 'Читабельность',
+    categoryId: 'content',
+    updatedAt: '2026-02-28',
+    tags: ['контент', 'UX'],
+    content: `<h4>Почему важно</h4>
+<p>Читабельность влияет на поведенческие факторы: время на странице, глубину скролла, bounce rate. Google учитывает эти метрики при ранжировании.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li>Короткие абзацы: 2–4 предложения</li>
+  <li>Подзаголовки каждые 200–300 слов</li>
+  <li>Списки для перечислений</li>
+  <li>Простые предложения: subject → verb → object</li>
+  <li>Минимум пассивного залога</li>
+</ul>`,
+  },
+  {
+    id: 'keyword-density',
+    title: 'Плотность ключевых слов',
+    categoryId: 'content',
+    updatedAt: '2026-02-25',
+    tags: ['контент', 'ключевые слова'],
+    content: `<h4>Современный подход</h4>
+<p>Плотность ключевых слов (keyword density) — устаревшая метрика. Современные поисковые системы используют <strong>семантический анализ</strong> и понимают синонимы, контекст и тематическую релевантность.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li>Основной запрос — 1–2% текста (ориентир, не правило)</li>
+  <li>Используйте LSI-синонимы и тематические слова</li>
+  <li>Естественность важнее формул</li>
+  <li>Избегайте keyword stuffing — это штрафуется</li>
+</ul>`,
+  },
+  {
+    id: 'internal-linking',
+    title: 'Внутренняя перелинковка',
+    categoryId: 'content',
+    updatedAt: '2026-02-20',
+    tags: ['контент', 'ссылки'],
+    content: `<h4>Назначение</h4>
+<p>Внутренние ссылки распределяют «вес» страниц, помогают поисковым роботам обходить сайт и улучшают навигацию для пользователей.</p>
+
+<h4>Правила</h4>
+<ul>
+  <li>3–5 внутренних ссылок на статью</li>
+  <li>Анкоры — информативные (не «тут», «здесь»)</li>
+  <li>Ссылайтесь на релевантные материалы</li>
+  <li>Обновляйте старые статьи ссылками на новые</li>
+</ul>`,
+  },
+  {
+    id: 'canonical',
+    title: 'Canonical URL',
+    categoryId: 'technical',
+    updatedAt: '2026-02-15',
+    tags: ['техническое', 'дубли'],
+    content: `<h4>Назначение</h4>
+<p>Тег <code>&lt;link rel="canonical"&gt;</code> указывает поисковым системам основную версию страницы, предотвращая проблемы с дублированным контентом.</p>
+
+<h4>Когда нужен</h4>
+<ul>
+  <li>Страница доступна по нескольким URL (с www/без, с параметрами)</li>
+  <li>Pagination — серия страниц с одинаковым контентом</li>
+  <li>Синдицированный контент (опубликован на нескольких площадках)</li>
+</ul>`,
+  },
+  {
+    id: 'sitemap',
+    title: 'Sitemap',
+    categoryId: 'technical',
+    updatedAt: '2026-02-10',
+    tags: ['техническое', 'индексация'],
+    content: `<h4>Назначение</h4>
+<p>XML Sitemap — карта сайта для поисковых роботов. Помогает обнаруживать страницы, особенно новые или глубоко вложенные.</p>
+
+<h4>Рекомендации</h4>
+<ul>
+  <li>Автоматическая генерация при публикации</li>
+  <li>Только канонические URL</li>
+  <li>Указывать <code>lastmod</code> для приоритетного переобхода</li>
+  <li>Максимум 50 000 URL на файл</li>
+</ul>`,
+  },
+  {
+    id: 'robots',
+    title: 'Robots.txt',
+    categoryId: 'technical',
+    updatedAt: '2026-02-10',
+    tags: ['техническое', 'индексация'],
+    content: `<h4>Назначение</h4>
+<p>Файл robots.txt управляет доступом поисковых роботов к разделам сайта. Не является средством защиты контента — только рекомендация для ботов.</p>
+
+<h4>Типичная конфигурация</h4>
+<ul>
+  <li>Закрыть: /admin/, /api/, /auth/</li>
+  <li>Открыть: все публичные страницы</li>
+  <li>Указать путь к Sitemap</li>
+  <li>Crawl-delay для вежливого обхода</li>
+</ul>`,
+  },
+  {
+    id: 'page-speed',
+    title: 'Скорость загрузки',
+    categoryId: 'technical',
+    updatedAt: '2026-03-01',
+    tags: ['техническое', 'Core Web Vitals'],
+    content: `<h4>Core Web Vitals</h4>
+<p>Google использует три метрики для оценки пользовательского опыта:</p>
+<ul>
+  <li><strong>LCP</strong> (Largest Contentful Paint) — < 2.5с</li>
+  <li><strong>INP</strong> (Interaction to Next Paint) — < 200мс</li>
+  <li><strong>CLS</strong> (Cumulative Layout Shift) — < 0.1</li>
+</ul>
+
+<h4>Оптимизация</h4>
+<ul>
+  <li>Оптимизация изображений: WebP/AVIF, lazy loading</li>
+  <li>Минификация CSS/JS, tree shaking</li>
+  <li>Server-side rendering для LCP</li>
+  <li>Предзагрузка шрифтов и критических ресурсов</li>
+</ul>`,
+  },
+];
+
+export const mockKBTree: KBCategory[] = [
+  {
+    id: 'headings',
+    label: 'Заголовки и мета',
+    children: [],
+    articles: mockKBArticles.filter(a => a.categoryId === 'headings'),
+  },
+  {
+    id: 'content',
+    label: 'Контент',
+    children: [],
+    articles: mockKBArticles.filter(a => a.categoryId === 'content'),
+  },
+  {
+    id: 'technical',
+    label: 'Техническое SEO',
+    children: [],
+    articles: mockKBArticles.filter(a => a.categoryId === 'technical'),
+  },
+];
+
+export function findKBArticle(id: string): KBArticle | undefined {
+  return mockKBArticles.find(a => a.id === id);
+}

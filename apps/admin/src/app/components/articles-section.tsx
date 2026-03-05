@@ -1,4 +1,5 @@
 import { useHeaderStore } from '@/app/store/header-store';
+import { useNavigationStore } from '@/app/store/navigation-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
 import { useArticles, useCategories } from '@/hooks/api';
 import { useState, useEffect, useMemo } from 'react';
@@ -67,6 +68,7 @@ const STATUSES = [
 export function ArticlesSection() {
   const { data: result, isLoading } = useArticles();
   const { data: apiCategories } = useCategories();
+  const { navigateTo } = useNavigationStore();
 
   const articles: Article[] = useMemo(
     () =>
@@ -190,7 +192,7 @@ export function ArticlesSection() {
               : `${result?.meta.total ?? articles.length} статей • ${publishedCount} опубликовано • ${draftCount} черновиков • ${totalViews.toLocaleString()} просмотров`}
           </p>
         </div>
-        <Button>
+        <Button onClick={() => navigateTo('article-editor')}>
           <Plus className='h-4 w-4 mr-2' />
           Новая статья
         </Button>
@@ -504,7 +506,9 @@ export function ArticlesSection() {
                               <Eye className='mr-2 h-4 w-4' />
                               Просмотр
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigateTo('article-editor')}
+                            >
                               <Edit className='mr-2 h-4 w-4' />
                               Редактировать
                             </DropdownMenuItem>

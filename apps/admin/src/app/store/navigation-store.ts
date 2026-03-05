@@ -21,7 +21,8 @@ export type PageId =
   | 'ads'
   | 'seo'
   | 'research'
-  | 'research-workspace';
+  | 'research-workspace'
+  | 'article-editor';
 
 export interface NavigationItem {
   id: PageId;
@@ -114,6 +115,14 @@ export const navigationItems: NavigationItem[] = [
     icon: 'FlaskConical',
     section: 'Контент',
     path: 'research-workspace',
+    keywords: [],
+  },
+  {
+    id: 'article-editor',
+    title: 'Редактор статьи',
+    icon: 'PenLine',
+    section: 'Контент',
+    path: 'article-editor',
     keywords: [],
   },
 
@@ -213,7 +222,10 @@ export const navigationItems: NavigationItem[] = [
 interface NavigationStore {
   currentPage: PageId;
   recentPages: PageId[];
+  seoKbArticleId?: string;
   navigateTo: (pageId: PageId) => void;
+  navigateToSeoKb: (articleId: string) => void;
+  clearSeoKbArticleId: () => void;
   getPageTitle: (pageId: PageId) => string;
   getNavigationItem: (pageId: PageId) => NavigationItem | undefined;
 }
@@ -221,6 +233,7 @@ interface NavigationStore {
 export const useNavigationStore = create<NavigationStore>((set, get) => ({
   currentPage: 'dashboard',
   recentPages: [],
+  seoKbArticleId: undefined,
 
   navigateTo: (pageId: PageId) => {
     set(state => {
@@ -230,6 +243,20 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
       ].slice(0, 5);
       return { currentPage: pageId, recentPages };
     });
+  },
+
+  navigateToSeoKb: (articleId: string) => {
+    set(state => {
+      const recentPages = [
+        'seo' as PageId,
+        ...state.recentPages.filter(p => p !== 'seo'),
+      ].slice(0, 5);
+      return { currentPage: 'seo', recentPages, seoKbArticleId: articleId };
+    });
+  },
+
+  clearSeoKbArticleId: () => {
+    set({ seoKbArticleId: undefined });
   },
 
   getPageTitle: (pageId: PageId) => {
