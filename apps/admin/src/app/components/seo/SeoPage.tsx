@@ -19,7 +19,7 @@ import {
   Save,
   X,
 } from 'lucide-react';
-import { KnowledgeBase } from '@/app/components/seo-knowledge-base';
+import { KnowledgeBase } from './knowledge-base';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Input } from '@/app/components/ui/input';
