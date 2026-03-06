@@ -11,7 +11,7 @@ function formatFileSize(bytes: number): string {
 export function MediaGalleryPanel({ itemId }: PanelComponentProps) {
   const { media } = useResearchStore();
 
-  // If itemId is a specific media item, show its details
+  // Если itemId — конкретный медиафайл, показать его детали
   const singleItem = media.find(m => m.id === itemId);
 
   if (singleItem) {
@@ -27,7 +27,7 @@ export function MediaGalleryPanel({ itemId }: PanelComponentProps) {
           <h2 className='font-semibold text-sm'>{singleItem.fileName}</h2>
         </div>
 
-        {/* Preview area */}
+        {/* Область превью */}
         {isImage ? (
           <div className='rounded-lg border bg-muted/30 flex items-center justify-center aspect-video'>
             <div className='text-center text-muted-foreground'>
@@ -44,7 +44,7 @@ export function MediaGalleryPanel({ itemId }: PanelComponentProps) {
           </div>
         )}
 
-        {/* Metadata */}
+        {/* Метаданные */}
         <div className='space-y-1 text-xs text-muted-foreground'>
           <p>Тип: {singleItem.mimeType}</p>
           <p>Размер: {formatFileSize(singleItem.size)}</p>

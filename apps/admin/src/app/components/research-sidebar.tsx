@@ -36,7 +36,7 @@ export function ResearchSidebar({ researchId }: ResearchSidebarProps) {
   return (
     <ScrollArea className='h-full'>
       <div className='py-1'>
-        {/* Materials section */}
+        {/* Раздел материалов */}
         <SectionHeader title='Материалы' />
 
         <TreeSection
@@ -83,7 +83,7 @@ export function ResearchSidebar({ researchId }: ResearchSidebarProps) {
           researchId={researchId}
         />
 
-        {/* Publications section */}
+        {/* Раздел публикаций */}
         <div className='mt-3'>
           <SectionHeader title='Публикации' />
           {publications.length === 0 ? (
@@ -150,7 +150,7 @@ function TreeSection({
       const layout = getLayout(researchId);
       if (!layout) return;
 
-      // Find the first panel in the layout
+      // Найти первую панель в раскладке
       const panelId = findFirstPanelId(layout);
       if (!panelId) return;
 
@@ -206,7 +206,7 @@ function TreeSection({
   );
 }
 
-// Utility: find first panel ID in recursive layout
+// Утилита: найти ID первой панели в рекурсивной раскладке
 function findFirstPanelId(
   node: import('@/app/types/workspace-layout').LayoutNode
 ): string | null {

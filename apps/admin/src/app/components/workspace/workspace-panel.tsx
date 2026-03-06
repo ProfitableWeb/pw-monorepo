@@ -13,7 +13,7 @@ export function WorkspacePanel({ panel, researchId }: WorkspacePanelProps) {
 
   return (
     <div className='flex flex-col h-full'>
-      {/* Tab bar */}
+      {/* Панель вкладок */}
       <TabBar
         tabs={panel.tabs}
         activeTabId={panel.activeTabId}
@@ -21,7 +21,7 @@ export function WorkspacePanel({ panel, researchId }: WorkspacePanelProps) {
         researchId={researchId}
       />
 
-      {/* Content */}
+      {/* Контент */}
       <div className='flex-1 min-h-0 overflow-auto'>
         {activeTab ? (
           <PanelContent

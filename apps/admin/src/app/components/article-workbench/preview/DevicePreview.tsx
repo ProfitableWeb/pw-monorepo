@@ -54,7 +54,7 @@ export function DevicePreview({ articleData }: DevicePreviewProps) {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Computed dimensions
+  // Вычисленные размеры
   const baseW = isLandscape ? selectedPreset.height : selectedPreset.width;
   const baseH = isLandscape ? selectedPreset.width : selectedPreset.height;
   const currentWidth = customSize?.width ?? baseW;
@@ -250,7 +250,7 @@ export function DevicePreview({ articleData }: DevicePreviewProps) {
               {iframeElement}
             </div>
 
-            {/* Touch simulation overlay */}
+            {/* Оверлей симуляции тача */}
             {iframeReady && (
               <div
                 className='absolute inset-0 z-10'
@@ -276,7 +276,7 @@ export function DevicePreview({ articleData }: DevicePreviewProps) {
               </div>
             )}
 
-            {/* Resize handles */}
+            {/* Ручки ресайза */}
             <div
               className='absolute top-0 w-1.5 cursor-col-resize hover:bg-primary/20 active:bg-primary/40 transition-colors rounded-r z-20'
               style={{

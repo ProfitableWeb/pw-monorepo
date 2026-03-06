@@ -87,12 +87,12 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
   const [excerptMinimap, setExcerptMinimap] = useState(false);
   const excerptSettings = useEditorSettingsPanel();
 
-  // Draggable divider state
+  // Состояние перетаскиваемого разделителя
   const [leftPct, setLeftPct] = useState(60);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDraggingDivider, setIsDraggingDivider] = useState(false);
 
-  // Image drag-and-drop state
+  // Состояние drag-and-drop изображения
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleExcerptResizeStart = useCallback(
@@ -234,7 +234,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
       className='flex h-full gap-0 px-4 pb-4 pt-2'
       style={{ userSelect: isDraggingDivider ? 'none' : undefined }}
     >
-      {/* Left column — form fields */}
+      {/* Левая колонка — поля формы */}
       <div
         className='h-full min-w-0 overflow-hidden border rounded-lg'
         style={{ width: `${leftPct}%`, flexShrink: 0 }}
@@ -542,7 +542,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
         </ScrollArea>
       </div>
 
-      {/* Draggable divider */}
+      {/* Перетаскиваемый разделитель */}
       <div
         className='flex items-center justify-center w-2 cursor-col-resize select-none shrink-0 mx-1'
         onPointerDown={handleDividerPointerDown}
@@ -550,7 +550,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
         <GripVertical className='size-4 text-muted-foreground/30' />
       </div>
 
-      {/* Right column — live card preview */}
+      {/* Правая колонка — живое превью карточки */}
       <div className='flex-1 min-w-0 border rounded-lg'>
         <LiveCardPreview
           title={h1}
@@ -562,7 +562,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
         />
       </div>
 
-      {/* Floating editor settings panel */}
+      {/* Плавающая панель настроек редактора */}
       <EditorSettingsPanel
         {...excerptSettings}
         fontSize={excerptFontSize}

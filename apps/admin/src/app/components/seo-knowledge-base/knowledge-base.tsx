@@ -17,7 +17,7 @@ export function KnowledgeBase({ initialArticleId }: KnowledgeBaseProps) {
   );
   const [searchQuery, setSearchQuery] = useState('');
 
-  // React to external navigation (from InfoHint)
+  // Реакция на внешнюю навигацию (из InfoHint)
   useEffect(() => {
     if (initialArticleId) {
       setActiveArticleId(initialArticleId);
@@ -30,7 +30,7 @@ export function KnowledgeBase({ initialArticleId }: KnowledgeBaseProps) {
 
   return (
     <div className='flex h-full'>
-      {/* Tree sidebar */}
+      {/* Сайдбар с деревом */}
       <div className='w-60 border-r flex flex-col shrink-0'>
         <div className='p-3 border-b shrink-0'>
           <div className='relative'>
@@ -60,7 +60,7 @@ export function KnowledgeBase({ initialArticleId }: KnowledgeBaseProps) {
         </div>
       </div>
 
-      {/* Content area */}
+      {/* Область контента */}
       <div className='flex-1 min-w-0'>
         <KBArticleEditor article={activeArticle} />
       </div>

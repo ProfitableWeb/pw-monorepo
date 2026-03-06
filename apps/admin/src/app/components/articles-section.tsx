@@ -182,7 +182,7 @@ export function ArticlesSection() {
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
+      {/* Заголовок */}
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-3xl font-bold'>Управление статьями</h1>
@@ -198,7 +198,7 @@ export function ArticlesSection() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Карточки статистики */}
       <div className='grid gap-4 md:grid-cols-4'>
         <Card>
           <CardHeader className='pb-3'>
@@ -230,11 +230,11 @@ export function ArticlesSection() {
         </Card>
       </div>
 
-      {/* Filters and Search */}
+      {/* Фильтры и поиск */}
       <Card className='sticky top-16 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80'>
         <CardHeader>
           <div className='flex flex-col gap-4'>
-            {/* Search Bar */}
+            {/* Строка поиска */}
             <div className='flex-1 max-w-md'>
               <div className='relative'>
                 <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
@@ -247,9 +247,9 @@ export function ArticlesSection() {
               </div>
             </div>
 
-            {/* Filter Chips */}
+            {/* Фильтр-чипы */}
             <div className='flex flex-wrap items-center gap-2'>
-              {/* Status Filter */}
+              {/* Фильтр по статусу */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -296,7 +296,7 @@ export function ArticlesSection() {
                 </PopoverContent>
               </Popover>
 
-              {/* Category Filter */}
+              {/* Фильтр по категории */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -341,7 +341,7 @@ export function ArticlesSection() {
                 </PopoverContent>
               </Popover>
 
-              {/* Date Range Filter */}
+              {/* Фильтр по дате */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -375,7 +375,7 @@ export function ArticlesSection() {
                 </PopoverContent>
               </Popover>
 
-              {/* Clear All */}
+              {/* Сбросить все */}
               {hasActiveFilters && (
                 <Button
                   variant='ghost'
@@ -388,7 +388,7 @@ export function ArticlesSection() {
                 </Button>
               )}
 
-              {/* Active Filter Chips */}
+              {/* Активные фильтры */}
               {selectedStatuses.map(status => (
                 <Badge
                   key={status}

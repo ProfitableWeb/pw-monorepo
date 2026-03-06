@@ -20,7 +20,7 @@ export function ResearchWorkspace() {
     useWorkspaceLayoutStore();
   const research = getCurrentResearch();
 
-  // Set breadcrumbs
+  // Установить хлебные крошки
   useEffect(() => {
     if (research) {
       setBreadcrumbs(breadcrumbPresets.researchWorkspace(research.title));
@@ -28,7 +28,7 @@ export function ResearchWorkspace() {
     return () => reset();
   }, [research, setBreadcrumbs, reset]);
 
-  // Initialize layout on mount
+  // Инициализировать раскладку при монтировании
   useEffect(() => {
     if (!currentResearchId) return;
     const loaded = loadFromLocalStorage(currentResearchId);
@@ -53,24 +53,24 @@ export function ResearchWorkspace() {
 
   return (
     <div className='flex h-full flex-col bg-background'>
-      {/* Workspace toolbar */}
+      {/* Панель инструментов */}
       <div className='h-9 border-b flex items-center px-3 gap-2 shrink-0 bg-background'>
         <WorkspaceToolbar />
       </div>
 
-      {/* Three-column layout */}
+      {/* Трёхколоночная раскладка */}
       <div className='flex flex-1 min-h-0'>
-        {/* Left Sidebar — file tree */}
+        {/* Левый сайдбар — дерево файлов */}
         <ResizableSidebar position='left' minWidth={180} maxWidthPercent={30}>
           <ResearchSidebar researchId={research.id} />
         </ResizableSidebar>
 
-        {/* Center — split panels */}
+        {/* Центр — разделённые панели */}
         <div className='flex-1 min-w-0'>
           <CentralGrid researchId={research.id} />
         </div>
 
-        {/* Right Sidebar — AI assistant */}
+        {/* Правый сайдбар — AI-ассистент */}
         <ResizableSidebar position='right' minWidth={200} maxWidthPercent={30}>
           <div className='flex items-center justify-center h-full p-4'>
             <div className='text-center text-muted-foreground'>

@@ -76,7 +76,7 @@ function ToolbarButton({
 function Toolbar({ editor }: { editor: Editor }) {
   return (
     <div className='flex items-center gap-0.5 flex-wrap border-b px-2 py-1'>
-      {/* Text formatting */}
+      {/* Форматирование текста */}
       <ToolbarButton
         editor={editor}
         action={() => editor.chain().focus().toggleBold().run()}
@@ -115,7 +115,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
       <Separator orientation='vertical' className='mx-1 h-6' />
 
-      {/* Headings */}
+      {/* Заголовки */}
       <ToolbarButton
         editor={editor}
         action={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -147,7 +147,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
       <Separator orientation='vertical' className='mx-1 h-6' />
 
-      {/* Lists & blockquote */}
+      {/* Списки и цитаты */}
       <ToolbarButton
         editor={editor}
         action={() => editor.chain().focus().toggleBulletList().run()}
@@ -172,7 +172,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
       <Separator orientation='vertical' className='mx-1 h-6' />
 
-      {/* Insert */}
+      {/* Вставка */}
       <ToolbarButton
         editor={editor}
         action={() => {
@@ -210,7 +210,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
       <Separator orientation='vertical' className='mx-1 h-6' />
 
-      {/* Alignment */}
+      {/* Выравнивание */}
       <ToolbarButton
         editor={editor}
         action={() => editor.chain().focus().setTextAlign('left').run()}

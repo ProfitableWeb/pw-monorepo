@@ -53,7 +53,7 @@ export function TelegramPreview({
     <div className='space-y-2'>
       <p className='text-xs font-medium text-muted-foreground'>Telegram</p>
       <div className='rounded-lg overflow-hidden border bg-muted/30'>
-        {/* Image area — clickable for upload */}
+        {/* Область изображения — клик для загрузки */}
         <div
           className='aspect-[1.91/1] bg-muted/50 flex items-center justify-center cursor-pointer group/tg-img relative'
           onClick={handleClick}
@@ -87,7 +87,7 @@ export function TelegramPreview({
           )}
         </div>
 
-        {/* Content with left border */}
+        {/* Контент с левой границей */}
         <div className='flex'>
           <div className='w-[3px] shrink-0 bg-muted-foreground/20' />
           <div className='p-3 space-y-1 min-w-0'>

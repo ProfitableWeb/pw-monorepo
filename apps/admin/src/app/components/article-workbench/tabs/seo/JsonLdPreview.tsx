@@ -62,7 +62,7 @@ export function JsonLdPreview({
       data.articleSection = category;
     }
 
-    // Clean undefined values
+    // Очистить undefined-значения
     return JSON.stringify(
       Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== undefined)

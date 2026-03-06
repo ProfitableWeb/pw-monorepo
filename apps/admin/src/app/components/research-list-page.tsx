@@ -89,7 +89,7 @@ export function ResearchListPage() {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
+      {/* Заголовок */}
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-2xl font-bold tracking-tight'>Исследования</h1>
@@ -103,7 +103,7 @@ export function ResearchListPage() {
         </Button>
       </div>
 
-      {/* Filters */}
+      {/* Фильтры */}
       <div className='flex items-center gap-4'>
         <div className='relative flex-1 max-w-sm'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
@@ -128,7 +128,7 @@ export function ResearchListPage() {
         </div>
       </div>
 
-      {/* Cards grid */}
+      {/* Сетка карточек */}
       {researches.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-16 text-center'>
           <FlaskConical className='h-12 w-12 text-muted-foreground/40 mb-4' />
@@ -162,7 +162,7 @@ export function ResearchListPage() {
                   {research.description}
                 </p>
 
-                {/* Counters */}
+                {/* Счётчики */}
                 <div className='flex items-center gap-3 text-xs text-muted-foreground'>
                   <CounterBadge
                     icon={StickyNote}
@@ -191,7 +191,7 @@ export function ResearchListPage() {
                   />
                 </div>
 
-                {/* Members + date */}
+                {/* Участники + дата */}
                 <div className='flex items-center justify-between mt-4 pt-3 border-t'>
                   <div className='flex -space-x-2'>
                     {research.members.slice(0, 3).map(m => (
@@ -223,7 +223,7 @@ export function ResearchListPage() {
         </div>
       )}
 
-      {/* Create dialog */}
+      {/* Диалог создания */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>

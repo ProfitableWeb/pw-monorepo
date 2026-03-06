@@ -99,7 +99,7 @@ function SplitHandle({
       e.currentTarget.setPointerCapture(e.pointerId);
       isDragging.current = true;
 
-      // Get the parent container rect for ratio calculation
+      // Получить rect родительского контейнера для расчёта пропорции
       const parent = e.currentTarget.parentElement;
       if (parent) {
         containerRect.current = parent.getBoundingClientRect();
@@ -123,7 +123,7 @@ function SplitHandle({
         ratio = (e.clientY - rect.top) / rect.height;
       }
 
-      // Clamp ratio between 0.15 and 0.85 to prevent tiny panels
+      // Ограничить пропорцию 0.15–0.85 против слишком мелких панелей
       ratio = Math.min(Math.max(ratio, 0.15), 0.85);
       updateSplitRatio(researchId, splitId, ratio);
     },

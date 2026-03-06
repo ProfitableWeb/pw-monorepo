@@ -139,7 +139,7 @@ export function useTouchSimulation({
     [sendScroll]
   );
 
-  // Cleanup momentum on unmount
+  // Очистка momentum при размонтировании
   useEffect(() => () => stopMomentum(), [stopMomentum]);
 
   return {

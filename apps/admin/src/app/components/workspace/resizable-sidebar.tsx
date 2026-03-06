@@ -98,7 +98,7 @@ export function ResizableSidebar({
       )}
       style={collapsed ? undefined : { width }}
     >
-      {/* Content */}
+      {/* Контент */}
       <div
         className={cn(
           'h-full overflow-hidden',
@@ -109,7 +109,7 @@ export function ResizableSidebar({
         {children}
       </div>
 
-      {/* Drag handle */}
+      {/* Ручка перетаскивания */}
       {!collapsed && (
         <div
           className={cn(
@@ -123,7 +123,7 @@ export function ResizableSidebar({
         />
       )}
 
-      {/* Toggle button */}
+      {/* Кнопка сворачивания */}
       <button
         onClick={toggle}
         className={cn(

@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/app/components/ui/command';
-import { 
-  LayoutDashboard, 
-  Sparkles, 
-  FileText, 
-  Calendar, 
-  FolderTree, 
-  Tag, 
-  Image, 
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/app/components/ui/command';
+import {
+  LayoutDashboard,
+  Sparkles,
+  FileText,
+  Calendar,
+  FolderTree,
+  Tag,
+  Image,
   BookOpen,
   FileHeart,
   Palette,
@@ -25,7 +34,10 @@ import {
   Layers,
   Search,
 } from 'lucide-react';
-import { useNavigationStore, navigationItems } from '@/app/store/navigation-store';
+import {
+  useNavigationStore,
+  navigationItems,
+} from '@/app/store/navigation-store';
 import { useTheme } from '@/app/components/theme-provider';
 import { cn } from '@/app/components/ui/utils';
 
@@ -72,7 +84,7 @@ export function CommandPalette() {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(open => !open);
       }
     };
 
@@ -120,25 +132,28 @@ export function CommandPalette() {
     .slice(0, 5);
 
   // Группировка по секциям
-  const groupedItems = navigationItems.reduce((acc, item) => {
-    if (!acc[item.section]) {
-      acc[item.section] = [];
-    }
-    acc[item.section].push(item);
-    return acc;
-  }, {} as Record<string, typeof navigationItems>);
+  const groupedItems = navigationItems.reduce(
+    (acc, item) => {
+      if (!acc[item.section]) {
+        acc[item.section] = [];
+      }
+      acc[item.section].push(item);
+      return acc;
+    },
+    {} as Record<string, typeof navigationItems>
+  );
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Поиск по разделам и действиям..." />
+      <CommandInput placeholder='Поиск по разделам и действиям...' />
       <CommandList>
         <CommandEmpty>Ничего не найдено.</CommandEmpty>
 
-        {/* Recent */}
+        {/* Недавние */}
         {recentItems.length > 0 && (
           <>
-            <CommandGroup heading="Недавние">
-              {recentItems.map((item) => {
+            <CommandGroup heading='Недавние'>
+              {recentItems.map(item => {
                 if (!item) return null;
                 const Icon = iconMap[item.icon] || FileText;
                 return (
@@ -146,14 +161,14 @@ export function CommandPalette() {
                     key={item.id}
                     value={item.title}
                     onSelect={() => handleNavigate(item.id)}
-                    className="flex items-center gap-3"
+                    className='flex items-center gap-3'
                   >
-                    <Clock className="size-4 text-muted-foreground" />
-                    <Icon className="size-4" />
-                    <div className="flex-1">
+                    <Clock className='size-4 text-muted-foreground' />
+                    <Icon className='size-4' />
+                    <div className='flex-1'>
                       <span>{item.title}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className='text-xs text-muted-foreground'>
                       {item.section}
                     </span>
                   </CommandItem>
@@ -164,24 +179,24 @@ export function CommandPalette() {
           </>
         )}
 
-        {/* Navigation by sections */}
+        {/* Навигация по разделам */}
         {Object.entries(groupedItems).map(([section, items], index) => (
           <div key={section}>
             <CommandGroup heading={section}>
-              {items.map((item) => {
+              {items.map(item => {
                 const Icon = iconMap[item.icon] || FileText;
                 return (
                   <CommandItem
                     key={item.id}
                     value={`${item.title} ${item.keywords?.join(' ') || ''}`}
                     onSelect={() => handleNavigate(item.id)}
-                    className="flex items-center gap-3"
+                    className='flex items-center gap-3'
                   >
-                    <Icon className="size-4" />
-                    <div className="flex-1">
+                    <Icon className='size-4' />
+                    <div className='flex-1'>
                       <span>{item.title}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className='text-xs text-muted-foreground'>
                       {item.section}
                     </span>
                   </CommandItem>
@@ -194,19 +209,19 @@ export function CommandPalette() {
           </div>
         ))}
 
-        {/* Quick Actions */}
+        {/* Быстрые действия */}
         <CommandSeparator />
-        <CommandGroup heading="Действия">
-          {quickActions.map((action) => {
+        <CommandGroup heading='Действия'>
+          {quickActions.map(action => {
             const Icon = action.icon;
             return (
               <CommandItem
                 key={action.id}
                 value={action.title}
                 onSelect={action.action}
-                className="flex items-center gap-3"
+                className='flex items-center gap-3'
               >
-                <Icon className="size-4" />
+                <Icon className='size-4' />
                 <span>{action.title}</span>
               </CommandItem>
             );
@@ -217,7 +232,7 @@ export function CommandPalette() {
   );
 }
 
-// Trigger button component for the header
+// Компонент кнопки-триггера для шапки
 export function CommandPaletteTrigger() {
   const handleClick = () => {
     document.dispatchEvent(new Event('openCommandPalette'));
@@ -226,11 +241,11 @@ export function CommandPaletteTrigger() {
   return (
     <button
       onClick={handleClick}
-      className="hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors border rounded-md hover:bg-muted/50"
+      className='hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors border rounded-md hover:bg-muted/50'
     >
-      <span className="text-xs">Поиск</span>
-      <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-        <span className="text-xs">⌘</span>K
+      <span className='text-xs'>Поиск</span>
+      <kbd className='pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground'>
+        <span className='text-xs'>⌘</span>K
       </kbd>
     </button>
   );

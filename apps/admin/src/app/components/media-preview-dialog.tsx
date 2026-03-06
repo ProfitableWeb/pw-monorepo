@@ -149,7 +149,7 @@ export function MediaPreviewDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className='w-[95vw] max-w-[1400px] h-[90vh] p-0 gap-0 flex flex-col'>
-        {/* Fixed Header */}
+        {/* Фиксированный заголовок */}
         <DialogHeader className='px-6 pt-6 pb-4 border-b shrink-0'>
           <DialogTitle className='flex items-center gap-2'>
             <Icon className='h-5 w-5' />
@@ -163,12 +163,12 @@ export function MediaPreviewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Scrollable Content */}
+        {/* Прокручиваемый контент */}
         <div className='flex-1 overflow-hidden'>
           <ScrollArea className='h-full'>
             <div className='p-6'>
               <div className='grid lg:grid-cols-2 gap-6'>
-                {/* Left Column - Preview */}
+                {/* Левая колонка — превью */}
                 <div className='space-y-4'>
                   <div>
                     <div className='flex items-center justify-between mb-3'>
@@ -218,7 +218,7 @@ export function MediaPreviewDialog({
                     </div>
                   </div>
 
-                  {/* Image Resizes */}
+                  {/* Варианты размеров */}
                   {editedFile.resizes && editedFile.resizes.length > 0 && (
                     <div>
                       <h3 className='font-medium mb-3 flex items-center gap-2'>
@@ -257,7 +257,7 @@ export function MediaPreviewDialog({
                     </div>
                   )}
 
-                  {/* File Info */}
+                  {/* Информация о файле */}
                   <div>
                     <h3 className='font-medium mb-3'>Информация о файле</h3>
                     <div className='grid grid-cols-2 gap-3'>
@@ -321,7 +321,7 @@ export function MediaPreviewDialog({
                   </div>
                 </div>
 
-                {/* Right Column - Parameters */}
+                {/* Правая колонка — параметры */}
                 <div className='space-y-6'>
                   {/* SEO Parameters */}
                   <div>
@@ -611,7 +611,7 @@ export function MediaPreviewDialog({
           </ScrollArea>
         </div>
 
-        {/* Fixed Footer */}
+        {/* Фиксированный футер */}
         <DialogFooter className='px-6 py-4 border-t flex-row justify-between gap-2'>
           <div className='flex gap-2'>
             <Button variant='outline'>

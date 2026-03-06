@@ -1,7 +1,17 @@
 import { useEffect } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { useHeaderStore } from '@/app/store/header-store';
-import { Layout, FileText, Newspaper, Video, Mic, Pencil, LayoutDashboard, Plus, FileType } from 'lucide-react';
+import {
+  Layout,
+  FileText,
+  Newspaper,
+  Video,
+  Mic,
+  Pencil,
+  LayoutDashboard,
+  Plus,
+  FileType,
+} from 'lucide-react';
 import { SectionCard } from '@/app/components/section-card';
 import { SectionHeader } from '@/app/components/section-header';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
@@ -52,32 +62,32 @@ export function FormatsDashboard() {
   ];
 
   return (
-    <div className="flex-1 overflow-hidden">
-      <ScrollArea className="h-full">
-        <div className="max-w-5xl mx-auto p-6 space-y-8 pb-12">
-          {/* Header */}
+    <div className='flex-1 overflow-hidden'>
+      <ScrollArea className='h-full'>
+        <div className='max-w-5xl mx-auto p-6 space-y-8 pb-12'>
+          {/* Заголовок */}
           <SectionHeader
             icon={Layout}
-            title="Форматы контента"
-            description="Шаблоны и структуры для различных типов материалов"
+            title='Форматы контента'
+            description='Шаблоны и структуры для различных типов материалов'
           />
 
-          {/* Main Formats Section */}
+          {/* Основные форматы */}
           <div>
             <SectionHeader
-              variant="small"
+              variant='small'
               icon={FileType}
-              title="Доступные форматы"
-              className="mb-4"
+              title='Доступные форматы'
+              className='mb-4'
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {formats.map((format) => (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {formats.map(format => (
                 <SectionCard
                   key={format.title}
                   icon={format.icon}
                   title={format.title}
                   description={format.description}
-                  variant="default"
+                  variant='default'
                   onClick={() => console.log(`Открыть формат: ${format.title}`)}
                   stats={[
                     {
@@ -85,7 +95,7 @@ export function FormatsDashboard() {
                       value: format.count,
                     },
                   ]}
-                  badges={format.examples.map((example) => ({
+                  badges={format.examples.map(example => ({
                     label: example,
                     variant: 'outline' as const,
                   }))}
@@ -94,20 +104,21 @@ export function FormatsDashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Plus className="h-6 w-6 text-primary" />
+          {/* Быстрые действия */}
+          <Card className='border-primary/20 bg-primary/5'>
+            <CardContent className='p-6'>
+              <div className='flex items-start gap-4'>
+                <div className='w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0'>
+                  <Plus className='h-6 w-6 text-primary' />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold mb-2">Создать новый формат</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Добавьте кастомный формат для вашего уникального типа контента
+                <div className='flex-1 min-w-0'>
+                  <h4 className='font-semibold mb-2'>Создать новый формат</h4>
+                  <p className='text-sm text-muted-foreground mb-4'>
+                    Добавьте кастомный формат для вашего уникального типа
+                    контента
                   </p>
-                  <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button variant='outline' size='sm'>
+                    <Plus className='h-4 w-4 mr-2' />
                     Добавить формат
                   </Button>
                 </div>
@@ -115,20 +126,21 @@ export function FormatsDashboard() {
             </CardContent>
           </Card>
 
-          {/* Templates Section */}
+          {/* Раздел шаблонов */}
           <div>
             <SectionHeader
-              variant="small"
+              variant='small'
               icon={Layout}
-              title="Шаблоны структур"
-              className="mb-4"
+              title='Шаблоны структур'
+              className='mb-4'
             />
-            <Card className="border-dashed">
-              <CardContent className="flex items-center justify-center py-12">
-                <div className="text-center space-y-2">
-                  <Layout className="size-12 mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Детальные шаблоны для каждого формата будут доступны в следующей версии
+            <Card className='border-dashed'>
+              <CardContent className='flex items-center justify-center py-12'>
+                <div className='text-center space-y-2'>
+                  <Layout className='size-12 mx-auto text-muted-foreground' />
+                  <p className='text-sm text-muted-foreground'>
+                    Детальные шаблоны для каждого формата будут доступны в
+                    следующей версии
                   </p>
                 </div>
               </CardContent>

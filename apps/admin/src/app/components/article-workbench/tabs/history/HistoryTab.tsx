@@ -84,7 +84,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
 
   return (
     <div className='flex h-full'>
-      {/* Left sidebar — revision timeline */}
+      {/* Левый сайдбар — таймлайн ревизий */}
       <nav className='w-56 shrink-0 border-r flex flex-col'>
         <div className='flex items-center justify-between px-4 border-b min-h-[49px]'>
           <h3 className='text-xs font-semibold'>Ревизии</h3>
@@ -128,9 +128,9 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         </div>
       </nav>
 
-      {/* Right — Diff Editor */}
+      {/* Справа — редактор diff */}
       <div className='flex-1 flex flex-col min-w-0'>
-        {/* Diff toolbar */}
+        {/* Тулбар diff */}
         <div className='flex items-center justify-between px-4 py-2 border-b'>
           <div className='flex items-center gap-3'>
             {selectedRevision && (
@@ -142,7 +142,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
           </div>
 
           <div className='flex items-center gap-3'>
-            {/* Inline / Side-by-side toggle */}
+            {/* Переключатель inline / side-by-side */}
             <div className='flex items-center gap-2'>
               <Label
                 htmlFor='diff-side-by-side'
@@ -157,7 +157,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
               />
             </div>
 
-            {/* Settings trigger */}
+            {/* Кнопка настроек */}
             <Button
               ref={settingsPanel.triggerRef}
               variant='ghost'
@@ -174,7 +174,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
               <Settings2 className='size-3.5' />
             </Button>
 
-            {/* Restore button */}
+            {/* Кнопка восстановления */}
             {selectedRevision && onRestore && (
               <Button
                 variant='outline'
@@ -202,7 +202,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
           </div>
         </div>
 
-        {/* Diff editor */}
+        {/* Редактор diff */}
         <div className='flex-1 min-h-0 min-w-0 overflow-hidden'>
           {selectedRevision ? (
             <DiffEditor
@@ -235,7 +235,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         </div>
       </div>
 
-      {/* Floating settings panel */}
+      {/* Плавающая панель настроек */}
       <EditorSettingsPanel
         title='Настройки Diff'
         fontSize={settings.fontSize}
@@ -247,7 +247,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         {...settingsPanel}
       />
 
-      {/* Restore confirmation dialog */}
+      {/* Диалог подтверждения восстановления */}
       <AlertDialog
         open={!!restoreTarget}
         onOpenChange={open => {
@@ -272,7 +272,7 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Delete confirmation dialog */}
+      {/* Диалог подтверждения удаления */}
       <AlertDialog
         open={!!deleteTarget}
         onOpenChange={open => {

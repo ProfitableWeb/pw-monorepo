@@ -24,7 +24,7 @@ const MATERIAL_LABELS = {
 export function ResearchTab() {
   return (
     <div className='p-6 space-y-6 max-w-4xl mx-auto'>
-      {/* Link to workspace */}
+      {/* Ссылка на воркспейс */}
       <Button
         variant='outline'
         className='gap-2 w-full justify-center'
@@ -36,7 +36,7 @@ export function ResearchTab() {
         Перейти к исследованию
       </Button>
 
-      {/* Materials grid */}
+      {/* Сетка материалов */}
       <section>
         <div className='flex items-center justify-between mb-4'>
           <h3 className='text-sm font-semibold'>Материалы исследования</h3>

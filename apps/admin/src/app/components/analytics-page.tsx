@@ -113,7 +113,7 @@ export function AnalyticsPage() {
 
   return (
     <div className='container mx-auto p-6 space-y-6'>
-      {/* Header */}
+      {/* Заголовок */}
       <div className='flex items-center justify-between'>
         <div className='space-y-2'>
           <h1 className='text-3xl font-semibold tracking-tight'>Аналитика</h1>
@@ -133,7 +133,7 @@ export function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Ключевые метрики */}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         <Card>
           <CardHeader className='pb-3'>
@@ -197,7 +197,7 @@ export function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Views Chart */}
+      {/* График просмотров */}
       <Card>
         <CardHeader>
           <CardTitle>Просмотры и посетители</CardTitle>
@@ -243,7 +243,7 @@ export function AnalyticsPage() {
       </Card>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {/* Top Articles */}
+        {/* Топ статей */}
         <Card>
           <CardHeader>
             <CardTitle>Топ статей</CardTitle>
@@ -277,7 +277,7 @@ export function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        {/* Device Distribution */}
+        {/* Распределение по устройствам */}
         <Card>
           <CardHeader>
             <CardTitle>Устройства</CardTitle>
@@ -337,7 +337,7 @@ export function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Traffic Sources */}
+      {/* Источники трафика */}
       <Card>
         <CardHeader>
           <CardTitle>Источники трафика</CardTitle>

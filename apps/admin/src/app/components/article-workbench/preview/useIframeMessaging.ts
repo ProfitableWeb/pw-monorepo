@@ -30,7 +30,7 @@ export function useIframeMessaging({
   const [iframeReady, setIframeReady] = useState(false);
   const [iframeError, setIframeError] = useState(false);
 
-  // Listen for preview:ready from iframe
+  // Слушать preview:ready от iframe
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.origin !== new URL(WEB_URL).origin) return;
@@ -43,20 +43,20 @@ export function useIframeMessaging({
     return () => window.removeEventListener('message', handler);
   }, []);
 
-  // Reset iframe state when key changes
+  // Сбросить состояние iframe при смене ключа
   useEffect(() => {
     setIframeReady(false);
     setIframeError(false);
   }, [iframeKey]);
 
-  // Loading timeout
+  // Таймаут загрузки
   useEffect(() => {
     if (iframeReady || iframeError) return;
     const timer = setTimeout(() => setIframeError(true), 15000);
     return () => clearTimeout(timer);
   }, [iframeReady, iframeError]);
 
-  // Send article data to iframe (debounced)
+  // Отправить данные статьи в iframe (с debounce)
   useEffect(() => {
     if (!iframeReady || !iframeRef.current?.contentWindow) return;
     const timer = setTimeout(() => {

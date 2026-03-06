@@ -96,7 +96,7 @@ function YandexSerp({
 
   return (
     <div className='space-y-1.5'>
-      {/* Site info row: favicon + site name + url */}
+      {/* Строка сайта: фавикон + название + URL */}
       <div className='flex items-start gap-2'>
         <img
           src={faviconUrl}
@@ -118,14 +118,14 @@ function YandexSerp({
           </div>
         </div>
       </div>
-      {/* Page title */}
+      {/* Заголовок страницы */}
       <div
         className='text-[16px] leading-[1.3] font-medium cursor-pointer hover:underline'
         style={{ color: c.title }}
       >
         {displayTitle}
       </div>
-      {/* Description snippet */}
+      {/* Сниппет описания */}
       <div className='text-[13px] leading-[1.5]' style={{ color: c.desc }}>
         {displayDesc}
       </div>

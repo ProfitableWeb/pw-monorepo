@@ -81,7 +81,7 @@ export function MiniWysiwygEditor({ value, onChange }: MiniWysiwygEditorProps) {
     },
   });
 
-  // Sync external value changes
+  // Синхронизация внешних изменений значения
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value, { emitUpdate: false });

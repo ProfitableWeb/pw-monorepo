@@ -273,7 +273,7 @@ export function SettingsPage() {
   };
 
   const handleSave = () => {
-    // Save logic here
+    // Логика сохранения
     setHasUnsavedChanges(false);
   };
 
@@ -283,7 +283,7 @@ export function SettingsPage() {
 
   return (
     <div className='flex h-full overflow-hidden'>
-      {/* Sidebar Navigation */}
+      {/* Боковая навигация */}
       <aside className='w-64 border-r bg-card flex-shrink-0 flex flex-col'>
         <div className='p-4 border-b flex-shrink-0'>
           <div className='relative'>
@@ -328,7 +328,7 @@ export function SettingsPage() {
         </ScrollArea>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Основная область контента */}
       <div className='flex-1 flex flex-col min-w-0 min-h-0'>
         <ScrollArea className='flex-1 min-h-0'>
           <div className='max-w-4xl mx-auto p-6 pb-24'>
@@ -336,7 +336,7 @@ export function SettingsPage() {
           </div>
         </ScrollArea>
 
-        {/* Fixed Action Bar */}
+        {/* Фиксированная панель действий */}
         {hasUnsavedChanges && (
           <div className='border-t bg-card p-4 flex items-center justify-between flex-shrink-0'>
             <p className='text-sm text-muted-foreground'>
@@ -385,7 +385,7 @@ function PasswordInput(
   );
 }
 
-// Profile Settings Component (PW-034)
+// Компонент настроек профиля (PW-034)
 function ProfileSettings() {
   const { user, updateUser } = useAuthStore();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -988,7 +988,7 @@ function ProfileSettings() {
   );
 }
 
-// General Settings Component
+// Компонент общих настроек
 function GeneralSettings({
   onChangeDetected,
 }: {
@@ -1185,7 +1185,7 @@ function GeneralSettings({
   );
 }
 
-// Blog Settings Component
+// Компонент настроек блога
 function BlogSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
   return (
     <div className='space-y-6'>
@@ -1342,7 +1342,7 @@ function BlogSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
   );
 }
 
-// Security Settings Component
+// Компонент настроек безопасности
 function SecuritySettings({
   onChangeDetected,
 }: {
@@ -1491,7 +1491,7 @@ function SecuritySettings({
         </TabsContent>
 
         <TabsContent value='access-control' className='space-y-6 mt-6'>
-          {/* Roles and Permissions */}
+          {/* Роли и разрешения */}
           <Card>
             <CardHeader>
               <CardTitle className='text-lg flex items-center gap-2'>
@@ -1503,7 +1503,7 @@ function SecuritySettings({
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
-              {/* Administrator Role */}
+              {/* Роль администратора */}
               <div className='p-4 rounded-lg border bg-card'>
                 <div className='flex items-start justify-between mb-3'>
                   <div className='flex items-start gap-3'>
@@ -1546,7 +1546,7 @@ function SecuritySettings({
                 </div>
               </div>
 
-              {/* Editor Role */}
+              {/* Роль редактора */}
               <div className='p-4 rounded-lg border bg-card'>
                 <div className='flex items-start justify-between mb-3'>
                   <div className='flex items-start gap-3'>
@@ -1596,7 +1596,7 @@ function SecuritySettings({
                 </div>
               </div>
 
-              {/* Author Role */}
+              {/* Роль автора */}
               <div className='p-4 rounded-lg border bg-card'>
                 <div className='flex items-start justify-between mb-3'>
                   <div className='flex items-start gap-3'>
@@ -1835,7 +1835,7 @@ function SecuritySettings({
             </CardContent>
           </Card>
 
-          {/* Security Policies */}
+          {/* Политики безопасности */}
           <Card>
             <CardHeader>
               <CardTitle className='text-lg flex items-center gap-2'>
@@ -1888,7 +1888,7 @@ function SecuritySettings({
             </CardContent>
           </Card>
 
-          {/* Security Log */}
+          {/* Журнал безопасности */}
           <Card>
             <CardHeader>
               <CardTitle className='text-lg flex items-center gap-2'>
@@ -1969,7 +1969,7 @@ function SecuritySettings({
   );
 }
 
-// Notification Settings Component
+// Компонент настроек уведомлений
 function NotificationSettings({
   onChangeDetected,
 }: {
@@ -2101,7 +2101,7 @@ function NotificationSettings({
   );
 }
 
-// Integration Settings Component
+// Компонент настроек интеграций
 function IntegrationSettings({
   onChangeDetected,
 }: {
@@ -2234,7 +2234,7 @@ function IntegrationSettings({
   );
 }
 
-// Appearance Settings Component
+// Компонент настроек внешнего вида
 function AppearanceSettings({
   onChangeDetected,
 }: {
@@ -2378,7 +2378,7 @@ function AppearanceSettings({
   );
 }
 
-// Developer Settings Component
+// Компонент настроек для разработчиков
 function DeveloperSettings({
   onChangeDetected,
 }: {
@@ -2493,7 +2493,7 @@ function DeveloperSettings({
   );
 }
 
-// Reusable Setting Row Component
+// Переиспользуемый компонент строки настройки
 function SettingRow({
   icon: Icon,
   label,

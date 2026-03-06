@@ -422,10 +422,10 @@ export function MediaSection() {
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(12);
 
-  // Header store for breadcrumbs
+  // Стор заголовка для хлебных крошек
   const { setBreadcrumbs, reset } = useHeaderStore();
 
-  // Set breadcrumbs
+  // Установить хлебные крошки
   useEffect(() => {
     setBreadcrumbs(breadcrumbPresets.media());
 
@@ -435,19 +435,19 @@ export function MediaSection() {
   const filteredFiles = useMemo(() => {
     let result = files;
 
-    // Filter by search
+    // Фильтр по поиску
     if (searchQuery) {
       result = result.filter(file =>
         file.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Filter by purpose
+    // Фильтр по назначению
     if (selectedFolder !== 'all') {
       result = result.filter(file => file.purposes.includes(selectedFolder));
     }
 
-    // Filter by file type
+    // Фильтр по типу файла
     if (selectedFileType !== 'all') {
       result = result.filter(file => file.type === selectedFileType);
     }
@@ -513,7 +513,7 @@ export function MediaSection() {
   };
 
   const handleCopyUrl = (url: string) => {
-    // Fallback for environments where Clipboard API is blocked
+    // Фоллбэк для окружений без Clipboard API
     const textArea = document.createElement('textarea');
     textArea.value = url;
     textArea.style.position = 'fixed';
@@ -542,7 +542,7 @@ export function MediaSection() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload
+    // Симуляция загрузки
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 100) {
@@ -556,7 +556,7 @@ export function MediaSection() {
   };
 
   const handleBackup = () => {
-    // Simulate backup creation
+    // Симуляция создания бэкапа
     setShowBackupDialog(false);
     // TODO: Show toast notification
   };
@@ -578,7 +578,7 @@ export function MediaSection() {
 
   return (
     <div className='flex h-full overflow-hidden'>
-      {/* Sidebar Navigation */}
+      {/* Боковая навигация */}
       <aside className='w-64 border-r bg-card flex-shrink-0 flex flex-col'>
         <div className='p-4 border-b flex-shrink-0'>
           <div className='relative'>
@@ -594,7 +594,7 @@ export function MediaSection() {
 
         <ScrollArea className='flex-1 min-h-0'>
           <div className='p-4 space-y-6'>
-            {/* Storage Stats */}
+            {/* Статистика хранилища */}
             <div className='space-y-3'>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>Хранилище</span>
@@ -622,7 +622,7 @@ export function MediaSection() {
 
             <Separator />
 
-            {/* Purpose Filter */}
+            {/* Фильтр по назначению */}
             <div className='space-y-2'>
               <h3 className='text-sm font-medium mb-3'>Назначение</h3>
               {PURPOSES.map(purpose => {
@@ -662,7 +662,7 @@ export function MediaSection() {
 
             <Separator />
 
-            {/* File Type Filter */}
+            {/* Фильтр по типу файла */}
             <div className='space-y-2'>
               <h3 className='text-sm font-medium mb-3'>Тип файла</h3>
               {FILE_TYPES.map(type => {
@@ -702,7 +702,7 @@ export function MediaSection() {
 
             <Separator />
 
-            {/* Backup Section */}
+            {/* Раздел резервного копирования */}
             <div className='space-y-3'>
               <div className='flex items-center justify-between'>
                 <h3 className='text-sm font-medium'>Резервные копии</h3>
@@ -753,9 +753,9 @@ export function MediaSection() {
         </ScrollArea>
       </aside>
 
-      {/* Main Content */}
+      {/* Основной контент */}
       <div className='flex-1 flex flex-col min-w-0 min-h-0'>
-        {/* Header */}
+        {/* Заголовок */}
         <div className='p-4 lg:p-6 border-b space-y-4 flex-shrink-0'>
           <div className='flex items-center justify-between'>
             <div>
@@ -773,7 +773,7 @@ export function MediaSection() {
             </Button>
           </div>
 
-          {/* Stats Cards */}
+          {/* Карточки статистики */}
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
             {Object.entries(fileTypeStats).map(([type, size]) => {
               const Icon = getFileIcon(type as FileType);
@@ -797,7 +797,7 @@ export function MediaSection() {
             })}
           </div>
 
-          {/* Controls */}
+          {/* Управление */}
           <div className='flex items-center gap-2'>
             {selectedFiles.length > 0 && (
               <>
@@ -843,7 +843,7 @@ export function MediaSection() {
           </div>
         </div>
 
-        {/* Upload Progress */}
+        {/* Прогресс загрузки */}
         {isUploading && (
           <div className='px-4 lg:px-6 py-3 border-b bg-muted/30 flex-shrink-0'>
             <div className='flex items-center gap-3'>
@@ -874,7 +874,7 @@ export function MediaSection() {
           </div>
         )}
 
-        {/* Files Display */}
+        {/* Отображение файлов */}
         <ScrollArea className='flex-1 min-h-0'>
           <div className='p-4 lg:p-6 space-y-6'>
             {viewMode === 'grid' ? (
@@ -893,7 +893,7 @@ export function MediaSection() {
                         )}
                         onClick={() => setPreviewFile(file)}
                       >
-                        {/* Selection Checkbox */}
+                        {/* Чекбокс выбора */}
                         <div
                           className='absolute top-2 left-2 z-10'
                           onClick={e => e.stopPropagation()}
@@ -913,7 +913,7 @@ export function MediaSection() {
                           </button>
                         </div>
 
-                        {/* Thumbnail */}
+                        {/* Миниатюра */}
                         <div
                           className={cn(
                             'aspect-square bg-muted flex items-center justify-center relative overflow-hidden transition-opacity',
@@ -938,7 +938,7 @@ export function MediaSection() {
                             )}
                         </div>
 
-                        {/* Info */}
+                        {/* Информация */}
                         <div className='p-2 lg:p-3'>
                           <p
                             className='text-xs lg:text-sm font-medium truncate'
@@ -959,7 +959,7 @@ export function MediaSection() {
                           </div>
                         </div>
 
-                        {/* Quick Actions */}
+                        {/* Быстрые действия */}
                         <div
                           className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity'
                           onClick={e => e.stopPropagation()}
@@ -1007,7 +1007,7 @@ export function MediaSection() {
                   })}
                 </div>
 
-                {/* Load More */}
+                {/* Загрузить ещё */}
                 {hasMore && (
                   <div className='flex justify-center pt-4'>
                     <Button
@@ -1035,7 +1035,7 @@ export function MediaSection() {
                       )}
                       onClick={() => setPreviewFile(file)}
                     >
-                      {/* Selection Checkbox */}
+                      {/* Чекбокс выбора */}
                       <div onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => handleFileSelect(file.id)}
@@ -1052,7 +1052,7 @@ export function MediaSection() {
                         </button>
                       </div>
 
-                      {/* Thumbnail */}
+                      {/* Миниатюра */}
                       <div className='w-16 h-16 bg-muted rounded flex items-center justify-center flex-shrink-0 overflow-hidden'>
                         {file.type === 'image' ? (
                           <MediaImageWithLoader
@@ -1065,7 +1065,7 @@ export function MediaSection() {
                         )}
                       </div>
 
-                      {/* Info */}
+                      {/* Информация */}
                       <div className='flex-1 min-w-0'>
                         <p className='font-medium truncate'>{file.name}</p>
                         <div className='flex items-center gap-3 mt-1 text-sm text-muted-foreground'>
@@ -1083,7 +1083,7 @@ export function MediaSection() {
                         </div>
                       </div>
 
-                      {/* Actions */}
+                      {/* Действия */}
                       <div onClick={e => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1121,7 +1121,7 @@ export function MediaSection() {
                   );
                 })}
 
-                {/* Load More */}
+                {/* Загрузить ещё */}
                 {hasMore && (
                   <div className='flex justify-center pt-4'>
                     <Button
@@ -1139,7 +1139,7 @@ export function MediaSection() {
         </ScrollArea>
       </div>
 
-      {/* Preview Dialog */}
+      {/* Диалог превью */}
       {previewFile && (
         <MediaPreviewDialog
           file={previewFile}
@@ -1149,7 +1149,7 @@ export function MediaSection() {
         />
       )}
 
-      {/* Backup Dialog */}
+      {/* Диалог бэкапа */}
       <Dialog open={showBackupDialog} onOpenChange={setShowBackupDialog}>
         <DialogContent>
           <DialogHeader>

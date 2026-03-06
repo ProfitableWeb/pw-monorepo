@@ -88,7 +88,7 @@ export function ResearchHeader({ toolbar }: ResearchHeaderProps) {
 
   return (
     <div className='h-12 border-b flex items-center px-3 gap-2 shrink-0 bg-background'>
-      {/* Back button */}
+      {/* Кнопка назад */}
       <Button
         variant='ghost'
         size='sm'
@@ -98,7 +98,7 @@ export function ResearchHeader({ toolbar }: ResearchHeaderProps) {
         <ArrowLeft className='h-4 w-4' />
       </Button>
 
-      {/* Title */}
+      {/* Заголовок */}
       {isEditing ? (
         <input
           ref={inputRef}
@@ -118,7 +118,7 @@ export function ResearchHeader({ toolbar }: ResearchHeaderProps) {
         </button>
       )}
 
-      {/* Status dropdown */}
+      {/* Выпадающий список статуса */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
@@ -144,7 +144,7 @@ export function ResearchHeader({ toolbar }: ResearchHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Members */}
+      {/* Участники */}
       <div className='flex -space-x-1.5 ml-2'>
         {research.members.slice(0, 3).map(m => (
           <div
@@ -159,10 +159,10 @@ export function ResearchHeader({ toolbar }: ResearchHeaderProps) {
         ))}
       </div>
 
-      {/* Spacer */}
+      {/* Разделитель */}
       <div className='flex-1' />
 
-      {/* Toolbar slot */}
+      {/* Слот тулбара */}
       {toolbar}
     </div>
   );

@@ -12,14 +12,14 @@ export function NoteEditorPanel({ itemId }: PanelComponentProps) {
 
   const [content, setContent] = useState(item?.content || '');
 
-  // Sync when switching items
+  // Синхронизация при переключении элементов
   useEffect(() => {
     setContent(item?.content || '');
   }, [itemId, item?.content]);
 
   const handleChange = (value: string) => {
     setContent(value);
-    // Debounced save
+    // Сохранение с debounce
     if (isNote) {
       updateNote(itemId, { content: value });
     } else {
@@ -37,12 +37,12 @@ export function NoteEditorPanel({ itemId }: PanelComponentProps) {
 
   return (
     <div className='flex flex-col h-full'>
-      {/* Title bar */}
+      {/* Заголовок */}
       <div className='px-4 py-2 border-b text-xs text-muted-foreground'>
         {item.title}
       </div>
 
-      {/* Editor */}
+      {/* Редактор */}
       <textarea
         value={content}
         onChange={e => handleChange(e.target.value)}

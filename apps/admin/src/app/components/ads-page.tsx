@@ -1,10 +1,16 @@
 import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { useHeaderStore } from '@/app/store/header-store';
-import { 
+import {
   LayoutPanelTop,
   DollarSign,
   MousePointer,
@@ -170,8 +176,8 @@ export function AdsPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      { 
-        label: 'Система', 
+      {
+        label: 'Система',
         icon: Cog,
         dropdown: [
           { label: 'Настройки', icon: Settings, href: 'settings' },
@@ -180,7 +186,7 @@ export function AdsPage() {
           { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
           { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
           { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ]
+        ],
       },
       { label: 'Реклама', icon: LayoutPanelTop },
     ]);
@@ -189,160 +195,182 @@ export function AdsPage() {
   }, [setBreadcrumbs, reset]);
 
   const totalRevenue = placements.reduce((sum, p) => sum + p.revenue, 0);
-  const totalImpressions = placements.reduce((sum, p) => sum + p.impressions, 0);
+  const totalImpressions = placements.reduce(
+    (sum, p) => sum + p.impressions,
+    0
+  );
   const totalClicks = campaigns.reduce((sum, c) => sum + c.clicks, 0);
-  const averageCtr = (campaigns.reduce((sum, c) => sum + c.ctr, 0) / campaigns.filter(c => c.status !== 'draft').length).toFixed(2);
+  const averageCtr = (
+    campaigns.reduce((sum, c) => sum + c.ctr, 0) /
+    campaigns.filter(c => c.status !== 'draft').length
+  ).toFixed(2);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Реклама</h1>
-          <p className="text-muted-foreground">
+    <div className='container mx-auto p-6 space-y-6'>
+      {/* Заголовок */}
+      <div className='flex items-center justify-between'>
+        <div className='space-y-2'>
+          <h1 className='text-3xl font-semibold tracking-tight'>Реклама</h1>
+          <p className='text-muted-foreground'>
             Управление рекламными кампаниями и монетизацией
           </p>
         </div>
         <Button>
-          <Plus className="size-4 mr-2" />
+          <Plus className='size-4 mr-2' />
           Новая кампания
         </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Статистика */}
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <DollarSign className="size-4" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
+              <DollarSign className='size-4' />
               Доход
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className='text-2xl font-bold'>
+              ${totalRevenue.toLocaleString()}
+            </div>
+            <p className='text-xs text-muted-foreground mt-1'>
               За текущий месяц
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Eye className="size-4" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
+              <Eye className='size-4' />
               Показы
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(totalImpressions / 1000).toFixed(0)}K</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Всего показов
-            </p>
+            <div className='text-2xl font-bold'>
+              {(totalImpressions / 1000).toFixed(0)}K
+            </div>
+            <p className='text-xs text-muted-foreground mt-1'>Всего показов</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <MousePointer className="size-4" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
+              <MousePointer className='size-4' />
               Клики
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalClicks.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className='text-2xl font-bold'>
+              {totalClicks.toLocaleString()}
+            </div>
+            <p className='text-xs text-muted-foreground mt-1'>
               Переходов по рекламе
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingUp className="size-4" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
+              <TrendingUp className='size-4' />
               CTR
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageCtr}%</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className='text-2xl font-bold'>{averageCtr}%</div>
+            <p className='text-xs text-muted-foreground mt-1'>
               Средний показатель
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Campaigns */}
+      {/* Кампании */}
       <Card>
         <CardHeader>
           <CardTitle>Рекламные кампании</CardTitle>
           <CardDescription>Активные и запланированные кампании</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {campaigns.map((campaign) => (
-              <div
-                key={campaign.id}
-                className="p-4 rounded-lg border bg-card"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium">{campaign.name}</p>
-                      <Badge variant="outline" className={cn("text-xs", statusColors[campaign.status])}>
+          <div className='space-y-4'>
+            {campaigns.map(campaign => (
+              <div key={campaign.id} className='p-4 rounded-lg border bg-card'>
+                <div className='flex items-start justify-between mb-3'>
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2 mb-1'>
+                      <p className='font-medium'>{campaign.name}</p>
+                      <Badge
+                        variant='outline'
+                        className={cn('text-xs', statusColors[campaign.status])}
+                      >
                         {statusLabels[campaign.status]}
                       </Badge>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant='outline' className='text-xs'>
                         {typeLabels[campaign.type]}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="size-3" />
-                        <span>{campaign.startDate} - {campaign.endDate}</span>
+                    <div className='flex items-center gap-3 text-sm text-muted-foreground'>
+                      <div className='flex items-center gap-1'>
+                        <Calendar className='size-3' />
+                        <span>
+                          {campaign.startDate} - {campaign.endDate}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="icon">
+                  <div className='flex gap-2'>
+                    <Button variant='ghost' size='icon'>
                       {campaign.status === 'active' ? (
-                        <Pause className="size-4" />
+                        <Pause className='size-4' />
                       ) : (
-                        <Play className="size-4" />
+                        <Play className='size-4' />
                       )}
                     </Button>
-                    <Button variant="ghost" size="icon">
-                      <Settings className="size-4" />
+                    <Button variant='ghost' size='icon'>
+                      <Settings className='size-4' />
                     </Button>
                   </div>
                 </div>
 
                 {campaign.status !== 'draft' && (
                   <>
-                    <div className="grid grid-cols-4 gap-4 mb-3 text-sm">
+                    <div className='grid grid-cols-4 gap-4 mb-3 text-sm'>
                       <div>
-                        <p className="text-muted-foreground mb-1">Показы</p>
-                        <p className="font-medium">{campaign.impressions.toLocaleString()}</p>
+                        <p className='text-muted-foreground mb-1'>Показы</p>
+                        <p className='font-medium'>
+                          {campaign.impressions.toLocaleString()}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground mb-1">Клики</p>
-                        <p className="font-medium">{campaign.clicks.toLocaleString()}</p>
+                        <p className='text-muted-foreground mb-1'>Клики</p>
+                        <p className='font-medium'>
+                          {campaign.clicks.toLocaleString()}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground mb-1">CTR</p>
-                        <p className="font-medium">{campaign.ctr}%</p>
+                        <p className='text-muted-foreground mb-1'>CTR</p>
+                        <p className='font-medium'>{campaign.ctr}%</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground mb-1">Потрачено</p>
-                        <p className="font-medium">${campaign.spent.toLocaleString()}</p>
+                        <p className='text-muted-foreground mb-1'>Потрачено</p>
+                        <p className='font-medium'>
+                          ${campaign.spent.toLocaleString()}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Бюджет</span>
-                        <span className="font-medium">
-                          ${campaign.spent.toLocaleString()} / ${campaign.budget.toLocaleString()}
+                    <div className='space-y-2'>
+                      <div className='flex items-center justify-between text-sm'>
+                        <span className='text-muted-foreground'>Бюджет</span>
+                        <span className='font-medium'>
+                          ${campaign.spent.toLocaleString()} / $
+                          {campaign.budget.toLocaleString()}
                         </span>
                       </div>
-                      <Progress value={(campaign.spent / campaign.budget) * 100} className="h-2" />
+                      <Progress
+                        value={(campaign.spent / campaign.budget) * 100}
+                        className='h-2'
+                      />
                     </div>
                   </>
                 )}
@@ -352,48 +380,52 @@ export function AdsPage() {
         </CardContent>
       </Card>
 
-      {/* Ad Placements */}
+      {/* Рекламные размещения */}
       <Card>
         <CardHeader>
           <CardTitle>Рекламные места</CardTitle>
           <CardDescription>Площадки для показа рекламы</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {placements.map((placement) => (
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            {placements.map(placement => (
               <div
                 key={placement.id}
-                className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                className='p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors'
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className='flex items-start justify-between mb-3'>
                   <div>
-                    <p className="font-medium mb-1">{placement.name}</p>
-                    <p className="text-sm text-muted-foreground">{placement.location}</p>
+                    <p className='font-medium mb-1'>{placement.name}</p>
+                    <p className='text-sm text-muted-foreground'>
+                      {placement.location}
+                    </p>
                   </div>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant='outline' className='text-xs'>
                     {placement.format}
                   </Badge>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-sm mb-3">
+                <div className='grid grid-cols-3 gap-3 text-sm mb-3'>
                   <div>
-                    <p className="text-muted-foreground mb-1">Показы</p>
-                    <p className="font-medium">{(placement.impressions / 1000).toFixed(0)}K</p>
+                    <p className='text-muted-foreground mb-1'>Показы</p>
+                    <p className='font-medium'>
+                      {(placement.impressions / 1000).toFixed(0)}K
+                    </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground mb-1">Доход</p>
-                    <p className="font-medium">${placement.revenue}</p>
+                    <p className='text-muted-foreground mb-1'>Доход</p>
+                    <p className='font-medium'>${placement.revenue}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground mb-1">Fill Rate</p>
-                    <p className="font-medium">{placement.fillRate}%</p>
+                    <p className='text-muted-foreground mb-1'>Fill Rate</p>
+                    <p className='font-medium'>{placement.fillRate}%</p>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Заполненность</span>
-                    <span className="font-medium">{placement.fillRate}%</span>
+                <div className='space-y-1'>
+                  <div className='flex items-center justify-between text-xs'>
+                    <span className='text-muted-foreground'>Заполненность</span>
+                    <span className='font-medium'>{placement.fillRate}%</span>
                   </div>
-                  <Progress value={placement.fillRate} className="h-1.5" />
+                  <Progress value={placement.fillRate} className='h-1.5' />
                 </div>
               </div>
             ))}
@@ -401,30 +433,28 @@ export function AdsPage() {
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
+      {/* Быстрые действия */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Быстрые действия</CardTitle>
-          <CardDescription>
-            Инструменты для управления рекламой
-          </CardDescription>
+          <CardTitle className='text-lg'>Быстрые действия</CardTitle>
+          <CardDescription>Инструменты для управления рекламой</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
-              <BarChart className="size-4 mr-2" />
+          <div className='flex flex-wrap gap-2'>
+            <Button variant='outline' size='sm'>
+              <BarChart className='size-4 mr-2' />
               Отчет по доходам
             </Button>
-            <Button variant="outline" size="sm">
-              <Target className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <Target className='size-4 mr-2' />
               Настройки таргетинга
             </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <Settings className='size-4 mr-2' />
               Управление площадками
             </Button>
-            <Button variant="outline" size="sm">
-              <DollarSign className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <DollarSign className='size-4 mr-2' />
               История выплат
             </Button>
           </div>

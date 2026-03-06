@@ -75,7 +75,7 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
   const robotsNoIndex = watch('robotsNoIndex');
   const robotsNoFollow = watch('robotsNoFollow');
 
-  // Auto-generate slug from H1
+  // Авто-генерация slug из H1
   useEffect(() => {
     if (autoSlug && h1) {
       setValue('slug', transliterate(h1));
@@ -114,12 +114,12 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
     ];
   }, [focusKeyword, title, metaDescription, slug, imageUrl, ogImage]);
 
-  // Effective OG values (with fallbacks)
+  // Эффективные OG-значения (с фоллбэками)
   const effectiveOgTitle = ogTitle || title;
   const effectiveOgDesc = ogDescription || metaDescription;
   const effectiveOgImage = ogImage || imageUrl;
 
-  // Keyword management
+  // Управление ключевыми словами
   const addKeyword = (kw: string) => {
     const trimmed = kw.trim();
     if (trimmed && !seoKeywords.includes(trimmed)) {
@@ -136,7 +136,7 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
     );
   };
 
-  // Author autocomplete
+  // Автодополнение автора
   const authorSuggestions = author.trim()
     ? EDITORIAL_TEAM.filter(
         name =>
@@ -188,12 +188,12 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
       {/* SEO Score Bar — pinned */}
       <SeoScoreBar checks={seoChecks} />
 
-      {/* Scrollable content */}
+      {/* Прокручиваемый контент */}
       <ScrollArea className='flex-1 min-h-0'>
         <div className='grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8 p-8'>
-          {/* Left: Form */}
+          {/* Слева: форма */}
           <div className='space-y-6 min-w-0'>
-            {/* Section: Search Engines (always open) */}
+            {/* Секция: поисковые системы (всегда открыта) */}
             <div className='space-y-5'>
               <h3 className='text-sm font-semibold text-foreground'>
                 Поисковые системы
@@ -313,9 +313,9 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
               </FormFieldInput>
             </div>
 
-            {/* Collapsible sections */}
+            {/* Сворачиваемые секции */}
             <Accordion type='multiple' className='border-t'>
-              {/* Social */}
+              {/* Соцсети */}
               <AccordionItem value='social'>
                 <AccordionTrigger className='py-3 hover:no-underline'>
                   <div className='flex items-center gap-2'>
@@ -375,7 +375,7 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Technical SEO */}
+              {/* Техническое SEO */}
               <AccordionItem value='technical'>
                 <AccordionTrigger className='py-3 hover:no-underline'>
                   <div className='flex items-center gap-2'>
@@ -444,7 +444,7 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Structured Data */}
+              {/* Структурированные данные */}
               <AccordionItem value='structured'>
                 <AccordionTrigger className='py-3 hover:no-underline'>
                   <div className='flex items-center gap-2'>
@@ -622,7 +622,7 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
             </Accordion>
           </div>
 
-          {/* Right: Live Previews */}
+          {/* Справа: живые превью */}
           <div className='space-y-6'>
             <SerpPreview
               title={title}

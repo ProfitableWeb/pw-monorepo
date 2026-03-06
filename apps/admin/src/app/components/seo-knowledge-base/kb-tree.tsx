@@ -28,7 +28,7 @@ function CategoryNode({
 
   return (
     <div>
-      {/* Category header */}
+      {/* Заголовок категории */}
       <button
         type='button'
         onClick={() => setExpanded(v => !v)}
@@ -51,7 +51,7 @@ function CategoryNode({
         </span>
       </button>
 
-      {/* Articles */}
+      {/* Статьи */}
       {expanded && (
         <div>
           {category.articles.map(article => (
@@ -72,7 +72,7 @@ function CategoryNode({
             </button>
           ))}
 
-          {/* Nested categories */}
+          {/* Вложенные категории */}
           {category.children.map(child => (
             <CategoryNode
               key={child.id}

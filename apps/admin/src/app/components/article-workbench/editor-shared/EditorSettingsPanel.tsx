@@ -176,7 +176,7 @@ export function EditorSettingsPanel({
       className='fixed z-50 w-[280px] rounded-lg border bg-popover/90 backdrop-blur-[2px] shadow-xl'
       style={{ left: panel.panelPos.x, top: panel.panelPos.y }}
     >
-      {/* Drag handle */}
+      {/* Ручка перетаскивания */}
       <div
         className='flex items-center justify-between px-3 py-2 border-b cursor-grab active:cursor-grabbing select-none'
         onPointerDown={panel.handleDragDown}
@@ -198,9 +198,9 @@ export function EditorSettingsPanel({
         </Button>
       </div>
 
-      {/* Settings content */}
+      {/* Контент настроек */}
       <div className='p-4 space-y-4'>
-        {/* Font size */}
+        {/* Размер шрифта */}
         <div className='space-y-3'>
           <div className='flex items-center justify-between'>
             <Label className='text-xs'>Размер шрифта</Label>
@@ -217,7 +217,7 @@ export function EditorSettingsPanel({
           />
         </div>
 
-        {/* Tab size */}
+        {/* Размер табуляции */}
         {tabSize !== undefined && onTabSizeChange && (
           <div className='space-y-3'>
             <div className='flex items-center justify-between'>
@@ -236,7 +236,7 @@ export function EditorSettingsPanel({
           </div>
         )}
 
-        {/* Word wrap */}
+        {/* Перенос строк */}
         <div className='flex items-center justify-between'>
           <Label htmlFor='esp-wordWrap' className='text-xs'>
             Перенос строк
@@ -248,7 +248,7 @@ export function EditorSettingsPanel({
           />
         </div>
 
-        {/* Line numbers */}
+        {/* Нумерация строк */}
         {lineNumbers !== undefined && onLineNumbersChange && (
           <div className='flex items-center justify-between'>
             <Label htmlFor='esp-lineNumbers' className='text-xs'>
@@ -262,7 +262,7 @@ export function EditorSettingsPanel({
           </div>
         )}
 
-        {/* Minimap */}
+        {/* Миникарта */}
         {minimap !== undefined && onMinimapChange && (
           <div className='flex items-center justify-between'>
             <Label htmlFor='esp-minimap' className='text-xs'>
@@ -276,7 +276,7 @@ export function EditorSettingsPanel({
           </div>
         )}
 
-        {/* Theme */}
+        {/* Тема */}
         {theme !== undefined && onThemeChange && (
           <div className='flex items-center justify-between'>
             <Label className='text-xs'>Тема</Label>
@@ -311,7 +311,7 @@ export function EditorSettingsPanel({
           </div>
         )}
 
-        {/* Extra sections */}
+        {/* Дополнительные секции */}
         {children}
       </div>
     </div>

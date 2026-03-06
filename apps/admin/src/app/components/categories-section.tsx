@@ -147,7 +147,7 @@ function SortableCategoryCard({
       )}
       {...attributes}
     >
-      {/* Drop indicators */}
+      {/* Индикаторы места вставки */}
       {isOverTop && (
         <div className='absolute -top-4 left-0 right-0 h-0.5 bg-blue-500 z-10 shadow-lg shadow-blue-500/50' />
       )}
@@ -168,7 +168,7 @@ function SortableCategoryCard({
           (isOverTop || isOverBottom) && 'scale-[0.98]'
         )}
       >
-        {/* Drag Handle */}
+        {/* Ручка перетаскивания */}
         <div
           className='cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground'
           {...listeners}
@@ -176,19 +176,19 @@ function SortableCategoryCard({
           <GripVertical className='h-5 w-5' />
         </div>
 
-        {/* Hierarchy indicator */}
+        {/* Индикатор иерархии */}
         {level > 0 && (
           <div className='flex items-center gap-2 text-muted-foreground'>
             <div className='w-6 h-px bg-border' />
           </div>
         )}
 
-        {/* Category Icon with Color */}
+        {/* Иконка категории с цветом */}
         <div className={cn('p-2 rounded-lg', category.color)}>
           <FolderOpen className='h-4 w-4 text-white' />
         </div>
 
-        {/* Category Info */}
+        {/* Информация о категории */}
         <div className='flex-1 min-w-0'>
           <div className='flex items-center gap-2'>
             <h3 className='font-medium truncate'>{category.name}</h3>
@@ -200,7 +200,7 @@ function SortableCategoryCard({
           <p className='text-xs text-muted-foreground'>/{category.slug}</p>
         </div>
 
-        {/* Actions */}
+        {/* Действия */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -258,7 +258,7 @@ export function CategoriesSection() {
   const [categories, setCategories] = useState<Category[]>([]);
   const initialized = useRef(false);
 
-  // Sync API data → local state (preserves DnD reordering)
+  // Синхронизация данных API → локальное состояние (сохраняет порядок DnD)
   useEffect(() => {
     if (apiCategories && !initialized.current) {
       initialized.current = true;
@@ -294,10 +294,10 @@ export function CategoriesSection() {
     parentId: null,
   });
 
-  // Header store for breadcrumbs
+  // Стор заголовка для хлебных крошек
   const { setBreadcrumbs, reset } = useHeaderStore();
 
-  // Set breadcrumbs
+  // Установить хлебные крошки
   useEffect(() => {
     setBreadcrumbs(breadcrumbPresets.categories());
 
@@ -320,7 +320,7 @@ export function CategoriesSection() {
       .sort((a, b) => a.order - b.order);
   };
 
-  // Build flat list of all category IDs in render order (for SortableContext)
+  // Плоский список ID категорий в порядке рендера (для SortableContext)
   const allItemIds = rootCategories.flatMap(cat => [
     cat.id,
     ...getChildCategories(cat.id).map(child => child.id),
@@ -337,7 +337,7 @@ export function CategoriesSection() {
     const activatorEvent = event.activatorEvent as PointerEvent | undefined;
     const overEvent = event.over;
 
-    // Use the delta from the drag to estimate cursor position
+    // Используем дельту перетаскивания для оценки позиции курсора
     if (overEvent?.rect) {
       const overRect = overEvent.rect;
       const pointerY = activatorEvent
@@ -376,7 +376,7 @@ export function CategoriesSection() {
 
     const position = getDropPosition(overId, event);
 
-    // Don't allow nesting deeper than 1 level
+    // Не допускать вложенность глубже 1 уровня
     if (position === 'child' && overCategory.parentId !== null) {
       setDropIndicator({ targetId: overId, position: 'after' });
       return;
@@ -421,18 +421,18 @@ export function CategoriesSection() {
       if (!draggedItem) return prev;
 
       if (position === 'child') {
-        // Make it a child of target
+        // Сделать дочерним элементом цели
         const oldParentId = draggedItem.parentId;
         const childrenCount = newCategories.filter(
           c => c.parentId === targetId && c.id !== draggedId
         ).length;
 
-        // Update dragged item
+        // Обновить перетаскиваемый элемент
         const updatedCategories = newCategories.map(c => {
           if (c.id === draggedId) {
             return { ...c, parentId: targetId, order: childrenCount };
           }
-          // Reorder old siblings
+          // Переупорядочить старых соседей
           if (c.parentId === oldParentId && c.order > draggedItem.order) {
             return { ...c, order: c.order - 1 };
           }
@@ -451,35 +451,35 @@ export function CategoriesSection() {
         const targetOrder = targetItem.order;
         const newOrder = position === 'before' ? targetOrder : targetOrder + 1;
 
-        // Update all affected categories
+        // Обновить все затронутые категории
         const updatedCategories = newCategories.map(c => {
           if (c.id === draggedId) {
             return { ...c, parentId: newParentId, order: newOrder };
           }
 
-          // If moving within same parent
+          // Перемещение внутри одного родителя
           if (oldParentId === newParentId) {
             if (c.parentId === newParentId && c.id !== draggedId) {
               const oldOrder = draggedItem.order;
               if (oldOrder < newOrder) {
-                // Moving down: shift items between old and new position
+                // Вниз: сдвинуть элементы между старой и новой позицией
                 if (c.order > oldOrder && c.order <= newOrder) {
                   return { ...c, order: c.order - 1 };
                 }
               } else {
-                // Moving up: shift items between new and old position
+                // Вверх: сдвинуть элементы между новой и старой позицией
                 if (c.order >= newOrder && c.order < oldOrder) {
                   return { ...c, order: c.order + 1 };
                 }
               }
             }
           } else {
-            // Moving to different parent
-            // Reorder old siblings
+            // Перемещение к другому родителю
+            // Переупорядочить старых соседей
             if (c.parentId === oldParentId && c.order > draggedItem.order) {
               return { ...c, order: c.order - 1 };
             }
-            // Make space in new parent
+            // Освободить место в новом родителе
             if (c.parentId === newParentId && c.order >= newOrder) {
               return { ...c, order: c.order + 1 };
             }
@@ -516,7 +516,7 @@ export function CategoriesSection() {
   };
 
   const handleDelete = (id: string) => {
-    // Also delete children
+    // Также удалить дочерние
     const childrenIds = categories
       .filter(c => c.parentId === id)
       .map(c => c.id);
@@ -560,7 +560,7 @@ export function CategoriesSection() {
       onDragCancel={handleDragCancel}
     >
       <div className='p-6 space-y-6'>
-        {/* Header */}
+        {/* Заголовок */}
         <div className='flex items-center justify-between'>
           <div>
             <h1 className='text-3xl font-bold'>
@@ -576,7 +576,7 @@ export function CategoriesSection() {
           </Button>
         </div>
 
-        {/* Info Card */}
+        {/* Информационная карточка */}
         <div className='p-4 border rounded-lg bg-muted/50'>
           <p className='text-sm text-muted-foreground'>
             💡 <strong>Подсказка:</strong> Перетаскивайте категории для
@@ -585,7 +585,7 @@ export function CategoriesSection() {
           </p>
         </div>
 
-        {/* Categories List */}
+        {/* Список категорий */}
         {isLoading && categories.length === 0 ? (
           <div className='text-center py-8 text-muted-foreground'>
             Загрузка категорий...
@@ -605,7 +605,7 @@ export function CategoriesSection() {
                     onDelete={handleDelete}
                     dropIndicator={dropIndicator}
                   />
-                  {/* Child categories */}
+                  {/* Дочерние категории */}
                   {getChildCategories(category.id).map(child => (
                     <SortableCategoryCard
                       key={child.id}
@@ -628,7 +628,7 @@ export function CategoriesSection() {
           ) : null}
         </DragOverlay>
 
-        {/* Add/Edit Dialog */}
+        {/* Диалог создания/редактирования */}
         <Dialog open={isAddDialogOpen} onOpenChange={handleCloseDialog}>
           <DialogContent>
             <DialogHeader>

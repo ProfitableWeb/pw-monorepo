@@ -30,7 +30,7 @@ export function SeoScoreBar({ checks }: SeoScoreBarProps) {
   const offset = useRef({ x: 0, y: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Initialize position near the button on first open
+  // Начальная позиция рядом с кнопкой при первом открытии
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleToggle = useCallback(() => {
     if (!checklistOpen && pos.x === -1) {
@@ -124,14 +124,14 @@ export function SeoScoreBar({ checks }: SeoScoreBarProps) {
         </div>
       </div>
 
-      {/* Draggable checklist panel */}
+      {/* Перетаскиваемая панель чеклиста */}
       {checklistOpen && (
         <div
           ref={panelRef}
           className='fixed z-50 w-[272px] rounded-lg border bg-popover shadow-xl'
           style={{ left: pos.x, top: pos.y }}
         >
-          {/* Drag handle / title bar */}
+          {/* Ручка перетаскивания / заголовок */}
           <div
             className='flex items-center justify-between px-3 py-2 border-b cursor-grab active:cursor-grabbing select-none'
             onPointerDown={handlePointerDown}
@@ -158,7 +158,7 @@ export function SeoScoreBar({ checks }: SeoScoreBarProps) {
             </Button>
           </div>
 
-          {/* Checklist items */}
+          {/* Элементы чеклиста */}
           <div className='p-2 space-y-0.5 max-h-[320px] overflow-y-auto'>
             {checks.map(check => (
               <div

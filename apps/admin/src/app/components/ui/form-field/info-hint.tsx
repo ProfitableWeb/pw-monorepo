@@ -25,7 +25,7 @@ function KBLink({
       <button
         type='button'
         onClick={() => {
-          // Extract article ID from URL like '/admin/seo/h1'
+          // Извлечь ID статьи из URL вроде '/admin/seo/h1'
           const articleId = knowledgeBaseUrl.split('/').pop() || '';
           navigateToSeoKb(articleId);
           onClose();
@@ -64,7 +64,7 @@ function InfoPanel({
   const resizeState = useRef({ startX: 0, startY: 0, startW: 0, startH: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Clamp initial position to viewport
+  // Ограничить начальную позицию размером viewport
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -75,11 +75,11 @@ function InfoPanel({
       x: Math.max(8, Math.min(p.x, maxX)),
       y: Math.max(8, Math.min(p.y, maxY)),
     }));
-    // Set initial height from natural content height
+    // Установить начальную высоту по естественной высоте контента
     setSize(s => ({ ...s, height: rect.height }));
   }, []);
 
-  // Close on Escape
+  // Закрытие по Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -88,7 +88,7 @@ function InfoPanel({
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Drag handlers
+  // Обработчики перетаскивания
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       dragState.current = {
@@ -112,7 +112,7 @@ function InfoPanel({
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   }, []);
 
-  // Resize handlers
+  // Обработчики ресайза
   const handleResizeDown = useCallback(
     (e: React.PointerEvent) => {
       e.stopPropagation();
@@ -152,7 +152,7 @@ function InfoPanel({
         maxHeight: '70vh',
       }}
     >
-      {/* Drag handle header */}
+      {/* Заголовок с ручкой перетаскивания */}
       <div
         className='flex items-center justify-between gap-2 px-3.5 py-2 border-b cursor-grab active:cursor-grabbing select-none shrink-0'
         onPointerDown={handlePointerDown}
@@ -171,12 +171,12 @@ function InfoPanel({
         </button>
       </div>
 
-      {/* Scrollable content with rich text styling */}
+      {/* Прокручиваемый контент с форматированием */}
       <div className='overflow-y-auto overscroll-contain min-h-0 flex-1 scrollbar-thin'>
         <div
           className={cn(
             'px-4 py-3.5 text-[13px] leading-[1.6]',
-            // Rich text formatting styles
+            // Стили форматирования текста
             '[&_h4]:text-[12px] [&_h4]:font-semibold [&_h4]:text-foreground [&_h4]:mb-1.5 [&_h4]:mt-5 first:[&_h4]:mt-0',
             '[&_p]:text-muted-foreground [&_p]:mb-3 last:[&_p]:mb-2.5',
             '[&_ul]:text-muted-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:mb-3 [&_ul]:space-y-1',
@@ -189,12 +189,12 @@ function InfoPanel({
         </div>
       </div>
 
-      {/* Knowledge base link footer */}
+      {/* Ссылка на базу знаний */}
       {knowledgeBaseUrl && (
         <KBLink knowledgeBaseUrl={knowledgeBaseUrl} onClose={onClose} />
       )}
 
-      {/* Resize handle */}
+      {/* Ручка ресайза */}
       <div
         className='absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize touch-none'
         onPointerDown={handleResizeDown}

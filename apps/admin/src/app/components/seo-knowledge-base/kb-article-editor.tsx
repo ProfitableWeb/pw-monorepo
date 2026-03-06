@@ -15,7 +15,7 @@ export function KBArticleEditor({ article }: KBArticleEditorProps) {
   const [editTags, setEditTags] = useState(article.tags?.join(', ') || '');
   const isWelcome = article.id === 'welcome';
 
-  // Reset state when switching articles
+  // Сброс состояния при переключении статей
   useEffect(() => {
     setEditing(false);
     setEditContent(article.content);
@@ -35,7 +35,7 @@ export function KBArticleEditor({ article }: KBArticleEditorProps) {
 
   return (
     <div className='flex flex-col h-full'>
-      {/* Header */}
+      {/* Заголовок */}
       {isWelcome ? (
         <div className='flex items-start justify-between gap-4 px-6 pt-6 pb-4 shrink-0'>
           <div>
@@ -141,7 +141,7 @@ export function KBArticleEditor({ article }: KBArticleEditorProps) {
         </div>
       )}
 
-      {/* Content */}
+      {/* Контент */}
       <div className='flex-1 min-h-0 overflow-y-auto'>
         {editing ? (
           <div className='flex flex-col h-full p-6 pt-0'>

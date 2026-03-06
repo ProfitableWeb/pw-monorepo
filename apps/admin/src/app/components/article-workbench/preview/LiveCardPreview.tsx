@@ -148,7 +148,7 @@ export function LiveCardPreview({
     return () => observer.disconnect();
   }, [updateFitScale]);
 
-  // Resize card width via side edge drag
+  // Ресайз ширины карточки через перетаскивание бокового края
   const handleEdgeResizeStart = useCallback(
     (e: React.PointerEvent, side: 'left' | 'right') => {
       e.preventDefault();
@@ -174,7 +174,7 @@ export function LiveCardPreview({
     [cardWidth, zoom]
   );
 
-  // Zoom controls
+  // Управление масштабом
   const zoomIn = () => {
     setAutoFit(false);
     setZoom(z => Math.min(2, Math.round((z + 0.1) * 10) / 10));

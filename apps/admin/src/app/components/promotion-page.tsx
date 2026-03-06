@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { useHeaderStore } from '@/app/store/header-store';
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   Share2,
   MessageCircle,
   Eye,
@@ -145,8 +151,8 @@ export function PromotionPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      { 
-        label: 'Система', 
+      {
+        label: 'Система',
         icon: Cog,
         dropdown: [
           { label: 'Настройки', icon: Settings, href: 'settings' },
@@ -155,7 +161,7 @@ export function PromotionPage() {
           { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
           { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
           { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ]
+        ],
       },
       { label: 'Продвижение', icon: TrendingUp },
     ]);
@@ -163,105 +169,130 @@ export function PromotionPage() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const totalSubscribers = channels.reduce((sum, ch) => sum + ch.subscribers, 0);
-  const averageEngagement = (channels.reduce((sum, ch) => sum + ch.engagement, 0) / channels.length).toFixed(1);
+  const totalSubscribers = channels.reduce(
+    (sum, ch) => sum + ch.subscribers,
+    0
+  );
+  const averageEngagement = (
+    channels.reduce((sum, ch) => sum + ch.engagement, 0) / channels.length
+  ).toFixed(1);
   const totalReach = channels.reduce((sum, ch) => sum + ch.reach, 0);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Продвижение</h1>
-          <p className="text-muted-foreground">
+    <div className='container mx-auto p-6 space-y-6'>
+      {/* Заголовок */}
+      <div className='flex items-center justify-between'>
+        <div className='space-y-2'>
+          <h1 className='text-3xl font-semibold tracking-tight'>Продвижение</h1>
+          <p className='text-muted-foreground'>
             Управление каналами распространения и маркетинговыми кампаниями
           </p>
         </div>
         <Button>
-          <Target className="size-4 mr-2" />
+          <Target className='size-4 mr-2' />
           Новая кампания
         </Button>
       </div>
 
-      {/* Overall Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Общая статистика */}
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Подписчики</CardTitle>
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>
+              Подписчики
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalSubscribers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <ArrowUpRight className="size-3 text-green-500" />
+            <div className='text-2xl font-bold'>
+              {totalSubscribers.toLocaleString()}
+            </div>
+            <p className='text-xs text-muted-foreground mt-1 flex items-center gap-1'>
+              <ArrowUpRight className='size-3 text-green-500' />
               +12% за месяц
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Вовлеченность</CardTitle>
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>
+              Вовлеченность
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageEngagement}%</div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <ArrowUpRight className="size-3 text-green-500" />
+            <div className='text-2xl font-bold'>{averageEngagement}%</div>
+            <p className='text-xs text-muted-foreground mt-1 flex items-center gap-1'>
+              <ArrowUpRight className='size-3 text-green-500' />
               +0.8% за месяц
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Охват</CardTitle>
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>
+              Охват
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(totalReach / 1000).toFixed(0)}K</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <div className='text-2xl font-bold'>
+              {(totalReach / 1000).toFixed(0)}K
+            </div>
+            <p className='text-xs text-muted-foreground mt-1'>
               За последние 30 дней
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Активные кампании</CardTitle>
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>
+              Активные кампании
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className='text-2xl font-bold'>
               {campaigns.filter(c => c.status === 'active').length}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {campaigns.filter(c => c.status === 'scheduled').length} запланировано
+            <p className='text-xs text-muted-foreground mt-1'>
+              {campaigns.filter(c => c.status === 'scheduled').length}{' '}
+              запланировано
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Channels */}
+      {/* Каналы */}
       <Card>
         <CardHeader>
           <CardTitle>Каналы распространения</CardTitle>
-          <CardDescription>Социальные сети и площадки публикации</CardDescription>
+          <CardDescription>
+            Социальные сети и площадки публикации
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {channels.map((channel) => {
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            {channels.map(channel => {
               const Icon = channel.icon;
               return (
                 <div
                   key={channel.id}
-                  className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className='p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors'
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("p-2 rounded-lg bg-muted/50", channel.color)}>
-                        <Icon className="size-5" />
+                  <div className='flex items-start justify-between mb-3'>
+                    <div className='flex items-center gap-3'>
+                      <div
+                        className={cn(
+                          'p-2 rounded-lg bg-muted/50',
+                          channel.color
+                        )}
+                      >
+                        <Icon className='size-5' />
                       </div>
                       <div>
-                        <p className="font-medium">{channel.name}</p>
-                        <Badge 
-                          variant="outline" 
+                        <p className='font-medium'>{channel.name}</p>
+                        <Badge
+                          variant='outline'
                           className={cn(
-                            "text-xs mt-1",
-                            channel.status === 'active' 
+                            'text-xs mt-1',
+                            channel.status === 'active'
                               ? 'bg-green-500/10 text-green-500 border-green-500/20'
                               : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                           )}
@@ -270,26 +301,32 @@ export function PromotionPage() {
                         </Badge>
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon">
-                      <ExternalLink className="size-4" />
+                    <Button variant='ghost' size='icon'>
+                      <ExternalLink className='size-4' />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className='grid grid-cols-2 gap-3 text-sm'>
                     <div>
-                      <p className="text-muted-foreground mb-1">Подписчики</p>
-                      <p className="font-medium">{channel.subscribers.toLocaleString()}</p>
+                      <p className='text-muted-foreground mb-1'>Подписчики</p>
+                      <p className='font-medium'>
+                        {channel.subscribers.toLocaleString()}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground mb-1">Вовлеченность</p>
-                      <p className="font-medium">{channel.engagement}%</p>
+                      <p className='text-muted-foreground mb-1'>
+                        Вовлеченность
+                      </p>
+                      <p className='font-medium'>{channel.engagement}%</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground mb-1">Публикаций</p>
-                      <p className="font-medium">{channel.posts}</p>
+                      <p className='text-muted-foreground mb-1'>Публикаций</p>
+                      <p className='font-medium'>{channel.posts}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground mb-1">Охват</p>
-                      <p className="font-medium">{(channel.reach / 1000).toFixed(0)}K</p>
+                      <p className='text-muted-foreground mb-1'>Охват</p>
+                      <p className='font-medium'>
+                        {(channel.reach / 1000).toFixed(0)}K
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -299,58 +336,62 @@ export function PromotionPage() {
         </CardContent>
       </Card>
 
-      {/* Active Campaigns */}
+      {/* Активные кампании */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className='flex items-center justify-between'>
             <div>
               <CardTitle>Кампании</CardTitle>
-              <CardDescription>Текущие и запланированные маркетинговые активности</CardDescription>
+              <CardDescription>
+                Текущие и запланированные маркетинговые активности
+              </CardDescription>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant='outline' size='sm'>
               Все кампании
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {campaigns.map((campaign) => (
-              <div
-                key={campaign.id}
-                className="p-4 rounded-lg border bg-card"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium">{campaign.title}</p>
-                      <Badge variant="outline" className={cn("text-xs", statusColors[campaign.status])}>
+          <div className='space-y-4'>
+            {campaigns.map(campaign => (
+              <div key={campaign.id} className='p-4 rounded-lg border bg-card'>
+                <div className='flex items-start justify-between mb-3'>
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2 mb-1'>
+                      <p className='font-medium'>{campaign.title}</p>
+                      <Badge
+                        variant='outline'
+                        className={cn('text-xs', statusColors[campaign.status])}
+                      >
                         {statusLabels[campaign.status]}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className='text-sm text-muted-foreground'>
                       {campaign.channel} • {campaign.startDate}
                     </p>
                   </div>
-                  <Button variant="ghost" size="sm">
+                  <Button variant='ghost' size='sm'>
                     Подробнее
                   </Button>
                 </div>
                 {campaign.status !== 'scheduled' && (
                   <>
-                    <div className="space-y-2 mb-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Прогресс</span>
-                        <span className="font-medium">{campaign.progress}%</span>
+                    <div className='space-y-2 mb-3'>
+                      <div className='flex items-center justify-between text-sm'>
+                        <span className='text-muted-foreground'>Прогресс</span>
+                        <span className='font-medium'>
+                          {campaign.progress}%
+                        </span>
                       </div>
-                      <Progress value={campaign.progress} className="h-2" />
+                      <Progress value={campaign.progress} className='h-2' />
                     </div>
-                    <div className="flex items-center gap-6 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Eye className="size-4 text-muted-foreground" />
+                    <div className='flex items-center gap-6 text-sm'>
+                      <div className='flex items-center gap-2'>
+                        <Eye className='size-4 text-muted-foreground' />
                         <span>{campaign.reach.toLocaleString()} охват</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Heart className="size-4 text-muted-foreground" />
+                      <div className='flex items-center gap-2'>
+                        <Heart className='size-4 text-muted-foreground' />
                         <span>{campaign.engagement}% вовлеченность</span>
                       </div>
                     </div>
@@ -362,30 +403,30 @@ export function PromotionPage() {
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
+      {/* Быстрые действия */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Быстрые действия</CardTitle>
+          <CardTitle className='text-lg'>Быстрые действия</CardTitle>
           <CardDescription>
             Инструменты для управления продвижением
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
-              <Zap className="size-4 mr-2" />
+          <div className='flex flex-wrap gap-2'>
+            <Button variant='outline' size='sm'>
+              <Zap className='size-4 mr-2' />
               Автопостинг
             </Button>
-            <Button variant="outline" size="sm">
-              <Target className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <Target className='size-4 mr-2' />
               Таргетированная реклама
             </Button>
-            <Button variant="outline" size="sm">
-              <Users className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <Users className='size-4 mr-2' />
               Анализ аудитории
             </Button>
-            <Button variant="outline" size="sm">
-              <TrendingUp className="size-4 mr-2" />
+            <Button variant='outline' size='sm'>
+              <TrendingUp className='size-4 mr-2' />
               Отчет по продвижению
             </Button>
           </div>

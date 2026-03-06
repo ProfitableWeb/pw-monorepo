@@ -19,7 +19,7 @@ export function MediaImageWithLoader({
 
   return (
     <div className='relative w-full h-full'>
-      {/* Skeleton Loader */}
+      {/* Скелетон загрузки */}
       <div
         className={cn(
           'absolute inset-0 bg-muted flex items-center justify-center transition-opacity duration-300',
@@ -29,7 +29,7 @@ export function MediaImageWithLoader({
         <Loader2 className='h-8 w-8 text-muted-foreground animate-spin' />
       </div>
 
-      {/* Actual Image with Fade-in */}
+      {/* Изображение с плавным появлением */}
       <ImageWithFallback
         src={src}
         alt={alt}
