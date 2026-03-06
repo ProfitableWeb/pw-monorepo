@@ -1,3 +1,16 @@
+/**
+ * Главный оркестратор редактора статей.
+ *
+ * Архитектура:
+ * - Форма управляется через `react-hook-form` (register/watch/setValue)
+ *   и прокидывается во вкладки — каждая вкладка работает с нужным срезом данных.
+ * - Глобальное состояние (editorMode, content, autosave) — в Zustand-сторе
+ *   `article-editor-store`, локальное состояние формы — в `useForm`.
+ * - Шесть вкладок: Карточка, SEO, Редактор, Артефакты, Исследование, История.
+ *
+ * @see tabs/ — реализация каждой вкладки
+ * @see article-editor-store — Zustand-стор глобального состояния редактора
+ */
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -8,12 +21,12 @@ import {
 } from '@/app/components/ui/tabs';
 import { Button } from '@/app/components/ui/button';
 import { Save, CheckCircle2, Loader2, WifiOff } from 'lucide-react';
-import { CardTab } from './CardTab';
-import { SeoTab } from './SeoTab';
-import { EditorTab } from './EditorTab';
-import { ArtifactsTab } from './ArtifactsTab';
-import { ResearchTab } from './ResearchTab';
-import { HistoryTab } from './HistoryTab';
+import { CardTab } from './tabs/card';
+import { SeoTab } from './tabs/seo';
+import { EditorTab } from './tabs/editor';
+import { ArtifactsTab } from './tabs/artifacts';
+import { ResearchTab } from './tabs/research';
+import { HistoryTab } from './tabs/history';
 import { useArticleEditorStore } from '@/app/store/article-editor-store';
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
@@ -61,7 +74,7 @@ export function ArticleWorkbench() {
     defaultValues: mockArticle,
   });
 
-  // Notify editor store of content changes
+  // Синхронизация изменений формы → Zustand-стор (для EditorTab и HistoryTab)
   useEffect(() => {
     const subscription = watch(data => {
       if (data.content) setContent(data.content);
@@ -69,14 +82,14 @@ export function ArticleWorkbench() {
     return () => subscription.unsubscribe();
   }, [watch, setContent]);
 
-  // Load mock article on mount
+  // Загрузка мок-статьи при монтировании (позже — загрузка по slug из API)
   useEffect(() => {
     if (!articleSlug) {
       openArticle(mockArticle.slug, mockArticle.content);
     }
   }, [articleSlug, openArticle]);
 
-  // Set breadcrumbs
+  // Хлебные крошки: «Статьи > {название}»
   useEffect(() => {
     setBreadcrumbs([
       {

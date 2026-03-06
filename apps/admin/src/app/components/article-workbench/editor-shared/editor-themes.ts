@@ -1,3 +1,14 @@
+/**
+ * Темы и настройки для Monaco Editor.
+ *
+ * Содержит 13 тем (8 тёмных + 5 светлых) с метаданными (label, category, цвета для превью).
+ * `defineCustomThemes()` регистрирует кастомные темы при монтировании Monaco —
+ * вызывается один раз в `beforeMount` колбэке.
+ *
+ * Переиспользуется в:
+ * - `EditorTab` — полный редактор контента статьи
+ * - `CardTab` — мини-редактор excerpt'а в HTML-режиме
+ */
 import type { Monaco } from '@monaco-editor/react';
 
 export type EditorTheme =

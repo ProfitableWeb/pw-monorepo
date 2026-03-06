@@ -1,3 +1,12 @@
+/**
+ * Облегчённый WYSIWYG-редактор на Tiptap для коротких текстов (excerpt, описание).
+ *
+ * Намеренно ограничен: только inline-форматирование (bold, italic, highlight, link)
+ * без заголовков, списков, блок-элементов — чтобы excerpt оставался компактным.
+ * Поддерживает светлую/тёмную тему через CSS-переменные.
+ *
+ * @see CardTab — используется для WYSIWYG-режима редактирования excerpt'а
+ */
 import { useCallback, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -75,7 +84,7 @@ export function MiniWysiwygEditor({ value, onChange }: MiniWysiwygEditorProps) {
   // Sync external value changes
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value, false);
+      editor.commands.setContent(value, { emitUpdate: false });
     }
   }, [value, editor]);
 

@@ -1,3 +1,16 @@
+/**
+ * Превью карточки статьи через iframe с реальным компонентом `ArticleCard` из web-приложения.
+ *
+ * Протокол (расширение базового preview):
+ * - `preview:update` → передаёт title/subtitle/summary/category/imageUrl/slug в iframe
+ * - `preview:theme` → переключает тему (light/dark) внутри iframe
+ * - `preview:resize` ← iframe сообщает высоту контента для auto-sizing
+ *
+ * Функциональность: zoom (ручной + auto-fit), переключение темы (Sun/Moon),
+ * ресайз ширины карточки боковыми ручками (280–640px).
+ *
+ * @see apps/web/src/app/preview/card/page.tsx — принимающая сторона
+ */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Sun,
@@ -52,7 +65,7 @@ export function LiveCardPreview({
   // Слушаем preview:ready и preview:resize от iframe
   useEffect(() => {
     const handler = (e: MessageEvent) => {
-      if (!e.origin.includes(new URL(WEB_URL).host)) return;
+      if (e.origin !== new URL(WEB_URL).origin) return;
       if (e.data?.type === 'preview:ready') {
         setIframeReady(true);
         setIframeError(false);

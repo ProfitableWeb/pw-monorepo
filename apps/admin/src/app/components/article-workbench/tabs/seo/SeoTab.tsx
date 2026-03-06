@@ -1,3 +1,15 @@
+/**
+ * Вкладка «SEO» — управление мета-данными, slug, ключевыми словами, автором.
+ *
+ * Секции (аккордеон):
+ * - Основные мета-поля (title, description, slug, keywords, автор)
+ * - SERP Preview — как статья выглядит в поисковой выдаче Google
+ * - Open Graph / Telegram Preview — превью при шеринге
+ * - JSON-LD — структурированные данные для поисковиков
+ * - SEO Score Bar — визуальная оценка заполненности SEO-полей
+ *
+ * Авто-slug: транслитерация H1 → латиница через `transliterate()`.
+ */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   UseFormRegister,
@@ -30,58 +42,12 @@ import { SeoScoreBar } from './SeoScoreBar';
 import { SerpPreview } from './SerpPreview';
 import { TelegramPreview } from './TelegramPreview';
 import { JsonLdPreview } from './JsonLdPreview';
-
-const EDITORIAL_TEAM = ['Николай', 'Анна Петрова', 'Максим Иванов'];
+import { transliterate, EDITORIAL_TEAM } from './seo.utils';
 
 interface SeoTabProps {
   register: UseFormRegister<ArticleFormData>;
   watch: UseFormWatch<ArticleFormData>;
   setValue: UseFormSetValue<ArticleFormData>;
-}
-
-function transliterate(text: string): string {
-  const map: Record<string, string> = {
-    а: 'a',
-    б: 'b',
-    в: 'v',
-    г: 'g',
-    д: 'd',
-    е: 'e',
-    ё: 'yo',
-    ж: 'zh',
-    з: 'z',
-    и: 'i',
-    й: 'y',
-    к: 'k',
-    л: 'l',
-    м: 'm',
-    н: 'n',
-    о: 'o',
-    п: 'p',
-    р: 'r',
-    с: 's',
-    т: 't',
-    у: 'u',
-    ф: 'f',
-    х: 'kh',
-    ц: 'ts',
-    ч: 'ch',
-    ш: 'sh',
-    щ: 'shch',
-    ъ: '',
-    ы: 'y',
-    ь: '',
-    э: 'e',
-    ю: 'yu',
-    я: 'ya',
-  };
-  return text
-    .toLowerCase()
-    .split('')
-    .map(char => map[char] ?? char)
-    .join('')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 }
 
 export function SeoTab({ register, watch, setValue }: SeoTabProps) {
@@ -203,9 +169,11 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
       }
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (authorHighlightedIndex >= 0) {
-          selectAuthor(authorSuggestions[authorHighlightedIndex]);
-        }
+        const author =
+          authorHighlightedIndex >= 0
+            ? authorSuggestions[authorHighlightedIndex]
+            : undefined;
+        if (author) selectAuthor(author);
         return;
       }
     }

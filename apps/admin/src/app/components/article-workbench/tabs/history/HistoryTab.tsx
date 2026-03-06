@@ -20,9 +20,9 @@ import { mockRevisions } from '@/app/mock/article-mock';
 import {
   EditorSettingsPanel,
   useEditorSettingsPanel,
-} from './EditorSettingsPanel';
-import { defineCustomThemes } from './editor-themes';
-import type { EditorTheme } from './editor-themes';
+  defineCustomThemes,
+  type EditorTheme,
+} from '../../editor-shared';
 import type { RevisionEntry } from '@/app/types/article-editor';
 
 function formatDate(dateStr: string): string {

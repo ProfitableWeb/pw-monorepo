@@ -1,3 +1,21 @@
+/**
+ * Переиспользуемая плавающая панель настроек редактора.
+ *
+ * Паттерн использования:
+ * ```tsx
+ * const panel = useEditorSettingsPanel();   // состояние + drag-логика
+ * <button ref={panel.triggerRef} onClick={panel.toggle}>⚙</button>
+ * <EditorSettingsPanel fontSize={14} ... {...panel}>
+ *   <ExtraSettings />  // дочерние элементы рендерятся внизу панели
+ * </EditorSettingsPanel>
+ * ```
+ *
+ * Панель: фиксированная (fixed), перетаскивается за grip-хэндл,
+ * позиционируется относительно кнопки-триггера при первом открытии.
+ *
+ * @see EditorTab — использует с FormatterSettings в children
+ * @see CardTab — использует без children (только базовые настройки)
+ */
 import { useState, useRef, useCallback, type ReactNode } from 'react';
 import { GripHorizontal, X } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';

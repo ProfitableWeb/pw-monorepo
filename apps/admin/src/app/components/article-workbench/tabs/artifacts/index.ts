@@ -1,0 +1,1 @@
+export { ArtifactsTab } from './ArtifactsTab';

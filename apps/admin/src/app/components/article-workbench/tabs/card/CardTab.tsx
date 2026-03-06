@@ -1,3 +1,14 @@
+/**
+ * Вкладка «Карточка» — визуальное редактирование карточки статьи.
+ *
+ * Левая панель: поля формы (H1, подзаголовок, категория, теги, обложка,
+ * excerpt в двух режимах — HTML/WYSIWYG, Monaco-редактор для excerpt-HTML).
+ * Правая панель: LiveCardPreview — реальный рендер карточки через iframe.
+ *
+ * Разделитель между панелями перетаскивается (35–70% ширины).
+ *
+ * @see LiveCardPreview — iframe-превью с реальным ArticleCard из web-приложения
+ */
 import { useCallback, useRef, useState } from 'react';
 import type {
   UseFormRegister,
@@ -28,13 +39,14 @@ import * as prettier from 'prettier/standalone';
 import htmlPlugin from 'prettier/plugins/html';
 import { Label } from '@/app/components/ui/label';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { LiveCardPreview } from './LiveCardPreview';
-import { MiniWysiwygEditor } from './MiniWysiwygEditor';
+import { LiveCardPreview } from '../../preview';
+import { MiniWysiwygEditor } from '../../shared';
 import {
   EditorSettingsPanel,
   useEditorSettingsPanel,
-} from './EditorSettingsPanel';
-import { defineCustomThemes } from './editor-themes';
+  defineCustomThemes,
+  type EditorTheme,
+} from '../../editor-shared';
 import type { ArticleFormData } from '@/app/types/article-editor';
 
 type ExcerptMode = 'html' | 'wysiwyg';
@@ -45,45 +57,12 @@ interface CardTabProps {
   setValue: UseFormSetValue<ArticleFormData>;
 }
 
-const MOCK_CATEGORIES = [
-  'Искусственный интеллект',
-  'Автоматизация',
-  'Рынок труда',
-  'Технологии',
-  'Образование',
-];
-
-const KNOWN_TAGS = [
-  'AI',
-  'автоматизация',
-  'рынок труда',
-  'будущее',
-  'React',
-  'TypeScript',
-  'JavaScript',
-  'CSS',
-  'UI/UX',
-  'веб-дизайн',
-  'продуктивность',
-  'SEO',
-  'Node.js',
-  'Tailwind',
-  'бренд',
-  'API',
-  'мобайл',
-  'аналитика',
-  'Figma',
-  'Git',
-  'контент',
-  'стартап',
-  'тренды',
-  'тестирование',
-  'DevOps',
-  'монетизация',
-];
-
-const MIN_LEFT_PCT = 35;
-const MAX_LEFT_PCT = 70;
+import {
+  MOCK_CATEGORIES,
+  KNOWN_TAGS,
+  MIN_LEFT_PCT,
+  MAX_LEFT_PCT,
+} from './card.constants';
 
 export function CardTab({ register, watch, setValue }: CardTabProps) {
   const h1 = watch('h1');
@@ -103,8 +82,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
   const [excerptFontSize, setExcerptFontSize] = useState(13);
   const [excerptMode, setExcerptMode] = useState<ExcerptMode>('html');
   const [excerptHeight, setExcerptHeight] = useState(192);
-  const [excerptTheme, setExcerptTheme] =
-    useState<import('./editor-themes').EditorTheme>('vs-dark');
+  const [excerptTheme, setExcerptTheme] = useState<EditorTheme>('vs-dark');
   const [excerptLineNumbers, setExcerptLineNumbers] = useState(true);
   const [excerptMinimap, setExcerptMinimap] = useState(false);
   const excerptSettings = useEditorSettingsPanel();

@@ -1,3 +1,10 @@
+/**
+ * Полнофункциональный визуальный редактор на Tiptap для контента статьи.
+ *
+ * Возможности: заголовки (H1–H3), списки, цитаты, ссылки, изображения,
+ * блоки кода (с подсветкой через lowlight), выравнивание текста.
+ * Используется в EditorTab в режиме `visual`.
+ */
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -40,7 +47,7 @@ interface VisualEditorProps {
 }
 
 function ToolbarButton({
-  editor,
+  editor: _editor,
   action,
   isActive,
   icon: Icon,
