@@ -182,7 +182,7 @@ function InfoPanel({
             '[&_ul]:text-muted-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:mb-3 [&_ul]:space-y-1',
             '[&_strong]:text-foreground/80 [&_strong]:font-medium',
             '[&_em]:italic [&_em]:text-muted-foreground/80',
-            '[&_code]:text-[11px] [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono'
+            '[&_code]:text-[11px] [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:whitespace-nowrap'
           )}
         >
           {children}

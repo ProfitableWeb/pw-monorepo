@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { LucideIcon } from "lucide-react";
+import { create } from 'zustand';
+import { LucideIcon } from 'lucide-react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -10,6 +10,7 @@ export interface BreadcrumbItem {
     label: string;
     icon?: LucideIcon;
     href?: string;
+    onClick?: () => void;
   }[];
 }
 
@@ -21,10 +22,10 @@ interface HeaderState {
   reset: () => void;
 }
 
-export const useHeaderStore = create<HeaderState>((set) => ({
+export const useHeaderStore = create<HeaderState>(set => ({
   title: null,
   breadcrumbs: null,
-  setTitle: (title) => set({ title, breadcrumbs: null }),
-  setBreadcrumbs: (breadcrumbs) => set({ breadcrumbs, title: null }),
+  setTitle: title => set({ title, breadcrumbs: null }),
+  setBreadcrumbs: breadcrumbs => set({ breadcrumbs, title: null }),
   reset: () => set({ title: null, breadcrumbs: null }),
 }));

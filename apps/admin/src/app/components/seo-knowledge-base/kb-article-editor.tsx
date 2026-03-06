@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Pencil, Save, X, Calendar, Tag } from 'lucide-react';
+import { Pencil, Check, X, Calendar, Tag } from 'lucide-react';
+import Editor from '@monaco-editor/react';
 import { Button } from '@/app/components/ui/button';
-import { Textarea } from '@/app/components/ui/textarea';
-import { Badge } from '@/app/components/ui/badge';
 import { cn } from '@/app/components/ui/utils';
 import type { KBArticle } from './kb-types';
 
@@ -13,11 +12,14 @@ interface KBArticleEditorProps {
 export function KBArticleEditor({ article }: KBArticleEditorProps) {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(article.content);
+  const [editTags, setEditTags] = useState(article.tags?.join(', ') || '');
+  const isWelcome = article.id === 'welcome';
 
   // Reset state when switching articles
   useEffect(() => {
     setEditing(false);
     setEditContent(article.content);
+    setEditTags(article.tags?.join(', ') || '');
   }, [article.id]);
 
   const handleSave = () => {
@@ -27,67 +29,140 @@ export function KBArticleEditor({ article }: KBArticleEditorProps) {
 
   const handleCancel = () => {
     setEditContent(article.content);
+    setEditTags(article.tags?.join(', ') || '');
     setEditing(false);
   };
 
   return (
     <div className='flex flex-col h-full'>
       {/* Header */}
-      <div className='flex items-start justify-between gap-4 px-6 pt-6 pb-4 border-b shrink-0'>
-        <div>
-          <h2 className='text-lg font-semibold'>{article.title}</h2>
-          <div className='flex items-center gap-3 mt-1.5 text-xs text-muted-foreground'>
-            <span className='inline-flex items-center gap-1'>
-              <Calendar className='size-3' />
-              {article.updatedAt}
-            </span>
-            {article.tags && article.tags.length > 0 && (
-              <span className='inline-flex items-center gap-1'>
-                <Tag className='size-3' />
-                {article.tags.join(', ')}
-              </span>
+      {isWelcome ? (
+        <div className='flex items-start justify-between gap-4 px-6 pt-6 pb-4 shrink-0'>
+          <div>
+            <h2 className='text-lg font-semibold'>{article.title}</h2>
+            <p className='text-sm text-muted-foreground mt-1'>
+              Инструкции и стратегии для команды и AI-агентов
+            </p>
+          </div>
+          <div className='shrink-0 flex items-center h-8'>
+            {editing ? (
+              <>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='size-8 text-muted-foreground'
+                  onClick={handleCancel}
+                >
+                  <X className='size-3.5' />
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='size-8'
+                  onClick={handleSave}
+                >
+                  <Check className='size-3.5' />
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='size-8 text-muted-foreground'
+                onClick={() => setEditing(true)}
+              >
+                <Pencil className='size-3.5' />
+              </Button>
             )}
           </div>
         </div>
-        <div className='flex items-center gap-2 shrink-0'>
-          {editing ? (
-            <>
-              <Button variant='outline' size='sm' onClick={handleCancel}>
-                <X className='size-3.5 mr-1.5' />
-                Отмена
+      ) : (
+        <div className='flex items-start justify-between gap-4 px-6 pt-6 pb-4 shrink-0'>
+          <div>
+            <h2 className='text-lg font-semibold'>{article.title}</h2>
+            <div className='flex items-center gap-3 mt-1.5 h-5 text-xs text-muted-foreground'>
+              <span className='inline-flex items-center gap-1'>
+                <Calendar className='size-3' />
+                {article.updatedAt}
+              </span>
+              {editing ? (
+                <span className='inline-flex items-center gap-1'>
+                  <Tag className='size-3 shrink-0' />
+                  <input
+                    type='text'
+                    value={editTags}
+                    onChange={e => setEditTags(e.target.value)}
+                    placeholder='теги через запятую'
+                    className='bg-transparent border-b border-muted-foreground/30 outline-none text-xs min-w-[120px]'
+                  />
+                </span>
+              ) : (
+                article.tags &&
+                article.tags.length > 0 && (
+                  <span className='inline-flex items-center gap-1'>
+                    <Tag className='size-3' />
+                    {article.tags.join(', ')}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+          <div className='shrink-0 flex items-center h-8'>
+            {editing ? (
+              <>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='size-8 text-muted-foreground'
+                  onClick={handleCancel}
+                >
+                  <X className='size-3.5' />
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='size-8'
+                  onClick={handleSave}
+                >
+                  <Check className='size-3.5' />
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='size-8 text-muted-foreground'
+                onClick={() => setEditing(true)}
+              >
+                <Pencil className='size-3.5' />
               </Button>
-              <Button size='sm' onClick={handleSave}>
-                <Save className='size-3.5 mr-1.5' />
-                Сохранить
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => setEditing(true)}
-            >
-              <Pencil className='size-3.5 mr-1.5' />
-              Редактировать
-            </Button>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <div className='flex-1 min-h-0 overflow-y-auto'>
         {editing ? (
-          <div className='p-6'>
-            <Textarea
-              value={editContent}
-              onChange={e => setEditContent(e.target.value)}
-              className='min-h-[400px] font-mono text-sm leading-relaxed'
-              placeholder='HTML-содержимое инструкции...'
-            />
-            <p className='mt-2 text-xs text-muted-foreground'>
-              Поддерживается HTML: &lt;h4&gt;, &lt;p&gt;, &lt;ul&gt;,
-              &lt;li&gt;, &lt;strong&gt;, &lt;code&gt;, &lt;em&gt;
-            </p>
+          <div className='flex flex-col h-full p-6 pt-0'>
+            <div className='flex-1 min-h-0 rounded-md overflow-hidden border'>
+              <Editor
+                height='100%'
+                language='html'
+                value={editContent}
+                onChange={value => setEditContent(value || '')}
+                theme='vs-dark'
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  lineNumbers: 'on',
+                  wordWrap: 'on',
+                  automaticLayout: true,
+                  scrollBeyondLastLine: false,
+                  padding: { top: 16 },
+                }}
+              />
+            </div>
           </div>
         ) : (
           <div

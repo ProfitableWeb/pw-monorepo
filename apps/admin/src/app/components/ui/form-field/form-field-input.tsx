@@ -3,7 +3,7 @@ import { Label } from '../label';
 import { cn } from '../utils';
 import { InfoHint } from './info-hint';
 
-interface FormFieldInputProps {
+interface FormFieldProps {
   label: string;
   htmlFor?: string;
   description?: string;
@@ -14,7 +14,7 @@ interface FormFieldInputProps {
   className?: string;
 }
 
-function FormFieldInput({
+function FormField({
   label,
   htmlFor,
   description,
@@ -23,9 +23,9 @@ function FormFieldInput({
   hintKnowledgeBaseUrl,
   children,
   className,
-}: FormFieldInputProps) {
+}: FormFieldProps) {
   return (
-    <div className={cn('grid gap-[6px]', className)}>
+    <div className={cn('group/field grid gap-[6px]', className)}>
       <div className='flex items-center gap-1'>
         <Label
           htmlFor={htmlFor}
@@ -34,12 +34,14 @@ function FormFieldInput({
           {label}
         </Label>
         {hint && (
-          <InfoHint
-            title={hintTitle ?? label}
-            knowledgeBaseUrl={hintKnowledgeBaseUrl}
-          >
-            {hint}
-          </InfoHint>
+          <span className='opacity-0 group-hover/field:opacity-100 transition-opacity'>
+            <InfoHint
+              title={hintTitle ?? label}
+              knowledgeBaseUrl={hintKnowledgeBaseUrl}
+            >
+              {hint}
+            </InfoHint>
+          </span>
         )}
       </div>
       {children}
@@ -50,4 +52,7 @@ function FormFieldInput({
   );
 }
 
-export { FormFieldInput };
+/** @deprecated Use FormField instead */
+const FormFieldInput = FormField;
+
+export { FormField, FormFieldInput };

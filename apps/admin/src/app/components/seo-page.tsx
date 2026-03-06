@@ -40,6 +40,7 @@ import {
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
+import { FormField } from '@/app/components/ui/form-field';
 import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Switch } from '@/app/components/ui/switch';
@@ -115,6 +116,7 @@ export function SEOPage() {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const isKnowledgeBase = activeCategory === 'knowledge-base';
 
   // Реакция на навигацию из InfoHint
   useEffect(() => {
@@ -150,7 +152,19 @@ export function SEOPage() {
           { label: 'SEO', icon: SearchCheck, href: 'seo' },
         ],
       },
-      { label: 'SEO', icon: SearchCheck },
+      {
+        label: 'SEO',
+        icon: SearchCheck,
+        ...(isKnowledgeBase
+          ? {
+              dropdown: seoCategories.map(cat => ({
+                label: cat.label,
+                icon: cat.icon,
+                onClick: () => setActiveCategory(cat.id),
+              })),
+            }
+          : {}),
+      },
       ...(currentCategory
         ? [{ label: currentCategory.label, icon: currentCategory.icon }]
         : []),
@@ -206,12 +220,7 @@ export function SEOPage() {
           />
         );
       case 'knowledge-base':
-        return (
-          <KnowledgeBase
-            initialArticleId={seoKbArticleId}
-            onBack={() => setActiveCategory('general')}
-          />
-        );
+        return <KnowledgeBase initialArticleId={seoKbArticleId} />;
       default:
         return null;
     }
@@ -224,8 +233,6 @@ export function SEOPage() {
   const handleCancel = () => {
     setHasUnsavedChanges(false);
   };
-
-  const isKnowledgeBase = activeCategory === 'knowledge-base';
 
   return (
     <div className='flex h-full overflow-hidden'>
@@ -335,44 +342,42 @@ function GeneralSEOSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='site-title'>Заголовок сайта</Label>
+          <FormField
+            label='Заголовок сайта'
+            htmlFor='site-title'
+            description='Отображается в результатах поиска и в табе браузера (50-60 символов)'
+          >
             <Input
               id='site-title'
               defaultValue='Мой технический блог'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Отображается в результатах поиска и в табе браузера (50-60
-              символов)
-            </p>
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='site-description'>Описание сайта</Label>
+          <FormField
+            label='Описание сайта'
+            htmlFor='site-description'
+            description='Meta description для главной страницы (150-160 символов)'
+          >
             <Textarea
               id='site-description'
               defaultValue='Блог о веб-разработке, React, TypeScript и современных технологиях'
               onChange={onChangeDetected}
               rows={3}
             />
-            <p className='text-xs text-muted-foreground'>
-              Meta description для главной страницы (150-160 символов)
-            </p>
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='keywords'>Ключевые слова</Label>
+          <FormField
+            label='Ключевые слова'
+            htmlFor='keywords'
+            description='Через запятую (опционально, современные поисковики не используют этот тег активно)'
+          >
             <Input
               id='keywords'
               defaultValue='react, typescript, веб-разработка, javascript'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Через запятую (опционально, современные поисковики не используют
-              этот тег активно)
-            </p>
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -384,36 +389,34 @@ function GeneralSEOSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='og-title'>OG заголовок</Label>
+          <FormField label='OG заголовок' htmlFor='og-title'>
             <Input
               id='og-title'
               placeholder='Мой технический блог'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='og-description'>OG описание</Label>
+          <FormField label='OG описание' htmlFor='og-description'>
             <Textarea
               id='og-description'
               placeholder='Статьи о веб-разработке и современных технологиях'
               onChange={onChangeDetected}
               rows={2}
             />
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='og-image'>OG изображение (URL)</Label>
+          <FormField
+            label='OG изображение (URL)'
+            htmlFor='og-image'
+            description='Рекомендуется 1200x630px'
+          >
             <Input
               id='og-image'
               placeholder='https://example.com/og-image.jpg'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Рекомендуется 1200x630px
-            </p>
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -425,17 +428,15 @@ function GeneralSEOSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='twitter-handle'>Twitter username</Label>
+          <FormField label='Twitter username' htmlFor='twitter-handle'>
             <Input
               id='twitter-handle'
               placeholder='@myblog'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='twitter-card'>Тип карточки</Label>
+          <FormField label='Тип карточки' htmlFor='twitter-card'>
             <Select defaultValue='summary_large_image'>
               <SelectTrigger>
                 <SelectValue />
@@ -447,7 +448,7 @@ function GeneralSEOSettings({
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
         </CardContent>
       </Card>
     </div>
@@ -527,8 +528,7 @@ function MetaTagsSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='title-strategy'>Подход к title</Label>
+          <FormField label='Подход к title' htmlFor='title-strategy'>
             <Select defaultValue='content-first'>
               <SelectTrigger>
                 <SelectValue />
@@ -570,30 +570,27 @@ function MetaTagsSettings({
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='title-template'>Шаблон для статей</Label>
+          <FormField
+            label='Шаблон для статей'
+            htmlFor='title-template'
+            description='Переменные: {title}, {category}, {author}, {site}. Совет: Оставьте только {title} для максимальной релевантности'
+          >
             <Input
               id='title-template'
               defaultValue='{title}'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Переменные: {'{title}'}, {'{category}'}, {'{author}'}, {'{site}'}.
-              <strong className='text-foreground'> Совет:</strong> Оставьте
-              только {'{title}'} для максимальной релевантности
-            </p>
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='category-template'>Шаблон для категорий</Label>
+          <FormField label='Шаблон для категорий' htmlFor='category-template'>
             <Input
               id='category-template'
               defaultValue='{category} - статьи и руководства'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
 
           <div className='p-3 rounded-lg border bg-muted/30'>
             <div className='flex items-start gap-2'>
@@ -644,21 +641,18 @@ function MetaTagsSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='description-length'>
-              Длина описания (символов)
-            </Label>
+          <FormField
+            label='Длина описания (символов)'
+            htmlFor='description-length'
+            description='Рекомендуется 120-155 символов. Google может переписать слишком короткие или длинные описания'
+          >
             <Input
               id='description-length'
               type='number'
               defaultValue='155'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Рекомендуется 120-155 символов. Google может переписать слишком
-              короткие или длинные описания
-            </p>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>
@@ -769,8 +763,7 @@ function SitemapSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='sitemap-url'>URL sitemap</Label>
+          <FormField label='URL sitemap' htmlFor='sitemap-url'>
             <div className='flex gap-2'>
               <Input
                 id='sitemap-url'
@@ -782,7 +775,7 @@ function SitemapSettings({
                 <ExternalLink className='size-4' />
               </Button>
             </div>
-          </div>
+          </FormField>
 
           <div className='space-y-2'>
             <Label>Включить в sitemap</Label>
@@ -818,8 +811,7 @@ function SitemapSettings({
           <CardDescription>Правила для поисковых роботов</CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='robots-content'>Содержимое robots.txt</Label>
+          <FormField label='Содержимое robots.txt' htmlFor='robots-content'>
             <Textarea
               id='robots-content'
               rows={8}
@@ -827,7 +819,7 @@ function SitemapSettings({
               onChange={onChangeDetected}
               className='font-mono text-sm'
             />
-          </div>
+          </FormField>
 
           <div className='flex gap-2'>
             <Button variant='outline' className='flex-1'>
@@ -924,8 +916,7 @@ function SchemaSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='article-type'>Тип статьи</Label>
+          <FormField label='Тип статьи' htmlFor='article-type'>
             <Select defaultValue='BlogPosting'>
               <SelectTrigger>
                 <SelectValue />
@@ -937,7 +928,7 @@ function SchemaSettings({
                 <SelectItem value='TechArticle'>Tech Article</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>
@@ -969,33 +960,33 @@ function SchemaSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='org-name'>Название организации</Label>
+          <FormField label='Название организации' htmlFor='org-name'>
             <Input
               id='org-name'
               defaultValue='My Tech Blog'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='org-logo'>URL логотипа</Label>
+          <FormField label='URL логотипа' htmlFor='org-logo'>
             <Input
               id='org-logo'
               placeholder='https://example.com/logo.png'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
 
-          <div className='space-y-2'>
-            <Label htmlFor='org-social'>Социальные сети</Label>
+          <FormField
+            label='Социальные сети'
+            htmlFor='org-social'
+            description='Через запятую'
+          >
             <Input
               id='org-social'
               placeholder='https://twitter.com/myblog, https://github.com/myblog'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>Через запятую</p>
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -1066,17 +1057,17 @@ function MonitoringSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='gsc-verification'>Код подтверждения GSC</Label>
+          <FormField
+            label='Код подтверждения GSC'
+            htmlFor='gsc-verification'
+            description='Вставьте код верификации из Google Search Console'
+          >
             <Input
               id='gsc-verification'
               placeholder='google-site-verification=XXXXXXXXXX'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Вставьте код верификации из Google Search Console
-            </p>
-          </div>
+          </FormField>
 
           <Button variant='outline' className='w-full'>
             <ExternalLink className='size-4 mr-2' />
@@ -1298,8 +1289,7 @@ function PerformanceSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='image-quality'>Качество сжатия</Label>
+          <FormField label='Качество сжатия' htmlFor='image-quality'>
             <Input
               id='image-quality'
               type='number'
@@ -1308,7 +1298,7 @@ function PerformanceSettings({
               defaultValue='85'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -1330,15 +1320,14 @@ function PerformanceSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='cache-duration'>Время кэш��рования (дни)</Label>
+          <FormField label='Время кэширования (дни)' htmlFor='cache-duration'>
             <Input
               id='cache-duration'
               type='number'
               defaultValue='30'
               onChange={onChangeDetected}
             />
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -1396,8 +1385,11 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
           <CardDescription>Формат человекопонятных URL (ЧПУ)</CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='post-url-structure'>Формат URL статей</Label>
+          <FormField
+            label='Формат URL статей'
+            htmlFor='post-url-structure'
+            description='Пример: /2026/02/my-awesome-post'
+          >
             <Select defaultValue='date-slug'>
               <SelectTrigger>
                 <SelectValue />
@@ -1415,10 +1407,7 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className='text-xs text-muted-foreground'>
-              Пример: /2026/02/my-awesome-post
-            </p>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>
@@ -1470,8 +1459,7 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='canonical-domain'>Предпочтительный домен</Label>
+          <FormField label='Предпочтительный домен' htmlFor='canonical-domain'>
             <Select defaultValue='https'>
               <SelectTrigger>
                 <SelectValue />
@@ -1483,7 +1471,7 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
         </CardContent>
       </Card>
 
@@ -1544,8 +1532,7 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
           <CardDescription>Обработка завершающего слэша в URL</CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='trailing-slash'>Политика trailing slash</Label>
+          <FormField label='Политика trailing slash' htmlFor='trailing-slash'>
             <Select defaultValue='no-slash'>
               <SelectTrigger>
                 <SelectValue />
@@ -1556,7 +1543,7 @@ function URLSettings({ onChangeDetected }: { onChangeDetected: () => void }) {
                 <SelectItem value='auto'>Автоматически</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>
@@ -1605,10 +1592,11 @@ function ContentAnalysisSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='keyword-density'>
-              Оптимальная плотность ключевых слов (%)
-            </Label>
+          <FormField
+            label='Оптимальная плотность ключевых слов (%)'
+            htmlFor='keyword-density'
+            description='Рекомендуется 1-2%'
+          >
             <Input
               id='keyword-density'
               type='number'
@@ -1616,8 +1604,7 @@ function ContentAnalysisSettings({
               defaultValue='1.5'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>Рекомендуется 1-2%</p>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>
@@ -1707,18 +1694,18 @@ function ContentAnalysisSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='similarity-threshold'>Порог схожести (%)</Label>
+          <FormField
+            label='Порог схожести (%)'
+            htmlFor='similarity-threshold'
+            description='При превышении будет предупреждение'
+          >
             <Input
               id='similarity-threshold'
               type='number'
               defaultValue='30'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              При превышении будет предупреждение
-            </p>
-          </div>
+          </FormField>
 
           <Button variant='outline' className='w-full'>
             Запустить полную проверку
@@ -1742,20 +1729,18 @@ function ContentAnalysisSettings({
             <Switch defaultChecked onChange={onChangeDetected} />
           </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='min-internal-links'>
-              Минимум внутренних ссылок
-            </Label>
+          <FormField
+            label='Минимум внутренних ссылок'
+            htmlFor='min-internal-links'
+            description='Рекомендуемое количество ссылок на другие статьи'
+          >
             <Input
               id='min-internal-links'
               type='number'
               defaultValue='3'
               onChange={onChangeDetected}
             />
-            <p className='text-xs text-muted-foreground'>
-              Рекомендуемое количество ссылок на другие статьи
-            </p>
-          </div>
+          </FormField>
 
           <div className='flex items-center justify-between'>
             <div className='space-y-0.5'>

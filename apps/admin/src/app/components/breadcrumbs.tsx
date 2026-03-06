@@ -1,6 +1,12 @@
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { BreadcrumbItem } from '@/app/store/header-store';
 import { cn } from '@/app/components/ui/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/app/components/ui/dropdown-menu';
 import { EditorialDropdown } from '@/app/components/editorial-dropdown';
 import { ContentDropdown } from '@/app/components/content-dropdown';
 import { SystemDropdown } from '@/app/components/system-dropdown';
@@ -79,6 +85,39 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                   <ChevronDown className='h-3 w-3 opacity-60' />
                 </button>
               </SystemDropdown>
+            ) : item.dropdown && !isLast ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={cn(
+                      'flex items-center gap-1 text-sm transition-colors hover:text-foreground',
+                      'text-muted-foreground'
+                    )}
+                  >
+                    {Icon && <Icon className='h-4 w-4' />}
+                    <span>{item.label}</span>
+                    <ChevronDown className='h-3 w-3 opacity-60' />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='start' className='w-56'>
+                  {item.dropdown.map((dropItem, i) => {
+                    const DropIcon = dropItem.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={i}
+                        onClick={() => {
+                          dropItem.onClick?.();
+                          handleBreadcrumbClick(dropItem.href);
+                        }}
+                        className='cursor-pointer'
+                      >
+                        {DropIcon && <DropIcon className='h-4 w-4 mr-2' />}
+                        {dropItem.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : item.href || item.onClick ? (
               <button
                 onClick={() => {

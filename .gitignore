@@ -71,3 +71,5 @@ ENV/
 .claude/settings.json
 .claude/settings.local.json
 
+.playwright/
+.playwright-mcp

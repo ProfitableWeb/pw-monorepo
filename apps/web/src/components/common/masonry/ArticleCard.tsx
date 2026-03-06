@@ -65,9 +65,32 @@ const ArticleCard = ({ article, isPriority = false }: ArticleCardProps) => {
         {formatDate(article.createdAt)}
       </time>
 
-      {/* Аннотация - скрывается на мобильных */}
+      {/* Аннотация и изображение - скрываются на мобильных */}
       {!isMobile && (
         <>
+          {article.imageUrl && (
+            <Link
+              href={`/${article.slug}`}
+              className='article-card__image-link'
+            >
+              <div className='article-card__image-wrap'>
+                <img
+                  src={article.imageUrl}
+                  alt={article.imageAlt || article.title}
+                  className='article-card__image'
+                  loading={isPriority ? 'eager' : 'lazy'}
+                  onError={e => {
+                    (
+                      e.currentTarget.closest(
+                        '.article-card__image-link'
+                      ) as HTMLElement
+                    )?.style.setProperty('display', 'none');
+                  }}
+                />
+              </div>
+            </Link>
+          )}
+
           {/* Аннотация */}
           <div
             itemProp='articleBody'

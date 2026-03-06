@@ -1,23 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, BookOpen, ArrowLeft } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { KBTree } from './kb-tree';
 import { KBArticleEditor } from './kb-article-editor';
-import { mockKBTree, findKBArticle } from './kb-types';
+import { mockKBTree, findKBArticle, welcomeArticle } from './kb-types';
 
 interface KnowledgeBaseProps {
   initialArticleId?: string;
-  onBack?: () => void;
 }
 
-export function KnowledgeBase({
-  initialArticleId,
-  onBack,
-}: KnowledgeBaseProps) {
-  const [activeArticleId, setActiveArticleId] = useState<string | undefined>(
-    initialArticleId
+export function KnowledgeBase({ initialArticleId }: KnowledgeBaseProps) {
+  const [activeArticleId, setActiveArticleId] = useState<string>(
+    initialArticleId || ''
   );
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -30,22 +26,12 @@ export function KnowledgeBase({
 
   const activeArticle = activeArticleId
     ? findKBArticle(activeArticleId)
-    : undefined;
+    : welcomeArticle;
 
   return (
     <div className='flex h-full'>
       {/* Tree sidebar */}
       <div className='w-60 border-r flex flex-col shrink-0'>
-        {onBack && (
-          <button
-            type='button'
-            onClick={onBack}
-            className='flex items-center gap-1.5 px-3 py-2 border-b text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0'
-          >
-            <ArrowLeft className='size-3' />
-            <span>Назад к SEO</span>
-          </button>
-        )}
         <div className='p-3 border-b shrink-0'>
           <div className='relative'>
             <Search className='absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground' />
@@ -76,17 +62,7 @@ export function KnowledgeBase({
 
       {/* Content area */}
       <div className='flex-1 min-w-0'>
-        {activeArticle ? (
-          <KBArticleEditor article={activeArticle} />
-        ) : (
-          <div className='flex flex-col items-center justify-center h-full text-muted-foreground'>
-            <BookOpen className='size-10 mb-3 opacity-20' />
-            <p className='text-sm font-medium'>Выберите инструкцию</p>
-            <p className='text-xs mt-1 opacity-60'>
-              или создайте новую из дерева слева
-            </p>
-          </div>
-        )}
+        <KBArticleEditor article={activeArticle} />
       </div>
     </div>
   );

@@ -290,6 +290,37 @@
     }
   }
 
+  /* Scroll fade - scrollbar hidden by default, visible on hover */
+  .scroll-fade {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .scroll-fade:hover {
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scroll-fade::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scroll-fade::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroll-fade::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 3px;
+  }
+
+  .scroll-fade:hover::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+  }
+
+  .scroll-fade:hover::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+
   /* Markdown prose styles for AI assistant messages */
   .prose {
     color: var(--foreground);

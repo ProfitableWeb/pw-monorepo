@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronRight, FileText, FolderOpen, Folder } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
 import type { KBCategory } from './kb-types';
+import { welcomeArticle } from './kb-types';
 
 interface KBTreeProps {
   categories: KBCategory[];
@@ -32,7 +33,7 @@ function CategoryNode({
         type='button'
         onClick={() => setExpanded(v => !v)}
         className={cn(
-          'w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[13px] font-medium transition-colors',
+          'w-full flex items-center gap-1.5 px-2 py-1 rounded-md text-[13px] font-medium transition-colors',
           'text-foreground/80 hover:bg-accent/50'
         )}
         style={{ paddingLeft: depth * 16 + 8 }}
@@ -59,12 +60,12 @@ function CategoryNode({
               type='button'
               onClick={() => onSelectArticle(article.id)}
               className={cn(
-                'w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[13px] transition-colors',
+                'w-full flex items-center gap-1.5 px-2 py-1 rounded-md text-[13px] transition-colors',
                 activeArticleId === article.id
                   ? 'bg-accent text-accent-foreground font-medium'
                   : 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'
               )}
-              style={{ paddingLeft: (depth + 1) * 16 + 8 }}
+              style={{ paddingLeft: depth * 16 + 28 }}
             >
               <FileText className='size-3.5 shrink-0 opacity-50' />
               <span className='truncate'>{article.title}</span>
@@ -92,8 +93,25 @@ export function KBTree({
   activeArticleId,
   onSelectArticle,
 }: KBTreeProps) {
+  const isWelcomeActive = !activeArticleId;
+
   return (
     <nav className='space-y-0.5 p-2'>
+      <button
+        type='button'
+        onClick={() => onSelectArticle('')}
+        className={cn(
+          'w-full flex items-center gap-1.5 px-2 py-1 rounded-md text-[13px] transition-colors',
+          isWelcomeActive
+            ? 'bg-accent text-accent-foreground font-medium'
+            : 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'
+        )}
+        style={{ paddingLeft: 8 }}
+      >
+        <FileText className='size-3.5 shrink-0 opacity-50' />
+        <span className='truncate'>{welcomeArticle.title}</span>
+      </button>
+
       {categories.map(category => (
         <CategoryNode
           key={category.id}

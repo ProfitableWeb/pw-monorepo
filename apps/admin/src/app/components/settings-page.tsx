@@ -85,6 +85,7 @@ import {
 import { cn } from '@/app/components/ui/utils';
 import { Switch } from '@/app/components/ui/switch';
 import { Label } from '@/app/components/ui/label';
+import { FormField } from '@/app/components/ui/form-field';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Separator } from '@/app/components/ui/separator';
 import {
@@ -650,16 +651,24 @@ function ProfileSettings() {
               <CardDescription>Имя и email</CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='profile-name'>Имя</Label>
+              <FormField label='Имя' htmlFor='profile-name'>
                 <Input
                   id='profile-name'
                   value={name}
                   onChange={e => setName(e.target.value)}
                 />
-              </div>
-              <div className='space-y-2'>
-                <Label htmlFor='profile-email'>Email</Label>
+              </FormField>
+              <FormField
+                label='Email'
+                htmlFor='profile-email'
+                description={
+                  emailChanged
+                    ? emailVerificationSent
+                      ? undefined
+                      : 'Для смены email отправим письмо с подтверждением'
+                    : undefined
+                }
+              >
                 <Input
                   id='profile-email'
                   type='email'
@@ -670,28 +679,24 @@ function ProfileSettings() {
                   }}
                 />
                 {emailChanged && (
-                  <p className='text-sm text-muted-foreground'>
+                  <p className='pl-1 text-xs text-muted-foreground'>
                     {emailVerificationSent ? (
                       <span className='text-green-500'>
                         ✓ Письмо отправлено на {email}
                       </span>
                     ) : (
-                      <>
-                        Для смены email отправим письмо с подтверждением.{' '}
-                        <button
-                          type='button'
-                          className='text-primary underline underline-offset-2 hover:opacity-80'
-                          onClick={handleEmailChange}
-                        >
-                          Отправить
-                        </button>
-                      </>
+                      <button
+                        type='button'
+                        className='text-primary underline underline-offset-2 hover:opacity-80'
+                        onClick={handleEmailChange}
+                      >
+                        Отправить
+                      </button>
                     )}
                   </p>
                 )}
-              </div>
-              <div className='space-y-2'>
-                <Label htmlFor='profile-bio'>О себе</Label>
+              </FormField>
+              <FormField label='О себе' htmlFor='profile-bio'>
                 <textarea
                   id='profile-bio'
                   className='flex min-h-[80px] max-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-vertical'
@@ -704,9 +709,8 @@ function ProfileSettings() {
                 <p className='text-xs text-muted-foreground text-right'>
                   {bio.length}/300
                 </p>
-              </div>
-              <div className='space-y-2'>
-                <Label>Ссылки</Label>
+              </FormField>
+              <FormField label='Ссылки'>
                 <div className='space-y-2'>
                   {links.map((link, index) => (
                     <div key={index} className='flex gap-2'>
@@ -741,7 +745,7 @@ function ProfileSettings() {
                     </Button>
                   )}
                 </div>
-              </div>
+              </FormField>
               {hasProfileChanges && (
                 <div className='flex gap-2 pt-2'>
                   <Button
