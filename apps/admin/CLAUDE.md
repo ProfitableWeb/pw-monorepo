@@ -43,6 +43,69 @@ Vite + React 19 + Tailwind CSS + Radix UI + Zustand. **Не Next.js**, **не SC
 
 ## Организация кода
 
+### Структура components/
+
+Директория `components/` отражает архитектуру интерфейса:
+
+```
+components/
+├── layout/              # Скелет приложения (shell)
+│   ├── sidebar-nav.tsx  # Боковая навигация
+│   ├── header.tsx       # Шапка с хлебными крошками
+│   ├── ai-sidebar.tsx   # AI-панель справа
+│   ├── command-palette  # Cmd+K
+│   ├── theme-provider   # Тема (light/dark)
+│   ├── login-page       # Страница входа
+│   ├── access-denied    # Ограничение доступа
+│   └── index.ts
+│
+├── sections/            # Разделы навигации (1:1 с sidebar)
+│   ├── dashboard/       # Главное → Дашборд
+│   ├── ai-center/       # Главное → AI центр
+│   ├── articles/        # Контент → Статьи
+│   ├── article-workbench/ # Редактор статьи (подсекция articles)
+│   ├── calendar/        # Контент → Календарь
+│   ├── categories/      # Контент → Категории
+│   ├── tags/            # Контент → Метки
+│   ├── media/           # Контент → Медиатека
+│   ├── research/        # Контент → Исследования
+│   ├── manifest/        # Редакция → Манифест
+│   ├── style/           # Редакция → Стиль
+│   ├── editorial/       # Редакция → Редакционный центр
+│   ├── content-hub/     # Редакция → Центр контента
+│   ├── formats/         # Редакция → Форматы
+│   ├── socials/         # Редакция → Соцсети
+│   ├── settings/        # Система → Настройки
+│   ├── users/           # Система → Пользователи
+│   ├── promotion/       # Система → Продвижение
+│   ├── analytics/       # Система → Аналитика
+│   ├── ads/             # Система → Реклама
+│   └── seo/             # Система → SEO
+│       └── knowledge-base/ # Подсекция SEO
+│
+├── common/              # Переиспользуемые бизнес-компоненты
+│   ├── section-header   # Заголовок секции
+│   ├── section-card     # Карточка секции
+│   ├── breadcrumbs      # Хлебные крошки
+│   ├── pw-logo          # Логотип
+│   └── index.ts
+│
+├── ui/                  # Примитивы (shadcn/Radix) — не трогать
+│   ├── button, dialog, select, ...
+│   └── form-field/      # Бизнес-обёртки форм (связаны с ui/)
+│
+├── workspace/           # Docking layout (исследования, редактор)
+├── panels/              # Панели workspace (AI чат, медиа, заметки)
+└── icons/               # Иконки
+```
+
+**Правила размещения:**
+
+- Новый раздел навигации → `sections/{section-name}/`
+- Компонент используется в ≥2 секциях → `common/`
+- UI-примитив (без бизнес-логики) → `ui/`
+- Часть shell-а приложения → `layout/`
+
 ### Атомарная декомпозиция
 
 Цель — **ни один файл не должен быть монолитом**. Каждый файл решает одну задачу. Если файл растёт выше ~300 строк или
@@ -56,33 +119,29 @@ Vite + React 19 + Tailwind CSS + Radix UI + Zustand. **Не Next.js**, **не SC
 4. Подкомпоненты (>100 строк JSX или >2 использований) → отдельный файл
 5. Кастомные хуки (>50 строк логики или нужна изоляция для тестов) → `use{Name}.ts`
 
-### Иерархия вложенности
+### Иерархия вложенности секции
 
 ```
-feature/
-├── FeatureName.tsx          # Оркестратор: импорты, state, композиция подкомпонентов
+sections/{section}/
+├── SectionName.tsx          # Оркестратор: импорты, state, композиция подкомпонентов
 ├── index.ts                 # Barrel-экспорт (единственная точка входа)
-├── feature.types.ts         # Типы модуля
-├── feature.constants.ts     # Константы модуля
-├── feature.utils.ts         # Чистые утилиты
+├── section.types.ts         # Типы модуля
+├── section.constants.ts     # Константы модуля
+├── section.utils.ts         # Чистые утилиты
 ├── SubComponentA.tsx        # Подкомпонент (UI)
-├── SubComponentB.tsx        # Подкомпонент (UI)
 ├── useFeatureLogic.ts       # Кастомный хук (бизнес-логика)
-├── README.md                # Для сложных модулей: структура, паттерны, протоколы
 │
 ├── sub-feature/             # Вложенная директория — только если ≥3 связанных файлов
 │   ├── SubFeature.tsx
-│   ├── sub-feature.types.ts
 │   └── index.ts
 │
-└── shared/                  # Компоненты, переиспользуемые внутри feature (не глобально)
-    ├── SharedWidget.tsx
-    └── index.ts
+└── shared/                  # Компоненты, переиспользуемые внутри секции (не глобально)
+    └── SharedWidget.tsx
 ```
 
 **Правила вложенности:**
 
-- Максимум 3 уровня (`feature/sub-feature/component.tsx`)
+- Максимум 3 уровня (`sections/section/sub-feature/component.tsx`)
 - Вложенная директория — только от 3 связанных файлов, иначе файлы остаются на уровне родителя
 - Каждая директория — `index.ts` с barrel-экспортом
 - Группировка по функциональности (tabs/, preview/), не по типу (components/, hooks/, utils/)
@@ -105,8 +164,8 @@ feature/
 
 ### Переиспользуемые паттерны
 
-- Общие утилиты компонента → директория `shared/` внутри feature (не глобальный shared)
-- Общие хуки/компоненты между несколькими feature → выделить в `{feature-group}-shared/`
+- Общие утилиты внутри секции → директория `shared/` внутри секции
+- Общие бизнес-компоненты между секциями → `common/`
 - Barrel-экспорт: `export { Component } from './Component'` — не `export * from`
 
 ## Роутинг
