@@ -393,7 +393,7 @@ export function CalendarSettingsDialog({
                 </div>
 
                 <div className='grid gap-2'>
-                  <Label htmlFor='publishing-days'>Дни ��ублаций</Label>
+                  <Label htmlFor='publishing-days'>Дни публаций</Label>
                   <div className='flex gap-2'>
                     {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map(
                       (day, index) => (
