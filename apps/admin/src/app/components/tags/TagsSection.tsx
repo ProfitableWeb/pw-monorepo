@@ -27,13 +27,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/app/components/ui/dropdown-menu';
 import {
   Plus,
   Search,
   MoreVertical,
-  Edit2,
   Trash2,
   Tag as TagIcon,
   TrendingUp,
@@ -47,247 +45,9 @@ import {
   Link2,
 } from 'lucide-react';
 
-interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  color: string;
-  articlesCount: number;
-  category?: string;
-  createdAt: Date;
-}
-
-const COLORS = [
-  { name: 'Серый', value: 'bg-gray-500' },
-  { name: 'Красный', value: 'bg-red-500' },
-  { name: 'Оранжевый', value: 'bg-orange-500' },
-  { name: 'Желтый', value: 'bg-yellow-500' },
-  { name: 'Зеленый', value: 'bg-green-500' },
-  { name: 'Синий', value: 'bg-blue-500' },
-  { name: 'Фиолетовый', value: 'bg-purple-500' },
-  { name: 'Розовый', value: 'bg-pink-500' },
-];
-
-const TAG_GROUPS = [
-  'Технологии',
-  'Дизайн',
-  'Маркетинг',
-  'Бизнес',
-  'Лайфстайл',
-  'Без группы',
-];
-
-const initialTags: Tag[] = [
-  {
-    id: '1',
-    name: 'React',
-    slug: 'react',
-    color: 'bg-blue-500',
-    articlesCount: 45,
-    category: 'Технологии',
-    createdAt: new Date(2024, 0, 15),
-  },
-  {
-    id: '2',
-    name: 'TypeScript',
-    slug: 'typescript',
-    color: 'bg-blue-500',
-    articlesCount: 38,
-    category: 'Технологии',
-    createdAt: new Date(2024, 0, 20),
-  },
-  {
-    id: '3',
-    name: 'UI/UX',
-    slug: 'ui-ux',
-    color: 'bg-pink-500',
-    articlesCount: 32,
-    category: 'Дизайн',
-    createdAt: new Date(2024, 1, 1),
-  },
-  {
-    id: '4',
-    name: 'JavaScript',
-    slug: 'javascript',
-    color: 'bg-yellow-500',
-    articlesCount: 28,
-    category: 'Технологии',
-    createdAt: new Date(2024, 0, 10),
-  },
-  {
-    id: '5',
-    name: 'CSS',
-    slug: 'css',
-    color: 'bg-purple-500',
-    articlesCount: 24,
-    category: 'Тхнологии',
-    createdAt: new Date(2024, 1, 5),
-  },
-  {
-    id: '6',
-    name: 'Веб-дизайн',
-    slug: 'web-design',
-    color: 'bg-pink-500',
-    articlesCount: 22,
-    category: 'Дизайн',
-    createdAt: new Date(2024, 1, 10),
-  },
-  {
-    id: '7',
-    name: 'Продуктивность',
-    slug: 'productivity',
-    color: 'bg-green-500',
-    articlesCount: 19,
-    category: 'Лайфстайл',
-    createdAt: new Date(2024, 1, 15),
-  },
-  {
-    id: '8',
-    name: 'SEO',
-    slug: 'seo',
-    color: 'bg-orange-500',
-    articlesCount: 17,
-    category: 'Маркетинг',
-    createdAt: new Date(2024, 0, 25),
-  },
-  {
-    id: '9',
-    name: 'Node.js',
-    slug: 'nodejs',
-    color: 'bg-green-500',
-    articlesCount: 15,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 20),
-  },
-  {
-    id: '10',
-    name: 'Tailwind',
-    slug: 'tailwind',
-    color: 'bg-blue-500',
-    articlesCount: 14,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 22),
-  },
-  {
-    id: '11',
-    name: 'Бренд',
-    slug: 'brand',
-    color: 'bg-red-500',
-    articlesCount: 12,
-    category: 'Маркетинг',
-    createdAt: new Date(2024, 1, 25),
-  },
-  {
-    id: '12',
-    name: 'API',
-    slug: 'api',
-    color: 'bg-purple-500',
-    articlesCount: 11,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 28),
-  },
-  {
-    id: '13',
-    name: 'Мобайл',
-    slug: 'mobile',
-    color: 'bg-green-500',
-    articlesCount: 10,
-    category: 'Технологии',
-    createdAt: new Date(2024, 0, 30),
-  },
-  {
-    id: '14',
-    name: 'Аналитика',
-    slug: 'analytics',
-    color: 'bg-orange-500',
-    articlesCount: 9,
-    category: 'Бизнес',
-    createdAt: new Date(2024, 1, 12),
-  },
-  {
-    id: '15',
-    name: 'Figma',
-    slug: 'figma',
-    color: 'bg-pink-500',
-    articlesCount: 8,
-    category: 'Дизайн',
-    createdAt: new Date(2024, 1, 18),
-  },
-  {
-    id: '16',
-    name: 'Git',
-    slug: 'git',
-    color: 'bg-orange-500',
-    articlesCount: 7,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 8),
-  },
-  {
-    id: '17',
-    name: 'Контент',
-    slug: 'content',
-    color: 'bg-yellow-500',
-    articlesCount: 6,
-    category: 'Маркетинг',
-    createdAt: new Date(2024, 1, 14),
-  },
-  {
-    id: '18',
-    name: 'AI',
-    slug: 'ai',
-    color: 'bg-purple-500',
-    articlesCount: 5,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 29),
-  },
-  {
-    id: '19',
-    name: 'Стартап',
-    slug: 'startup',
-    color: 'bg-red-500',
-    articlesCount: 4,
-    category: 'Бизнес',
-    createdAt: new Date(2024, 1, 16),
-  },
-  {
-    id: '20',
-    name: 'Тренды',
-    slug: 'trends',
-    color: 'bg-pink-500',
-    articlesCount: 3,
-    category: 'Лайфстайл',
-    createdAt: new Date(2024, 1, 27),
-  },
-  {
-    id: '21',
-    name: 'Тестирование',
-    slug: 'testing',
-    color: 'bg-green-500',
-    articlesCount: 2,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 21),
-  },
-  {
-    id: '22',
-    name: 'DevOps',
-    slug: 'devops',
-    color: 'bg-blue-500',
-    articlesCount: 1,
-    category: 'Технологии',
-    createdAt: new Date(2024, 1, 26),
-  },
-  {
-    id: '23',
-    name: 'Монетизация',
-    slug: 'monetization',
-    color: 'bg-green-500',
-    articlesCount: 0,
-    category: 'Бизнес',
-    createdAt: new Date(2024, 1, 30),
-  },
-];
-
-type ViewMode = 'cloud' | 'grid' | 'list';
+import type { Tag, ViewMode } from './tags.types';
+import { COLORS, TAG_GROUPS, initialTags } from './tags.constants';
+import { getTagSize, getTagOpacity } from './tags.utils';
 
 export function TagsSection() {
   const [tags, setTags] = useState<Tag[]>(initialTags);
@@ -355,24 +115,6 @@ export function TagsSection() {
     });
     return groups;
   }, [tags]);
-
-  const getTagSize = (count: number) => {
-    const ratio = count / maxCount;
-    if (ratio > 0.7) return 'text-4xl';
-    if (ratio > 0.5) return 'text-3xl';
-    if (ratio > 0.3) return 'text-2xl';
-    if (ratio > 0.15) return 'text-xl';
-    return 'text-base';
-  };
-
-  const getTagOpacity = (count: number) => {
-    const ratio = count / maxCount;
-    if (ratio > 0.7) return 'opacity-100';
-    if (ratio > 0.5) return 'opacity-90';
-    if (ratio > 0.3) return 'opacity-80';
-    if (ratio > 0.15) return 'opacity-70';
-    return 'opacity-60';
-  };
 
   const handleSave = () => {
     if (editingTag) {
@@ -592,8 +334,8 @@ export function TagsSection() {
               onClick={() => setSelectedTag(tag)}
               className={cn(
                 'font-semibold transition-all duration-300 hover:scale-110 cursor-pointer',
-                getTagSize(tag.articlesCount),
-                getTagOpacity(tag.articlesCount),
+                getTagSize(tag.articlesCount, maxCount),
+                getTagOpacity(tag.articlesCount, maxCount),
                 selectedTag?.id === tag.id && 'scale-125 text-primary'
               )}
               style={{
