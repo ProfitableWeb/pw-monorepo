@@ -5,7 +5,6 @@ import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Label } from '@/app/components/ui/label';
 import { Separator } from '@/app/components/ui/separator';
-import { Badge } from '@/app/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -15,8 +14,7 @@ import {
   DialogTitle,
 } from '@/app/components/ui/dialog';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { ImageWithFallback } from '@/app/components/ui/image-with-fallback';
-import { MediaImageWithLoader } from '@/app/components/media-image-with-loader';
+import { MediaImageWithLoader } from './MediaImageWithLoader';
 import {
   Download,
   Trash2,
@@ -26,54 +24,24 @@ import {
   Camera,
   Image as ImageIcon,
 } from 'lucide-react';
-
-type FileType = 'image' | 'video' | 'audio' | 'document';
-
-interface MediaFile {
-  id: string;
-  name: string;
-  type: FileType;
-  url: string;
-  size: number;
-  uploadedAt: Date;
-  usedIn: number;
-  purposes: string[];
-  thumbnail?: string;
-  dimensions?: { width: number; height: number };
-  duration?: number;
-  seo?: {
-    filename: string;
-    alt: string;
-    caption: string;
-  };
-  exif?: {
-    dateTaken?: string;
-    camera?: string;
-    lens?: string;
-    iso?: string;
-    aperture?: string;
-    shutterSpeed?: string;
-    focalLength?: string;
-  };
-  resizes?: Array<{
-    name: string;
-    width: number;
-    height: number;
-    size: number;
-    url: string;
-  }>;
-}
+import type { FileType, MediaFile } from './media.types';
+import {
+  formatBytes,
+  formatDuration,
+  getFileIcon,
+  handleCopyUrl,
+} from './media.utils';
 
 interface MediaPreviewDialogProps {
   file: MediaFile | null;
-  open: boolean;
+  open?: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
   onSave: (file: MediaFile) => void;
-  formatBytes: (bytes: number) => string;
-  formatDuration: (seconds: number) => string;
-  getFileIcon: (type: FileType) => any;
-  handleCopyUrl: (url: string) => void;
+  formatBytes?: (bytes: number) => string;
+  formatDuration?: (seconds: number) => string;
+  getFileIcon?: (type: FileType) => any;
+  handleCopyUrl?: (url: string) => void;
 }
 
 export function MediaPreviewDialog({
@@ -82,10 +50,10 @@ export function MediaPreviewDialog({
   onClose,
   onDelete,
   onSave,
-  formatBytes,
-  formatDuration,
-  getFileIcon,
-  handleCopyUrl,
+  formatBytes: formatBytesProp,
+  formatDuration: formatDurationProp,
+  getFileIcon: getFileIconProp,
+  handleCopyUrl: handleCopyUrlProp,
 }: MediaPreviewDialogProps) {
   const [editedFile, setEditedFile] = useState<MediaFile | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -142,12 +110,18 @@ export function MediaPreviewDialog({
     input.click();
   };
 
+  // Используем переданные пропсы или фоллбэк на локальные утилиты
+  const fmtBytes = formatBytesProp || formatBytes;
+  const fmtDuration = formatDurationProp || formatDuration;
+  const fileIcon = getFileIconProp || getFileIcon;
+  const copyUrl = handleCopyUrlProp || handleCopyUrl;
+
   if (!editedFile) return null;
 
-  const Icon = getFileIcon(editedFile.type);
+  const Icon = fileIcon(editedFile.type);
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open ?? true} onOpenChange={onClose}>
       <DialogContent className='w-[95vw] max-w-[1400px] h-[90vh] p-0 gap-0 flex flex-col'>
         {/* Фиксированный заголовок */}
         <DialogHeader className='px-6 pt-6 pb-4 border-b shrink-0'>
@@ -211,7 +185,7 @@ export function MediaPreviewDialog({
                       <Button
                         size='sm'
                         variant='outline'
-                        onClick={() => handleCopyUrl(editedFile.url)}
+                        onClick={() => copyUrl(editedFile.url)}
                       >
                         <Copy className='h-4 w-4' />
                       </Button>
@@ -241,12 +215,12 @@ export function MediaPreviewDialog({
                             </div>
                             <div className='flex items-center gap-3'>
                               <span className='text-sm text-muted-foreground'>
-                                {formatBytes(resize.size)}
+                                {fmtBytes(resize.size)}
                               </span>
                               <Button
                                 size='sm'
                                 variant='ghost'
-                                onClick={() => handleCopyUrl(resize.url)}
+                                onClick={() => copyUrl(resize.url)}
                               >
                                 <Copy className='h-3.5 w-3.5' />
                               </Button>
@@ -266,7 +240,7 @@ export function MediaPreviewDialog({
                           Размер
                         </Label>
                         <p className='text-sm font-medium mt-1'>
-                          {formatBytes(editedFile.size)}
+                          {fmtBytes(editedFile.size)}
                         </p>
                       </div>
                       <div className='p-3 border rounded-lg bg-card'>
@@ -296,7 +270,7 @@ export function MediaPreviewDialog({
                             Длительность
                           </Label>
                           <p className='text-sm font-medium mt-1'>
-                            {formatDuration(editedFile.duration)}
+                            {fmtDuration(editedFile.duration)}
                           </p>
                         </div>
                       )}

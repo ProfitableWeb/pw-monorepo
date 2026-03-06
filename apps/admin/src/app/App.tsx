@@ -8,7 +8,7 @@ import { ArticlesSection } from '@/app/components/articles-section';
 import { CalendarSection } from '@/app/components/calendar-section';
 import { CategoriesSection } from '@/app/components/categories-section';
 import { TagsSection } from '@/app/components/tags-section';
-import { MediaSection } from '@/app/components/media-section';
+import { MediaSection } from '@/app/components/media';
 import { AICenter } from '@/app/components/ai-center';
 import { ManifestPage } from '@/app/components/manifest-page';
 import { StyleDashboard } from '@/app/components/style-dashboard';
@@ -16,12 +16,12 @@ import { EditorialHub } from '@/app/components/editorial-hub';
 import { ContentHub } from '@/app/components/content-hub';
 import { FormatsDashboard } from '@/app/components/formats-dashboard';
 import { SocialsDashboard } from '@/app/components/socials-dashboard';
-import { SettingsPage } from '@/app/components/settings-page';
+import { SettingsPage } from '@/app/components/settings';
 import { UsersPage } from '@/app/components/users-page';
 import { PromotionPage } from '@/app/components/promotion-page';
 import { AnalyticsPage } from '@/app/components/analytics-page';
 import { AdsPage } from '@/app/components/ads-page';
-import { SEOPage } from '@/app/components/seo-page';
+import { SeoPage } from '@/app/components/seo';
 import { CommandPalette } from '@/app/components/command-palette';
 import { ResearchListPage } from '@/app/components/research-list-page';
 import { ResearchWorkspace } from '@/app/components/research-workspace';
@@ -164,7 +164,7 @@ function App() {
       case 'ads':
         return <AdsPage />;
       case 'seo':
-        return <SEOPage />;
+        return <SeoPage />;
       default:
         return <DashboardSection />;
     }
@@ -301,7 +301,7 @@ function App() {
               </div>
             ) : activeSection === 'seo' ? (
               <div className='flex-1 min-h-0 overflow-hidden'>
-                <SEOPage />
+                <SeoPage />
               </div>
             ) : activeSection === 'research' ? (
               <ScrollArea className='flex-1 min-h-0'>
