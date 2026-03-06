@@ -1,3 +1,13 @@
+/**
+ * Типы модуля исследований.
+ *
+ * Research — корневая сущность, к которой привязаны заметки, источники,
+ * черновики, медиа и публикации через `researchId`.
+ *
+ * @see store/research-store.ts — CRUD и фильтрация
+ * @see components/workspace/ — UI рабочего пространства
+ */
+
 // === Исследования ===
 
 export type ResearchStatus =
@@ -77,7 +87,7 @@ export interface ResearchPublication {
   status: 'draft' | 'published';
 }
 
-// === Utility types ===
+// === Составные типы ===
 
 export type ResearchContentItem =
   | { type: 'note'; data: ResearchNote }

@@ -1,3 +1,12 @@
+/**
+ * Стор исследований — CRUD, фильтрация, геттеры по связанным сущностям.
+ *
+ * Хранит все данные исследований (заметки, источники, черновики, медиа, публикации)
+ * и привязывает их к конкретному исследованию через `researchId`.
+ * Удаление исследования каскадно чистит все связанные сущности.
+ *
+ * Сейчас данные загружаются из моков; позже — из API.
+ */
 import { create } from 'zustand';
 import type {
   Research,
@@ -18,7 +27,7 @@ import {
 } from '@/app/mock/research-mock';
 
 interface ResearchStore {
-  // Data
+  // Данные
   researches: Research[];
   notes: ResearchNote[];
   sources: ResearchSource[];
@@ -26,17 +35,17 @@ interface ResearchStore {
   media: ResearchMedia[];
   publications: ResearchPublication[];
 
-  // State
+  // Состояние UI
   currentResearchId: string | null;
   statusFilter: ResearchStatus | 'all';
   searchQuery: string;
 
-  // Navigation
+  // Навигация
   setCurrentResearch: (id: string | null) => void;
   setStatusFilter: (status: ResearchStatus | 'all') => void;
   setSearchQuery: (query: string) => void;
 
-  // Research CRUD
+  // CRUD исследований
   createResearch: (title: string, description: string) => Research;
   updateResearch: (
     id: string,
@@ -46,7 +55,7 @@ interface ResearchStore {
   ) => void;
   deleteResearch: (id: string) => void;
 
-  // Content CRUD
+  // CRUD контента
   updateNote: (
     id: string,
     updates: Partial<Pick<ResearchNote, 'title' | 'content'>>
@@ -56,7 +65,7 @@ interface ResearchStore {
     updates: Partial<Pick<ResearchDraft, 'title' | 'content'>>
   ) => void;
 
-  // Getters
+  // Геттеры
   getCurrentResearch: () => Research | undefined;
   getResearchNotes: (researchId: string) => ResearchNote[];
   getResearchSources: (researchId: string) => ResearchSource[];
@@ -65,7 +74,7 @@ interface ResearchStore {
   getResearchPublications: (researchId: string) => ResearchPublication[];
   getFilteredResearches: () => Research[];
 
-  // Content counts for list view
+  // Счётчики контента для списка исследований
   getResearchCounts: (researchId: string) => {
     notes: number;
     sources: number;

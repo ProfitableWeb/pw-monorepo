@@ -1,3 +1,12 @@
+/**
+ * Стор авторизации.
+ *
+ * Поддерживает login по email/password и OAuth (Google, Яндекс, Telegram).
+ * Хранит текущего пользователя, флаг isAdmin (admin/editor) и isLoading.
+ * `checkAuth` вызывается при старте приложения для восстановления сессии.
+ *
+ * @see lib/api-client.ts — authLogin, authLogout, authGetMe, getOAuthUrl
+ */
 import { create } from 'zustand';
 import {
   authLogin,

@@ -1,3 +1,13 @@
+/**
+ * Типы редактора статей.
+ *
+ * ArticleFormData — полная форма статьи (react-hook-form).
+ * PreviewArticleData / PreviewMessage / PreviewResponse — postMessage-протокол
+ * между админкой и iframe-превью web-приложения.
+ *
+ * @see store/article-editor-store.ts — глобальное состояние редактора
+ * @see components/article-workbench/ — UI вкладок и превью
+ */
 export type EditorMode = 'markdown' | 'html' | 'visual';
 export type DeviceType = 'desktop' | 'tablet' | 'mobile';
 export type AutosaveStatus = 'saved' | 'syncing' | 'offline';

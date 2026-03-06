@@ -1,5 +1,19 @@
-import { create } from "zustand";
-import { blogAnalyticsSession, manifestCreationSession, type AISession } from "./ai-sessions";
+/**
+ * Стор AI-центра — управление сессиями, сообщениями, вариантами ответов.
+ *
+ * Поддерживает: мульти-сессионность, варианты сообщений (regenerate),
+ * редактирование сообщений, вложения, выбор модели, стриминг.
+ * Каждое сообщение хранит массив вариантов (MessageVariant) для A/B-сравнения ответов.
+ *
+ * @see ai-sessions.ts — mock-данные сессий
+ * @see components/ai-center.tsx — UI AI-чата
+ */
+import { create } from 'zustand';
+import {
+  blogAnalyticsSession,
+  manifestCreationSession,
+  type AISession,
+} from './ai-sessions';
 
 export interface ThinkingBlock {
   id: string;
@@ -12,7 +26,7 @@ export interface ToolCall {
   name: string;
   input: Record<string, unknown>;
   output?: string;
-  status: "pending" | "success" | "error";
+  status: 'pending' | 'success' | 'error';
   duration?: number;
 }
 
@@ -25,7 +39,7 @@ export interface Attachment {
 
 export interface MessageVariant {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   thinking?: ThinkingBlock[];
@@ -49,14 +63,17 @@ interface AIState {
   isStreaming: boolean;
   editingMessageId: string | null;
   initialPrompt: string | null;
-  
-  // Getters
+
+  // Геттеры
   getCurrentSession: () => AISession | undefined;
   getMessages: () => Message[];
-  
-  // Actions
-  addMessage: (message: Omit<MessageVariant, "id" | "timestamp">) => void;
-  addMessageVariant: (messageId: string, variant: Omit<MessageVariant, "id" | "timestamp">) => void;
+
+  // Действия
+  addMessage: (message: Omit<MessageVariant, 'id' | 'timestamp'>) => void;
+  addMessageVariant: (
+    messageId: string,
+    variant: Omit<MessageVariant, 'id' | 'timestamp'>
+  ) => void;
   setInput: (input: string) => void;
   addAttachment: (attachment: Attachment) => void;
   removeAttachment: (id: string) => void;
@@ -66,202 +83,219 @@ interface AIState {
   clearMessages: () => void;
   setCurrentVariant: (messageId: string, variantIndex: number) => void;
   setEditingMessageId: (id: string | null) => void;
-  editMessage: (messageId: string, newContent: string, attachments?: Attachment[]) => void;
+  editMessage: (
+    messageId: string,
+    newContent: string,
+    attachments?: Attachment[]
+  ) => void;
   setInitialPrompt: (prompt: string | null) => void;
   switchSession: (sessionId: string) => void;
-  createNewSession: (title: string, initialMessage?: Omit<MessageVariant, "id" | "timestamp">) => string;
+  createNewSession: (
+    title: string,
+    initialMessage?: Omit<MessageVariant, 'id' | 'timestamp'>
+  ) => string;
 }
 
 export const useAIStore = create<AIState>((set, get) => ({
   sessions: [blogAnalyticsSession, manifestCreationSession],
-  currentSessionId: "session-1",
-  input: "",
+  currentSessionId: 'session-1',
+  input: '',
   attachments: [],
-  selectedModel: "opus-4.6",
+  selectedModel: 'opus-4.6',
   isStreaming: false,
   editingMessageId: null,
   initialPrompt: null,
-  
+
   getCurrentSession: () => {
     const state = get();
     return state.sessions.find(s => s.id === state.currentSessionId);
   },
-  
+
   getMessages: () => {
     const session = get().getCurrentSession();
     return session?.messages || [];
   },
-  
-  addMessage: (message) =>
-    set((state) => {
-      const currentSession = state.sessions.find(s => s.id === state.currentSessionId);
+
+  addMessage: message =>
+    set(state => {
+      const currentSession = state.sessions.find(
+        s => s.id === state.currentSessionId
+      );
       if (!currentSession) return state;
       return {
         ...state,
-        sessions: state.sessions.map(s => 
+        sessions: state.sessions.map(s =>
           s.id === state.currentSessionId
-          ? {
-            ...s,
-            messages: [
-              ...s.messages,
-              {
-                id: Math.random().toString(36).substr(2, 9),
-                variants: [
+            ? {
+                ...s,
+                messages: [
+                  ...s.messages,
                   {
-                    ...message,
                     id: Math.random().toString(36).substr(2, 9),
-                    timestamp: new Date(),
-                  },
-                ],
-                currentVariantIndex: 0,
-              },
-            ],
-          }
-          : s
-        ),
-      };
-    }),
-  
-  addMessageVariant: (messageId, variant) =>
-    set((state) => {
-      const currentSession = state.sessions.find(s => s.id === state.currentSessionId);
-      if (!currentSession) return state;
-      return {
-        ...state,
-        sessions: state.sessions.map(s => 
-          s.id === state.currentSessionId
-          ? {
-            ...s,
-            messages: s.messages.map((message) =>
-              message.id === messageId
-                ? {
-                    ...message,
                     variants: [
-                      ...message.variants,
                       {
-                        ...variant,
+                        ...message,
                         id: Math.random().toString(36).substr(2, 9),
                         timestamp: new Date(),
                       },
                     ],
-                  }
-                : message
-            ),
-          }
-          : s
+                    currentVariantIndex: 0,
+                  },
+                ],
+              }
+            : s
         ),
       };
     }),
-  
-  setInput: (input) => set({ input }),
-  
-  addAttachment: (attachment) =>
-    set((state) => ({
+
+  addMessageVariant: (messageId, variant) =>
+    set(state => {
+      const currentSession = state.sessions.find(
+        s => s.id === state.currentSessionId
+      );
+      if (!currentSession) return state;
+      return {
+        ...state,
+        sessions: state.sessions.map(s =>
+          s.id === state.currentSessionId
+            ? {
+                ...s,
+                messages: s.messages.map(message =>
+                  message.id === messageId
+                    ? {
+                        ...message,
+                        variants: [
+                          ...message.variants,
+                          {
+                            ...variant,
+                            id: Math.random().toString(36).substr(2, 9),
+                            timestamp: new Date(),
+                          },
+                        ],
+                      }
+                    : message
+                ),
+              }
+            : s
+        ),
+      };
+    }),
+
+  setInput: input => set({ input }),
+
+  addAttachment: attachment =>
+    set(state => ({
       attachments: [...state.attachments, attachment],
     })),
-  
-  removeAttachment: (id) =>
-    set((state) => ({
-      attachments: state.attachments.filter((a) => a.id !== id),
+
+  removeAttachment: id =>
+    set(state => ({
+      attachments: state.attachments.filter(a => a.id !== id),
     })),
-  
-  setAttachments: (attachments) => set({ attachments }),
-  
-  setSelectedModel: (model) => set({ selectedModel: model }),
-  
-  setIsStreaming: (isStreaming) => set({ isStreaming }),
-  
+
+  setAttachments: attachments => set({ attachments }),
+
+  setSelectedModel: model => set({ selectedModel: model }),
+
+  setIsStreaming: isStreaming => set({ isStreaming }),
+
   clearMessages: () =>
-    set((state) => ({
-      sessions: state.sessions.map(s => 
+    set(state => ({
+      sessions: state.sessions.map(s =>
         s.id === state.currentSessionId
-        ? {
-          ...s,
-          messages: [
-            {
-              id: "1",
-              variants: [
+          ? {
+              ...s,
+              messages: [
                 {
-                  id: "v1",
-                  role: "assistant",
-                  content: "Привет! Я AI ассистент для управления блогом. Чем могу помочь?",
-                  timestamp: new Date(),
+                  id: '1',
+                  variants: [
+                    {
+                      id: 'v1',
+                      role: 'assistant',
+                      content:
+                        'Привет! Я AI ассистент для управления блогом. Чем могу помочь?',
+                      timestamp: new Date(),
+                    },
+                  ],
+                  currentVariantIndex: 0,
                 },
               ],
-              currentVariantIndex: 0,
-            },
-          ],
-        }
-        : s
+            }
+          : s
       ),
     })),
-  
+
   setCurrentVariant: (messageId, variantIndex) =>
-    set((state) => {
-      const currentSession = state.sessions.find(s => s.id === state.currentSessionId);
+    set(state => {
+      const currentSession = state.sessions.find(
+        s => s.id === state.currentSessionId
+      );
       if (!currentSession) return state;
       return {
         ...state,
-        sessions: state.sessions.map(s => 
+        sessions: state.sessions.map(s =>
           s.id === state.currentSessionId
-          ? {
-            ...s,
-            messages: s.messages.map((message) =>
-              message.id === messageId
-                ? {
-                    ...message,
-                    currentVariantIndex: variantIndex,
-                  }
-                : message
-            ),
-          }
-          : s
+            ? {
+                ...s,
+                messages: s.messages.map(message =>
+                  message.id === messageId
+                    ? {
+                        ...message,
+                        currentVariantIndex: variantIndex,
+                      }
+                    : message
+                ),
+              }
+            : s
         ),
       };
     }),
-  
-  setEditingMessageId: (id) => set({ editingMessageId: id }),
-  
+
+  setEditingMessageId: id => set({ editingMessageId: id }),
+
   editMessage: (messageId, newContent, attachments) =>
-    set((state) => {
-      const currentSession = state.sessions.find(s => s.id === state.currentSessionId);
+    set(state => {
+      const currentSession = state.sessions.find(
+        s => s.id === state.currentSessionId
+      );
       if (!currentSession) return state;
       return {
         ...state,
-        sessions: state.sessions.map(s => 
+        sessions: state.sessions.map(s =>
           s.id === state.currentSessionId
-          ? {
-            ...s,
-            messages: s.messages.map((message) =>
-              message.id === messageId
-                ? {
-                    ...message,
-                    variants: message.variants.map((variant) =>
-                      variant.id === message.variants[message.currentVariantIndex].id
-                        ? {
-                            ...variant,
-                            content: newContent,
-                            attachments: attachments || [],
-                          }
-                        : variant
-                    ),
-                  }
-                : message
-            ),
-          }
-          : s
+            ? {
+                ...s,
+                messages: s.messages.map(message =>
+                  message.id === messageId
+                    ? {
+                        ...message,
+                        variants: message.variants.map(variant =>
+                          variant.id ===
+                          message.variants[message.currentVariantIndex].id
+                            ? {
+                                ...variant,
+                                content: newContent,
+                                attachments: attachments || [],
+                              }
+                            : variant
+                        ),
+                      }
+                    : message
+                ),
+              }
+            : s
         ),
       };
     }),
-  
-  setInitialPrompt: (prompt) => set({ initialPrompt: prompt }),
-  
-  switchSession: (sessionId) => set({ currentSessionId: sessionId }),
-  
+
+  setInitialPrompt: prompt => set({ initialPrompt: prompt }),
+
+  switchSession: sessionId => set({ currentSessionId: sessionId }),
+
   createNewSession: (title, initialMessage) => {
     const newSessionId = `session-${Math.random().toString(36).substr(2, 9)}`;
     const now = new Date();
-    set((state) => ({
+    set(state => ({
       sessions: [
         ...state.sessions,
         {
@@ -271,18 +305,18 @@ export const useAIStore = create<AIState>((set, get) => ({
           updatedAt: now,
           messages: initialMessage
             ? [
-              {
-                id: Math.random().toString(36).substr(2, 9),
-                variants: [
-                  {
-                    ...initialMessage,
-                    id: Math.random().toString(36).substr(2, 9),
-                    timestamp: new Date(),
-                  },
-                ],
-                currentVariantIndex: 0,
-              },
-            ]
+                {
+                  id: Math.random().toString(36).substr(2, 9),
+                  variants: [
+                    {
+                      ...initialMessage,
+                      id: Math.random().toString(36).substr(2, 9),
+                      timestamp: new Date(),
+                    },
+                  ],
+                  currentVariantIndex: 0,
+                },
+              ]
             : [],
         },
       ],

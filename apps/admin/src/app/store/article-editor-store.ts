@@ -1,3 +1,13 @@
+/**
+ * Стор редактора статей — глобальное состояние, общее для всех вкладок.
+ *
+ * Управляет: режим редактирования (html/markdown/visual), контент, autosave-статус.
+ * Переключение режима требует подтверждения через `requestModeChange` → AlertDialog →
+ * `confirmModeChange` (защита от случайной потери форматирования при конвертации).
+ *
+ * @see ArticleWorkbench — оркестратор, подписывается на watch() и синхронизирует content
+ * @see EditorTab — использует editorMode для выбора Monaco vs VisualEditor
+ */
 import { create } from 'zustand';
 import type { EditorMode, AutosaveStatus } from '@/app/types/article-editor';
 

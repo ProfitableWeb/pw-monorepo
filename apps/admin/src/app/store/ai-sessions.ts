@@ -1,4 +1,11 @@
-import type { Message } from "./ai-store";
+/**
+ * Mock-данные AI-сессий для демонстрации интерфейса AI-центра.
+ *
+ * Содержит две сессии: анализ блога и создание манифеста.
+ * Каждая включает варианты сообщений, thinking-блоки и tool-вызовы.
+ * Будет заменено на реальные данные из API.
+ */
+import type { Message } from './ai-store';
 
 export interface AISession {
   id: string;
@@ -8,33 +15,34 @@ export interface AISession {
   updatedAt: Date;
 }
 
-// Mock session 1: Blog analytics
+// Мок-сессия 1: анализ блога
 export const blogAnalyticsSession: AISession = {
-  id: "session-1",
-  title: "Анализ блога и контент-план",
+  id: 'session-1',
+  title: 'Анализ блога и контент-план',
   createdAt: new Date(Date.now() - 7200000),
   updatedAt: new Date(Date.now() - 6000000),
   messages: [
-    // First exchange - User asks about blog structure
+    // Первый обмен — пользователь запрашивает анализ контента
     {
-      id: "1",
+      id: '1',
       variants: [
         {
-          id: "v1-1",
-          role: "user",
-          content: "Мне нужно проанализировать эффективность контента в моем блоге за последний квартал. Хочу понять, какие темы заходят лучше всего и что нужно улучшить.",
+          id: 'v1-1',
+          role: 'user',
+          content:
+            'Мне нужно проанализировать эффективность контента в моем блоге за последний квартал. Хочу понять, какие темы заходят лучше всего и что нужно улучшить.',
           timestamp: new Date(Date.now() - 7200000),
         },
       ],
       currentVariantIndex: 0,
     },
-    // AI Response with detailed analysis
+    // Ответ AI с детальным анализом
     {
-      id: "2",
+      id: '2',
       variants: [
         {
-          id: "v2-1",
-          role: "assistant",
+          id: 'v2-1',
+          role: 'assistant',
           content: `Отличный запрос! Я проведу комплексный анализ эффективности вашего блога. Давайте разберем ключевые метрики:
 
 ## Топ-5 статей по охвату:
@@ -56,46 +64,51 @@ export const blogAnalyticsSession: AISession = {
 3. Добавить интерактивные элементы (CodeSandbox, live demos)
 4. Оптимизировать первые 200 слов для повышения retention`,
           timestamp: new Date(Date.now() - 7100000),
-          model: "opus-4.6",
+          model: 'opus-4.6',
           thinking: [
             {
-              id: "t1",
-              content: "Анализирую структуру запроса: пользователь хочет увидеть метрики эффективности и получить практические рекомендации по улучшению контента.",
+              id: 't1',
+              content:
+                'Анализирую структуру запроса: пользователь хочет увидеть метрики эффективности и получить практические рекомендации по улучшению контента.',
               duration: 850,
             },
             {
-              id: "t2",
-              content: "Определяю ключевые аспекты анализа: популярность статей, метрики вовлеченности (время чтения, глубина скролла), социальные сигналы, темы с наибольшим откликом.",
+              id: 't2',
+              content:
+                'Определяю ключевые аспекты анализа: популярность статей, метрики вовлеченности (время чтения, глубина скролла), социальные сигналы, темы с наибольшим откликом.',
               duration: 1240,
             },
             {
-              id: "t3",
-              content: "Формирую структуру ответа: топ статей с конкретными числами → инсайты на основе паттернов → actionable рекомендации для роста.",
+              id: 't3',
+              content:
+                'Формирую структуру ответа: топ статей с конкретными числами → инсайты на основе паттернов → actionable рекомендации для роста.',
               duration: 920,
             },
           ],
           toolCalls: [
             {
-              id: "tc1",
-              name: "fetch_analytics_data",
-              input: { 
-                timeframe: "last_quarter",
-                metrics: ["views", "avg_time", "bounce_rate", "social_shares"],
-                sortBy: "views"
+              id: 'tc1',
+              name: 'fetch_analytics_data',
+              input: {
+                timeframe: 'last_quarter',
+                metrics: ['views', 'avg_time', 'bounce_rate', 'social_shares'],
+                sortBy: 'views',
               },
-              output: "Получены данные по 47 статьям: общий охват 892K просмотров, средний bounce rate 42%, топ-категория 'Веб-разработка' (35% трафика)",
-              status: "success",
+              output:
+                "Получены данные по 47 статьям: общий охват 892K просмотров, средний bounce rate 42%, топ-категория 'Веб-разработка' (35% трафика)",
+              status: 'success',
               duration: 2840,
             },
             {
-              id: "tc2",
-              name: "analyze_content_patterns",
-              input: { 
-                categories: ["tutorials", "reviews", "comparisons", "news"],
-                engagement_metrics: true
+              id: 'tc2',
+              name: 'analyze_content_patterns',
+              input: {
+                categories: ['tutorials', 'reviews', 'comparisons', 'news'],
+                engagement_metrics: true,
               },
-              output: "Выявлены паттерны: туториалы показывают 2.3x retention, сравнения генерируют 40% больше комментариев, новости имеют короткий lifecycle",
-              status: "success",
+              output:
+                'Выявлены паттерны: туториалы показывают 2.3x retention, сравнения генерируют 40% больше комментариев, новости имеют короткий lifecycle',
+              status: 'success',
               duration: 3120,
             },
           ],
@@ -106,19 +119,19 @@ export const blogAnalyticsSession: AISession = {
   ],
 };
 
-// Mock session 2: Manifest creation for ProfitableWeb.ru
+// Мок-сессия 2: создание манифеста ProfitableWeb.ru
 export const manifestCreationSession: AISession = {
-  id: "session-2",
-  title: "Создание манифеста ProfitableWeb.ru",
+  id: 'session-2',
+  title: 'Создание манифеста ProfitableWeb.ru',
   createdAt: new Date(),
   updatedAt: new Date(),
   messages: [
     {
-      id: "m1",
+      id: 'm1',
       variants: [
         {
-          id: "vm1-1",
-          role: "user",
+          id: 'vm1-1',
+          role: 'user',
           content: `Помоги создать манифест издания на основе моих ответов:
 
 **Почему я решил создать это издание?**
@@ -144,11 +157,11 @@ export const manifestCreationSession: AISession = {
       currentVariantIndex: 0,
     },
     {
-      id: "m2",
+      id: 'm2',
       variants: [
         {
-          id: "vm2-1",
-          role: "assistant",
+          id: 'vm2-1',
+          role: 'assistant',
           content: `Отлично! Вижу четкое позиционирование. Давайте превратим это в полноценный манифест ProfitableWeb.ru.
 
 Я проанализировал ваши ответы и подготовил структурированный манифест по всем 8 секциям. Начну с самого главного:
@@ -241,51 +254,65 @@ export const manifestCreationSession: AISession = {
 
 Пока остановлюсь здесь. Хочешь, чтобы я продолжил с остальными секциями (Контентная стратегия, Редакционная политика, Метрики, Развитие, Инструкции для AI)? Или сначала доработаем эти три?`,
           timestamp: new Date(Date.now() - 180000),
-          model: "opus-4.6",
+          model: 'opus-4.6',
           thinking: [
             {
-              id: "tm1",
-              content: "Анализирую ответы пользователя: четкое позиционирование против 'гуру' и инфоцыган, фокус на реальный опыт и цифры. Это сильная дифференциация.",
+              id: 'tm1',
+              content:
+                "Анализирую ответы пользователя: четкое позиционирование против 'гуру' и инфоцыган, фокус на реальный опыт и цифры. Это сильная дифференциация.",
               duration: 1240,
             },
             {
-              id: "tm2",
-              content: "Формирую миссию: должна отражать главную боль аудитории (недоверие к контенту про заработок) и уникальное решение (честность + реальные кейсы).",
+              id: 'tm2',
+              content:
+                'Формирую миссию: должна отражать главную боль аудитории (недоверие к контенту про заработок) и уникальное решение (честность + реальные кейсы).',
               duration: 1680,
             },
             {
-              id: "tm3",
-              content: "Детализирую портреты аудитории: выделяю 3 сегмента с разным уровнем опыта, но общей потребностью в честной информации. Это поможет таргетировать контент.",
+              id: 'tm3',
+              content:
+                'Детализирую портреты аудитории: выделяю 3 сегмента с разным уровнем опыта, но общей потребностью в честной информации. Это поможет таргетировать контент.',
               duration: 1420,
             },
             {
-              id: "tm4",
-              content: "Формулирую Tone of Voice: баланс между экспертностью и дружелюбием. Важно избежать пафоса 'гуру', но сохранить авторитет практика.",
+              id: 'tm4',
+              content:
+                "Формулирую Tone of Voice: баланс между экспертностью и дружелюбием. Важно избежать пафоса 'гуру', но сохранить авторитет практика.",
               duration: 980,
             },
           ],
           toolCalls: [
             {
-              id: "ttc1",
-              name: "analyze_competitive_positioning",
+              id: 'ttc1',
+              name: 'analyze_competitive_positioning',
               input: {
-                niche: "онлайн заработок",
-                competitors: ["vc.ru/finance", "secretmag.ru", "TexTerra", "инфоцыгане"],
-                differentiation: "реальный опыт + цифры"
+                niche: 'онлайн заработок',
+                competitors: [
+                  'vc.ru/finance',
+                  'secretmag.ru',
+                  'TexTerra',
+                  'инфоцыгане',
+                ],
+                differentiation: 'реальный опыт + цифры',
               },
-              output: "Найдена сильная незанятая ниша: большинство конкурентов либо теоретики, либо скамеры. 'Честный практик' = сильное УТП.",
-              status: "success",
+              output:
+                "Найдена сильная незанятая ниша: большинство конкурентов либо теоретики, либо скамеры. 'Честный практик' = сильное УТП.",
+              status: 'success',
               duration: 2340,
             },
             {
-              id: "ttc2",
-              name: "segment_target_audience",
+              id: 'ttc2',
+              name: 'segment_target_audience',
               input: {
-                demographics: { age: "25-40", occupation: "online workers" },
-                psychographics: { values: ["честность", "результат"], pains: ["недоверие", "информационный шум"] }
+                demographics: { age: '25-40', occupation: 'online workers' },
+                psychographics: {
+                  values: ['честность', 'результат'],
+                  pains: ['недоверие', 'информационный шум'],
+                },
               },
-              output: "Выделено 3 ключевых сегмента с общей психографикой но разными этапами customer journey",
-              status: "success",
+              output:
+                'Выделено 3 ключевых сегмента с общей психографикой но разными этапами customer journey',
+              status: 'success',
               duration: 1890,
             },
           ],
@@ -294,23 +321,23 @@ export const manifestCreationSession: AISession = {
       currentVariantIndex: 0,
     },
     {
-      id: "m3",
+      id: 'm3',
       variants: [
         {
-          id: "vm3-1",
-          role: "user",
-          content: "Отлично! Продолжай, пожалуйста, с оставшимися секциями.",
+          id: 'vm3-1',
+          role: 'user',
+          content: 'Отлично! Продолжай, пожалуйста, с оставшимися секциями.',
           timestamp: new Date(Date.now() - 120000),
         },
       ],
       currentVariantIndex: 0,
     },
     {
-      id: "m4",
+      id: 'm4',
       variants: [
         {
-          id: "vm4-1",
-          role: "assistant",
+          id: 'vm4-1',
+          role: 'assistant',
           content: `Продолжаю! Вот оставшиеся секции манифеста:
 
 ---
@@ -501,40 +528,58 @@ export const manifestCreationSession: AISession = {
 
 Хочешь, чтобы я помог с чем-то из этого?`,
           timestamp: new Date(Date.now() - 30000),
-          model: "opus-4.6",
+          model: 'opus-4.6',
           thinking: [
             {
-              id: "tm5",
-              content: "Завершаю манифест оставшимися секциями. Важно сохранить детализацию и практичность - каждый раздел должен быть actionable.",
+              id: 'tm5',
+              content:
+                'Завершаю манифест оставшимися секциями. Важно сохранить детализацию и практичность - каждый раздел должен быть actionable.',
               duration: 890,
             },
             {
-              id: "tm6",
-              content: "Для контентной стратегии задаю четкое процентное распределение тем и форматов. Это поможет AI-агенту приоритезировать идеи.",
+              id: 'tm6',
+              content:
+                'Для контентной стратегии задаю четкое процентное распределение тем и форматов. Это поможет AI-агенту приоритезировать идеи.',
               duration: 1120,
             },
           ],
           toolCalls: [
             {
-              id: "ttc3",
-              name: "create_editorial_guidelines",
+              id: 'ttc3',
+              name: 'create_editorial_guidelines',
               input: {
-                topics: ["фриланс", "монетизация", "инфопродукты", "SEO", "кейсы"],
-                quality_standards: ["personal_experience", "real_numbers", "actionable_steps"]
+                topics: [
+                  'фриланс',
+                  'монетизация',
+                  'инфопродукты',
+                  'SEO',
+                  'кейсы',
+                ],
+                quality_standards: [
+                  'personal_experience',
+                  'real_numbers',
+                  'actionable_steps',
+                ],
               },
-              output: "Создан полный набор редакционных стандартов с чек-листами для каждого типа контента",
-              status: "success",
+              output:
+                'Создан полный набор редакционных стандартов с чек-листами для каждого типа контента',
+              status: 'success',
               duration: 2140,
             },
             {
-              id: "ttc4",
-              name: "define_success_metrics",
+              id: 'ttc4',
+              name: 'define_success_metrics',
               input: {
-                timeframe: "12_months",
-                kpi_categories: ["content", "audience", "engagement", "monetization"]
+                timeframe: '12_months',
+                kpi_categories: [
+                  'content',
+                  'audience',
+                  'engagement',
+                  'monetization',
+                ],
               },
-              output: "Определены измеримые KPI с разбивкой по кварталам",
-              status: "success",
+              output: 'Определены измеримые KPI с разбивкой по кварталам',
+              status: 'success',
               duration: 1890,
             },
           ],

@@ -1,3 +1,10 @@
+/**
+ * Стор заголовка страницы.
+ *
+ * Управляет заголовком и хлебными крошками в шапке админки.
+ * Каждая страница при монтировании вызывает `setBreadcrumbs` или `setTitle`,
+ * а при размонтировании — `reset`.
+ */
 import { create } from 'zustand';
 import { LucideIcon } from 'lucide-react';
 

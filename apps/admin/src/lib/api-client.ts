@@ -1,13 +1,18 @@
 /**
- * PW-030 | Типизированный API-клиент для админки.
- * Аналог apps/web/src/lib/api-client.ts, но для Vite (import.meta.env).
- * credentials: 'include' для httpOnly cookies аутентификации.
+ * Типизированный API-клиент админки.
+ *
+ * Архитектура: Raw-типы (snake_case) → mappers → Public-типы (camelCase).
+ * Авто-рефреш при 401 (одна повторная попытка через authRefresh).
+ * credentials: 'include' для httpOnly-кук авторизации.
+ *
+ * @see store/auth-store.ts — использует authLogin, authLogout, authGetMe
+ * @see apps/web/src/lib/api-client.ts — аналогичный клиент для web
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 // ---------------------------------------------------------------------------
-// Raw API types (snake_case)
+// Raw-типы API (snake_case — как возвращает бэкенд)
 // ---------------------------------------------------------------------------
 
 interface ApiResponseRaw<T> {
@@ -71,7 +76,7 @@ interface CommentThreadRaw {
 }
 
 // ---------------------------------------------------------------------------
-// Public types (camelCase)
+// Публичные типы (camelCase — используются в компонентах)
 // ---------------------------------------------------------------------------
 
 export interface AdminCategory {
@@ -133,7 +138,7 @@ export interface PaginatedResult<T> {
 }
 
 // ---------------------------------------------------------------------------
-// Auth types
+// Типы авторизации
 // ---------------------------------------------------------------------------
 
 interface AuthUserRaw {
@@ -153,7 +158,7 @@ export interface AuthUser {
 }
 
 // ---------------------------------------------------------------------------
-// Mappers
+// Маппинг snake_case → camelCase
 // ---------------------------------------------------------------------------
 
 function mapCategory(raw: CategoryRaw): AdminCategory {
@@ -222,7 +227,7 @@ function mapAuthUser(raw: AuthUserRaw): AuthUser {
 }
 
 // ---------------------------------------------------------------------------
-// Base fetch
+// Базовый fetch с авто-рефрешем
 // ---------------------------------------------------------------------------
 
 export class ApiError extends Error {
@@ -298,7 +303,7 @@ async function apiFetchWithMeta<T>(
 }
 
 // ---------------------------------------------------------------------------
-// Public API functions
+// Публичные API-функции: контент
 // ---------------------------------------------------------------------------
 
 export async function getAllCategories(): Promise<AdminCategory[]> {
@@ -373,7 +378,7 @@ export async function getUserComments(
 }
 
 // ---------------------------------------------------------------------------
-// Auth API
+// API авторизации
 // ---------------------------------------------------------------------------
 
 export async function authLogin(
@@ -427,7 +432,7 @@ export async function authRefresh(): Promise<boolean> {
 }
 
 export async function getOAuthUrl(provider: string): Promise<string> {
-  // Передаём base path (/admin) чтобы после OAuth вернуться в админку
+  // Base path (/admin) — чтобы после OAuth вернуться в админку
   const origin = window.location.origin + '/admin';
   const res = await fetch(
     `${API_BASE}/auth/${provider}/url?origin=${encodeURIComponent(origin)}`,
@@ -439,7 +444,7 @@ export async function getOAuthUrl(provider: string): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------
-// Profile API (PW-034)
+// API профиля пользователя
 // ---------------------------------------------------------------------------
 
 interface ProfileRaw {
