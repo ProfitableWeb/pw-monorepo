@@ -1,145 +1,150 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Инструкции для Claude Code при работе с кодовой базой этого репозитория.
 
-## Project Overview
+## Обзор проекта
 
-ProfitableWeb is a **Turborepo monorepo** — a research blog about AI-automated labor transformation.
+ProfitableWeb — **Turborepo-монорепо**, исследовательский блог о трансформации труда через ИИ-автоматизацию.
 
-- `apps/web` — Next.js 15 frontend (App Router, React 19, SCSS modules)
-- `apps/admin` — Vite SPA admin panel (React 19, Radix UI, Tailwind CSS)
-- `apps/api` — FastAPI Python backend (sync SQLAlchemy, PostgreSQL)
-- `packages/types` — Shared TypeScript types (`@profitable-web/types`)
+- `apps/web` — Next.js 15 фронтенд (App Router, React 19, SCSS-модули)
+- `apps/admin` — Vite SPA админ-панель (React 19, Radix UI, Tailwind CSS)
+- `apps/api` — FastAPI Python бэкенд (синхронный SQLAlchemy, PostgreSQL)
+- `packages/types` — Общие TypeScript-типы (`@profitable-web/types`)
 
-**Package managers**: Bun (>=1.2.17) for JavaScript, uv for Python
+**Пакетные менеджеры**: Bun (>=1.2.17) для JavaScript, uv для Python
 
-## Common Commands
+## Основные команды
 
-### Monorepo (from root)
-
-```bash
-bun turbo dev                                  # Run all apps
-bun turbo dev --filter=@profitable-web/web     # Web only (port 3000)
-bun turbo dev --filter=@profitable-web/admin   # Admin only (port 3001)
-bun turbo dev --filter=@profitable-web/api     # API only (port 8000)
-bun turbo build                                # Build all
-bun turbo lint                                 # Lint all
-bun turbo type-check                           # Type-check all
-bun turbo test                                 # Test all
-bun run format                                 # Prettier format
-```
-
-### Frontend (apps/web)
+### Монорепо (из корня)
 
 ```bash
-bun --cwd apps/web run lint:fix       # Auto-fix lint issues
-bun --cwd apps/web run test           # Run Vitest
-bun --cwd apps/web run test:coverage  # Coverage report
-bun --cwd apps/web run test:watch     # Watch mode
+bun turbo dev                                  # Запуск всех приложений
+bun turbo dev --filter=@profitable-web/web     # Только web (порт 3000)
+bun turbo dev --filter=@profitable-web/admin   # Только admin (порт 3001)
+bun turbo dev --filter=@profitable-web/api     # Только api (порт 8000)
+bun turbo build                                # Сборка всех
+bun turbo lint                                 # Линтинг всех
+bun turbo type-check                           # Проверка типов всех
+bun turbo test                                 # Тесты всех
+bun run format                                 # Prettier-форматирование
 ```
 
-### Backend (apps/api)
+### Фронтенд (apps/web)
+
+```bash
+bun --cwd apps/web run lint:fix       # Автоисправление линтера
+bun --cwd apps/web run test           # Запуск Vitest
+bun --cwd apps/web run test:coverage  # Отчёт покрытия
+bun --cwd apps/web run test:watch     # Watch-режим
+```
+
+### Бэкенд (apps/api)
 
 ```bash
 cd apps/api
-uv sync                                # Install dependencies
-uv run pytest                          # All tests
-uv run pytest tests/test_specific.py   # Single test file
-uv run ruff check                      # Lint
-uv run ruff check --fix                # Auto-fix lint
-uv run mypy .                          # Type check
-uv run alembic upgrade head            # Apply migrations
-uv run alembic revision --autogenerate -m "description"  # Create migration
+uv sync                                # Установка зависимостей
+uv run pytest                          # Все тесты
+uv run pytest tests/test_specific.py   # Один файл тестов
+uv run ruff check                      # Линтинг
+uv run ruff check --fix                # Автоисправление линтера
+uv run mypy .                          # Проверка типов
+uv run alembic upgrade head            # Применить миграции
+uv run alembic revision --autogenerate -m "описание"  # Создать миграцию
 ```
 
-## Architecture
+## Архитектура
 
 ### apps/web — Next.js 15
 
-**Routing**: Single dynamic route `[slug]/page.tsx` resolves content type by priority: static pages → categories
-(`getCategoryBySlug`) → articles (`getArticleBySlug`) → 404.
+**Роутинг**: единый динамический маршрут `[slug]/page.tsx` определяет тип контента по приоритету: статические страницы →
+категории (`getCategoryBySlug`) → статьи (`getArticleBySlug`) → 404.
 
-**Styling**: SCSS modules only (`component.module.scss`). Theme system in `styles/themes/{light,dark}/` with
-component-level overrides. Utility mixins in `styles/utils/`. No Tailwind, no CSS-in-JS.
+**Стили**: только SCSS-модули (`component.module.scss`). Система тем в `styles/themes/{light,dark}/` с переопределениями
+на уровне компонентов. Миксины в `styles/utils/`. Без Tailwind, без CSS-in-JS.
 
-**State**: TanStack React Query for server state. React Context for auth (`contexts/auth/AuthContext.tsx`) and theme
-(`contexts/ThemeContext.tsx`). Query key factories in `lib/query-keys.ts`.
+**Состояние**: TanStack React Query для серверного состояния. React Context для авторизации
+(`contexts/auth/AuthContext.tsx`) и темы (`contexts/ThemeContext.tsx`). Фабрики ключей запросов в `lib/query-keys.ts`.
 
-**Provider stack** (in `components/providers/Providers.tsx`): QueryProvider → ThemeProvider → AuthProvider →
+**Стек провайдеров** (`components/providers/Providers.tsx`): QueryProvider → ThemeProvider → AuthProvider →
 ToastProvider.
 
-**API client** (`lib/api-client.ts`): Fetch wrapper with `credentials: 'include'` for httpOnly cookies. Automatic
-snake_case→camelCase mapping of API responses. Auto-refresh on 401 (one retry via `authRefresh()`). SSR uses absolute
-URL (`http://localhost:8000/api`), client uses relative `/api` (nginx proxy).
+**API-клиент** (`lib/api-client.ts`): обёртка над fetch с `credentials: 'include'` для httpOnly-кук. Автоматический
+маппинг snake_case → camelCase ответов API. Авто-рефреш при 401 (одна повторная попытка через `authRefresh()`). SSR
+использует абсолютный URL (`http://localhost:8000/api`), клиент — относительный `/api` (через nginx-прокси).
 
-**SEO**: `generateMetadata()` + JSON-LD structured data in every content page. Helpers in `utils/seo.ts`.
+**SEO**: `generateMetadata()` + JSON-LD структурированные данные на каждой контентной странице. Хелперы в
+`utils/seo.ts`.
 
 ### apps/admin — Vite SPA
 
-**Different stack from web**: Vite (not Next.js), Tailwind CSS (not SCSS), Radix UI components, Zustand stores (not
-React Context).
+**Отличается от web по стеку**: Vite (не Next.js), Tailwind CSS (не SCSS), компоненты Radix UI, Zustand-сторы (не React
+Context).
 
-**Routing**: Client-side via Zustand `navigation-store.ts` (no file-based routing). Base path: `/admin/`.
+**Роутинг**: клиентский через Zustand `navigation-store.ts` (без файлового роутинга). Базовый путь: `/admin/`.
 
-**Auth store**: `store/auth-store.ts` — `useAuthStore` with login, logout, checkAuth, OAuth.
+**Стор авторизации**: `store/auth-store.ts` — `useAuthStore` с login, logout, checkAuth, OAuth.
 
-**API client**: Same pattern as web (`lib/api-client.ts`) but uses `import.meta.env.VITE_API_URL`.
+**API-клиент**: тот же паттерн, что и в web (`lib/api-client.ts`), но использует `import.meta.env.VITE_API_URL`.
+
+**Организация кода**: подробные правила в `apps/admin/CLAUDE.md` — структура `components/`, атомарная декомпозиция,
+иерархия вложенности секций, именование файлов. Эталон паттерна — `sections/ai-center/` (с README.md внутри). Шаблон
+README для секций — `docs/templates/section-readme-template.md`.
 
 ### apps/api — FastAPI
 
-**Database**: Sync PostgreSQL via SQLAlchemy 2.0 + psycopg2 (deliberate choice, not async). UUID primary keys.
-`TimestampMixin` for created_at/updated_at.
+**База данных**: синхронный PostgreSQL через SQLAlchemy 2.0 + psycopg2 (осознанный выбор, не async). UUID-первичные
+ключи. `TimestampMixin` для created_at/updated_at.
 
-**Service layer pattern**: Routers (`api/`) → Services (`services/`) → Models (`models/`). Pydantic schemas in
-`schemas/` (snake_case).
+**Паттерн сервисного слоя**: роутеры (`api/`) → сервисы (`services/`) → модели (`models/`). Pydantic-схемы в `schemas/`
+(snake_case).
 
-**Auth**: JWT access token (15min, Path=/api) + refresh token (7d, Path=/api/auth) in httpOnly cookies. OAuth: Yandex,
-Google, Telegram Login Widget. FastAPI dependencies: `get_current_user`, `get_current_admin`, `get_optional_user` in
-`auth/dependencies.py`.
+**Авторизация**: JWT access-токен (15 мин, Path=/api) + refresh-токен (7 дней, Path=/api/auth) в httpOnly-куках. OAuth:
+Яндекс, Google, Telegram Login Widget. FastAPI-зависимости: `get_current_user`, `get_current_admin`, `get_optional_user`
+в `auth/dependencies.py`.
 
-**User roles**: admin, editor, author, viewer.
+**Роли пользователей**: admin, editor, author, viewer.
 
-**File storage**: Local disk uploads served by nginx. Service abstraction in `services/storage.py`.
+**Хранение файлов**: локальный диск, раздача через nginx. Абстракция сервиса в `services/storage.py`.
 
-**Migrations**: Alembic, auto-applied on deploy via CI/CD.
+**Миграции**: Alembic, автоприменение при деплое через CI/CD.
 
-### Deployment
+### Деплой
 
-nginx :80 proxies to: web :3000 (Next.js SSR), admin :3001 (Vite), api :8000 (uvicorn), uploads/ (static). PM2 manages
-all processes (`ecosystem.config.js`). Cloud.ru VM, CI/CD via GitHub Actions.
+nginx :80 проксирует: web :3000 (Next.js SSR), admin :3001 (Vite), api :8000 (uvicorn), uploads/ (статика). PM2
+управляет всеми процессами (`ecosystem.config.js`). Cloud.ru VM, CI/CD через GitHub Actions.
 
 ## Git Workflow
 
-**Dual repository**: GitVerse (`origin`, primary) + GitHub (`github`, mirror).
+**Два репозитория**: GitVerse (`origin`, основной) + GitHub (`github`, зеркало).
 
 ```bash
-git push            # GitVerse only
-git push github     # GitHub only
-git pushall         # Both (custom alias)
+git push            # Только GitVerse
+git push github     # Только GitHub
+git pushall         # Оба (кастомный алиас)
 ```
 
-**Commit format** (REQUIRED): `type(PW-XXXX): описание на русском`
+**Формат коммитов** (ОБЯЗАТЕЛЬНО): `type(PW-XXXX): описание на русском`
 
-- Task number must exist in `docs/tasks/`
-- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
+- Номер задачи должен существовать в `docs/tasks/`
+- Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
 - **НЕ добавлять** `Co-Authored-By:` или другие строки авторства
 
-**Pre-commit hooks**: Husky runs lint-staged — `apps/web` files get lint:fix + prettier + type-check, `apps/admin` gets
-prettier only.
+**Pre-commit хуки**: Husky запускает lint-staged — файлы `apps/web` проходят lint:fix + prettier + type-check,
+`apps/admin` — только prettier.
 
-## Content Language
+## Язык контента
 
-Primary language is **Russian**. All user-facing text, commit messages, and documentation in Russian unless technical
-terms require English.
+Основной язык — **русский**. Весь пользовательский текст, коммиты и документация на русском, если технические термины не
+требуют английского.
 
-## Key Files
+## Ключевые файлы
 
-- `apps/web/src/app/[slug]/page.tsx` — Unified dynamic route handler
-- `apps/web/src/lib/api-client.ts` — Frontend API client (fetch wrapper, auth refresh, snake→camel)
-- `apps/web/src/contexts/auth/AuthContext.tsx` — Auth context with OAuth support
-- `apps/web/src/styles/themes/` — Light/dark SCSS theme definitions
-- `apps/api/src/core/config.py` — Backend settings (Pydantic Settings from .env)
-- `apps/api/src/auth/` — JWT, OAuth providers, FastAPI auth dependencies
-- `packages/types/` — Shared TypeScript types for both frontends
-- `docs/architecture/decisions/` — ADRs (database, auth, file storage)
-- `docs/architecture/runbooks/` — Operational guides (deploy, db-sync, promote-admin)
+- `apps/web/src/app/[slug]/page.tsx` — единый динамический маршрут
+- `apps/web/src/lib/api-client.ts` — API-клиент фронтенда (fetch-обёртка, авто-рефреш, snake→camel)
+- `apps/web/src/contexts/auth/AuthContext.tsx` — контекст авторизации с OAuth
+- `apps/web/src/styles/themes/` — определения SCSS-тем (светлая/тёмная)
+- `apps/api/src/core/config.py` — настройки бэкенда (Pydantic Settings из .env)
+- `apps/api/src/auth/` — JWT, OAuth-провайдеры, FastAPI-зависимости авторизации
+- `packages/types/` — общие TypeScript-типы для обоих фронтендов
+- `docs/architecture/decisions/` — ADR (база данных, авторизация, хранение файлов)
+- `docs/architecture/runbooks/` — операционные гайды (деплой, синхронизация БД, назначение админа)

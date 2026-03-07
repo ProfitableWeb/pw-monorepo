@@ -16,7 +16,7 @@ export function SourceViewerPanel({ itemId }: PanelComponentProps) {
 
   return (
     <div className='p-4 space-y-4 overflow-auto h-full'>
-      {/* Title */}
+      {/* Заголовок */}
       <h2 className='font-semibold text-base'>{source.title}</h2>
 
       {/* URL */}
@@ -32,7 +32,7 @@ export function SourceViewerPanel({ itemId }: PanelComponentProps) {
         </a>
       )}
 
-      {/* Annotation */}
+      {/* Аннотация */}
       {source.annotation && (
         <div>
           <h3 className='text-xs font-medium text-muted-foreground mb-1.5'>
@@ -42,7 +42,7 @@ export function SourceViewerPanel({ itemId }: PanelComponentProps) {
         </div>
       )}
 
-      {/* Quotes */}
+      {/* Цитаты */}
       {source.quotes.length > 0 && (
         <div>
           <h3 className='text-xs font-medium text-muted-foreground mb-2'>
@@ -62,7 +62,7 @@ export function SourceViewerPanel({ itemId }: PanelComponentProps) {
         </div>
       )}
 
-      {/* Meta */}
+      {/* Метаданные */}
       <div className='text-xs text-muted-foreground/60 pt-2 border-t'>
         Добавлено {new Date(source.createdAt).toLocaleDateString('ru-RU')}
       </div>

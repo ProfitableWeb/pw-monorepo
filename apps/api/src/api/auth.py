@@ -6,8 +6,6 @@ PW-030 | Auth router: register, login, refresh, logout, me, OAuth.
 import logging
 from urllib.parse import urlencode
 
-logger = logging.getLogger(__name__)
-
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from jose import JWTError
 from sqlalchemy.orm import Session
@@ -33,6 +31,7 @@ from src.schemas.auth import (
 )
 from src.services import user as user_service
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 

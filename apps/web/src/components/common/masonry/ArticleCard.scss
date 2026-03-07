@@ -138,21 +138,27 @@
     // Стили для ссылок в HTML контенте
     a {
       color: var(--masonry-link-color);
-      text-decoration: underline;
-      text-decoration-color: var(--masonry-link-underline);
-      text-underline-offset: 2px;
-      transition: 
+      text-decoration: none;
+      border-bottom: 1px solid var(--masonry-link-underline);
+      transition:
         color 0.2s ease-in-out,
-        text-decoration-color 0.2s ease-in-out;
+        border-color 0.2s ease-in-out;
 
       &:hover {
         color: var(--masonry-link-hover);
-        text-decoration-color: var(--masonry-link-underline-hover);
+        border-color: var(--masonry-link-underline-hover);
       }
 
       &:visited {
         color: var(--masonry-link-visited);
       }
+    }
+
+    mark {
+      background-color: var(--mark-green-bg, #c5f3c5);
+      color: var(--mark-green-text, #182718);
+      padding: 2px 6px;
+      border-radius: 3px;
     }
 
     blockquote {

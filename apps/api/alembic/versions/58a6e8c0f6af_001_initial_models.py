@@ -1,15 +1,16 @@
 """001_initial_models
 
 Revision ID: 58a6e8c0f6af
-Revises: 
+Revises:
+
 Create Date: 2026-02-14 19:27:41.630256
 
 """
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '58a6e8c0f6af'

@@ -1,3 +1,16 @@
+/**
+ * Стор docking-layout рабочего пространства исследований.
+ *
+ * Управляет: боковые панели (ширина, свёрнутость), центральный грид (дерево LayoutNode).
+ * Каждое исследование имеет свой layout (Record<researchId, LayoutNode>).
+ * Layout сохраняется в localStorage для персистентности между сессиями.
+ *
+ * Дерево LayoutNode — рекурсивная структура: split-ноды делят пространство,
+ * panel-ноды содержат вкладки (PanelTab). Helper-функции обходят дерево для обновлений.
+ *
+ * @see types/workspace-layout.ts — типы LayoutNode, LayoutPanel, PanelTab
+ * @see components/workspace/ — UI-компоненты, рендерящие layout
+ */
 import { create } from 'zustand';
 import type {
   LayoutNode,
@@ -7,7 +20,7 @@ import type {
 
 const STORAGE_PREFIX = 'workspace-layout-';
 
-// === Helpers для рекурсивного обхода LayoutNode ===
+// === Хелперы для рекурсивного обхода LayoutNode ===
 
 function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
@@ -60,25 +73,23 @@ function updateSplitInTree(
   return node;
 }
 
-// === Store ===
-
 interface WorkspaceLayoutState {
-  // Sidebars
+  // Боковые панели
   leftSidebarWidth: number;
   leftSidebarCollapsed: boolean;
   rightSidebarWidth: number;
   rightSidebarCollapsed: boolean;
 
-  // Central grid layouts per research
+  // Центральные layout'ы по исследованиям
   layouts: Record<string, LayoutNode>;
 
-  // Sidebar actions
+  // Действия с боковыми панелями
   setLeftSidebarWidth: (width: number) => void;
   toggleLeftSidebar: () => void;
   setRightSidebarWidth: (width: number) => void;
   toggleRightSidebar: () => void;
 
-  // Layout actions
+  // Действия с layout'ом
   getLayout: (researchId: string) => LayoutNode | undefined;
   setLayout: (researchId: string, layout: LayoutNode) => void;
   updateSplitRatio: (
@@ -87,7 +98,7 @@ interface WorkspaceLayoutState {
     ratio: number
   ) => void;
 
-  // Tab management
+  // Управление вкладками
   openTab: (researchId: string, panelId: string, tab: PanelTab) => void;
   closeTab: (researchId: string, panelId: string, tabId: string) => void;
   setActiveTab: (researchId: string, panelId: string, tabId: string) => void;
@@ -99,7 +110,7 @@ interface WorkspaceLayoutState {
     dirty: boolean
   ) => void;
 
-  // Persistence
+  // Персистентность
   saveToLocalStorage: (researchId: string) => void;
   loadFromLocalStorage: (researchId: string) => boolean;
 }
@@ -142,7 +153,7 @@ export const useWorkspaceLayoutStore = create<WorkspaceLayoutState>(
       const panel = findPanelById(cloned, panelId) || findFirstPanel(cloned);
       if (!panel) return;
 
-      // Check if tab already open
+      // Вкладка уже открыта — переключиться на неё
       const existingTab = panel.tabs.find(
         t => t.itemId === tab.itemId && t.itemType === tab.itemType
       );
@@ -153,7 +164,7 @@ export const useWorkspaceLayoutStore = create<WorkspaceLayoutState>(
       }
 
       if (!tab.isPinned) {
-        // Replace existing preview tab (first unpinned)
+        // Заменить превью-вкладку (первую незакреплённую)
         const previewIndex = panel.tabs.findIndex(t => !t.isPinned);
         if (previewIndex !== -1) {
           panel.tabs[previewIndex] = tab;
@@ -239,7 +250,7 @@ export const useWorkspaceLayoutStore = create<WorkspaceLayoutState>(
             JSON.stringify(layout)
           );
         } catch {
-          // Storage full or unavailable
+          // localStorage заполнен или недоступен
         }
       }
     },
@@ -253,7 +264,7 @@ export const useWorkspaceLayoutStore = create<WorkspaceLayoutState>(
           return true;
         }
       } catch {
-        // Invalid JSON
+        // Невалидный JSON
       }
       return false;
     },

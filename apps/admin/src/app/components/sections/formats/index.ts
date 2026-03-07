@@ -1,0 +1,1 @@
+export { FormatsDashboard } from './FormatsDashboard';

@@ -1,37 +1,40 @@
 import { useState, useEffect } from 'react';
-import { AccessDenied } from '@/app/components/access-denied';
-import { ThemeProvider } from '@/app/components/theme-provider';
-import { SidebarNav } from '@/app/components/sidebar-nav';
-import { Header } from '@/app/components/header';
-import { DashboardSection } from '@/app/components/dashboard-section';
-import { ArticlesSection } from '@/app/components/articles-section';
-import { CalendarSection } from '@/app/components/calendar-section';
-import { CategoriesSection } from '@/app/components/categories-section';
-import { TagsSection } from '@/app/components/tags-section';
-import { MediaSection } from '@/app/components/media-section';
-import { AICenter } from '@/app/components/ai-center';
-import { ManifestPage } from '@/app/components/manifest-page';
-import { StyleDashboard } from '@/app/components/style-dashboard';
-import { EditorialHub } from '@/app/components/editorial-hub';
-import { ContentHub } from '@/app/components/content-hub';
-import { FormatsDashboard } from '@/app/components/formats-dashboard';
-import { SocialsDashboard } from '@/app/components/socials-dashboard';
-import { SettingsPage } from '@/app/components/settings-page';
-import { UsersPage } from '@/app/components/users-page';
-import { PromotionPage } from '@/app/components/promotion-page';
-import { AnalyticsPage } from '@/app/components/analytics-page';
-import { AdsPage } from '@/app/components/ads-page';
-import { SEOPage } from '@/app/components/seo-page';
-import { CommandPalette } from '@/app/components/command-palette';
-import { ResearchListPage } from '@/app/components/research-list-page';
-import { ResearchWorkspace } from '@/app/components/research-workspace';
-import { AiSidebar } from '@/app/components/ai-sidebar';
+import { AccessDenied } from '@/app/components/layout/access-denied';
+import { ThemeProvider } from '@/app/components/layout/theme-provider';
+import { SidebarNav } from '@/app/components/layout/sidebar-nav';
+import { Header } from '@/app/components/layout/header';
+import { DashboardSection } from '@/app/components/sections/dashboard';
+import { ArticlesSection } from '@/app/components/sections/articles';
+import { CalendarSection } from '@/app/components/sections/calendar';
+import { CategoriesSection } from '@/app/components/sections/categories';
+import { TagsSection } from '@/app/components/sections/tags';
+import { MediaSection } from '@/app/components/sections/media';
+import { AICenter } from '@/app/components/sections/ai-center';
+import { ManifestPage } from '@/app/components/sections/manifest';
+import { StyleDashboard } from '@/app/components/sections/style';
+import { EditorialHub } from '@/app/components/sections/editorial';
+import { ContentHub } from '@/app/components/sections/content-hub';
+import { FormatsDashboard } from '@/app/components/sections/formats';
+import { SocialsDashboard } from '@/app/components/sections/socials';
+import { SettingsPage } from '@/app/components/sections/settings';
+import { UsersPage } from '@/app/components/sections/users';
+import { PromotionPage } from '@/app/components/sections/promotion';
+import { AnalyticsPage } from '@/app/components/sections/analytics';
+import { AdsPage } from '@/app/components/sections/ads';
+import { SeoPage } from '@/app/components/sections/seo';
+import { CommandPalette } from '@/app/components/layout/command-palette';
+import {
+  ResearchListPage,
+  ResearchWorkspace,
+} from '@/app/components/sections/research';
+import { ArticleWorkbench } from '@/app/components/sections/article-workbench/ArticleWorkbench';
+import { AiSidebar } from '@/app/components/layout/ai-sidebar';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { cn } from '@/app/components/ui/utils';
 import { useIsMobile } from '@/app/components/ui/use-mobile';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { useAuthStore } from '@/app/store/auth-store';
-import { LoginPage } from '@/app/components/login-page';
+import { LoginPage } from '@/app/components/layout/login-page';
 import { Drawer } from 'vaul';
 
 function App() {
@@ -113,6 +116,8 @@ function App() {
         return 'Исследования';
       case 'research-workspace':
         return 'Рабочее пространство';
+      case 'article-editor':
+        return 'Редактор статьи';
       case 'seo':
         return 'SEO';
       default:
@@ -161,7 +166,7 @@ function App() {
       case 'ads':
         return <AdsPage />;
       case 'seo':
-        return <SEOPage />;
+        return <SeoPage />;
       default:
         return <DashboardSection />;
     }
@@ -298,7 +303,7 @@ function App() {
               </div>
             ) : activeSection === 'seo' ? (
               <div className='flex-1 min-h-0 overflow-hidden'>
-                <SEOPage />
+                <SeoPage />
               </div>
             ) : activeSection === 'research' ? (
               <ScrollArea className='flex-1 min-h-0'>
@@ -309,6 +314,10 @@ function App() {
             ) : activeSection === 'research-workspace' ? (
               <div className='flex-1 min-h-0 overflow-hidden'>
                 <ResearchWorkspace />
+              </div>
+            ) : activeSection === 'article-editor' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <ArticleWorkbench />
               </div>
             ) : (
               <ScrollArea className='flex-1 min-h-0'>

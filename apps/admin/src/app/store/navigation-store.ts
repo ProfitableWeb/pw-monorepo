@@ -1,3 +1,10 @@
+/**
+ * Стор навигации — клиентский роутинг админ-панели.
+ *
+ * Вместо файлового роутинга используется Zustand-стор с `navigateTo(pageId)`.
+ * `navigationItems` определяет структуру бокового меню (секции, иконки, ключевые слова для поиска).
+ * История последних 5 страниц хранится в `recentPages` для быстрого возврата.
+ */
 import { create } from 'zustand';
 
 export type PageId =
@@ -21,7 +28,8 @@ export type PageId =
   | 'ads'
   | 'seo'
   | 'research'
-  | 'research-workspace';
+  | 'research-workspace'
+  | 'article-editor';
 
 export interface NavigationItem {
   id: PageId;
@@ -114,6 +122,14 @@ export const navigationItems: NavigationItem[] = [
     icon: 'FlaskConical',
     section: 'Контент',
     path: 'research-workspace',
+    keywords: [],
+  },
+  {
+    id: 'article-editor',
+    title: 'Редактор статьи',
+    icon: 'PenLine',
+    section: 'Контент',
+    path: 'article-editor',
     keywords: [],
   },
 
@@ -213,14 +229,18 @@ export const navigationItems: NavigationItem[] = [
 interface NavigationStore {
   currentPage: PageId;
   recentPages: PageId[];
+  seoKbArticleId?: string;
   navigateTo: (pageId: PageId) => void;
+  navigateToSeoKb: (articleId: string) => void;
+  clearSeoKbArticleId: () => void;
   getPageTitle: (pageId: PageId) => string;
   getNavigationItem: (pageId: PageId) => NavigationItem | undefined;
 }
 
-export const useNavigationStore = create<NavigationStore>((set, get) => ({
+export const useNavigationStore = create<NavigationStore>(set => ({
   currentPage: 'dashboard',
   recentPages: [],
+  seoKbArticleId: undefined,
 
   navigateTo: (pageId: PageId) => {
     set(state => {
@@ -230,6 +250,20 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
       ].slice(0, 5);
       return { currentPage: pageId, recentPages };
     });
+  },
+
+  navigateToSeoKb: (articleId: string) => {
+    set(state => {
+      const recentPages = [
+        'seo' as PageId,
+        ...state.recentPages.filter(p => p !== 'seo'),
+      ].slice(0, 5);
+      return { currentPage: 'seo', recentPages, seoKbArticleId: articleId };
+    });
+  },
+
+  clearSeoKbArticleId: () => {
+    set({ seoKbArticleId: undefined });
   },
 
   getPageTitle: (pageId: PageId) => {

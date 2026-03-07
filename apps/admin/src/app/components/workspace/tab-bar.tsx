@@ -61,7 +61,7 @@ export function TabBar({
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, tabId: string) => {
-      // Middle-click to close
+      // Закрытие средней кнопкой мыши
       if (e.button === 1) {
         e.preventDefault();
         closeTab(researchId, panelId, tabId);

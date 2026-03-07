@@ -1,0 +1,1 @@
+export { ManifestPage } from './ManifestPage';

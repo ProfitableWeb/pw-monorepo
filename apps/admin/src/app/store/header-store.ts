@@ -1,5 +1,12 @@
-import { create } from "zustand";
-import { LucideIcon } from "lucide-react";
+/**
+ * Стор заголовка страницы.
+ *
+ * Управляет заголовком и хлебными крошками в шапке админки.
+ * Каждая страница при монтировании вызывает `setBreadcrumbs` или `setTitle`,
+ * а при размонтировании — `reset`.
+ */
+import { create } from 'zustand';
+import { LucideIcon } from 'lucide-react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -10,6 +17,7 @@ export interface BreadcrumbItem {
     label: string;
     icon?: LucideIcon;
     href?: string;
+    onClick?: () => void;
   }[];
 }
 
@@ -21,10 +29,10 @@ interface HeaderState {
   reset: () => void;
 }
 
-export const useHeaderStore = create<HeaderState>((set) => ({
+export const useHeaderStore = create<HeaderState>(set => ({
   title: null,
   breadcrumbs: null,
-  setTitle: (title) => set({ title, breadcrumbs: null }),
-  setBreadcrumbs: (breadcrumbs) => set({ breadcrumbs, title: null }),
+  setTitle: title => set({ title, breadcrumbs: null }),
+  setBreadcrumbs: breadcrumbs => set({ breadcrumbs, title: null }),
   reset: () => set({ title: null, breadcrumbs: null }),
 }));
