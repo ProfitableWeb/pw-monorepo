@@ -35,7 +35,7 @@ export function ManifestDocSection({
   currentQuestion,
   answers,
   onSave,
-  onExport,
+  onExport: _onExport,
   updateField,
   getCompletionPercentage,
   isSectionComplete,
@@ -268,55 +268,61 @@ export function ManifestDocSection({
                 </div>
 
                 {/* Текущий вопрос */}
-                <div className='space-y-4'>
-                  <div className='p-4 bg-muted rounded-lg'>
-                    <p className='font-semibold mb-2'>
-                      {aiQuestions[currentQuestion].question}
-                    </p>
-                    <p className='text-sm text-muted-foreground'>
-                      {aiQuestions[currentQuestion].hint}
-                    </p>
-                  </div>
+                {(() => {
+                  const currentQ = aiQuestions[currentQuestion];
+                  if (!currentQ) return null;
+                  return (
+                    <div className='space-y-4'>
+                      <div className='p-4 bg-muted rounded-lg'>
+                        <p className='font-semibold mb-2'>
+                          {currentQ.question}
+                        </p>
+                        <p className='text-sm text-muted-foreground'>
+                          {currentQ.hint}
+                        </p>
+                      </div>
 
-                  <Textarea
-                    placeholder='Ваш ответ...'
-                    value={answers[aiQuestions[currentQuestion].id] || ''}
-                    onChange={e =>
-                      setAnswers({
-                        ...answers,
-                        [aiQuestions[currentQuestion].id]: e.target.value,
-                      })
-                    }
-                    rows={6}
-                    className='resize-none'
-                  />
-
-                  <div className='flex justify-between'>
-                    <Button
-                      variant='outline'
-                      onClick={() =>
-                        setCurrentQuestion(Math.max(0, currentQuestion - 1))
-                      }
-                      disabled={currentQuestion === 0}
-                    >
-                      Назад
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        if (currentQuestion < aiQuestions.length - 1) {
-                          setCurrentQuestion(currentQuestion + 1);
-                        } else {
-                          // Создать AI-сессию с ответами визарда
-                          handleCompleteWizard();
+                      <Textarea
+                        placeholder='Ваш ответ...'
+                        value={answers[currentQ.id] || ''}
+                        onChange={e =>
+                          setAnswers({
+                            ...answers,
+                            [currentQ.id]: e.target.value,
+                          })
                         }
-                      }}
-                    >
-                      {currentQuestion === aiQuestions.length - 1
-                        ? 'Создать диалог с AI'
-                        : 'Далее'}
-                    </Button>
-                  </div>
-                </div>
+                        rows={6}
+                        className='resize-none'
+                      />
+
+                      <div className='flex justify-between'>
+                        <Button
+                          variant='outline'
+                          onClick={() =>
+                            setCurrentQuestion(Math.max(0, currentQuestion - 1))
+                          }
+                          disabled={currentQuestion === 0}
+                        >
+                          Назад
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            if (currentQuestion < aiQuestions.length - 1) {
+                              setCurrentQuestion(currentQuestion + 1);
+                            } else {
+                              // Создать AI-сессию с ответами визарда
+                              handleCompleteWizard();
+                            }
+                          }}
+                        >
+                          {currentQuestion === aiQuestions.length - 1
+                            ? 'Создать диалог с AI'
+                            : 'Далее'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Отвеченные вопросы */}
                 {Object.keys(answers).length > 0 && (

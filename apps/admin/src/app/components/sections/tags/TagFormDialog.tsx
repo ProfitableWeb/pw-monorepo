@@ -107,12 +107,10 @@ export function TagFormDialog({
           <div className='space-y-2'>
             <Label htmlFor='category'>Группа</Label>
             <Select
-              id='category'
               value={formData.category}
               onValueChange={value =>
                 onFormChange({ ...formData, category: value })
               }
-              className='w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring'
             >
               <SelectTrigger className='w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring'>
                 <SelectValue placeholder='Выберите группу'>

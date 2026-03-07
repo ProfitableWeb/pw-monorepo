@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Copy, RotateCcw, Trash2, MoreVertical, Edit2 } from 'lucide-react';
-import { copyToClipboard } from './ai-center.utils';
+import { copyToClipboard } from '../../ai-center.utils';
 
 interface MessageActionsProps {
   role: 'user' | 'assistant';

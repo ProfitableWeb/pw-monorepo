@@ -2,10 +2,9 @@ import { useRef, useEffect } from 'react';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { useAIStore } from '@/app/store/ai-store';
 import { AI_MODELS } from './ai-center.constants';
-import { MessageItem } from './MessageItem';
-import { EmptyState } from './EmptyState';
-import { StreamingIndicator } from './StreamingIndicator';
-import { ChatInput } from './ChatInput';
+import { MessageItem, StreamingIndicator } from './chat-message';
+import { EmptyState } from './chat-empty-state';
+import { ChatInput } from './chat-input';
 
 export function AICenter() {
   const getMessages = useAIStore(state => state.getMessages);

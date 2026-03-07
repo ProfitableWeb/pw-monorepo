@@ -38,7 +38,7 @@ export function CategoriesSection() {
           id: cat.id,
           name: cat.name,
           slug: cat.slug,
-          color: FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+          color: FALLBACK_COLORS[i % FALLBACK_COLORS.length] ?? 'bg-gray-500',
           articlesCount: cat.articleCount,
           parentId: null,
           order: i,

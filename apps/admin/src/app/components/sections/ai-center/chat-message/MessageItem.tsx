@@ -7,11 +7,11 @@ import remarkGfm from 'remark-gfm';
 import { Bot, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAIStore } from '@/app/store/ai-store';
 import type { Message } from '@/app/store/ai-store';
-import { formatFileSize, getFileIcon } from './ai-center.utils';
-import { ThinkingBlock } from './ThinkingBlock';
-import { ToolCallsBlock } from './ToolCallsBlock';
-import { MessageActions } from './MessageActions';
-import { EditMessageDialog } from './EditMessageDialog';
+import { formatFileSize, getFileIcon } from '../ai-center.utils';
+import { ThinkingBlock } from './assets/ThinkingBlock';
+import { ToolCallsBlock } from './assets/ToolCallsBlock';
+import { MessageActions } from './assets/MessageActions';
+import { EditMessageDialog } from './assets/EditMessageDialog';
 
 interface MessageItemProps {
   message: Message;
@@ -21,7 +21,6 @@ interface MessageItemProps {
 export function MessageItem({ message, aiModels }: MessageItemProps) {
   const setCurrentVariant = useAIStore(state => state.setCurrentVariant);
   const addMessageVariant = useAIStore(state => state.addMessageVariant);
-  const addMessage = useAIStore(state => state.addMessage);
   const setIsStreaming = useAIStore(state => state.setIsStreaming);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -29,6 +28,8 @@ export function MessageItem({ message, aiModels }: MessageItemProps) {
 
   const currentVariant = message.variants[message.currentVariantIndex];
   const hasMultipleVariants = message.variants.length > 1;
+
+  if (!currentVariant) return null;
 
   const handlePrevVariant = () => {
     if (message.currentVariantIndex > 0) {

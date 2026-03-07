@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -39,7 +38,6 @@ import {
   navigationItems,
 } from '@/app/store/navigation-store';
 import { useTheme } from '@/app/components/layout/theme-provider';
-import { cn } from '@/app/components/ui/utils';
 
 const iconMap: Record<string, any> = {
   LayoutDashboard,
@@ -128,7 +126,7 @@ export function CommandPalette() {
 
   const recentItems = recentPages
     .map(pageId => getNavigationItem(pageId))
-    .filter(Boolean)
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
     .slice(0, 5);
 
   // Группировка по секциям
@@ -137,7 +135,7 @@ export function CommandPalette() {
       if (!acc[item.section]) {
         acc[item.section] = [];
       }
-      acc[item.section].push(item);
+      acc[item.section]!.push(item);
       return acc;
     },
     {} as Record<string, typeof navigationItems>

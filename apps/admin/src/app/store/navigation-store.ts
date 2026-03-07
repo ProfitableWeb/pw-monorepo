@@ -237,7 +237,7 @@ interface NavigationStore {
   getNavigationItem: (pageId: PageId) => NavigationItem | undefined;
 }
 
-export const useNavigationStore = create<NavigationStore>((set, get) => ({
+export const useNavigationStore = create<NavigationStore>(set => ({
   currentPage: 'dashboard',
   recentPages: [],
   seoKbArticleId: undefined,

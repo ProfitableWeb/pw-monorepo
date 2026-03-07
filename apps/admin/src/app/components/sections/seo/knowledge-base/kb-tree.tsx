@@ -22,7 +22,7 @@ function CategoryNode({
   depth?: number;
 }) {
   const hasActiveChild = category.articles.some(a => a.id === activeArticleId);
-  const [expanded, setExpanded] = useState(hasActiveChild || true);
+  const [expanded, setExpanded] = useState<boolean>(hasActiveChild || true);
 
   const FolderIcon = expanded ? FolderOpen : Folder;
 

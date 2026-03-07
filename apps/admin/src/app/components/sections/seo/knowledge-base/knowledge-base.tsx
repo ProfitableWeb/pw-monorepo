@@ -62,7 +62,7 @@ export function KnowledgeBase({ initialArticleId }: KnowledgeBaseProps) {
 
       {/* Область контента */}
       <div className='flex-1 min-w-0'>
-        <KBArticleEditor article={activeArticle} />
+        <KBArticleEditor article={activeArticle!} />
       </div>
     </div>
   );

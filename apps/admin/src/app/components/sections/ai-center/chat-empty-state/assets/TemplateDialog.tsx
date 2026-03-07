@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import {
-  Bot,
   Plus,
   FileText,
   Sparkles,
@@ -30,8 +29,7 @@ import {
   TrendingUp,
   Search,
 } from 'lucide-react';
-import { QUICK_PROMPTS, TEMPLATE_ICON_OPTIONS } from './ai-center.constants';
-import type { QuickPrompt } from './ai-center.constants';
+import { TEMPLATE_ICON_OPTIONS } from '../chat-empty-state.constants';
 
 const ICON_MAP = {
   FileText,
@@ -43,38 +41,7 @@ const ICON_MAP = {
   Search,
 } as const;
 
-interface EmptyStateProps {
-  onSetInput: (value: string) => void;
-}
-
-function QuickPromptCard({
-  prompt,
-  onClick,
-}: {
-  prompt: QuickPrompt;
-  onClick: () => void;
-}) {
-  const Icon = ICON_MAP[prompt.icon];
-
-  return (
-    <button
-      onClick={onClick}
-      className='group p-4 rounded-lg border bg-card hover:bg-accent transition-colors text-left'
-    >
-      <div className='flex items-start gap-3'>
-        <div className='flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors'>
-          <Icon className='h-5 w-5 text-primary' />
-        </div>
-        <div className='flex-1 min-w-0'>
-          <h3 className='font-medium mb-1'>{prompt.label}</h3>
-          <p className='text-sm text-muted-foreground'>{prompt.description}</p>
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function TemplateDialog() {
+export function TemplateDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [templateName, setTemplateName] = useState('');
   const [templateDescription, setTemplateDescription] = useState('');
@@ -186,35 +153,5 @@ function TemplateDialog() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-export function EmptyState({ onSetInput }: EmptyStateProps) {
-  return (
-    <div className='flex flex-col items-center justify-center min-h-[60vh] text-center px-4'>
-      <div className='w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6'>
-        <Bot className='h-10 w-10 text-primary' />
-      </div>
-
-      <h2 className='text-2xl font-semibold mb-3'>Начните новую сессию</h2>
-      <p className='text-muted-foreground mb-8 max-w-md'>
-        Используйте AI для написания статей, анализа данных, создания контента и
-        многого другого.
-      </p>
-
-      {/* Быстрые промпты */}
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl'>
-        {QUICK_PROMPTS.map(prompt => (
-          <QuickPromptCard
-            key={prompt.icon}
-            prompt={prompt}
-            onClick={() => onSetInput(prompt.prompt)}
-          />
-        ))}
-      </div>
-
-      {/* Кнопка добавления шаблона */}
-      <TemplateDialog />
-    </div>
   );
 }

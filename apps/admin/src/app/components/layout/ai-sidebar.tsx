@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { cn } from '@/app/components/ui/utils';
 import {
-  Sparkles,
   MessageSquare,
   Play,
   Pause,
@@ -13,7 +11,6 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
-  X,
   PanelRightClose,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';

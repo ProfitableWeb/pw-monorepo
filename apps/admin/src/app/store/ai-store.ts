@@ -271,7 +271,7 @@ export const useAIStore = create<AIState>((set, get) => ({
                         ...message,
                         variants: message.variants.map(variant =>
                           variant.id ===
-                          message.variants[message.currentVariantIndex].id
+                          message.variants[message.currentVariantIndex]?.id
                             ? {
                                 ...variant,
                                 content: newContent,

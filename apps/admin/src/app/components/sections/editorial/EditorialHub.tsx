@@ -25,9 +25,6 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
-import { SectionCard } from '@/app/components/common/section-card';
-import { SectionHeader } from '@/app/components/common/section-header';
-import { ScrollArea } from '@/app/components/ui/scroll-area';
 
 interface EditorialSection {
   id: 'manifest' | 'style' | 'formats' | 'socials';

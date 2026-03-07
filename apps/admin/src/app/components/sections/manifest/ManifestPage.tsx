@@ -35,8 +35,6 @@ export function ManifestPage({ onNavigateToAI }: ManifestPageProps) {
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   // Zustand-стор AI
-  const clearMessages = useAIStore(state => state.clearMessages);
-  const setInitialPrompt = useAIStore(state => state.setInitialPrompt);
   const switchSession = useAIStore(state => state.switchSession);
 
   // Стор заголовка для хлебных крошек
