@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 
 import type { Article } from './articles.types';
 import { filterArticles } from './articles.utils';
-import { StatsCards } from './StatsCards';
-import { FiltersToolbar } from './FiltersToolbar';
-import { ArticlesTable } from './ArticlesTable';
+import { StatsCards } from './assets/StatsCards';
+import { FiltersToolbar } from './assets/FiltersToolbar';
+import { ArticlesTable } from './assets/ArticlesTable';
 
 export function ArticlesSection() {
   const { data: result, isLoading } = useArticles();

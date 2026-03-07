@@ -4,14 +4,14 @@ import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { useHeaderStore } from '@/app/store/header-store';
 import { authors } from './style.constants';
 import type { StyleMode, StyleStats } from './style.types';
-import { SubSectionPlaceholder } from './SubSectionPlaceholder';
-import { StyleModeSelector } from './StyleModeSelector';
-import { StyleStatusCard } from './StyleStatusCard';
-import { MainSettingsSection } from './MainSettingsSection';
-import { ToolsSection } from './ToolsSection';
-import { VisualContentSection } from './VisualContentSection';
-import { AiAgentSection } from './AiAgentSection';
-import { TipCard } from './TipCard';
+import { SubSectionPlaceholder } from './assets/SubSectionPlaceholder';
+import { StyleModeSelector } from './assets/StyleModeSelector';
+import { StyleStatusCard } from './assets/StyleStatusCard';
+import { MainSettingsSection } from './assets/MainSettingsSection';
+import { ToolsSection } from './assets/ToolsSection';
+import { VisualContentSection } from './assets/VisualContentSection';
+import { AiAgentSection } from './assets/AiAgentSection';
+import { TipCard } from './assets/TipCard';
 
 export function StyleDashboard() {
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);

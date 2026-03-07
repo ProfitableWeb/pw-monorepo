@@ -10,9 +10,9 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Plus } from 'lucide-react';
 
-import { SortableCategoryCard } from './SortableCategoryCard';
-import { DragOverlayCard } from './DragOverlayCard';
-import { CategoryDialog } from './CategoryDialog';
+import { SortableCategoryCard } from './assets/SortableCategoryCard';
+import { DragOverlayCard } from './assets/DragOverlayCard';
+import { CategoryDialog } from './assets/CategoryDialog';
 import { useCategoryDnd } from './useCategoryDnd';
 import { FALLBACK_COLORS } from './categories.constants';
 import type { Category, CategoryFormData } from './categories.types';

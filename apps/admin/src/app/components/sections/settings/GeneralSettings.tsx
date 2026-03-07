@@ -22,7 +22,7 @@ import {
   TabsTrigger,
 } from '@/app/components/ui/tabs';
 import { Globe, Eye, Users, Search, MapPin, Languages } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент общих настроек
 export function GeneralSettings({

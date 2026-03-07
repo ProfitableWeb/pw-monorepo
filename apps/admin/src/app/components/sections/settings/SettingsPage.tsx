@@ -24,10 +24,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
 import { settingsCategories } from './settings.constants';
-import { ProfileSettings } from './ProfileSettings';
+import { ProfileSettings } from './profile';
 import { GeneralSettings } from './GeneralSettings';
 import { BlogSettings } from './BlogSettings';
-import { SecuritySettings } from './SecuritySettings';
+import { SecuritySettings } from './security';
 import { NotificationSettings } from './NotificationSettings';
 import { IntegrationSettings } from './IntegrationSettings';
 import { AppearanceSettings } from './AppearanceSettings';

@@ -1,11 +1,11 @@
 import { Plus } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { WeekView } from './WeekView';
-import { MonthView } from './MonthView';
-import { QuarterView } from './QuarterView';
-import { YearView } from './YearView';
-import { CalendarSettingsDialog } from './CalendarSettingsDialog';
+import { WeekView } from './views/WeekView';
+import { MonthView } from './views/MonthView';
+import { QuarterView } from './views/QuarterView';
+import { YearView } from './views/YearView';
+import { CalendarSettingsDialog } from './settings-dialog';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarBottomCards } from './CalendarBottomCards';
 import { useCalendarState } from './useCalendarState';

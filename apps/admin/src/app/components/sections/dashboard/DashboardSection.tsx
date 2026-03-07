@@ -1,6 +1,6 @@
-import { BlogStats } from './BlogStats';
-import { AnalyticsChart } from './AnalyticsChart';
-import { PostsTable } from './PostsTable';
+import { BlogStats } from './assets/BlogStats';
+import { AnalyticsChart } from './assets/AnalyticsChart';
+import { PostsTable } from './assets/PostsTable';
 import { QuickActions } from '@/app/components/common/quick-actions';
 
 export function DashboardSection() {

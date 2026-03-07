@@ -13,11 +13,11 @@ import {
   LayoutPanelTop,
   SearchCheck,
 } from 'lucide-react';
-import { StatsCards } from './StatsCards';
-import { ViewsChart } from './ViewsChart';
-import { TopArticles } from './TopArticles';
-import { DevicesChart } from './DevicesChart';
-import { TrafficSources } from './TrafficSources';
+import { StatsCards } from './assets/StatsCards';
+import { ViewsChart } from './assets/ViewsChart';
+import { TopArticles } from './assets/TopArticles';
+import { DevicesChart } from './assets/DevicesChart';
+import { TrafficSources } from './assets/TrafficSources';
 
 export function AnalyticsPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();

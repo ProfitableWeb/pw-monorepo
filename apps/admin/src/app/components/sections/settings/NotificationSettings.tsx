@@ -28,7 +28,7 @@ import {
   Users,
   Activity,
 } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек уведомлений
 export function NotificationSettings({

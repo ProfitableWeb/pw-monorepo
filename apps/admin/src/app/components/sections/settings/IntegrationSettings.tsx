@@ -21,7 +21,7 @@ import {
   Activity,
   BarChart3,
 } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек интеграций
 export function IntegrationSettings({

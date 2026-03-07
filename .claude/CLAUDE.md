@@ -86,6 +86,10 @@ Context).
 
 **API-клиент**: тот же паттерн, что и в web (`lib/api-client.ts`), но использует `import.meta.env.VITE_API_URL`.
 
+**Организация кода**: подробные правила в `apps/admin/CLAUDE.md` — структура `components/`, атомарная декомпозиция,
+иерархия вложенности секций, именование файлов. Эталон паттерна — `sections/ai-center/` (с README.md внутри). Шаблон
+README для секций — `docs/templates/section-readme-template.md`.
+
 ### apps/api — FastAPI
 
 **База данных**: синхронный PostgreSQL через SQLAlchemy 2.0 + psycopg2 (осознанный выбор, не async). UUID-первичные

@@ -19,7 +19,7 @@ import { MediaSidebar } from './MediaSidebar';
 import { MediaControls } from './MediaControls';
 import { MediaGrid } from './MediaGrid';
 import { MediaList } from './MediaList';
-import { MediaPreviewDialog } from './MediaPreviewDialog';
+import { MediaPreviewDialog } from './preview';
 import { formatBytes } from './media.utils';
 import { initialFiles, backupHistory } from './media.mock';
 import type { ViewMode, MediaFile } from './media.types';

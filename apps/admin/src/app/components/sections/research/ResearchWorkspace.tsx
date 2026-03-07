@@ -5,7 +5,7 @@ import { useResearchStore } from '@/app/store/research-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { useHeaderStore } from '@/app/store/header-store';
 import { useWorkspaceLayoutStore } from '@/app/store/workspace-layout-store';
-import { ResearchSidebar } from './ResearchSidebar';
+import { ResearchSidebar } from './assets/ResearchSidebar';
 import { ResizableSidebar } from '@/app/components/workspace/resizable-sidebar';
 import { CentralGrid } from '@/app/components/workspace/central-grid';
 import { WorkspaceToolbar } from '@/app/components/workspace/workspace-toolbar';

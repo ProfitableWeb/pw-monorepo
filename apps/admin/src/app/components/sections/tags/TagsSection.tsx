@@ -14,11 +14,11 @@ import {
 
 import { TAG_GROUPS } from './tags.constants';
 import { useTagsState } from './useTagsState';
-import { TagCloudView } from './TagCloudView';
-import { TagGridView } from './TagGridView';
-import { TagListView } from './TagListView';
-import { TagDetailDialog } from './TagDetailDialog';
-import { TagFormDialog } from './TagFormDialog';
+import { TagCloudView } from './assets/TagCloudView';
+import { TagGridView } from './assets/TagGridView';
+import { TagListView } from './assets/TagListView';
+import { TagDetailDialog } from './assets/TagDetailDialog';
+import { TagFormDialog } from './assets/TagFormDialog';
 
 export function TagsSection() {
   const {

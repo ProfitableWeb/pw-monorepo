@@ -29,7 +29,7 @@ import {
   Type,
   Code,
 } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек внешнего вида
 export function AppearanceSettings({

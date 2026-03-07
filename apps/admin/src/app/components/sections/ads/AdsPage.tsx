@@ -23,9 +23,9 @@ import {
   SearchCheck,
 } from 'lucide-react';
 import { campaigns, placements } from './ads.constants';
-import { AdsStatsGrid } from './AdsStatsGrid';
-import { CampaignCard } from './CampaignCard';
-import { PlacementCard } from './PlacementCard';
+import { AdsStatsGrid } from './assets/AdsStatsGrid';
+import { CampaignCard } from './assets/CampaignCard';
+import { PlacementCard } from './assets/PlacementCard';
 
 export function AdsPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();

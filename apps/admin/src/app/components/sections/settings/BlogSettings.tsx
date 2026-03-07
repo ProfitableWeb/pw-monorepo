@@ -23,7 +23,7 @@ import {
   Rss,
   Type,
 } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек блога
 export function BlogSettings({

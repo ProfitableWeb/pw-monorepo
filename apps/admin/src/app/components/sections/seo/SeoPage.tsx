@@ -27,14 +27,14 @@ import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/components/ui/utils';
 
 import { seoCategories } from './seo.constants';
-import { GeneralSeoSettings } from './GeneralSeoSettings';
-import { MetaTagsSettings } from './MetaTagsSettings';
-import { SitemapSettings } from './SitemapSettings';
-import { SchemaSettings } from './SchemaSettings';
-import { MonitoringSettings } from './MonitoringSettings';
-import { PerformanceSettings } from './PerformanceSettings';
-import { UrlSettings } from './UrlSettings';
-import { ContentAnalysisSettings } from './ContentAnalysisSettings';
+import { GeneralSeoSettings } from './assets/GeneralSeoSettings';
+import { MetaTagsSettings } from './assets/MetaTagsSettings';
+import { SitemapSettings } from './assets/SitemapSettings';
+import { SchemaSettings } from './assets/SchemaSettings';
+import { MonitoringSettings } from './assets/MonitoringSettings';
+import { PerformanceSettings } from './assets/PerformanceSettings';
+import { UrlSettings } from './assets/UrlSettings';
+import { ContentAnalysisSettings } from './assets/ContentAnalysisSettings';
 
 export function SeoPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();

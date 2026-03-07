@@ -13,7 +13,7 @@ import {
   sections,
 } from './manifest.constants';
 import { generateMarkdown } from './manifest.utils';
-import { ManifestDocSection } from './ManifestDocSection';
+import { ManifestDocSection } from './assets/ManifestDocSection';
 import {
   MissionSection,
   AudienceSection,
@@ -22,7 +22,7 @@ import {
   EditorialSection,
   MetricsSection,
   DevelopmentSection,
-} from './ManifestStubSections';
+} from './assets/ManifestStubSections';
 
 export function ManifestPage({ onNavigateToAI }: ManifestPageProps) {
   const [activeSubsection, setActiveSubsection] = useState('manifest-doc');

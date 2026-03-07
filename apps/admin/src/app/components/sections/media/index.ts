@@ -1,5 +1,5 @@
 export { MediaSection } from './MediaSection';
-export { MediaPreviewDialog } from './MediaPreviewDialog';
+export { MediaPreviewDialog } from './preview';
 export { MediaImageWithLoader } from './MediaImageWithLoader';
 export { MediaSidebar } from './MediaSidebar';
 export { MediaGrid } from './MediaGrid';

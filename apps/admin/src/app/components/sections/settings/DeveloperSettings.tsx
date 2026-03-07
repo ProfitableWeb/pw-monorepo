@@ -23,7 +23,7 @@ import {
   Plus,
   Activity,
 } from 'lucide-react';
-import { SettingRow } from './SettingRow';
+import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек для разработчиков
 export function DeveloperSettings({

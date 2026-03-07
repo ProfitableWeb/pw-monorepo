@@ -21,10 +21,10 @@ import {
 } from 'lucide-react';
 
 import { channels, campaigns } from './promotion.constants';
-import { StatsGrid } from './StatsGrid';
-import { ChannelCard } from './ChannelCard';
-import { CampaignCard } from './CampaignCard';
-import { QuickActions } from './QuickActions';
+import { StatsGrid } from './assets/StatsGrid';
+import { ChannelCard } from './assets/ChannelCard';
+import { CampaignCard } from './assets/CampaignCard';
+import { QuickActions } from './assets/QuickActions';
 
 export function PromotionPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();

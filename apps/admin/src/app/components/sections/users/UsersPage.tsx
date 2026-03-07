@@ -16,17 +16,17 @@ import {
 import { cn } from '@/app/components/ui/utils';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { NAVIGATION_ITEMS } from './users.constants';
-import { UsersList } from './UsersList';
-import { TeamSection } from './TeamSection';
-import { InvitesSection } from './InvitesSection';
-import { AccessSection } from './AccessSection';
+import { UsersList } from './assets/UsersList';
+import { TeamSection } from './assets/TeamSection';
+import { InvitesSection } from './assets/InvitesSection';
+import { AccessSection } from './access';
 import {
   CommentsSection,
   BlacklistSection,
   RolesSection,
   ActivitySection,
   SupportSection,
-} from './StubSections';
+} from './assets/StubSections';
 
 export function UsersPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();
