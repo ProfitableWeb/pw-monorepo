@@ -1,184 +1,54 @@
-import { useHeaderStore } from '@/app/store/header-store';
-import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
-
-import { useState, useMemo, useEffect } from 'react';
-import { cn } from '@/app/components/ui/utils';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
-import { Label } from '@/app/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/app/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/app/components/ui/dropdown-menu';
-import {
   Plus,
   Search,
-  MoreVertical,
-  Trash2,
-  Tag as TagIcon,
   TrendingUp,
   Clock,
-  Hash,
   AlertCircle,
   Cloud,
   Grid3x3,
   List,
-  Pencil,
-  Link2,
 } from 'lucide-react';
 
-import type { Tag, ViewMode } from './tags.types';
-import { COLORS, TAG_GROUPS, initialTags } from './tags.constants';
-import { getTagSize, getTagOpacity } from './tags.utils';
+import { TAG_GROUPS } from './tags.constants';
+import { useTagsState } from './useTagsState';
+import { TagCloudView } from './TagCloudView';
+import { TagGridView } from './TagGridView';
+import { TagListView } from './TagListView';
+import { TagDetailDialog } from './TagDetailDialog';
+import { TagFormDialog } from './TagFormDialog';
 
 export function TagsSection() {
-  const [tags, setTags] = useState<Tag[]>(initialTags);
-  const [viewMode, setViewMode] = useState<ViewMode>('cloud');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingTag, setEditingTag] = useState<Tag | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    color: 'bg-gray-500',
-    category: 'Без группы',
-  });
-
-  // Стор заголовка для хлебных крошек
-  const { setBreadcrumbs, reset } = useHeaderStore();
-
-  // Установить хлебные крошки
-  useEffect(() => {
-    setBreadcrumbs(breadcrumbPresets.tags());
-
-    return () => reset();
-  }, [setBreadcrumbs, reset]);
-
-  const filteredTags = useMemo(() => {
-    let result = tags;
-
-    if (searchQuery) {
-      result = result.filter(
-        tag =>
-          tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          tag.slug.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return result;
-  }, [tags, searchQuery]);
-
-  const maxCount = Math.max(...tags.map(t => t.articlesCount), 1);
-
-  const topTags = useMemo(() => {
-    return [...tags]
-      .sort((a, b) => b.articlesCount - a.articlesCount)
-      .slice(0, 10);
-  }, [tags]);
-
-  const recentTags = useMemo(() => {
-    return [...tags]
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, 5);
-  }, [tags]);
-
-  const unusedTags = useMemo(() => {
-    return tags.filter(t => t.articlesCount === 0);
-  }, [tags]);
-
-  const tagsByGroup = useMemo(() => {
-    const groups: Record<string, Tag[]> = {};
-    tags.forEach(tag => {
-      const group = tag.category || 'Без группы';
-      if (!groups[group]) groups[group] = [];
-      groups[group].push(tag);
-    });
-    return groups;
-  }, [tags]);
-
-  const handleSave = () => {
-    if (editingTag) {
-      setTags(prev =>
-        prev.map(t => (t.id === editingTag.id ? { ...t, ...formData } : t))
-      );
-    } else {
-      const newTag: Tag = {
-        id: Date.now().toString(),
-        name: formData.name,
-        slug: formData.slug,
-        color: formData.color,
-        articlesCount: 0,
-        category: formData.category,
-        createdAt: new Date(),
-      };
-      setTags(prev => [...prev, newTag]);
-    }
-    handleCloseDialog();
-  };
-
-  const handleDelete = (id: string) => {
-    setTags(prev => prev.filter(t => t.id !== id));
-    setSelectedTag(null);
-  };
-
-  const handleEdit = (tag: Tag) => {
-    setEditingTag(tag);
-    setFormData({
-      name: tag.name,
-      slug: tag.slug,
-      color: tag.color,
-      category: tag.category || 'Без группы',
-    });
-    setIsAddDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsAddDialogOpen(false);
-    setEditingTag(null);
-    setFormData({
-      name: '',
-      slug: '',
-      color: 'bg-gray-500',
-      category: 'Без группы',
-    });
-  };
-
-  const handleQuickAdd = () => {
-    if (
-      searchQuery &&
-      !tags.find(t => t.name.toLowerCase() === searchQuery.toLowerCase())
-    ) {
-      setFormData({
-        name: searchQuery,
-        slug: searchQuery.toLowerCase().replace(/\s+/g, '-'),
-        color: 'bg-gray-500',
-        category: 'Без группы',
-      });
-      setIsAddDialogOpen(true);
-    }
-  };
-
-  const totalArticles = tags.reduce((sum, tag) => sum + tag.articlesCount, 0);
+  const {
+    tags,
+    viewMode,
+    setViewMode,
+    searchQuery,
+    setSearchQuery,
+    selectedTag,
+    setSelectedTag,
+    selectedGroup,
+    setSelectedGroup,
+    isAddDialogOpen,
+    setIsAddDialogOpen,
+    editingTag,
+    formData,
+    setFormData,
+    filteredTags,
+    maxCount,
+    topTags,
+    recentTags,
+    unusedTags,
+    tagsByGroup,
+    totalArticles,
+    handleSave,
+    handleDelete,
+    handleEdit,
+    handleCloseDialog,
+    handleQuickAdd,
+  } = useTagsState();
 
   return (
     <div className='p-6 space-y-6'>
@@ -327,365 +197,48 @@ export function TagsSection() {
 
       {/* Отображение тегов */}
       {viewMode === 'cloud' && (
-        <div className='p-8 border rounded-lg bg-muted/30 min-h-[400px] flex flex-wrap items-center justify-center gap-4 content-center'>
-          {filteredTags.map(tag => (
-            <button
-              key={tag.id}
-              onClick={() => setSelectedTag(tag)}
-              className={cn(
-                'font-semibold transition-all duration-300 hover:scale-110 cursor-pointer',
-                getTagSize(tag.articlesCount, maxCount),
-                getTagOpacity(tag.articlesCount, maxCount),
-                selectedTag?.id === tag.id && 'scale-125 text-primary'
-              )}
-              style={{
-                color: tag.color.replace('bg-', ''),
-                filter: 'saturate(0.8)',
-              }}
-            >
-              #{tag.name}
-            </button>
-          ))}
-        </div>
+        <TagCloudView
+          tags={filteredTags}
+          maxCount={maxCount}
+          selectedTagId={selectedTag?.id ?? null}
+          onSelect={setSelectedTag}
+        />
       )}
 
       {viewMode === 'grid' && (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-          {filteredTags.map(tag => (
-            <div
-              key={tag.id}
-              className='group p-4 border rounded-lg bg-card hover:shadow-md transition-all cursor-pointer'
-              onClick={() => setSelectedTag(tag)}
-            >
-              <div className='flex items-start justify-between mb-2'>
-                <div className={cn('p-2 rounded-lg', tag.color)}>
-                  <Hash className='h-4 w-4 text-white' />
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    asChild
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='h-8 w-8 opacity-0 group-hover:opacity-100'
-                    >
-                      <MoreVertical className='h-4 w-4' />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align='end'>
-                    <DropdownMenuItem
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleEdit(tag);
-                      }}
-                    >
-                      <Pencil className='h-4 w-4 mr-2' />
-                      Редактировать
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleDelete(tag.id);
-                      }}
-                      className='text-destructive'
-                    >
-                      <Trash2 className='h-4 w-4 mr-2' />
-                      Удалить
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <h3 className='font-semibold mb-1'>{tag.name}</h3>
-              <p className='text-xs text-muted-foreground mb-2'>/{tag.slug}</p>
-              <div className='flex items-center justify-between'>
-                <Badge variant='secondary' className='text-xs'>
-                  {tag.articlesCount} статей
-                </Badge>
-                {tag.category && (
-                  <span className='text-xs text-muted-foreground'>
-                    {tag.category}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <TagGridView
+          tags={filteredTags}
+          onSelect={setSelectedTag}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       )}
 
       {viewMode === 'list' && (
-        <div className='border rounded-lg overflow-hidden'>
-          <table className='w-full'>
-            <thead className='bg-muted/50'>
-              <tr className='text-sm'>
-                <th className='text-left p-3 font-medium'>Метка</th>
-                <th className='text-left p-3 font-medium'>Группа</th>
-                <th className='text-left p-3 font-medium'>Статей</th>
-                <th className='text-left p-3 font-medium'>Создана</th>
-                <th className='text-right p-3 font-medium'>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTags.map((tag, index) => (
-                <tr
-                  key={tag.id}
-                  className={cn(
-                    'border-t hover:bg-muted/30 transition-colors cursor-pointer',
-                    index % 2 === 0 && 'bg-muted/10'
-                  )}
-                  onClick={() => setSelectedTag(tag)}
-                >
-                  <td className='p-3'>
-                    <div className='flex items-center gap-2'>
-                      <div className={cn('w-3 h-3 rounded-full', tag.color)} />
-                      <div>
-                        <div className='font-medium'>{tag.name}</div>
-                        <div className='text-xs text-muted-foreground'>
-                          /{tag.slug}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='p-3 text-sm text-muted-foreground'>
-                    {tag.category || '—'}
-                  </td>
-                  <td className='p-3'>
-                    <Badge variant='secondary' className='text-xs'>
-                      {tag.articlesCount}
-                    </Badge>
-                  </td>
-                  <td className='p-3 text-sm text-muted-foreground'>
-                    {tag.createdAt.toLocaleDateString('ru-RU', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td
-                    className='p-3 text-right'
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant='ghost' size='icon' className='h-8 w-8'>
-                          <MoreVertical className='h-4 w-4' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuItem onClick={() => handleEdit(tag)}>
-                          <Pencil className='h-4 w-4 mr-2' />
-                          Редактировать
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(tag.id)}
-                          className='text-destructive'
-                        >
-                          <Trash2 className='h-4 w-4 mr-2' />
-                          Удалить
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TagListView
+          tags={filteredTags}
+          onSelect={setSelectedTag}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       )}
 
       {/* Диалог деталей тега */}
-      <Dialog
-        open={selectedTag !== null}
-        onOpenChange={() => setSelectedTag(null)}
-      >
-        <DialogContent className='max-w-lg'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-              <div className={cn('p-2 rounded-lg', selectedTag?.color)}>
-                <Hash className='h-4 w-4 text-white' />
-              </div>
-              {selectedTag?.name}
-            </DialogTitle>
-            <DialogDescription>Детальная информация о метке</DialogDescription>
-          </DialogHeader>
-
-          {selectedTag && (
-            <div className='space-y-4 py-4'>
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <Label className='text-xs text-muted-foreground'>Slug</Label>
-                  <p className='text-sm font-medium mt-1'>
-                    /{selectedTag.slug}
-                  </p>
-                </div>
-                <div>
-                  <Label className='text-xs text-muted-foreground'>
-                    Группа
-                  </Label>
-                  <p className='text-sm font-medium mt-1'>
-                    {selectedTag.category || '—'}
-                  </p>
-                </div>
-                <div>
-                  <Label className='text-xs text-muted-foreground'>
-                    Использований
-                  </Label>
-                  <p className='text-sm font-medium mt-1'>
-                    {selectedTag.articlesCount} статей
-                  </p>
-                </div>
-                <div>
-                  <Label className='text-xs text-muted-foreground'>
-                    Создана
-                  </Label>
-                  <p className='text-sm font-medium mt-1'>
-                    {selectedTag.createdAt.toLocaleDateString('ru-RU')}
-                  </p>
-                </div>
-              </div>
-
-              <div className='p-3 border rounded-lg bg-muted/30'>
-                <div className='flex items-center gap-2 text-sm text-muted-foreground mb-2'>
-                  <Link2 className='h-4 w-4' />
-                  Часто используется с:
-                </div>
-                <div className='flex flex-wrap gap-1.5'>
-                  <Badge variant='outline' className='text-xs'>
-                    React
-                  </Badge>
-                  <Badge variant='outline' className='text-xs'>
-                    TypeScript
-                  </Badge>
-                  <Badge variant='outline' className='text-xs'>
-                    UI/UX
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setSelectedTag(null)}>
-              Закрыть
-            </Button>
-            <Button
-              onClick={() => {
-                handleEdit(selectedTag!);
-                setSelectedTag(null);
-              }}
-            >
-              <Pencil className='h-4 w-4 mr-2' />
-              Редактировать
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TagDetailDialog
+        tag={selectedTag}
+        onClose={() => setSelectedTag(null)}
+        onEdit={handleEdit}
+      />
 
       {/* Диалог создания/редактирования */}
-      <Dialog open={isAddDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className='sm:max-w-[500px]'>
-          <DialogHeader>
-            <DialogTitle>
-              {editingTag ? 'Редактировать метку' : 'Новая метка'}
-            </DialogTitle>
-            <DialogDescription>
-              {editingTag
-                ? 'Измените данные метки'
-                : 'Создайте новую метку для организации контента'}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className='space-y-4 py-4'>
-            <div className='space-y-2'>
-              <Label htmlFor='name'>Название</Label>
-              <Input
-                id='name'
-                value={formData.name}
-                onChange={e => {
-                  const name = e.target.value;
-                  setFormData(prev => ({
-                    ...prev,
-                    name,
-                    slug: prev.slug || name.toLowerCase().replace(/\s+/g, '-'),
-                  }));
-                }}
-                placeholder='Например: React'
-              />
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='slug'>URL (slug)</Label>
-              <Input
-                id='slug'
-                value={formData.slug}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, slug: e.target.value }))
-                }
-                placeholder='react'
-              />
-            </div>
-
-            <div className='space-y-2'>
-              <Label>Цвет</Label>
-              <div className='flex gap-2 flex-wrap'>
-                {COLORS.map(color => (
-                  <button
-                    key={color.value}
-                    onClick={() =>
-                      setFormData(prev => ({ ...prev, color: color.value }))
-                    }
-                    className={cn(
-                      'w-10 h-10 rounded-lg transition-all',
-                      color.value,
-                      formData.color === color.value &&
-                        'ring-2 ring-offset-2 ring-foreground scale-110'
-                    )}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='category'>Группа</Label>
-              <Select
-                id='category'
-                value={formData.category}
-                onValueChange={value =>
-                  setFormData(prev => ({ ...prev, category: value }))
-                }
-                className='w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring'
-              >
-                <SelectTrigger className='w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring'>
-                  <SelectValue placeholder='Выберите группу'>
-                    {formData.category}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {TAG_GROUPS.map(group => (
-                    <SelectItem key={group} value={group}>
-                      {group}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant='outline' onClick={handleCloseDialog}>
-              Отмена
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!formData.name || !formData.slug}
-            >
-              {editingTag ? 'Сохранить' : 'Создать'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TagFormDialog
+        open={isAddDialogOpen}
+        editingTag={editingTag}
+        formData={formData}
+        onFormChange={setFormData}
+        onSave={handleSave}
+        onClose={handleCloseDialog}
+      />
     </div>
   );
 }

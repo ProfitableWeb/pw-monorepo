@@ -2,39 +2,27 @@ import { useHeaderStore } from '@/app/store/header-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
 import { useCategories } from '@/hooks/api';
 import { useState, useEffect, useRef } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragOverlay,
-  type DragStartEvent,
-  type DragEndEvent,
-  type DragOverEvent,
-} from '@dnd-kit/core';
+import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input';
-import { cn } from '@/app/components/ui/utils';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
 import { Plus } from 'lucide-react';
-import { Label } from '@/app/components/ui/label';
 
 import { SortableCategoryCard } from './SortableCategoryCard';
 import { DragOverlayCard } from './DragOverlayCard';
-import { COLORS, FALLBACK_COLORS } from './categories.constants';
-import type { Category, DropIndicator, DropPosition } from './categories.types';
+import { CategoryDialog } from './CategoryDialog';
+import { useCategoryDnd } from './useCategoryDnd';
+import { FALLBACK_COLORS } from './categories.constants';
+import type { Category, CategoryFormData } from './categories.types';
+
+const INITIAL_FORM_DATA: CategoryFormData = {
+  name: '',
+  slug: '',
+  color: 'bg-gray-500',
+  parentId: null,
+};
 
 export function CategoriesSection() {
   const { data: apiCategories, isLoading } = useCategories();
@@ -61,37 +49,25 @@ export function CategoriesSection() {
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(
-    null
-  );
-  const [formData, setFormData] = useState<{
-    name: string;
-    slug: string;
-    color: string;
-    parentId: string | null;
-  }>({
-    name: '',
-    slug: '',
-    color: 'bg-gray-500',
-    parentId: null,
-  });
+  const [formData, setFormData] = useState<CategoryFormData>(INITIAL_FORM_DATA);
 
   // Стор заголовка для хлебных крошек
   const { setBreadcrumbs, reset } = useHeaderStore();
 
-  // Установить хлебные крошки
   useEffect(() => {
     setBreadcrumbs(breadcrumbPresets.categories());
-
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    })
-  );
+  const {
+    sensors,
+    activeCategory,
+    dropIndicator,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDragCancel,
+  } = useCategoryDnd(categories, setCategories);
 
   const rootCategories = categories
     .filter(c => c.parentId === null)
@@ -108,173 +84,6 @@ export function CategoriesSection() {
     cat.id,
     ...getChildCategories(cat.id).map(child => child.id),
   ]);
-
-  const getDropPosition = (
-    overId: string,
-    event: DragOverEvent
-  ): DropPosition => {
-    const overElement = document.getElementById(`category-${overId}`);
-    if (!overElement) return 'after';
-
-    const rect = overElement.getBoundingClientRect();
-    const activatorEvent = event.activatorEvent as PointerEvent | undefined;
-    const overEvent = event.over;
-
-    // Используем дельту перетаскивания для оценки позиции курсора
-    if (overEvent?.rect) {
-      const overRect = overEvent.rect;
-      const pointerY = activatorEvent
-        ? activatorEvent.clientY + (event.delta?.y ?? 0)
-        : rect.top + rect.height / 2;
-
-      const relativeY = pointerY - rect.top;
-      const height = rect.height;
-
-      if (relativeY < height * 0.25) return 'before';
-      if (relativeY > height * 0.75) return 'after';
-      return 'child';
-    }
-
-    return 'after';
-  };
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) {
-      setDropIndicator(null);
-      return;
-    }
-
-    const overId = over.id as string;
-    const overCategory = categories.find(c => c.id === overId);
-
-    if (!overCategory) {
-      setDropIndicator(null);
-      return;
-    }
-
-    const position = getDropPosition(overId, event);
-
-    // Не допускать вложенность глубже 1 уровня
-    if (position === 'child' && overCategory.parentId !== null) {
-      setDropIndicator({ targetId: overId, position: 'after' });
-      return;
-    }
-
-    setDropIndicator({ targetId: overId, position });
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    setActiveId(null);
-
-    if (!over || active.id === over.id || !dropIndicator) {
-      setDropIndicator(null);
-      return;
-    }
-
-    const draggedId = active.id as string;
-    const targetId = dropIndicator.targetId;
-    const position = dropIndicator.position;
-
-    setDropIndicator(null);
-    handleMove(draggedId, targetId, position);
-  };
-
-  const handleDragCancel = () => {
-    setActiveId(null);
-    setDropIndicator(null);
-  };
-
-  const handleMove = (
-    draggedId: string,
-    targetId: string | null,
-    position: DropPosition
-  ) => {
-    setCategories(prev => {
-      const newCategories = [...prev];
-      const draggedIndex = newCategories.findIndex(c => c.id === draggedId);
-      const draggedItem = newCategories[draggedIndex];
-
-      if (!draggedItem) return prev;
-
-      if (position === 'child') {
-        // Сделать дочерним элементом цели
-        const oldParentId = draggedItem.parentId;
-        const childrenCount = newCategories.filter(
-          c => c.parentId === targetId && c.id !== draggedId
-        ).length;
-
-        // Обновить перетаскиваемый элемент
-        const updatedCategories = newCategories.map(c => {
-          if (c.id === draggedId) {
-            return { ...c, parentId: targetId, order: childrenCount };
-          }
-          // Переупорядочить старых соседей
-          if (c.parentId === oldParentId && c.order > draggedItem.order) {
-            return { ...c, order: c.order - 1 };
-          }
-          return c;
-        });
-
-        return updatedCategories;
-      } else {
-        const targetIndex = newCategories.findIndex(c => c.id === targetId);
-        const targetItem = newCategories[targetIndex];
-
-        if (!targetItem) return prev;
-
-        const oldParentId = draggedItem.parentId;
-        const newParentId = targetItem.parentId;
-        const targetOrder = targetItem.order;
-        const newOrder = position === 'before' ? targetOrder : targetOrder + 1;
-
-        // Обновить все затронутые категории
-        const updatedCategories = newCategories.map(c => {
-          if (c.id === draggedId) {
-            return { ...c, parentId: newParentId, order: newOrder };
-          }
-
-          // Перемещение внутри одного родителя
-          if (oldParentId === newParentId) {
-            if (c.parentId === newParentId && c.id !== draggedId) {
-              const oldOrder = draggedItem.order;
-              if (oldOrder < newOrder) {
-                // Вниз: сдвинуть элементы между старой и новой позицией
-                if (c.order > oldOrder && c.order <= newOrder) {
-                  return { ...c, order: c.order - 1 };
-                }
-              } else {
-                // Вверх: сдвинуть элементы между новой и старой позицией
-                if (c.order >= newOrder && c.order < oldOrder) {
-                  return { ...c, order: c.order + 1 };
-                }
-              }
-            }
-          } else {
-            // Перемещение к другому родителю
-            // Переупорядочить старых соседей
-            if (c.parentId === oldParentId && c.order > draggedItem.order) {
-              return { ...c, order: c.order - 1 };
-            }
-            // Освободить место в новом родителе
-            if (c.parentId === newParentId && c.order >= newOrder) {
-              return { ...c, order: c.order + 1 };
-            }
-          }
-
-          return c;
-        });
-
-        return updatedCategories;
-      }
-    });
-  };
 
   const handleSave = () => {
     if (editingCategory) {
@@ -299,7 +108,6 @@ export function CategoriesSection() {
   };
 
   const handleDelete = (id: string) => {
-    // Также удалить дочерние
     const childrenIds = categories
       .filter(c => c.parentId === id)
       .map(c => c.id);
@@ -322,16 +130,13 @@ export function CategoriesSection() {
   const handleCloseDialog = () => {
     setIsAddDialogOpen(false);
     setEditingCategory(null);
-    setFormData({ name: '', slug: '', color: 'bg-gray-500', parentId: null });
+    setFormData(INITIAL_FORM_DATA);
   };
 
   const totalArticles = categories.reduce(
     (sum, cat) => sum + cat.articlesCount,
     0
   );
-  const activeCategory = activeId
-    ? categories.find(c => c.id === activeId)
-    : null;
 
   return (
     <DndContext
@@ -388,7 +193,6 @@ export function CategoriesSection() {
                     onDelete={handleDelete}
                     dropIndicator={dropIndicator}
                   />
-                  {/* Дочерние категории */}
                   {getChildCategories(category.id).map(child => (
                     <SortableCategoryCard
                       key={child.id}
@@ -411,112 +215,15 @@ export function CategoriesSection() {
           ) : null}
         </DragOverlay>
 
-        {/* Диалог создания/редактирования */}
-        <Dialog open={isAddDialogOpen} onOpenChange={handleCloseDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingCategory
-                  ? 'Редактировать категорию'
-                  : 'Новая категория'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingCategory
-                  ? 'Измените данные категории'
-                  : 'Создайте новую категорию для организации контента'}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className='space-y-4 py-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='name'>Название</Label>
-                <Input
-                  id='name'
-                  value={formData.name}
-                  onChange={e => {
-                    const name = e.target.value;
-                    setFormData(prev => ({
-                      ...prev,
-                      name,
-                      slug:
-                        prev.slug || name.toLowerCase().replace(/\s+/g, '-'),
-                    }));
-                  }}
-                  placeholder='Например: Веб-разработка'
-                />
-              </div>
-
-              <div className='space-y-2'>
-                <Label htmlFor='slug'>URL (slug)</Label>
-                <Input
-                  id='slug'
-                  value={formData.slug}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, slug: e.target.value }))
-                  }
-                  placeholder='web-development'
-                />
-              </div>
-
-              <div className='space-y-2'>
-                <Label>Цвет</Label>
-                <div className='flex gap-2 flex-wrap'>
-                  {COLORS.map(color => (
-                    <button
-                      key={color.value}
-                      onClick={() =>
-                        setFormData(prev => ({ ...prev, color: color.value }))
-                      }
-                      className={cn(
-                        'w-10 h-10 rounded-lg transition-all',
-                        color.value,
-                        formData.color === color.value &&
-                          'ring-2 ring-offset-2 ring-foreground scale-110'
-                      )}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className='space-y-2'>
-                <Label htmlFor='parent'>Родительская категория</Label>
-                <select
-                  id='parent'
-                  value={formData.parentId || ''}
-                  onChange={e =>
-                    setFormData(prev => ({
-                      ...prev,
-                      parentId: e.target.value || null,
-                    }))
-                  }
-                  className='w-full p-2 border rounded-lg bg-background'
-                >
-                  <option value=''>Без родителя (корневая)</option>
-                  {rootCategories
-                    .filter(c => c.id !== editingCategory?.id)
-                    .map(cat => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button variant='outline' onClick={handleCloseDialog}>
-                Отмена
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={!formData.name || !formData.slug}
-              >
-                {editingCategory ? 'Сохранить' : 'Создать'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <CategoryDialog
+          open={isAddDialogOpen}
+          onClose={handleCloseDialog}
+          onSave={handleSave}
+          editingCategory={editingCategory}
+          formData={formData}
+          setFormData={setFormData}
+          rootCategories={rootCategories}
+        />
       </div>
     </DndContext>
   );

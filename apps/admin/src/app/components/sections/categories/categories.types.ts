@@ -25,3 +25,10 @@ export interface CategoryCardProps {
   dropIndicator: DropIndicator | null;
   isDragOverlay?: boolean;
 }
+
+export interface CategoryFormData {
+  name: string;
+  slug: string;
+  color: string;
+  parentId: string | null;
+}

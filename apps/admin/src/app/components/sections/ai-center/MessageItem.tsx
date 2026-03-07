@@ -1,46 +1,17 @@
 import { useState } from 'react';
 import { cn } from '@/app/components/ui/utils';
 import { Button } from '@/app/components/ui/button';
-import { Textarea } from '@/app/components/ui/textarea';
 import { Badge } from '@/app/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Editor from '@monaco-editor/react';
-import { useTheme } from 'next-themes';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/app/components/ui/dropdown-menu';
-import {
-  Bot,
-  User,
-  Brain,
-  Code2,
-  FileText,
-  Image as ImageIcon,
-  File,
-  Copy,
-  RotateCcw,
-  Trash2,
-  MoreVertical,
-  ChevronLeft,
-  ChevronRight,
-  Edit2,
-  Check,
-  X,
-} from 'lucide-react';
+import { Bot, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAIStore } from '@/app/store/ai-store';
-import type { Message, MessageVariant } from '@/app/store/ai-store';
+import type { Message } from '@/app/store/ai-store';
+import { formatFileSize, getFileIcon } from './ai-center.utils';
+import { ThinkingBlock } from './ThinkingBlock';
+import { ToolCallsBlock } from './ToolCallsBlock';
+import { MessageActions } from './MessageActions';
+import { EditMessageDialog } from './EditMessageDialog';
 
 interface MessageItemProps {
   message: Message;
@@ -52,29 +23,12 @@ export function MessageItem({ message, aiModels }: MessageItemProps) {
   const addMessageVariant = useAIStore(state => state.addMessageVariant);
   const addMessage = useAIStore(state => state.addMessage);
   const setIsStreaming = useAIStore(state => state.setIsStreaming);
-  const { resolvedTheme } = useTheme();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState('');
 
   const currentVariant = message.variants[message.currentVariantIndex];
   const hasMultipleVariants = message.variants.length > 1;
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <ImageIcon className='h-4 w-4' />;
-    if (type.startsWith('text/')) return <FileText className='h-4 w-4' />;
-    return <File className='h-4 w-4' />;
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
 
   const handlePrevVariant = () => {
     if (message.currentVariantIndex > 0) {
@@ -225,90 +179,12 @@ export function MessageItem({ message, aiModels }: MessageItemProps) {
 
           {/* Блоки размышлений */}
           {currentVariant.thinking && currentVariant.thinking.length > 0 && (
-            <details className='group'>
-              <summary className='cursor-pointer p-3 rounded-lg border text-sm flex items-center gap-2 hover:bg-muted/30 transition-colors'>
-                <Brain className='h-4 w-4 text-muted-foreground' />
-                <span className='text-muted-foreground'>
-                  Цепочка размышлений ({currentVariant.thinking.length})
-                </span>
-                <span className='ml-auto text-xs text-muted-foreground'>
-                  {currentVariant.thinking.reduce(
-                    (sum, t) => sum + (t.duration || 0),
-                    0
-                  )}
-                  ms
-                </span>
-              </summary>
-              <div className='mt-2 space-y-2 pl-4 border-l-2 border-muted'>
-                {currentVariant.thinking.map(think => (
-                  <div key={think.id} className='p-3 rounded-lg border text-sm'>
-                    <p className='text-muted-foreground italic'>
-                      {think.content}
-                    </p>
-                    {think.duration && (
-                      <p className='text-xs text-muted-foreground mt-1'>
-                        {think.duration}ms
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </details>
+            <ThinkingBlock thinking={currentVariant.thinking} />
           )}
 
           {/* Вызовы инструментов */}
           {currentVariant.toolCalls && currentVariant.toolCalls.length > 0 && (
-            <div className='space-y-2'>
-              {currentVariant.toolCalls.map(tool => (
-                <details key={tool.id} className='group'>
-                  <summary className='cursor-pointer p-3 rounded-lg border text-sm flex items-center gap-2 hover:bg-muted/30 transition-colors'>
-                    <Code2 className='h-4 w-4 text-muted-foreground' />
-                    <span className='font-medium'>{tool.name}</span>
-                    <Badge
-                      variant={
-                        tool.status === 'success'
-                          ? 'outline'
-                          : tool.status === 'error'
-                            ? 'destructive'
-                            : 'secondary'
-                      }
-                      className={cn(
-                        'text-xs ml-auto',
-                        tool.status === 'success' &&
-                          'border-[rgb(200,225,210)] text-[rgb(90,170,120)] dark:border-[rgb(16,52,27)] dark:text-[rgb(65,145,94)]'
-                      )}
-                    >
-                      {tool.status === 'success' ? 'Success' : tool.status}
-                    </Badge>
-                    {tool.duration && (
-                      <span className='text-xs text-muted-foreground'>
-                        {tool.duration}ms
-                      </span>
-                    )}
-                  </summary>
-                  <div className='mt-2 p-3 rounded-lg border space-y-2'>
-                    <div>
-                      <p className='text-xs font-medium text-muted-foreground mb-1'>
-                        Input:
-                      </p>
-                      <pre className='text-xs bg-muted/30 p-2 rounded overflow-x-auto'>
-                        {JSON.stringify(tool.input, null, 2)}
-                      </pre>
-                    </div>
-                    {tool.output && (
-                      <div>
-                        <p className='text-xs font-medium text-muted-foreground mb-1'>
-                          Output:
-                        </p>
-                        <p className='text-xs bg-muted/30 p-2 rounded'>
-                          {tool.output}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </details>
-              ))}
-            </div>
+            <ToolCallsBlock toolCalls={currentVariant.toolCalls} />
           )}
 
           {/* Вложения */}
@@ -353,51 +229,12 @@ export function MessageItem({ message, aiModels }: MessageItemProps) {
           </div>
 
           {/* Действия с сообщением */}
-          <div className='flex items-center gap-1'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
-              onClick={handleStartEdit}
-            >
-              <Edit2 className='h-3 w-3' />
-            </Button>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
-              onClick={() => copyToClipboard(currentVariant.content)}
-            >
-              <Copy className='h-3 w-3' />
-            </Button>
-            {currentVariant.role === 'assistant' && (
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={handleRegenerate}
-              >
-                <RotateCcw className='h-3 w-3' />
-              </Button>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='ghost' size='icon' className='h-8 w-8'>
-                  <MoreVertical className='h-3 w-3' />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='start'>
-                <DropdownMenuItem>
-                  <Copy className='h-4 w-4 mr-2' />
-                  Копировать
-                </DropdownMenuItem>
-                <DropdownMenuItem className='text-destructive'>
-                  <Trash2 className='h-4 w-4 mr-2' />
-                  Удалить
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <MessageActions
+            role={currentVariant.role}
+            content={currentVariant.content}
+            onEdit={handleStartEdit}
+            onRegenerate={handleRegenerate}
+          />
         </div>
 
         {currentVariant.role === 'user' && (
@@ -408,55 +245,14 @@ export function MessageItem({ message, aiModels }: MessageItemProps) {
       </div>
 
       {/* Диалог редактирования сообщения */}
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent
-          className='max-w-4xl max-h-[85vh] flex flex-col'
-          onEscapeKeyDown={e => e.preventDefault()}
-          onInteractOutside={e => e.preventDefault()}
-        >
-          <DialogHeader>
-            <DialogTitle>Редактировать сообщение</DialogTitle>
-            <DialogDescription>
-              После сохранения создастся новая ветка диалога с этого момента.
-              <br />
-              Исходная ветка сохранится — переключайтесь между вариантами
-              стрелками.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='h-[500px] border rounded-md overflow-hidden'>
-            <Editor
-              height='500px'
-              defaultLanguage='markdown'
-              value={editContent}
-              onChange={value => setEditContent(value || '')}
-              theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                wordWrap: 'on',
-                wrappingStrategy: 'advanced',
-                padding: { top: 10, bottom: 10 },
-                suggestOnTriggerCharacters: true,
-                quickSuggestions: {
-                  other: true,
-                  comments: false,
-                  strings: false,
-                },
-                tabSize: 2,
-                insertSpaces: true,
-              }}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant='outline' onClick={handleCancelEdit}>
-              Отмена
-            </Button>
-            <Button onClick={handleSaveEdit}>Сохранить и отправить</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditMessageDialog
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        content={editContent}
+        onContentChange={setEditContent}
+        onCancel={handleCancelEdit}
+        onSave={handleSaveEdit}
+      />
     </>
   );
 }
