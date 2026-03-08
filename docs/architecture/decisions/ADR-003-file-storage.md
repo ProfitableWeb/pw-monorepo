@@ -25,7 +25,7 @@
 Абстракция `StorageBackend` с двумя реализациями:
 
 - **`LocalStorage`** — dev/staging: запись на диск VM, раздача через nginx
-- **`S3Storage`** — prod: Cloud.ru Object Storage (OBS, S3-совместимый API)
+- **`S3Storage`** — prod: Cloud.ru Evolution Object Storage (S3-совместимый API)
 
 Переключение — одна переменная в `.env`:
 
@@ -35,11 +35,11 @@ STORAGE_BACKEND=local
 
 # Prod
 STORAGE_BACKEND=s3
-S3_ENDPOINT=https://obs.ru-moscow-1.hc.sbercloud.ru
+S3_ENDPOINT=https://s3.cloud.ru
 S3_BUCKET=pw-media
 S3_ACCESS_KEY=...
 S3_SECRET_KEY=...
-S3_REGION=ru-moscow-1
+S3_REGION=ru-central-1
 ```
 
 ### Структура файлов
@@ -161,14 +161,14 @@ location /uploads/ {
 **S3Storage** — прямые URL на OBS с 30-дневным кешем:
 
 ```
-https://pw-media.obs.ru-moscow-1.hc.sbercloud.ru/media/{uuid}.webp
+https://s3.cloud.ru/pw-media/media/{uuid}.webp
 ```
 
 Или через nginx reverse proxy (если нужен единый домен):
 
 ```nginx
 location /uploads/ {
-    proxy_pass https://pw-media.obs.ru-moscow-1.hc.sbercloud.ru/;
+    proxy_pass https://s3.cloud.ru/pw-media/;
     proxy_cache media_cache;
     proxy_cache_valid 200 30d;
 }
@@ -188,7 +188,7 @@ class LocalStorage(StorageBackend):
     """Dev/staging: ~/profitableweb/uploads/, nginx раздаёт."""
 
 class S3Storage(StorageBackend):
-    """Prod: Cloud.ru OBS (S3-совместимый). boto3, forcePathStyle."""
+    """Prod: Cloud.ru Evolution Object Storage (S3-совместимый). boto3."""
 ```
 
 ## Почему медиа-центричная модель, а не entity-центричная
@@ -235,7 +235,7 @@ class S3Storage(StorageBackend):
 [obs]
 type = s3
 provider = Other
-endpoint = obs.ru-moscow-1.hc.sbercloud.ru
+endpoint = s3.cloud.ru
 access_key_id = ...
 secret_access_key = ...
 force_path_style = true
@@ -302,5 +302,5 @@ systemctl restart pw-api
 - PW-034: Управление профилем пользователя (аватарки)
 - PW-XXX: Media API (модель, эндпоинты, загрузка, ресайзы)
 - PW-XXX: Подключение админской галереи к Media API
-- PW-XXX: S3Storage реализация (Cloud.ru OBS)
-- PW-XXX: Настройка rclone sync (local ↔ Cloud.ru OBS)
+- PW-XXX: S3Storage реализация (Cloud.ru Evolution Object Storage)
+- PW-XXX: Настройка rclone sync (local ↔ Cloud.ru Evolution Object Storage)
