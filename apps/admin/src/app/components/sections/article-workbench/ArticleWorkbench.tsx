@@ -408,10 +408,10 @@ export function ArticleWorkbench() {
           }
         );
       } else if (newStatus === 'archived') {
-        deleteMutation.mutate(
-          { articleId },
+        updateMutation.mutate(
+          { articleId, data: { status: 'archived' } },
           {
-            onSuccess: () => setValue('status', 'archived' as ArticleStatus),
+            onSuccess: res => setValue('status', res.status as ArticleStatus),
             onError: () => toast.error('Не удалось архивировать статью'),
           }
         );
@@ -428,7 +428,7 @@ export function ArticleWorkbench() {
       publishMutation,
       scheduleMutation,
       unpublishMutation,
-      deleteMutation,
+      updateMutation,
       setValue,
       getValues,
     ]
