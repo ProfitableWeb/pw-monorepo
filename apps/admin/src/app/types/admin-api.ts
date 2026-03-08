@@ -114,6 +114,8 @@ export interface ArticleUpdatePayload {
   title?: string;
   subtitle?: string | null;
   slug?: string;
+  status?: 'draft' | 'published' | 'archived' | 'scheduled';
+  published_at?: string | null;
   content?: string;
   content_format?: 'html' | 'markdown';
   excerpt?: string;

@@ -284,6 +284,29 @@ async function apiFetchWithMeta<T>(
     credentials: 'include',
   });
 
+  if (res.status === 401 && !path.startsWith('/auth/')) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      const retry = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        credentials: 'include',
+      });
+      if (retry.ok) {
+        const json: ApiResponseRaw<T> = await retry.json();
+        return {
+          data: json.data ?? null,
+          meta: {
+            page: json.meta?.page,
+            limit: json.meta?.limit,
+            total: json.meta?.total,
+            hasMore: json.meta?.has_more,
+          },
+        };
+      }
+    }
+    throw new ApiError(401, 'Не авторизован');
+  }
+
   if (!res.ok)
     throw new ApiError(res.status, `API error ${res.status}: ${url}`);
 
@@ -890,7 +913,8 @@ export async function createArticle(
     method: 'POST',
     body: data,
   });
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 export async function updateArticle(
@@ -901,7 +925,8 @@ export async function updateArticle(
     `/admin/articles/${encodeURIComponent(articleId)}`,
     { method: 'PATCH', body: data }
   );
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 export async function deleteArticle(
@@ -921,7 +946,8 @@ export async function publishArticle(
     `/admin/articles/${encodeURIComponent(articleId)}/publish`,
     { method: 'POST' }
   );
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 export async function scheduleArticle(
@@ -932,7 +958,8 @@ export async function scheduleArticle(
     `/admin/articles/${encodeURIComponent(articleId)}/schedule`,
     { method: 'POST', body: { published_at: publishedAt } }
   );
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 export async function unpublishArticle(
@@ -942,7 +969,8 @@ export async function unpublishArticle(
     `/admin/articles/${encodeURIComponent(articleId)}/unpublish`,
     { method: 'POST' }
   );
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 // ---------------------------------------------------------------------------
@@ -981,7 +1009,8 @@ export async function restoreRevision(
     `/admin/articles/${encodeURIComponent(articleId)}/revisions/${encodeURIComponent(revisionId)}/restore`,
     { method: 'POST' }
   );
-  return mapAdminArticleFull(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminArticleFull(raw);
 }
 
 // ---------------------------------------------------------------------------
@@ -998,7 +1027,8 @@ export async function createTag(name: string): Promise<AdminTagType> {
     method: 'POST',
     body: { name },
   });
-  return mapAdminTagItem(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminTagItem(raw);
 }
 
 // ---------------------------------------------------------------------------
@@ -1016,7 +1046,8 @@ export async function getAdminCategories(): Promise<AdminCategoryFull[]> {
 
 export async function getSystemSettings(): Promise<SystemSettings> {
   const raw = await apiFetch<SystemSettingsRaw>('/admin/settings');
-  return mapSystemSettingsItem(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSystemSettingsItem(raw);
 }
 
 export async function updateSystemSettings(data: {
@@ -1026,7 +1057,8 @@ export async function updateSystemSettings(data: {
     method: 'PATCH',
     body: data,
   });
-  return mapSystemSettingsItem(raw!);
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSystemSettingsItem(raw);
 }
 
 export async function getOAuthLinkUrl(provider: string): Promise<string> {

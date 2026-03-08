@@ -254,7 +254,10 @@ def update_article(
     fields = body.model_dump(exclude_unset=True)
     if "category_id" in fields and fields["category_id"] is not None:
         fields["category_id"] = _validate_category(db, fields["category_id"])
-    article = admin_service.update_article(db, article, author_id=user.id, **fields)
+    try:
+        article = admin_service.update_article(db, article, author_id=user.id, **fields)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     return _response_with_revisions(db, article)
 
 
