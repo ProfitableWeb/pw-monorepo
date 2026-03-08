@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 
 from src.core.database import get_db
 from src.models.article import Article
-from src.schemas.article import ArticleListItem, ArticleResponse
+from src.schemas.articles.public import ArticleListItem, ArticleResponse
 from src.schemas.common import ApiMeta, ApiResponse
-from src.services import article as article_service
+from src.services.articles import queries as article_service
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -86,12 +86,16 @@ def list_articles(
     return ApiResponse(
         success=True,
         data=data,
-        meta=ApiMeta(page=page, limit=limit, total=total, has_more=(page * limit < total)),
+        meta=ApiMeta(
+            page=page, limit=limit, total=total, has_more=(page * limit < total)
+        ),
     )
 
 
 @router.get("/{slug}", response_model=ApiResponse[ArticleResponse])
-def get_article(slug: str, db: Session = Depends(get_db)) -> ApiResponse[ArticleResponse]:
+def get_article(
+    slug: str, db: Session = Depends(get_db)
+) -> ApiResponse[ArticleResponse]:
     article = article_service.get_article_by_slug(db, slug)
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
