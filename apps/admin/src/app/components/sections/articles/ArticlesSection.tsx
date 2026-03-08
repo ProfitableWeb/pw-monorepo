@@ -8,6 +8,7 @@ import { Plus, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 
 import type { Article } from './articles.types';
+import { VALID_STATUSES } from './articles.constants';
 import { filterArticles } from './articles.utils';
 import { StatsCards } from './assets/StatsCards';
 import { FiltersToolbar } from './assets/FiltersToolbar';
@@ -23,7 +24,9 @@ export function ArticlesSection() {
       (adminResult?.data ?? []).map(a => ({
         id: a.id,
         title: a.title,
-        status: a.status as Article['status'],
+        status: (VALID_STATUSES.has(a.status)
+          ? a.status
+          : 'draft') as Article['status'],
         category: a.category.name,
         author: a.author?.name ?? '—',
         views: a.views,

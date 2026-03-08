@@ -4,3 +4,5 @@ export const STATUSES = [
   { value: 'scheduled', label: 'Запланированные' },
   { value: 'archived', label: 'Архивные' },
 ] as const;
+
+export const VALID_STATUSES = new Set(STATUSES.map(s => s.value));
