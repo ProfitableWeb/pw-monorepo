@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 import { DiffEditor, type Monaco } from '@monaco-editor/react';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
@@ -14,16 +15,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/app/components/ui/alert-dialog';
-import { Clock, RotateCcw, Trash2, Settings2 } from 'lucide-react';
+import { Clock, RotateCcw, Settings2, Loader2 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
-import { mockRevisions } from '@/app/mock/article-mock';
 import {
   EditorSettingsPanel,
   useEditorSettingsPanel,
   defineCustomThemes,
   type EditorTheme,
 } from '../../editor-shared';
-import type { RevisionEntry } from '@/app/types/article-editor';
+import { useRevisions, useRevision, useRestoreRevision } from '@/hooks/api';
+import type { RevisionListItem } from '@/app/types/admin-api';
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('ru-RU', {
@@ -49,20 +50,34 @@ const DEFAULT_DIFF_SETTINGS: DiffSettings = {
 };
 
 interface HistoryTabProps {
+  articleId: string | null;
   currentContent: string;
   onRestore?: (content: string) => void;
 }
 
-export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
-  const [selectedRevision, setSelectedRevision] =
-    useState<RevisionEntry | null>(mockRevisions[1] ?? null);
-  const [settings, setSettings] = useState<DiffSettings>(DEFAULT_DIFF_SETTINGS);
-  const [restoreTarget, setRestoreTarget] = useState<RevisionEntry | null>(
+export function HistoryTab({
+  articleId,
+  currentContent,
+  onRestore,
+}: HistoryTabProps) {
+  const [selectedRevisionId, setSelectedRevisionId] = useState<string | null>(
     null
   );
-  const [deleteTarget, setDeleteTarget] = useState<RevisionEntry | null>(null);
+  const [settings, setSettings] = useState<DiffSettings>(DEFAULT_DIFF_SETTINGS);
+  const [restoreTarget, setRestoreTarget] = useState<RevisionListItem | null>(
+    null
+  );
 
   const settingsPanel = useEditorSettingsPanel();
+
+  const { data: revisionsResult, isLoading: revisionsLoading } =
+    useRevisions(articleId);
+  const revisions = revisionsResult?.data ?? [];
+  const { data: revisionDetail } = useRevision(articleId, selectedRevisionId);
+  const restoreMutation = useRestoreRevision();
+
+  const selectedListItem =
+    revisions.find(r => r.id === selectedRevisionId) ?? null;
 
   const updateSetting = useCallback(
     <K extends keyof DiffSettings>(key: K, value: DiffSettings[K]) => {
@@ -76,11 +91,28 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
   }, []);
 
   const handleRestore = useCallback(() => {
-    if (restoreTarget && onRestore) {
-      onRestore(restoreTarget.content);
-    }
+    if (!restoreTarget || !articleId) return;
+    restoreMutation.mutate(
+      { articleId, revisionId: restoreTarget.id },
+      {
+        onSuccess: data => {
+          if (onRestore && data.content != null) {
+            onRestore(data.content);
+          }
+        },
+        onError: () => toast.error('Не удалось восстановить ревизию'),
+      }
+    );
     setRestoreTarget(null);
-  }, [restoreTarget, onRestore]);
+  }, [restoreTarget, articleId, restoreMutation, onRestore]);
+
+  if (!articleId) {
+    return (
+      <div className='flex items-center justify-center h-full text-sm text-muted-foreground'>
+        Сохраните статью, чтобы увидеть историю ревизий
+      </div>
+    );
+  }
 
   return (
     <div className='flex h-full'>
@@ -89,42 +121,52 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         <div className='flex items-center justify-between px-4 border-b min-h-[49px]'>
           <h3 className='text-xs font-semibold'>Ревизии</h3>
           <Badge variant='secondary' className='text-[10px]'>
-            {mockRevisions.length}
+            {revisions.length}
           </Badge>
         </div>
 
         <div className='flex-1 overflow-auto'>
-          <div className='relative'>
-            <div className='absolute left-[22px] top-4 bottom-4 w-px bg-muted-foreground/30' />
-            {mockRevisions.map(rev => {
-              const isActive = selectedRevision?.id === rev.id;
-              return (
-                <button
-                  key={rev.id}
-                  type='button'
-                  onClick={() => setSelectedRevision(rev)}
-                  className={cn(
-                    'flex items-start gap-2.5 w-full px-3 py-2.5 text-left transition-colors relative',
-                    isActive
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
-                  )}
-                >
-                  <div className='relative z-10 p-1 rounded-full bg-background border shrink-0 mt-0.5'>
-                    <Clock className='size-3 ' />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-xs font-medium line-clamp-2 leading-relaxed'>
-                      {rev.summary}
-                    </p>
-                    <p className='text-[10px] text-muted-foreground mt-0.5'>
-                      {rev.author} · {formatDate(rev.date)}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          {revisionsLoading ? (
+            <div className='flex items-center justify-center py-8'>
+              <Loader2 className='size-4 animate-spin text-muted-foreground' />
+            </div>
+          ) : revisions.length === 0 ? (
+            <div className='px-4 py-6 text-xs text-muted-foreground text-center'>
+              Нет ревизий
+            </div>
+          ) : (
+            <div className='relative'>
+              <div className='absolute left-[22px] top-4 bottom-4 w-px bg-muted-foreground/30' />
+              {revisions.map(rev => {
+                const isActive = selectedRevisionId === rev.id;
+                return (
+                  <button
+                    key={rev.id}
+                    type='button'
+                    onClick={() => setSelectedRevisionId(rev.id)}
+                    className={cn(
+                      'flex items-start gap-2.5 w-full px-3 py-2.5 text-left transition-colors relative',
+                      isActive
+                        ? 'bg-accent text-accent-foreground'
+                        : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+                    )}
+                  >
+                    <div className='relative z-10 p-1 rounded-full bg-background border shrink-0 mt-0.5'>
+                      <Clock className='size-3 ' />
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-xs font-medium line-clamp-2 leading-relaxed'>
+                        {rev.summary ?? 'Без описания'}
+                      </p>
+                      <p className='text-[10px] text-muted-foreground mt-0.5'>
+                        {formatDate(rev.createdAt)}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </nav>
 
@@ -133,10 +175,10 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
         {/* Тулбар diff */}
         <div className='flex items-center justify-between px-4 py-2 border-b'>
           <div className='flex items-center gap-3'>
-            {selectedRevision && (
+            {selectedListItem && (
               <span className='text-xs text-muted-foreground'>
-                {selectedRevision.summary} <span className='opacity-60'>→</span>{' '}
-                Текущая
+                {selectedListItem.summary ?? 'Без описания'}{' '}
+                <span className='opacity-60'>&rarr;</span> Текущая
               </span>
             )}
           </div>
@@ -175,40 +217,27 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
             </Button>
 
             {/* Кнопка восстановления */}
-            {selectedRevision && onRestore && (
+            {selectedListItem && onRestore && (
               <Button
                 variant='outline'
                 size='sm'
                 className='gap-1.5 text-xs'
-                onClick={() => setRestoreTarget(selectedRevision)}
+                onClick={() => setRestoreTarget(selectedListItem)}
               >
                 <RotateCcw className='size-3' />
                 Восстановить
               </Button>
             )}
-            {selectedRevision &&
-              selectedRevision.id !==
-                mockRevisions[mockRevisions.length - 1]?.id && (
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='size-7 text-muted-foreground hover:text-destructive'
-                  title='Удалить ревизию'
-                  onClick={() => setDeleteTarget(selectedRevision)}
-                >
-                  <Trash2 className='size-3.5' />
-                </Button>
-              )}
           </div>
         </div>
 
         {/* Редактор diff */}
         <div className='flex-1 min-h-0 min-w-0 overflow-hidden'>
-          {selectedRevision ? (
+          {revisionDetail ? (
             <DiffEditor
               height='100%'
               language='html'
-              original={selectedRevision.content}
+              original={revisionDetail.content}
               modified={currentContent}
               beforeMount={handleBeforeMount}
               theme={settings.theme}
@@ -258,8 +287,9 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Восстановить версию?</AlertDialogTitle>
             <AlertDialogDescription>
-              Текущий контент будет заменён версией «{restoreTarget?.summary}»
-              от {restoreTarget ? formatDate(restoreTarget.date) : ''}. Это
+              Текущий контент будет заменён версией «
+              {restoreTarget?.summary ?? 'Без описания'}» от{' '}
+              {restoreTarget ? formatDate(restoreTarget.createdAt) : ''}. Это
               действие можно отменить через Ctrl+Z.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -267,40 +297,6 @@ export function HistoryTab({ currentContent, onRestore }: HistoryTabProps) {
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={handleRestore}>
               Восстановить
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Диалог подтверждения удаления */}
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={open => {
-          if (!open) setDeleteTarget(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Удалить ревизию?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Ревизия «{deleteTarget?.summary}» от{' '}
-              {deleteTarget ? formatDate(deleteTarget.date) : ''} будет удалена
-              безвозвратно.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction
-              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-              onClick={() => {
-                // TODO: delete revision via API
-                if (selectedRevision?.id === deleteTarget?.id) {
-                  setSelectedRevision(null);
-                }
-                setDeleteTarget(null);
-              }}
-            >
-              Удалить
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

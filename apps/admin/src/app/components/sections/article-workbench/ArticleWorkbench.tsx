@@ -11,7 +11,7 @@
  * @see tabs/ — реализация каждой вкладки
  * @see article-editor-store — Zustand-стор глобального состояния редактора
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Tabs,
@@ -34,7 +34,17 @@ import {
 } from '@/app/components/ui/popover';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Input } from '@/app/components/ui/input';
-import { Save, Loader2, CalendarClock } from 'lucide-react';
+import { Save, Loader2, CalendarClock, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/app/components/ui/alert-dialog';
 import { CardTab } from './tabs/card';
 import { SeoTab } from './tabs/seo';
 import { EditorTab } from './tabs/editor';
@@ -42,9 +52,26 @@ import { ArtifactsTab } from './tabs/artifacts';
 import { ResearchTab } from './tabs/research';
 import { HistoryTab } from './tabs/history';
 import { useArticleEditorStore } from '@/app/store/article-editor-store';
+import { toast } from 'sonner';
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
-import { mockArticle } from '@/app/mock/article-mock';
+import {
+  useAdminArticle,
+  useUpdateArticle,
+  useCreateArticle,
+  usePublishArticle,
+  useScheduleArticle,
+  useUnpublishArticle,
+  useDeleteArticle,
+  useAdminCategories,
+} from '@/hooks/api';
+import { useSystemSettings } from '@/hooks/api/useSystemSettings';
+import {
+  apiToFormData,
+  formDataToUpdatePayload,
+  formDataToCreatePayload,
+  getEmptyFormData,
+} from '@/lib/mappers';
 import type {
   ArticleFormData,
   ArticleStatus,
@@ -119,28 +146,73 @@ function formatPublishDate(iso: string, offset: string, abbr: string): string {
   return `${shifted.getUTCDate()} ${MONTHS_SHORT[shifted.getUTCMonth()]} ${shifted.getUTCFullYear()}, ${hh}:${mm} ${abbr}`;
 }
 
+/** Debounce интервал автосохранения (мс) */
+const AUTOSAVE_DELAY = 4000;
+
 export function ArticleWorkbench() {
-  const { articleSlug, openArticle, closeArticle, setContent } =
-    useArticleEditorStore();
+  const {
+    articleId,
+    openArticle,
+    closeArticle,
+    setContent,
+    markSaved,
+    setAutosaveStatus,
+  } = useArticleEditorStore();
 
-  const [isSaving, setIsSaving] = useState(false);
+  const { editArticleId } = useNavigationStore();
+  const isCreateMode = !editArticleId;
 
-  const handleSave = useCallback(async () => {
-    setIsSaving(true);
-    // TODO: реальный вызов API
-    await new Promise(r => setTimeout(r, 600));
-    setIsSaving(false);
-  }, []);
+  // --- API данные ---
+  const { data: apiArticle, isLoading: isLoadingArticle } = useAdminArticle(
+    editArticleId ?? null
+  );
+  const { data: settings } = useSystemSettings();
+  const { data: categories } = useAdminCategories();
+  const timezone = settings?.timezone ?? '+03:00';
+
+  // --- Мутации ---
+  const updateMutation = useUpdateArticle();
+  const createMutation = useCreateArticle();
+  const publishMutation = usePublishArticle();
+  const scheduleMutation = useScheduleArticle();
+  const unpublishMutation = useUnpublishArticle();
+  const deleteMutation = useDeleteArticle();
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
+  const isSaving = updateMutation.isPending || createMutation.isPending;
+
   const { setBreadcrumbs } = useHeaderStore();
-  const { navigateTo } = useNavigationStore();
+  const { navigateTo, navigateToArticleEditor } = useNavigationStore();
 
-  const { register, watch, setValue } = useForm<ArticleFormData>({
-    defaultValues: mockArticle,
-  });
+  // --- Форма ---
+  const defaultValues = useMemo(() => {
+    if (apiArticle) return apiToFormData(apiArticle, timezone);
+    return getEmptyFormData(timezone);
+  }, [apiArticle, timezone]);
+
+  const { register, watch, setValue, reset, getValues } =
+    useForm<ArticleFormData>({
+      defaultValues,
+    });
+
+  // Сброс формы при загрузке данных из API
+  useEffect(() => {
+    if (apiArticle) {
+      const formData = apiToFormData(apiArticle, timezone);
+      reset(formData);
+      openArticle(apiArticle.id, apiArticle.slug, apiArticle.content);
+    } else if (isCreateMode) {
+      const empty = getEmptyFormData(timezone);
+      reset(empty);
+      openArticle(null, '', '');
+    }
+  }, [apiArticle, timezone, isCreateMode, reset, openArticle]);
 
   const currentStatus = watch('status');
   const publishedAt = watch('publishedAt');
   const publishTimezone = watch('publishTimezone');
+  const h1 = watch('h1');
 
   const tzOption = useMemo(
     () => TIMEZONE_OPTIONS.find(o => o.value === publishTimezone) ?? TZ_DEFAULT,
@@ -215,22 +287,170 @@ export function ArticleWorkbench() {
     [publishedAt, publishTimezone]
   );
 
-  // Синхронизация изменений формы → Zustand-стор (для EditorTab и HistoryTab)
-  useEffect(() => {
-    const subscription = watch(data => {
-      if (data.content) setContent(data.content);
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, setContent]);
+  // --- Сохранение ---
+  const handleSave = useCallback(async () => {
+    if (!categories) return;
+    const formData = getValues();
 
-  // Загрузка мок-статьи при монтировании (позже — загрузка по slug из API)
-  useEffect(() => {
-    if (!articleSlug) {
-      openArticle(mockArticle.slug, mockArticle.content);
+    try {
+      if (isCreateMode || !articleId) {
+        createMutation.mutate(formDataToCreatePayload(formData, categories), {
+          onSuccess: result => {
+            openArticle(result.id, result.slug, result.content);
+            markSaved();
+            navigateToArticleEditor(result.id);
+          },
+          onError: () => toast.error('Не удалось создать статью'),
+        });
+      } else {
+        updateMutation.mutate(
+          { articleId, data: formDataToUpdatePayload(formData, categories) },
+          {
+            onSuccess: () => markSaved(),
+            onError: () => toast.error('Не удалось сохранить статью'),
+          }
+        );
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Ошибка сохранения');
     }
-  }, [articleSlug, openArticle]);
+  }, [
+    getValues,
+    categories,
+    isCreateMode,
+    articleId,
+    createMutation,
+    updateMutation,
+    openArticle,
+    markSaved,
+    navigateToArticleEditor,
+  ]);
 
-  // Хлебные крошки: «Статьи > {название}»
+  // --- Автосохранение (debounced) ---
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const subscription = watch((data, { type }) => {
+      if (data.content != null) setContent(data.content);
+
+      // Автосохранение только для существующих статей
+      if (type !== 'change' || !articleId) return;
+
+      setAutosaveStatus('syncing');
+      clearTimeout(autosaveTimerRef.current);
+      autosaveTimerRef.current = setTimeout(() => {
+        if (!categories) return;
+        try {
+          const formData = getValues();
+          updateMutation.mutate(
+            { articleId, data: formDataToUpdatePayload(formData, categories) },
+            {
+              onSuccess: () => markSaved(),
+              onError: () => setAutosaveStatus('offline'),
+            }
+          );
+        } catch {
+          setAutosaveStatus('offline');
+        }
+      }, AUTOSAVE_DELAY);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(autosaveTimerRef.current);
+    };
+  }, [
+    watch,
+    setContent,
+    articleId,
+    getValues,
+    categories,
+    updateMutation,
+    markSaved,
+    setAutosaveStatus,
+  ]);
+
+  // --- Смена статуса через select ---
+  const handleStatusChange = useCallback(
+    (newStatus: string) => {
+      if (!articleId) {
+        setValue('status', newStatus as ArticleStatus);
+        return;
+      }
+
+      const prevStatus = currentStatus;
+      if (newStatus === prevStatus) return;
+
+      if (newStatus === 'published') {
+        publishMutation.mutate(articleId, {
+          onSuccess: res => {
+            setValue('status', res.status as ArticleStatus);
+            if (res.publishedAt) setValue('publishedAt', res.publishedAt);
+          },
+          onError: () => toast.error('Не удалось опубликовать статью'),
+        });
+      } else if (newStatus === 'scheduled') {
+        const publishedAt = getValues('publishedAt');
+        if (!publishedAt) {
+          toast.error('Укажите дату публикации для планирования');
+          return;
+        }
+        scheduleMutation.mutate(
+          { articleId, publishedAt },
+          {
+            onSuccess: res => {
+              setValue('status', res.status as ArticleStatus);
+              if (res.publishedAt) setValue('publishedAt', res.publishedAt);
+            },
+            onError: () => toast.error('Не удалось запланировать публикацию'),
+          }
+        );
+      } else if (newStatus === 'archived') {
+        deleteMutation.mutate(
+          { articleId },
+          {
+            onSuccess: () => setValue('status', 'archived' as ArticleStatus),
+            onError: () => toast.error('Не удалось архивировать статью'),
+          }
+        );
+      } else if (newStatus === 'draft') {
+        unpublishMutation.mutate(articleId, {
+          onSuccess: res => setValue('status', res.status as ArticleStatus),
+          onError: () => toast.error('Не удалось снять с публикации'),
+        });
+      }
+    },
+    [
+      articleId,
+      currentStatus,
+      publishMutation,
+      scheduleMutation,
+      unpublishMutation,
+      deleteMutation,
+      setValue,
+      getValues,
+    ]
+  );
+
+  // --- Удаление ---
+  const handleDelete = useCallback(() => {
+    if (!articleId) return;
+    deleteMutation.mutate(
+      { articleId },
+      {
+        onSuccess: () => {
+          closeArticle();
+          navigateTo('articles');
+        },
+        onError: () => toast.error('Не удалось удалить статью'),
+      }
+    );
+    setDeleteConfirmOpen(false);
+  }, [articleId, deleteMutation, closeArticle, navigateTo]);
+
+  // --- Хлебные крошки ---
   useEffect(() => {
     setBreadcrumbs([
       {
@@ -240,13 +460,23 @@ export function ArticleWorkbench() {
           navigateTo('articles');
         },
       },
-      { label: mockArticle.h1 },
+      { label: h1 || (isCreateMode ? 'Новая статья' : 'Загрузка...') },
     ]);
 
     return () => {
       useHeaderStore.getState().reset();
     };
-  }, [setBreadcrumbs, navigateTo, closeArticle]);
+  }, [setBreadcrumbs, navigateTo, closeArticle, h1, isCreateMode]);
+
+  // --- Loading state ---
+  if (!isCreateMode && isLoadingArticle) {
+    return (
+      <div className='flex items-center justify-center h-full text-muted-foreground'>
+        <Loader2 className='h-5 w-5 animate-spin mr-2' />
+        Загрузка статьи...
+      </div>
+    );
+  }
 
   return (
     <Tabs
@@ -261,7 +491,9 @@ export function ArticleWorkbench() {
           <TabsTrigger value='editor'>Редактор</TabsTrigger>
           <TabsTrigger value='artifacts'>Артефакты</TabsTrigger>
           <TabsTrigger value='research'>Исследование</TabsTrigger>
-          <TabsTrigger value='history'>История</TabsTrigger>
+          <TabsTrigger value='history' disabled={isCreateMode}>
+            История
+          </TabsTrigger>
         </TabsList>
 
         <div className='flex items-center gap-3 mb-2'>
@@ -360,10 +592,7 @@ export function ArticleWorkbench() {
             </Popover>
           )}
 
-          <Select
-            value={currentStatus}
-            onValueChange={v => setValue('status', v as ArticleStatus)}
-          >
+          <Select value={currentStatus} onValueChange={handleStatusChange}>
             <SelectTrigger size='sm' className='w-[150px] h-7 text-xs'>
               <SelectValue>
                 <span className='flex items-center gap-2'>
@@ -392,7 +621,7 @@ export function ArticleWorkbench() {
             variant='outline'
             size='sm'
             className='gap-1.5'
-            disabled={isSaving}
+            disabled={isSaving || !categories}
             onClick={handleSave}
           >
             {isSaving ? (
@@ -402,6 +631,18 @@ export function ArticleWorkbench() {
             )}
             Сохранить
           </Button>
+
+          {!isCreateMode && (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='size-7 text-muted-foreground hover:text-destructive'
+              title='Удалить статью'
+              onClick={() => setDeleteConfirmOpen(true)}
+            >
+              <Trash2 className='size-3.5' />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -430,10 +671,32 @@ export function ArticleWorkbench() {
 
       <TabsContent value='history' className='flex-1 min-h-0 mt-0'>
         <HistoryTab
+          articleId={articleId}
           currentContent={watch('content')}
           onRestore={content => setValue('content', content)}
         />
       </TabsContent>
+
+      {/* Диалог подтверждения удаления */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить статью?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Статья «{h1}» будет перемещена в архив.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction
+              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+              onClick={handleDelete}
+            >
+              Удалить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Tabs>
   );
 }

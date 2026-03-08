@@ -230,7 +230,9 @@ interface NavigationStore {
   currentPage: PageId;
   recentPages: PageId[];
   seoKbArticleId?: string;
+  editArticleId?: string;
   navigateTo: (pageId: PageId) => void;
+  navigateToArticleEditor: (articleId?: string) => void;
   navigateToSeoKb: (articleId: string) => void;
   clearSeoKbArticleId: () => void;
   getPageTitle: (pageId: PageId) => string;
@@ -241,6 +243,7 @@ export const useNavigationStore = create<NavigationStore>(set => ({
   currentPage: 'dashboard',
   recentPages: [],
   seoKbArticleId: undefined,
+  editArticleId: undefined,
 
   navigateTo: (pageId: PageId) => {
     set(state => {
@@ -259,6 +262,20 @@ export const useNavigationStore = create<NavigationStore>(set => ({
         ...state.recentPages.filter(p => p !== 'seo'),
       ].slice(0, 5);
       return { currentPage: 'seo', recentPages, seoKbArticleId: articleId };
+    });
+  },
+
+  navigateToArticleEditor: (articleId?: string) => {
+    set(state => {
+      const recentPages = [
+        'article-editor' as PageId,
+        ...state.recentPages.filter(p => p !== 'article-editor'),
+      ].slice(0, 5);
+      return {
+        currentPage: 'article-editor',
+        recentPages,
+        editArticleId: articleId,
+      };
     });
   },
 

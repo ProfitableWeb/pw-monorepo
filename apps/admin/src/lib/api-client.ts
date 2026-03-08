@@ -585,6 +585,450 @@ export async function deleteAvatar(): Promise<UserProfile> {
   return mapProfile(json.data);
 }
 
+// ---------------------------------------------------------------------------
+// Базовый fetch для мутаций (POST / PATCH / DELETE)
+// ---------------------------------------------------------------------------
+
+interface ApiMutateOptions {
+  method: 'POST' | 'PATCH' | 'DELETE';
+  body?: unknown;
+}
+
+async function apiMutate<T>(
+  path: string,
+  { method, body }: ApiMutateOptions
+): Promise<T | null> {
+  const url = `${API_BASE}${path}`;
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
+
+  const res = await fetch(url, {
+    method,
+    headers,
+    credentials: 'include',
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+
+  if (res.status === 204) return null;
+
+  if (res.status === 401 && !path.startsWith('/auth/')) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      const retry = await fetch(url, {
+        method,
+        headers,
+        credentials: 'include',
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+      if (retry.status === 204) return null;
+      if (retry.ok) {
+        const json: ApiResponseRaw<T> = await retry.json();
+        return json.data ?? null;
+      }
+    }
+    throw new ApiError(401, 'Не авторизован');
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? `API error ${res.status}`);
+  }
+
+  const json: ApiResponseRaw<T> = await res.json();
+  if (!json.success)
+    throw new ApiError(res.status, json.error?.message ?? 'Unknown API error');
+
+  return json.data ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Admin API — типы и маппинг
+// ---------------------------------------------------------------------------
+
+import type {
+  AdminArticleResponse as AdminArticleResponseType,
+  AdminArticleListItem as AdminArticleListItemType,
+  AdminArticlesParams,
+  ArticleCreatePayload,
+  ArticleUpdatePayload,
+  AdminTag as AdminTagType,
+  AdminCategoryFull,
+  SystemSettings,
+  RevisionListItem as RevisionListItemType,
+  RevisionResponse as RevisionResponseType,
+  PaginationParams,
+} from '@/app/types/admin-api';
+
+interface AdminArticleRaw {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle: string | null;
+  content: string;
+  content_format: string;
+  excerpt: string;
+  summary: string | null;
+  status: string;
+  layout: string;
+  image_url: string | null;
+  image_alt: string | null;
+  reading_time: number | null;
+  views: number;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  canonical_url: string | null;
+  og_title: string | null;
+  og_description: string | null;
+  og_image: string | null;
+  focus_keyword: string | null;
+  seo_keywords: string[];
+  schema_type: string | null;
+  robots_no_index: boolean;
+  robots_no_follow: boolean;
+  category: { id: string; name: string; slug: string };
+  tags: { id: string; name: string; slug: string }[];
+  author: { id: string; name: string } | null;
+  artifacts: any;
+  revision_count: number;
+}
+
+interface AdminArticleListItemRaw {
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+  excerpt: string;
+  category: { id: string; name: string; slug: string };
+  tags: { id: string; name: string; slug: string }[];
+  author: { id: string; name: string } | null;
+  image_url: string | null;
+  reading_time: number | null;
+  views: number;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface AdminTagRaw {
+  id: string;
+  name: string;
+  slug: string;
+  article_count: number;
+}
+
+interface AdminCategoryFullRaw {
+  id: string;
+  name: string;
+  slug: string;
+  subtitle: string | null;
+  description: string | null;
+  icon: string | null;
+  color: string | null;
+  article_count: number;
+}
+
+interface SystemSettingsRaw {
+  timezone: string;
+  updated_at: string;
+}
+
+interface RevisionListItemRaw {
+  id: string;
+  summary: string | null;
+  content_format: string;
+  author_id: string | null;
+  created_at: string;
+}
+
+interface RevisionResponseRaw extends RevisionListItemRaw {
+  content: string;
+}
+
+function mapAdminArticleFull(raw: AdminArticleRaw): AdminArticleResponseType {
+  return {
+    id: raw.id,
+    title: raw.title,
+    slug: raw.slug,
+    subtitle: raw.subtitle,
+    content: raw.content,
+    contentFormat: raw.content_format,
+    excerpt: raw.excerpt,
+    summary: raw.summary,
+    status: raw.status,
+    layout: raw.layout,
+    imageUrl: raw.image_url,
+    imageAlt: raw.image_alt,
+    readingTime: raw.reading_time,
+    views: raw.views,
+    publishedAt: raw.published_at,
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
+    metaTitle: raw.meta_title,
+    metaDescription: raw.meta_description,
+    canonicalUrl: raw.canonical_url,
+    ogTitle: raw.og_title,
+    ogDescription: raw.og_description,
+    ogImage: raw.og_image,
+    focusKeyword: raw.focus_keyword,
+    seoKeywords: raw.seo_keywords,
+    schemaType: raw.schema_type,
+    robotsNoIndex: raw.robots_no_index,
+    robotsNoFollow: raw.robots_no_follow,
+    category: raw.category,
+    tags: raw.tags,
+    author: raw.author,
+    artifacts: raw.artifacts,
+    revisionCount: raw.revision_count,
+  };
+}
+
+function mapAdminArticleListItem(
+  raw: AdminArticleListItemRaw
+): AdminArticleListItemType {
+  return {
+    id: raw.id,
+    title: raw.title,
+    slug: raw.slug,
+    status: raw.status,
+    excerpt: raw.excerpt,
+    category: raw.category,
+    tags: raw.tags,
+    author: raw.author,
+    imageUrl: raw.image_url,
+    readingTime: raw.reading_time,
+    views: raw.views,
+    publishedAt: raw.published_at,
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
+  };
+}
+
+function mapAdminTagItem(raw: AdminTagRaw): AdminTagType {
+  return {
+    id: raw.id,
+    name: raw.name,
+    slug: raw.slug,
+    articleCount: raw.article_count,
+  };
+}
+
+function mapAdminCategoryFullItem(
+  raw: AdminCategoryFullRaw
+): AdminCategoryFull {
+  return {
+    id: raw.id,
+    name: raw.name,
+    slug: raw.slug,
+    subtitle: raw.subtitle,
+    description: raw.description,
+    icon: raw.icon,
+    color: raw.color,
+    articleCount: raw.article_count,
+  };
+}
+
+function mapSystemSettingsItem(raw: SystemSettingsRaw): SystemSettings {
+  return { timezone: raw.timezone, updatedAt: raw.updated_at };
+}
+
+function mapRevisionItem(raw: RevisionListItemRaw): RevisionListItemType {
+  return {
+    id: raw.id,
+    summary: raw.summary,
+    contentFormat: raw.content_format,
+    authorId: raw.author_id,
+    createdAt: raw.created_at,
+  };
+}
+
+function mapRevisionFull(raw: RevisionResponseRaw): RevisionResponseType {
+  return { ...mapRevisionItem(raw), content: raw.content };
+}
+
+// ---------------------------------------------------------------------------
+// Admin Articles API
+// ---------------------------------------------------------------------------
+
+export async function getAdminArticles(
+  params?: AdminArticlesParams
+): Promise<PaginatedResult<AdminArticleListItemType>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.status) q.set('status', params.status);
+  if (params?.category) q.set('category', params.category);
+  if (params?.search) q.set('search', params.search);
+  if (params?.sortBy) q.set('sort_by', params.sortBy);
+  if (params?.order) q.set('order', params.order);
+  if (params?.authorId) q.set('author_id', params.authorId);
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<AdminArticleListItemRaw[]>(
+    `/admin/articles${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapAdminArticleListItem),
+    meta: result.meta,
+  };
+}
+
+export async function getAdminArticle(
+  articleId: string
+): Promise<AdminArticleResponseType | null> {
+  const raw = await apiFetch<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}`
+  );
+  return raw ? mapAdminArticleFull(raw) : null;
+}
+
+export async function createArticle(
+  data: ArticleCreatePayload
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>('/admin/articles', {
+    method: 'POST',
+    body: data,
+  });
+  return mapAdminArticleFull(raw!);
+}
+
+export async function updateArticle(
+  articleId: string,
+  data: ArticleUpdatePayload
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}`,
+    { method: 'PATCH', body: data }
+  );
+  return mapAdminArticleFull(raw!);
+}
+
+export async function deleteArticle(
+  articleId: string,
+  permanent = false
+): Promise<void> {
+  await apiMutate(
+    `/admin/articles/${encodeURIComponent(articleId)}${permanent ? '?permanent=true' : ''}`,
+    { method: 'DELETE' }
+  );
+}
+
+export async function publishArticle(
+  articleId: string
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}/publish`,
+    { method: 'POST' }
+  );
+  return mapAdminArticleFull(raw!);
+}
+
+export async function scheduleArticle(
+  articleId: string,
+  publishedAt: string
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}/schedule`,
+    { method: 'POST', body: { published_at: publishedAt } }
+  );
+  return mapAdminArticleFull(raw!);
+}
+
+export async function unpublishArticle(
+  articleId: string
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}/unpublish`,
+    { method: 'POST' }
+  );
+  return mapAdminArticleFull(raw!);
+}
+
+// ---------------------------------------------------------------------------
+// Admin Revisions API
+// ---------------------------------------------------------------------------
+
+export async function getRevisions(
+  articleId: string,
+  params?: PaginationParams
+): Promise<PaginatedResult<RevisionListItemType>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<RevisionListItemRaw[]>(
+    `/admin/articles/${encodeURIComponent(articleId)}/revisions${qs ? `?${qs}` : ''}`
+  );
+  return { data: (result.data ?? []).map(mapRevisionItem), meta: result.meta };
+}
+
+export async function getRevision(
+  articleId: string,
+  revisionId: string
+): Promise<RevisionResponseType | null> {
+  const raw = await apiFetch<RevisionResponseRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}/revisions/${encodeURIComponent(revisionId)}`
+  );
+  return raw ? mapRevisionFull(raw) : null;
+}
+
+export async function restoreRevision(
+  articleId: string,
+  revisionId: string
+): Promise<AdminArticleResponseType> {
+  const raw = await apiMutate<AdminArticleRaw>(
+    `/admin/articles/${encodeURIComponent(articleId)}/revisions/${encodeURIComponent(revisionId)}/restore`,
+    { method: 'POST' }
+  );
+  return mapAdminArticleFull(raw!);
+}
+
+// ---------------------------------------------------------------------------
+// Admin Tags API
+// ---------------------------------------------------------------------------
+
+export async function getAdminTags(): Promise<AdminTagType[]> {
+  const data = await apiFetch<AdminTagRaw[]>('/admin/tags');
+  return (data ?? []).map(mapAdminTagItem);
+}
+
+export async function createTag(name: string): Promise<AdminTagType> {
+  const raw = await apiMutate<AdminTagRaw>('/admin/tags', {
+    method: 'POST',
+    body: { name },
+  });
+  return mapAdminTagItem(raw!);
+}
+
+// ---------------------------------------------------------------------------
+// Admin Categories API
+// ---------------------------------------------------------------------------
+
+export async function getAdminCategories(): Promise<AdminCategoryFull[]> {
+  const data = await apiFetch<AdminCategoryFullRaw[]>('/admin/categories');
+  return (data ?? []).map(mapAdminCategoryFullItem);
+}
+
+// ---------------------------------------------------------------------------
+// System Settings API
+// ---------------------------------------------------------------------------
+
+export async function getSystemSettings(): Promise<SystemSettings> {
+  const raw = await apiFetch<SystemSettingsRaw>('/admin/settings');
+  return mapSystemSettingsItem(raw!);
+}
+
+export async function updateSystemSettings(data: {
+  timezone?: string;
+}): Promise<SystemSettings> {
+  const raw = await apiMutate<SystemSettingsRaw>('/admin/settings', {
+    method: 'PATCH',
+    body: data,
+  });
+  return mapSystemSettingsItem(raw!);
+}
+
 export async function getOAuthLinkUrl(provider: string): Promise<string> {
   const origin = window.location.origin + '/admin';
   const res = await fetch(

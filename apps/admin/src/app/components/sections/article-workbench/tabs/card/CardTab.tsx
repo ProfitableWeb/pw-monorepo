@@ -48,6 +48,8 @@ import {
   type EditorTheme,
 } from '../../editor-shared';
 import type { ArticleFormData } from '@/app/types/article-editor';
+import { useAdminCategories, useAdminTags } from '@/hooks/api';
+import { MIN_LEFT_PCT, MAX_LEFT_PCT } from './card.constants';
 
 type ExcerptMode = 'html' | 'wysiwyg';
 
@@ -57,13 +59,6 @@ interface CardTabProps {
   setValue: UseFormSetValue<ArticleFormData>;
 }
 
-import {
-  MOCK_CATEGORIES,
-  KNOWN_TAGS,
-  MIN_LEFT_PCT,
-  MAX_LEFT_PCT,
-} from './card.constants';
-
 export function CardTab({ register, watch, setValue }: CardTabProps) {
   const h1 = watch('h1');
   const subtitle = watch('subtitle');
@@ -72,6 +67,9 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
   const tags = watch('tags');
   const imageUrl = watch('imageUrl');
   const slug = watch('slug');
+
+  const { data: apiCategories = [] } = useAdminCategories();
+  const { data: apiTags = [] } = useAdminTags();
 
   const [tagInput, setTagInput] = useState('');
   const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
@@ -167,8 +165,9 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
     if (file) handleImageFile(file);
   };
 
+  const knownTagNames = apiTags.map(t => t.name);
   const filteredSuggestions = tagInput.trim()
-    ? KNOWN_TAGS.filter(
+    ? knownTagNames.filter(
         t =>
           t.toLowerCase().includes(tagInput.toLowerCase()) && !tags.includes(t)
       )
@@ -472,9 +471,9 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
                   <SelectValue placeholder='Выберите категорию' />
                 </SelectTrigger>
                 <SelectContent>
-                  {MOCK_CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                  {apiCategories.map(cat => (
+                    <SelectItem key={cat.slug} value={cat.slug}>
+                      {cat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
