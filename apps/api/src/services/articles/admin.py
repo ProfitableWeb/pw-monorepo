@@ -198,6 +198,19 @@ def update_article(
 
     tag_names = fields.pop("tags", None)
 
+    new_status = fields.get("status")
+    if new_status is not None:
+        if new_status in ("published", ArticleStatus.PUBLISHED):
+            _validate_publishable(article)
+            if article.published_at is None and "published_at" not in fields:
+                fields["published_at"] = datetime.now(timezone.utc)
+        elif new_status in ("scheduled", ArticleStatus.SCHEDULED):
+            pub_at = fields.get("published_at")
+            if pub_at is None:
+                raise ValueError("Для планирования необходимо указать published_at")
+            if isinstance(pub_at, datetime) and pub_at <= datetime.now(timezone.utc):
+                raise ValueError("Дата публикации должна быть в будущем")
+
     if "slug" in fields and fields["slug"] != article.slug:
         fields["slug"] = ensure_unique_slug(db, fields["slug"], exclude_id=article.id)
 

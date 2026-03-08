@@ -55,6 +55,7 @@ export interface ArticleFormData {
   tags: string[];
   excerpt: string;
   imageUrl?: string;
+  imageAlt?: string;
   content: string;
   metaDescription: string;
   canonicalUrl: string;

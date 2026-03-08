@@ -12,6 +12,7 @@ import { create } from 'zustand';
 import type { EditorMode, AutosaveStatus } from '@/app/types/article-editor';
 
 interface ArticleEditorState {
+  articleId: string | null;
   articleSlug: string | null;
   editorMode: EditorMode;
   content: string;
@@ -20,7 +21,7 @@ interface ArticleEditorState {
   showConversionWarning: boolean;
   pendingMode: EditorMode | null;
 
-  openArticle: (slug: string, content: string) => void;
+  openArticle: (id: string | null, slug: string, content: string) => void;
   closeArticle: () => void;
   setContent: (content: string) => void;
   requestModeChange: (mode: EditorMode) => void;
@@ -31,6 +32,7 @@ interface ArticleEditorState {
 }
 
 export const useArticleEditorStore = create<ArticleEditorState>((set, get) => ({
+  articleId: null,
   articleSlug: null,
   editorMode: 'html',
   content: '',
@@ -39,8 +41,9 @@ export const useArticleEditorStore = create<ArticleEditorState>((set, get) => ({
   showConversionWarning: false,
   pendingMode: null,
 
-  openArticle: (slug, content) =>
+  openArticle: (id, slug, content) =>
     set({
+      articleId: id,
       articleSlug: slug,
       content,
       editorMode: 'html',
@@ -50,6 +53,7 @@ export const useArticleEditorStore = create<ArticleEditorState>((set, get) => ({
 
   closeArticle: () =>
     set({
+      articleId: null,
       articleSlug: null,
       content: '',
       editorMode: 'html',

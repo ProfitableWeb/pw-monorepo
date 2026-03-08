@@ -103,7 +103,8 @@ function mapArticleListItem(raw: ArticleListItemRaw): Article {
     title: raw.title,
     subtitle: raw.subtitle ?? '',
     slug: raw.slug,
-    summary: raw.summary ?? raw.excerpt,
+    // excerpt — редакторский текст из админки, приоритетнее автогенерированного summary
+    summary: raw.excerpt || raw.summary || '',
     category: raw.category,
     readTime: raw.reading_time ?? undefined,
     imageUrl: raw.image_url ?? undefined,

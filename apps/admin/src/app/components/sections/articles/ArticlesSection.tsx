@@ -1,35 +1,38 @@
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
-import { useArticles, useCategories } from '@/hooks/api';
+import { useAdminArticles, useAdminCategories } from '@/hooks/api';
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 
 import type { Article } from './articles.types';
+import { VALID_STATUSES } from './articles.constants';
 import { filterArticles } from './articles.utils';
 import { StatsCards } from './assets/StatsCards';
 import { FiltersToolbar } from './assets/FiltersToolbar';
 import { ArticlesTable } from './assets/ArticlesTable';
 
 export function ArticlesSection() {
-  const { data: result, isLoading } = useArticles();
-  const { data: apiCategories } = useCategories();
-  const { navigateTo } = useNavigationStore();
+  const { data: adminResult, isLoading } = useAdminArticles();
+  const { data: apiCategories } = useAdminCategories();
+  const { navigateToArticleEditor } = useNavigationStore();
 
   const articles: Article[] = useMemo(
     () =>
-      (result?.data ?? []).map(a => ({
+      (adminResult?.data ?? []).map(a => ({
         id: a.id,
         title: a.title,
-        status: (a.publishedAt ? 'published' : 'draft') as Article['status'],
-        category: a.category,
-        author: a.author ?? '—',
+        status: (VALID_STATUSES.has(a.status)
+          ? a.status
+          : 'draft') as Article['status'],
+        category: a.category.name,
+        author: a.author?.name ?? '—',
         views: a.views,
         date: a.publishedAt ?? '',
       })),
-    [result]
+    [adminResult]
   );
 
   const categoryNames = useMemo(
@@ -95,10 +98,10 @@ export function ArticlesSection() {
           <p className='text-muted-foreground mt-1'>
             {isLoading
               ? 'Загрузка...'
-              : `${result?.meta.total ?? articles.length} статей • ${publishedCount} опубликовано • ${draftCount} черновиков • ${totalViews.toLocaleString()} просмотров`}
+              : `${articles.length} статей • ${publishedCount} опубликовано • ${draftCount} черновиков • ${totalViews.toLocaleString()} просмотров`}
           </p>
         </div>
-        <Button onClick={() => navigateTo('article-editor')}>
+        <Button onClick={() => navigateToArticleEditor()}>
           <Plus className='h-4 w-4 mr-2' />
           Новая статья
         </Button>
@@ -106,7 +109,7 @@ export function ArticlesSection() {
 
       {/* Карточки статистики */}
       <StatsCards
-        total={result?.meta.total ?? articles.length}
+        total={articles.length}
         publishedCount={publishedCount}
         draftCount={draftCount}
         totalViews={totalViews}
@@ -137,7 +140,7 @@ export function ArticlesSection() {
           ) : (
             <ArticlesTable
               articles={filteredArticles}
-              onEdit={() => navigateTo('article-editor')}
+              onEdit={articleId => navigateToArticleEditor(articleId)}
             />
           )}
         </CardContent>

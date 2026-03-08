@@ -7,7 +7,30 @@ import {
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { mockResearchMaterials } from '@/app/mock/article-mock';
+import type { ResearchMaterial } from '@/app/types/article-editor';
+
+/** Заглушка — позже заменится на API исследований */
+const STUB_RESEARCH_MATERIALS: ResearchMaterial[] = [
+  {
+    id: 'mat-1',
+    title: 'Отчёт McKinsey: Future of Work 2030',
+    type: 'source',
+    url: 'https://mckinsey.com/future-of-work',
+  },
+  { id: 'mat-2', title: 'Заметки по интервью с HR-директорами', type: 'note' },
+  {
+    id: 'mat-3',
+    title: 'Статистика HeadHunter по AI-вакансиям',
+    type: 'source',
+    url: 'https://hh.ru/article/ai-jobs',
+  },
+  {
+    id: 'mat-4',
+    title: 'Инфографика: динамика вакансий 2023–2026',
+    type: 'media',
+  },
+  { id: 'mat-5', title: 'Черновик раздела про этику AI', type: 'note' },
+];
 
 const MATERIAL_ICONS = {
   note: FileText,
@@ -41,11 +64,11 @@ export function ResearchTab() {
         <div className='flex items-center justify-between mb-4'>
           <h3 className='text-sm font-semibold'>Материалы исследования</h3>
           <Badge variant='secondary' className='text-xs'>
-            {mockResearchMaterials.length}
+            {STUB_RESEARCH_MATERIALS.length}
           </Badge>
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-          {mockResearchMaterials.map(mat => {
+          {STUB_RESEARCH_MATERIALS.map(mat => {
             const Icon = MATERIAL_ICONS[mat.type];
             return (
               <button
