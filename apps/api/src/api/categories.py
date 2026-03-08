@@ -9,11 +9,11 @@ from sqlalchemy.orm import Session
 from src.core.database import get_db
 from src.models.article import Article
 from src.models.category import Category
-from src.schemas.article import ArticleListItem
+from src.schemas.articles.public import ArticleListItem
 from src.schemas.category import CategoryResponse
 from src.schemas.common import ApiMeta, ApiResponse
-from src.services import article as article_service
 from src.services import category as category_service
+from src.services.articles import queries as article_service
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -33,14 +33,18 @@ def _category_to_response(db: Session, cat: Category) -> CategoryResponse:
 
 
 @router.get("", response_model=ApiResponse[list[CategoryResponse]])
-def list_categories(db: Session = Depends(get_db)) -> ApiResponse[list[CategoryResponse]]:
+def list_categories(
+    db: Session = Depends(get_db),
+) -> ApiResponse[list[CategoryResponse]]:
     categories = category_service.get_all_categories(db)
     data = [_category_to_response(db, c) for c in categories]
     return ApiResponse(success=True, data=data)
 
 
 @router.get("/{slug}", response_model=ApiResponse[CategoryResponse])
-def get_category(slug: str, db: Session = Depends(get_db)) -> ApiResponse[CategoryResponse]:
+def get_category(
+    slug: str, db: Session = Depends(get_db)
+) -> ApiResponse[CategoryResponse]:
     cat = category_service.get_category_by_slug(db, slug)
     if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -85,5 +89,7 @@ def list_category_articles(
     return ApiResponse(
         success=True,
         data=data,
-        meta=ApiMeta(page=page, limit=limit, total=total, has_more=(page * limit < total)),
+        meta=ApiMeta(
+            page=page, limit=limit, total=total, has_more=(page * limit < total)
+        ),
     )

@@ -98,6 +98,14 @@ README для секций — `docs/templates/section-readme-template.md`.
 **Паттерн сервисного слоя**: роутеры (`api/`) → сервисы (`services/`) → модели (`models/`). Pydantic-схемы в `schemas/`
 (snake_case).
 
+**Организация кода — доменные пакеты внутри слоёв**: когда домен разрастается до 3+ файлов, файлы группируются в пакет.
+1-2 файла — остаются плоскими. Утилиты, используемые несколькими доменами, остаются в корне слоя.
+
+- `services/articles/` — queries (публичные), admin (CRUD), revisions, reading_time
+- `schemas/articles/` — public (ArticleResponse), admin (ArticleCreateRequest, ArticleAdminResponse...)
+- `services/slug.py` — общая утилита (статьи + теги), в корне services/
+- `models/` — всегда плоский (Alembic auto-discovery через `__init__.py`)
+
 **Авторизация**: JWT access-токен (15 мин, Path=/api) + refresh-токен (7 дней, Path=/api/auth) в httpOnly-куках. OAuth:
 Яндекс, Google, Telegram Login Widget. FastAPI-зависимости: `get_current_user`, `get_current_admin`, `get_optional_user`
 в `auth/dependencies.py`.
