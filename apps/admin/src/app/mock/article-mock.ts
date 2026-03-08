@@ -9,6 +9,9 @@ export const mockArticle: ArticleFormData = {
   subtitle: 'Какие профессии исчезнут, а какие появятся в ближайшие 5 лет',
   title: 'AI и автоматизация труда — прогноз рынка к 2030 | ProfitableWeb',
   slug: 'ai-i-avtomatizatsiya-truda',
+  status: 'draft',
+  publishedAt: '',
+  publishTimezone: '+03:00',
   category: 'Искусственный интеллект',
   tags: ['AI', 'автоматизация', 'рынок труда', 'будущее'],
   excerpt:

@@ -11,6 +11,7 @@
 export type EditorMode = 'markdown' | 'html' | 'visual';
 export type DeviceType = 'desktop' | 'tablet' | 'mobile';
 export type AutosaveStatus = 'saved' | 'syncing' | 'offline';
+export type ArticleStatus = 'draft' | 'published' | 'archived' | 'scheduled';
 
 export interface SelfCheckItem {
   id: string;
@@ -45,6 +46,11 @@ export interface ArticleFormData {
   subtitle: string;
   title: string;
   slug: string;
+  status: ArticleStatus;
+  /** ISO-строка даты публикации (для scheduled и published) */
+  publishedAt: string;
+  /** Часовой пояс публикации (UTC-смещение, напр. '+03:00') */
+  publishTimezone: string;
   category: string;
   tags: string[];
   excerpt: string;

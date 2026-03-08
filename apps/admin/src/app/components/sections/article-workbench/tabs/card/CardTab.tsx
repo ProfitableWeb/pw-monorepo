@@ -231,7 +231,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
   return (
     <div
       ref={containerRef}
-      className='flex h-full gap-0 px-4 pb-4 pt-2'
+      className='flex h-full gap-0 px-4 pb-4 pt-4'
       style={{ userSelect: isDraggingDivider ? 'none' : undefined }}
     >
       {/* Левая колонка — поля формы */}
