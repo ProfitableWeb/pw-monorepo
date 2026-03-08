@@ -56,7 +56,7 @@ const STATUS_CONFIG: Record<
   { label: string; dotClass: string }
 > = {
   draft: { label: 'Черновик', dotClass: 'bg-amber-500' },
-  published: { label: 'Опубликована', dotClass: 'bg-emerald-500' },
+  published: { label: 'Опубликована', dotClass: 'bg-[#5ADC5A]' },
   scheduled: { label: 'Запланирована', dotClass: 'bg-blue-500' },
   archived: { label: 'В архиве', dotClass: 'bg-zinc-400' },
 };

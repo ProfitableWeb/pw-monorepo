@@ -3,7 +3,7 @@ import type { Article } from './articles.types';
 export function getStatusColor(status: string): string {
   switch (status) {
     case 'published':
-      return 'bg-green-500/10 text-green-700 dark:text-green-400 hover:bg-green-500/20';
+      return 'bg-[#5ADC5A]/10 text-[#3a8a3a] dark:text-[#69b969] hover:bg-[#5ADC5A]/20';
     case 'draft':
       return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20';
     default:
