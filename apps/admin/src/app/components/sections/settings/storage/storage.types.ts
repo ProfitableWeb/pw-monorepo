@@ -48,7 +48,7 @@ export interface StorageInfo {
 }
 
 export interface StorageTestStep {
-  name: string;
+  name: 'write' | 'read' | 'delete';
   success: boolean;
   latencyMs: number;
   error: string | null;

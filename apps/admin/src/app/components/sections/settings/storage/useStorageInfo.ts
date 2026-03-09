@@ -96,28 +96,27 @@ export function useStorageInfo() {
   // Сохранение лимитов загрузки
   const [savingLimits, setSavingLimits] = useState(false);
 
-  const saveLimits = useCallback(
-    async (imageMb: number, otherMb: number) => {
-      setSavingLimits(true);
-      try {
-        // TODO PW-041-D2: заменить на adminUpdateStorageLimits()
-        await new Promise(resolve => setTimeout(resolve, 500));
-        if (info) {
-          setInfo({
-            ...info,
-            config: {
-              ...info.config,
-              maxUploadImageMb: imageMb,
-              maxUploadOtherMb: otherMb,
-            },
-          });
-        }
-      } finally {
-        setSavingLimits(false);
-      }
-    },
-    [info]
-  );
+  const saveLimits = useCallback(async (imageMb: number, otherMb: number) => {
+    setSavingLimits(true);
+    try {
+      // TODO PW-041-D2: заменить на adminUpdateStorageLimits()
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setInfo(prev =>
+        prev
+          ? {
+              ...prev,
+              config: {
+                ...prev.config,
+                maxUploadImageMb: imageMb,
+                maxUploadOtherMb: otherMb,
+              },
+            }
+          : prev
+      );
+    } finally {
+      setSavingLimits(false);
+    }
+  }, []);
 
   // Ручная синхронизация
   const runSync = useCallback(async () => {
@@ -126,21 +125,24 @@ export function useStorageInfo() {
       // TODO PW-041-D2: заменить на adminRunStorageSync()
       await new Promise(resolve => setTimeout(resolve, 2000));
       // После синхронизации обновляем данные
-      if (info) {
-        setInfo({
-          ...info,
-          sync: {
-            localOnly: 0,
-            s3Only: 0,
-            synced: info.sync.localOnly + info.sync.s3Only + info.sync.synced,
-            lastSyncAt: new Date().toISOString(),
-          },
-        });
-      }
+      setInfo(prev =>
+        prev
+          ? {
+              ...prev,
+              sync: {
+                localOnly: 0,
+                s3Only: 0,
+                synced:
+                  prev.sync.localOnly + prev.sync.s3Only + prev.sync.synced,
+                lastSyncAt: new Date().toISOString(),
+              },
+            }
+          : prev
+      );
     } finally {
       setSyncing(false);
     }
-  }, [info]);
+  }, []);
 
   useEffect(() => {
     loadInfo();

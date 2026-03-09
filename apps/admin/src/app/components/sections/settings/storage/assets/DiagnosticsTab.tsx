@@ -21,17 +21,21 @@ import {
   Eye,
   Trash2,
 } from 'lucide-react';
-import type { StorageTestResult, StorageTestStep } from '../storage.types';
+import type {
+  StorageInfo,
+  StorageTestResult,
+  StorageTestStep,
+} from '../storage.types';
 
 interface DiagnosticsTabProps {
   testResult: StorageTestResult | null;
   testing: boolean;
   onRunTest: () => void;
-  backend: string;
+  backend: StorageInfo['backend'];
 }
 
 const STEP_META: Record<
-  string,
+  StorageTestStep['name'],
   { label: string; description: string; icon: typeof PenLine }
 > = {
   write: {
@@ -52,11 +56,7 @@ const STEP_META: Record<
 };
 
 function StepRow({ step }: { step: StorageTestStep }) {
-  const meta = STEP_META[step.name] || {
-    label: step.name,
-    description: '',
-    icon: Zap,
-  };
+  const meta = STEP_META[step.name];
   const Icon = meta.icon;
 
   return (

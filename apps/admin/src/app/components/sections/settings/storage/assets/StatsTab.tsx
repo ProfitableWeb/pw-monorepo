@@ -19,19 +19,11 @@ import {
   Database,
   Users,
 } from 'lucide-react';
+import { formatBytes } from '@/app/components/sections/media/media.utils';
 import type { StorageStats } from '../storage.types';
 
 interface StatsTabProps {
   stats: StorageStats;
-}
-
-/** Форматирование байт → KB / MB / GB */
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Б';
-  const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const value = bytes / Math.pow(1024, i);
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[i]}`;
 }
 
 /** Форматирование числа с разделителями */
@@ -41,27 +33,27 @@ function formatNumber(n: number): string {
 
 const TYPE_META: Record<
   string,
-  { label: string; icon: typeof Image; bgColor: string }
+  { label: string; icon: typeof Image; progressClass: string }
 > = {
   image: {
     label: 'Изображения',
     icon: Image,
-    bgColor: 'bg-blue-500',
+    progressClass: 'h-2 [&>[data-slot=progress-indicator]]:bg-blue-500',
   },
   document: {
     label: 'Документы',
     icon: FileText,
-    bgColor: 'bg-amber-500',
+    progressClass: 'h-2 [&>[data-slot=progress-indicator]]:bg-amber-500',
   },
   video: {
     label: 'Видео',
     icon: Film,
-    bgColor: 'bg-purple-500',
+    progressClass: 'h-2 [&>[data-slot=progress-indicator]]:bg-purple-500',
   },
   audio: {
     label: 'Аудио',
     icon: Music,
-    bgColor: 'bg-emerald-500',
+    progressClass: 'h-2 [&>[data-slot=progress-indicator]]:bg-emerald-500',
   },
 };
 
@@ -138,7 +130,7 @@ export function StatsTab({ stats }: StatsTabProps) {
                 const meta = TYPE_META[type] || {
                   label: type,
                   icon: FileText,
-                  bgColor: 'bg-muted-foreground',
+                  progressClass: 'h-2',
                 };
                 const Icon = meta.icon;
                 const percent =
@@ -162,10 +154,7 @@ export function StatsTab({ stats }: StatsTabProps) {
                         </span>
                       </div>
                     </div>
-                    <Progress
-                      value={percent}
-                      className={`h-2 [&>[data-slot=progress-indicator]]:${meta.bgColor}`}
-                    />
+                    <Progress value={percent} className={meta.progressClass} />
                   </div>
                 );
               })}

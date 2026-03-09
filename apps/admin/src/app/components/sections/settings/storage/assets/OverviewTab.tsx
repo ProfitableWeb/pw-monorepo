@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Cloud,
   HardDrive,
@@ -84,9 +84,15 @@ export function OverviewTab({
   const needsSync = sync.localOnly > 0 || sync.s3Only > 0;
   const syncPercent = total > 0 ? Math.round((sync.synced / total) * 100) : 100;
 
-  // Редактируемые лимиты
+  // Редактируемые лимиты (синхронизируются при обновлении info)
   const [imageMb, setImageMb] = useState(info.config.maxUploadImageMb);
   const [otherMb, setOtherMb] = useState(info.config.maxUploadOtherMb);
+
+  useEffect(() => {
+    setImageMb(info.config.maxUploadImageMb);
+    setOtherMb(info.config.maxUploadOtherMb);
+  }, [info.config.maxUploadImageMb, info.config.maxUploadOtherMb]);
+
   const limitsChanged =
     imageMb !== info.config.maxUploadImageMb ||
     otherMb !== info.config.maxUploadOtherMb;
