@@ -69,6 +69,9 @@ class S3Storage(StorageBackend):
 
         self._bucket = settings.s3_bucket
         self._endpoint = settings.s3_endpoint.rstrip("/")
+        self._public_endpoint = (
+            settings.s3_public_endpoint or settings.s3_endpoint
+        ).rstrip("/")
         self._client = boto3.client(
             "s3",
             endpoint_url=settings.s3_endpoint,
@@ -90,7 +93,7 @@ class S3Storage(StorageBackend):
         self._client.delete_object(Bucket=self._bucket, Key=path)
 
     def url(self, path: str) -> str:
-        return f"{self._endpoint}/{self._bucket}/{path}"
+        return f"{self._public_endpoint}/{self._bucket}/{path}"
 
     def exists(self, path: str) -> bool:
         from botocore.exceptions import ClientError

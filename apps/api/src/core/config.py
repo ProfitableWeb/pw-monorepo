@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     s3_access_key: str = ""
     s3_secret_key: str = ""
     s3_region: str = ""
+    s3_public_endpoint: str = ""  # для публичных URL (Cloud.ru: global.s3.cloud.ru)
 
     # Лимиты загрузки (PW-041)
     max_upload_size_image: int = 20 * 1024 * 1024  # 20 MB
