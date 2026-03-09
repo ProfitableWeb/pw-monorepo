@@ -1325,3 +1325,122 @@ export async function getMediaStats(): Promise<MediaStatsResponse> {
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapMediaStats(raw);
 }
+
+// ---------------------------------------------------------------------------
+// Admin Storage (PW-041-D2)
+// ---------------------------------------------------------------------------
+
+import type {
+  StorageInfo,
+  StorageTestResult,
+} from '@/app/components/sections/settings/storage/storage.types';
+
+interface StorageConfigRaw {
+  max_upload_image_mb: number;
+  max_upload_other_mb: number;
+  upload_dir: string | null;
+  bucket: string | null;
+  region: string | null;
+  endpoint: string | null;
+  public_endpoint: string | null;
+}
+
+interface StorageHealthRaw {
+  connected: boolean;
+  latency_ms: number | null;
+  error: string | null;
+}
+
+interface StorageStatsRaw {
+  media_files: number;
+  media_size: number;
+  avatars_count: number;
+  by_type: Record<string, number>;
+}
+
+interface StorageSyncRaw {
+  local_only: number;
+  s3_only: number;
+  synced: number;
+  last_sync_at: string | null;
+}
+
+interface StorageInfoRaw {
+  backend: string;
+  config: StorageConfigRaw;
+  health: StorageHealthRaw;
+  stats: StorageStatsRaw;
+  sync: StorageSyncRaw;
+}
+
+interface StorageTestStepRaw {
+  name: 'write' | 'read' | 'delete';
+  success: boolean;
+  latency_ms: number;
+  error: string | null;
+}
+
+interface StorageTestResultRaw {
+  success: boolean;
+  steps: StorageTestStepRaw[];
+  total_ms: number;
+}
+
+function mapStorageInfo(raw: StorageInfoRaw): StorageInfo {
+  return {
+    backend: raw.backend as StorageInfo['backend'],
+    config: {
+      maxUploadImageMb: raw.config.max_upload_image_mb,
+      maxUploadOtherMb: raw.config.max_upload_other_mb,
+      uploadDir: raw.config.upload_dir,
+      bucket: raw.config.bucket,
+      region: raw.config.region,
+      endpoint: raw.config.endpoint,
+      publicEndpoint: raw.config.public_endpoint,
+    },
+    health: {
+      connected: raw.health.connected,
+      latencyMs: raw.health.latency_ms,
+      error: raw.health.error,
+    },
+    stats: {
+      mediaFiles: raw.stats.media_files,
+      mediaSize: raw.stats.media_size,
+      avatarsCount: raw.stats.avatars_count,
+      byType: raw.stats.by_type,
+    },
+    sync: {
+      localOnly: raw.sync.local_only,
+      s3Only: raw.sync.s3_only,
+      synced: raw.sync.synced,
+      lastSyncAt: raw.sync.last_sync_at,
+    },
+  };
+}
+
+function mapStorageTestResult(raw: StorageTestResultRaw): StorageTestResult {
+  return {
+    success: raw.success,
+    steps: raw.steps.map(s => ({
+      name: s.name,
+      success: s.success,
+      latencyMs: s.latency_ms,
+      error: s.error,
+    })),
+    totalMs: raw.total_ms,
+  };
+}
+
+export async function adminGetStorageInfo(): Promise<StorageInfo> {
+  const raw = await apiFetch<StorageInfoRaw>('/admin/storage/info');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapStorageInfo(raw);
+}
+
+export async function adminTestStorage(): Promise<StorageTestResult> {
+  const raw = await apiMutate<StorageTestResultRaw>('/admin/storage/test', {
+    method: 'POST',
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapStorageTestResult(raw);
+}
