@@ -36,11 +36,16 @@ STORAGE_BACKEND=local
 # Prod
 STORAGE_BACKEND=s3
 S3_ENDPOINT=https://s3.cloud.ru
+S3_PUBLIC_ENDPOINT=https://global.s3.cloud.ru
 S3_BUCKET=pw-media
-S3_ACCESS_KEY=...
+S3_ACCESS_KEY=<tenant_id>:<key_id>
 S3_SECRET_KEY=...
 S3_REGION=ru-central-1
 ```
+
+> **Формат access key для Cloud.ru**: `<tenant_id>:<key_id>`, где tenant_id — UUID тенанта из панели Object Storage API
+> (`2095a86e-...`), а key_id — сам ключ. Итого ~69 символов. Только key_id (32 символа) — не работает, Cloud.ru вернёт
+> `InvalidAccessKeyId`.
 
 ### Структура файлов
 
@@ -158,17 +163,31 @@ location /uploads/ {
 }
 ```
 
-**S3Storage** — прямые URL на OBS с 30-дневным кешем:
+**S3Storage** — публичные URL через global endpoint Cloud.ru:
 
 ```
-https://s3.cloud.ru/pw-media/media/{uuid}.webp
+https://global.s3.cloud.ru/pw-media/media/{uuid}.webp
 ```
+
+> **Важно**: Cloud.ru поддерживает три модели адресации бакетов:
+>
+> | Модель       | Формат                                    | Анонимный доступ |
+> | ------------ | ----------------------------------------- | ---------------- |
+> | Basic (имя)  | `https://s3.cloud.ru/{bucket}/...`        | ❌ нет           |
+> | Global (имя) | `https://global.s3.cloud.ru/{bucket}/...` | ✅ да            |
+> | DNS (домен)  | `https://{bucket}.s3.cloud.ru/...`        | ✅ да            |
+>
+> Basic name работает только для авторизованных запросов (boto3). Для публичного доступа в браузере необходим Global или
+> DNS endpoint. Поэтому в проекте два эндпоинта:
+>
+> - `S3_ENDPOINT=https://s3.cloud.ru` — для API-вызовов (boto3)
+> - `S3_PUBLIC_ENDPOINT=https://global.s3.cloud.ru` — для публичных URL изображений
 
 Или через nginx reverse proxy (если нужен единый домен):
 
 ```nginx
 location /uploads/ {
-    proxy_pass https://s3.cloud.ru/pw-media/;
+    proxy_pass https://global.s3.cloud.ru/pw-media/;
     proxy_cache media_cache;
     proxy_cache_valid 200 30d;
 }
