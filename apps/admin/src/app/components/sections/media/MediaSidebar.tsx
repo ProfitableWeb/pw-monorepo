@@ -1,43 +1,37 @@
 import { cn } from '@/app/components/ui/utils';
-import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Separator } from '@/app/components/ui/separator';
-import { Search, Archive, Clock } from 'lucide-react';
+import { Search, Archive } from 'lucide-react';
 import { PURPOSES, FILE_TYPES } from './media.constants';
 import { formatBytes } from './media.utils';
-import type { MediaFile, Backup } from './media.types';
+import type { MediaStatsResponse } from './media.types';
+
+const MAX_STORAGE = 5 * 1024 * 1024 * 1024; // 5 GB
 
 interface MediaSidebarProps {
-  files: MediaFile[];
+  stats?: MediaStatsResponse;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   selectedFolder: string;
   onFolderChange: (folder: string) => void;
   selectedFileType: string;
   onFileTypeChange: (type: string) => void;
-  totalSize: number;
-  maxStorage: number;
-  storagePercentage: number;
-  lastBackup?: Backup;
-  onCreateBackup: () => void;
 }
 
-/** Боковая панель: поиск, фильтры, хранилище, бэкапы */
+/** Боковая панель: поиск, фильтры, хранилище */
 export function MediaSidebar({
-  files,
+  stats,
   searchQuery,
   onSearchChange,
   selectedFolder,
   onFolderChange,
   selectedFileType,
   onFileTypeChange,
-  totalSize,
-  maxStorage,
-  storagePercentage,
-  lastBackup,
-  onCreateBackup,
 }: MediaSidebarProps) {
+  const totalSize = stats?.totalSize ?? 0;
+  const storagePercentage = (totalSize / MAX_STORAGE) * 100;
+
   return (
     <aside className='w-64 border-r bg-card flex-shrink-0 flex flex-col'>
       <div className='p-4 border-b flex-shrink-0'>
@@ -76,7 +70,7 @@ export function MediaSidebar({
               />
             </div>
             <p className='text-xs text-muted-foreground'>
-              {formatBytes(totalSize)} из {formatBytes(maxStorage)}
+              {formatBytes(totalSize)} из {formatBytes(MAX_STORAGE)}
             </p>
           </div>
 
@@ -87,9 +81,6 @@ export function MediaSidebar({
             <h3 className='text-sm font-medium mb-3'>Назначение</h3>
             {PURPOSES.map(purpose => {
               const Icon = purpose.icon;
-              const count = files.filter(f =>
-                purpose.id === 'all' ? true : f.purposes.includes(purpose.id)
-              ).length;
               const isActive = selectedFolder === purpose.id;
 
               return (
@@ -105,16 +96,6 @@ export function MediaSidebar({
                 >
                   <Icon className='size-4 flex-shrink-0' />
                   <span className='flex-1 text-left'>{purpose.name}</span>
-                  {purpose.id !== 'all' && (
-                    <span
-                      className={cn(
-                        'text-xs px-1.5 py-0.5 rounded',
-                        isActive ? 'bg-background/50' : 'bg-muted'
-                      )}
-                    >
-                      {count}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -127,9 +108,8 @@ export function MediaSidebar({
             <h3 className='text-sm font-medium mb-3'>Тип файла</h3>
             {FILE_TYPES.map(type => {
               const Icon = type.icon;
-              const count = files.filter(f =>
-                type.id === 'all' ? true : f.type === type.id
-              ).length;
+              const count =
+                type.id === 'all' ? stats?.totalCount : stats?.byType[type.id];
               const isActive = selectedFileType === type.id;
 
               return (
@@ -145,7 +125,7 @@ export function MediaSidebar({
                 >
                   <Icon className='size-4 flex-shrink-0' />
                   <span className='flex-1 text-left'>{type.name}</span>
-                  {type.id !== 'all' && (
+                  {type.id !== 'all' && count != null && (
                     <span
                       className={cn(
                         'text-xs px-1.5 py-0.5 rounded',
@@ -162,52 +142,17 @@ export function MediaSidebar({
 
           <Separator />
 
-          {/* Раздел резервного копирования */}
+          {/* Раздел резервного копирования — заглушка */}
           <div className='space-y-3'>
             <div className='flex items-center justify-between'>
               <h3 className='text-sm font-medium'>Резервные копии</h3>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={onCreateBackup}
-                className='h-7 text-xs'
-              >
-                <Archive className='size-3 mr-1' />
-                Создать
-              </Button>
             </div>
-            {lastBackup && (
-              <div className='p-3 rounded-lg border bg-muted/30 space-y-1'>
-                <div className='flex items-center gap-2'>
-                  <div
-                    className={cn(
-                      'size-2 rounded-full',
-                      lastBackup.status === 'completed'
-                        ? 'bg-green-500'
-                        : lastBackup.status === 'in-progress'
-                          ? 'bg-yellow-500'
-                          : 'bg-red-500'
-                    )}
-                  />
-                  <span className='text-xs font-medium'>
-                    {lastBackup.type === 'auto' ? 'Авто' : 'Ручной'}
-                  </span>
-                </div>
-                <p className='text-xs text-muted-foreground'>
-                  {formatBytes(lastBackup.size)} • {lastBackup.filesCount}{' '}
-                  файлов
-                </p>
-                <p className='text-xs text-muted-foreground'>
-                  <Clock className='size-3 inline mr-1' />
-                  {lastBackup.date.toLocaleDateString('ru-RU', {
-                    day: 'numeric',
-                    month: 'short',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
+            <div className='p-3 rounded-lg border bg-muted/30'>
+              <div className='flex items-center gap-2 text-muted-foreground'>
+                <Archive className='size-4' />
+                <span className='text-xs'>Скоро</span>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </ScrollArea>

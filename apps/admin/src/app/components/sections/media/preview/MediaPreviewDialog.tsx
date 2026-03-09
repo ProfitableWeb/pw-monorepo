@@ -9,9 +9,9 @@ import {
   DialogTitle,
 } from '@/app/components/ui/dialog';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { Download, Trash2, Save } from 'lucide-react';
-import type { FileType, MediaFile } from '../media.types';
-import { getFileIcon } from '../media.utils';
+import { Download, Trash2, Save, Loader2 } from 'lucide-react';
+import type { MediaFile } from '../media.types';
+import { getFileIcon, downloadFile } from '../media.utils';
 import { useMediaPreviewDialog } from './useMediaPreviewDialog';
 import { MediaPreviewPanel } from './assets/MediaPreviewPanel';
 import { MediaSeoForm } from './assets/MediaSeoForm';
@@ -23,10 +23,6 @@ interface MediaPreviewDialogProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onSave: (file: MediaFile) => void;
-  formatBytes?: (bytes: number) => string;
-  formatDuration?: (seconds: number) => string;
-  getFileIcon?: (type: FileType) => any;
-  handleCopyUrl?: (url: string) => void;
 }
 
 export function MediaPreviewDialog({
@@ -35,27 +31,34 @@ export function MediaPreviewDialog({
   onClose,
   onDelete,
   onSave,
-  formatBytes: formatBytesProp,
-  formatDuration: formatDurationProp,
-  getFileIcon: getFileIconProp,
-  handleCopyUrl: handleCopyUrlProp,
 }: MediaPreviewDialogProps) {
   const {
     editedFile,
     hasChanges,
+    isSaving,
+    isReplacing,
+    replaceInputRef,
     handleFieldChange,
     handleSave,
     handleReplaceFile,
+    handleReplaceFileChange,
   } = useMediaPreviewDialog({ file, onSave });
 
   if (!editedFile) return null;
 
-  const fileIcon = getFileIconProp || getFileIcon;
-  const Icon = fileIcon(editedFile.type);
+  const Icon = getFileIcon(editedFile.type);
 
   return (
     <Dialog open={open ?? true} onOpenChange={onClose}>
       <DialogContent className='w-[95vw] max-w-[1400px] h-[90vh] p-0 gap-0 flex flex-col'>
+        {/* Скрытый input для замены файла */}
+        <input
+          ref={replaceInputRef}
+          type='file'
+          className='hidden'
+          onChange={handleReplaceFileChange}
+          accept='image/*,video/*,audio/*,.pdf,.doc,.docx'
+        />
         {/* Фиксированный заголовок */}
         <DialogHeader className='px-6 pt-6 pb-4 border-b shrink-0'>
           <DialogTitle className='flex items-center gap-2'>
@@ -66,7 +69,7 @@ export function MediaPreviewDialog({
             )}
           </DialogTitle>
           <DialogDescription>
-            Редактирование SEO параметров, EXIF данных и замена файла
+            Редактирование SEO параметров и просмотр метаданных файла
           </DialogDescription>
         </DialogHeader>
 
@@ -78,11 +81,8 @@ export function MediaPreviewDialog({
                 {/* Левая колонка — превью */}
                 <MediaPreviewPanel
                   file={editedFile}
+                  isReplacing={isReplacing}
                   onReplaceFile={handleReplaceFile}
-                  formatBytes={formatBytesProp}
-                  formatDuration={formatDurationProp}
-                  getFileIcon={getFileIconProp}
-                  handleCopyUrl={handleCopyUrlProp}
                 />
 
                 {/* Правая колонка — параметры */}
@@ -94,11 +94,8 @@ export function MediaPreviewDialog({
 
                   <Separator />
 
-                  {editedFile.type === 'image' && (
-                    <MediaExifForm
-                      file={editedFile}
-                      onFieldChange={handleFieldChange}
-                    />
+                  {editedFile.type === 'image' && editedFile.exif && (
+                    <MediaExifForm file={editedFile} />
                   )}
                 </div>
               </div>
@@ -109,15 +106,22 @@ export function MediaPreviewDialog({
         {/* Фиксированный футер */}
         <DialogFooter className='px-6 py-4 border-t flex-row justify-between gap-2'>
           <div className='flex gap-2'>
-            <Button variant='outline'>
+            <Button
+              variant='outline'
+              onClick={() => downloadFile(editedFile.url, editedFile.name)}
+            >
               <Download className='h-4 w-4 mr-2' />
               Скачать
             </Button>
           </div>
           <div className='flex gap-2'>
             {hasChanges && (
-              <Button onClick={handleSave}>
-                <Save className='h-4 w-4 mr-2' />
+              <Button onClick={handleSave} disabled={isSaving}>
+                {isSaving ? (
+                  <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                ) : (
+                  <Save className='h-4 w-4 mr-2' />
+                )}
                 Сохранить изменения
               </Button>
             )}

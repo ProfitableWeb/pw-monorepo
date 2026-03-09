@@ -86,7 +86,7 @@ export function MediaSeoForm({ file, onFieldChange }: MediaSeoFormProps) {
           />
           <div className='flex items-center justify-between mt-1'>
             <p className='text-xs text-muted-foreground/60'>
-              тображается под изображением в статьях
+              Отображается под изображением в статьях
             </p>
             <p className='text-xs text-muted-foreground/60'>
               <span

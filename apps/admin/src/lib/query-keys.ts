@@ -3,6 +3,7 @@ import type {
   AdminArticlesParams,
   PaginationParams,
 } from '@/app/types/admin-api';
+import type { MediaListParams } from '@/app/components/sections/media/media.types';
 
 export const queryKeys = {
   categories: {
@@ -41,4 +42,14 @@ export const adminCategoryKeys = {
 
 export const settingsKeys = {
   all: ['admin', 'settings'] as const,
+};
+
+export const adminMediaKeys = {
+  all: ['admin', 'media'] as const,
+  lists: () => [...adminMediaKeys.all, 'list'] as const,
+  list: (params?: MediaListParams) =>
+    [...adminMediaKeys.lists(), params] as const,
+  details: () => [...adminMediaKeys.all, 'detail'] as const,
+  detail: (id: string) => [...adminMediaKeys.details(), id] as const,
+  stats: () => [...adminMediaKeys.all, 'stats'] as const,
 };

@@ -16,7 +16,6 @@ media/
 ├── media.constants.ts            # Константы (фильтры, сортировка)
 ├── media.types.ts                # MediaFile, FileType, ViewMode, Backup
 ├── media.utils.ts                # formatBytes, getFileIcon, handleCopyUrl
-├── media.mock.ts                 # Моковые данные
 ├── index.ts                      # Barrel-экспорт
 │
 ├── preview/                      # Диалог превью и редактирования файла

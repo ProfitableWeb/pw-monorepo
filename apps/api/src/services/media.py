@@ -362,6 +362,79 @@ def delete_media(db: Session, storage: StorageBackend, media: MediaFile) -> None
     db.commit()
 
 
+def replace_file(
+    db: Session,
+    storage: StorageBackend,
+    media: MediaFile,
+    *,
+    data: bytes,
+    filename: str,
+    content_type: str,
+) -> MediaFile:
+    """Заменяет физический файл медиа-записи, сохраняя ID, slug, SEO и связи."""
+    file_type = _determine_file_type(content_type)
+
+    # Валидация размера
+    max_size = (
+        settings.max_upload_size_image
+        if file_type == FileType.IMAGE
+        else settings.max_upload_size_other
+    )
+    if len(data) > max_size:
+        raise ValueError(
+            f"Файл слишком большой. Максимум: {max_size // (1024 * 1024)} МБ"
+        )
+
+    # Валидация MIME
+    if content_type not in ALLOWED_MIME_TYPES:
+        raise ValueError(f"Недопустимый тип файла: {content_type}")
+
+    # 1. Удалить старые файлы из storage
+    storage.delete(media.storage_key)
+    if media.resizes:
+        for resize in media.resizes:
+            key = resize.get("key")
+            if key:
+                storage.delete(key)
+
+    # 2. Обработать новый файл (тот же pipeline, что upload_media)
+    file_uuid = str(uuid.uuid4())
+    width = None
+    height = None
+    resizes = None
+    exif_data = None
+
+    if file_type == FileType.IMAGE:
+        storage_key = f"media/{file_uuid}.webp"
+        webp_data, width, height, resizes, exif_data = _process_image(
+            data, storage, storage_key, file_uuid
+        )
+        final_size = len(webp_data)
+        mime_type = "image/webp"
+    else:
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "bin"
+        storage_key = f"media/{file_uuid}.{ext}"
+        storage.save(storage_key, data)
+        final_size = len(data)
+        mime_type = content_type
+
+    # 3. Обновить запись (СОХРАНЯЕМ: id, slug, alt, caption, purposes,
+    #    uploaded_by_id, created_at, связи со статьями)
+    media.filename = filename
+    media.storage_key = storage_key
+    media.mime_type = mime_type
+    media.file_type = file_type
+    media.size = final_size
+    media.width = width
+    media.height = height
+    media.exif_data = exif_data
+    media.resizes = resizes
+
+    db.commit()
+    db.refresh(media)
+    return media
+
+
 def get_media_stats(db: Session) -> dict[str, Any]:
     """Агрегированная статистика: количество, объём, по типам, все purposes."""
     total_count = (

@@ -1,4 +1,5 @@
 import { Image as ImageIcon, Video, Music, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 import type { FileType } from './media.types';
 
 /** Форматирование размера файла в человекочитаемый вид */
@@ -31,21 +32,54 @@ export const getFileIcon = (type: FileType) => {
   }
 };
 
-/** Копирование URL в буфер обмена (фоллбэк для окружений без Clipboard API) */
-export const handleCopyUrl = (url: string) => {
-  const textArea = document.createElement('textarea');
-  textArea.value = url;
-  textArea.style.position = 'fixed';
-  textArea.style.left = '-999999px';
-  document.body.appendChild(textArea);
-  textArea.select();
-
+/** Копирование URL в буфер обмена с toast-уведомлением */
+export const handleCopyUrl = async (url: string) => {
   try {
-    document.execCommand('copy');
-    // TODO: Show toast notification
-  } catch (err) {
-    console.error('Failed to copy:', err);
-  } finally {
-    document.body.removeChild(textArea);
+    await navigator.clipboard.writeText(url);
+    toast.success('URL скопирован');
+  } catch {
+    // Fallback для окружений без Clipboard API
+    const textArea = document.createElement('textarea');
+    textArea.value = url;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      toast.success('URL скопирован');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      toast.error('Не удалось скопировать URL');
+    } finally {
+      document.body.removeChild(textArea);
+    }
   }
+};
+
+/** Скачивание файла по URL */
+export const downloadFile = (url: string, filename: string) => {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+/** Русская плюрализация: pluralize(1, 'статья', 'статьи', 'статей') → 'статья' */
+export const pluralize = (
+  n: number,
+  one: string,
+  few: string,
+  many: string
+) => {
+  const abs = Math.abs(n);
+  const mod10 = abs % 10;
+  const mod100 = abs % 100;
+  if (mod100 >= 11 && mod100 <= 19) return many;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
 };

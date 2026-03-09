@@ -1085,3 +1085,243 @@ export async function unlinkOAuth(provider: string): Promise<UserProfile> {
   if (!json.data) throw new ApiError(500, 'Нет данных');
   return mapProfile(json.data);
 }
+
+// ---------------------------------------------------------------------------
+// Admin Media API (PW-041-B)
+// ---------------------------------------------------------------------------
+
+import type {
+  MediaFile,
+  MediaListParams,
+  MediaUpdatePayload,
+  MediaStatsResponse,
+} from '@/app/components/sections/media/media.types';
+
+interface MediaFileRaw {
+  id: string;
+  filename: string;
+  storage_key: string;
+  mime_type: string;
+  file_type: string;
+  size: number;
+  width?: number | null;
+  height?: number | null;
+  duration?: number | null;
+  slug: string;
+  alt?: string | null;
+  caption?: string | null;
+  exif_data?: Record<string, string> | null;
+  purposes: string[];
+  resizes?: Array<{
+    suffix: string;
+    key: string;
+    width: number;
+    height: number;
+    size: number;
+    url: string;
+  }> | null;
+  url: string;
+  thumbnail_url?: string | null;
+  uploaded_by_id?: string | null;
+  used_in: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface MediaStatsRaw {
+  total_count: number;
+  total_size: number;
+  by_type: Record<string, number>;
+  all_purposes: string[];
+}
+
+const RESIZE_SUFFIX_NAMES: Record<string, string> = {
+  _thumb: 'Thumbnail',
+  _small: 'Small',
+  _medium: 'Medium',
+  _large: 'Large',
+};
+
+function mapMediaFile(raw: MediaFileRaw): MediaFile {
+  // EXIF: snake_case → camelCase
+  let exif: MediaFile['exif'] = undefined;
+  if (raw.exif_data && Object.keys(raw.exif_data).length > 0) {
+    exif = {
+      dateTaken: raw.exif_data.date_taken,
+      camera: raw.exif_data.camera,
+      lens: raw.exif_data.lens,
+      iso: raw.exif_data.iso,
+      aperture: raw.exif_data.aperture,
+      shutterSpeed: raw.exif_data.shutter_speed,
+      focalLength: raw.exif_data.focal_length,
+    };
+  }
+
+  // Ресайзы: suffix → human-readable name
+  let resizes: MediaFile['resizes'] = undefined;
+  if (raw.resizes && raw.resizes.length > 0) {
+    resizes = raw.resizes.map(r => ({
+      name: RESIZE_SUFFIX_NAMES[r.suffix] ?? r.suffix,
+      width: r.width,
+      height: r.height,
+      size: r.size,
+      url: r.url,
+    }));
+  }
+
+  return {
+    id: raw.id,
+    name: raw.filename,
+    type: raw.file_type as MediaFile['type'],
+    url: raw.url,
+    size: raw.size,
+    uploadedAt: new Date(raw.created_at),
+    usedIn: raw.used_in,
+    purposes: raw.purposes ?? [],
+    thumbnail: raw.thumbnail_url ?? undefined,
+    duration: raw.duration ?? undefined,
+    dimensions:
+      raw.width != null && raw.height != null
+        ? { width: raw.width, height: raw.height }
+        : undefined,
+    seo: {
+      filename: raw.slug,
+      alt: raw.alt ?? '',
+      caption: raw.caption ?? '',
+    },
+    exif,
+    resizes,
+    storageKey: raw.storage_key,
+    mimeType: raw.mime_type,
+    slug: raw.slug,
+    uploadedById: raw.uploaded_by_id ?? undefined,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+function mapMediaStats(raw: MediaStatsRaw): MediaStatsResponse {
+  return {
+    totalCount: raw.total_count,
+    totalSize: raw.total_size,
+    byType: raw.by_type,
+    allPurposes: raw.all_purposes,
+  };
+}
+
+export async function getMediaList(
+  params?: MediaListParams
+): Promise<PaginatedResult<MediaFile>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.file_type) q.set('file_type', params.file_type);
+  if (params?.purpose) q.set('purpose', params.purpose);
+  if (params?.search) q.set('search', params.search);
+  if (params?.sort_by) q.set('sort_by', params.sort_by);
+  if (params?.order) q.set('order', params.order);
+
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<MediaFileRaw[]>(
+    `/admin/media${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapMediaFile),
+    meta: result.meta,
+  };
+}
+
+export async function getMedia(id: string): Promise<MediaFile | null> {
+  const raw = await apiFetch<MediaFileRaw>(
+    `/admin/media/${encodeURIComponent(id)}`
+  );
+  return raw ? mapMediaFile(raw) : null;
+}
+
+export async function uploadMedia(file: File): Promise<MediaFile> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const doUpload = () =>
+    fetch(`${API_BASE}/admin/media/upload`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+
+  let res = await doUpload();
+
+  // 401 — пробуем refresh один раз (паттерн apiMutate)
+  if (res.status === 401) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      res = await doUpload();
+    }
+    if (res.status === 401) throw new ApiError(401, 'Не авторизован');
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка загрузки файла');
+  }
+  const json: ApiResponseRaw<MediaFileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapMediaFile(json.data);
+}
+
+export async function replaceMediaFile(
+  mediaId: string,
+  file: File
+): Promise<MediaFile> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const doReplace = () =>
+    fetch(`${API_BASE}/admin/media/${encodeURIComponent(mediaId)}/file`, {
+      method: 'PUT',
+      credentials: 'include',
+      body: formData,
+    });
+
+  let res = await doReplace();
+
+  // 401 — пробуем refresh один раз (паттерн uploadMedia)
+  if (res.status === 401) {
+    const refreshed = await authRefresh();
+    if (refreshed) {
+      res = await doReplace();
+    }
+    if (res.status === 401) throw new ApiError(401, 'Не авторизован');
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка замены файла');
+  }
+  const json: ApiResponseRaw<MediaFileRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Нет данных');
+  return mapMediaFile(json.data);
+}
+
+export async function updateMedia(
+  id: string,
+  data: MediaUpdatePayload
+): Promise<MediaFile> {
+  const raw = await apiMutate<MediaFileRaw>(
+    `/admin/media/${encodeURIComponent(id)}`,
+    { method: 'PATCH', body: data }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapMediaFile(raw);
+}
+
+export async function deleteMedia(id: string): Promise<void> {
+  await apiMutate(`/admin/media/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getMediaStats(): Promise<MediaStatsResponse> {
+  const raw = await apiFetch<MediaStatsRaw>('/admin/media/stats');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapMediaStats(raw);
+}

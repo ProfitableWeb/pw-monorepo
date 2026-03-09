@@ -12,17 +12,25 @@ import {
   Download,
   Trash2,
   Copy,
+  ExternalLink,
   Check,
-  RefreshCw,
+  ChevronDown,
+  Loader2,
 } from 'lucide-react';
 import { MediaImageWithLoader } from './MediaImageWithLoader';
-import { formatBytes, getFileIcon, handleCopyUrl } from './media.utils';
+import {
+  formatBytes,
+  getFileIcon,
+  handleCopyUrl,
+  downloadFile,
+} from './media.utils';
 import type { MediaFile } from './media.types';
 
 interface MediaListProps {
   files: MediaFile[];
   selectedFiles: string[];
   hasMore: boolean;
+  isFetchingMore: boolean;
   onFileSelect: (id: string) => void;
   onPreview: (file: MediaFile) => void;
   onDelete: (id: string) => void;
@@ -34,6 +42,7 @@ export function MediaList({
   files,
   selectedFiles,
   hasMore,
+  isFetchingMore,
   onFileSelect,
   onPreview,
   onDelete,
@@ -48,11 +57,21 @@ export function MediaList({
         return (
           <div
             key={file.id}
+            role='button'
+            tabIndex={0}
+            aria-label={`${file.name}, ${formatBytes(file.size)}, ${file.uploadedAt.toLocaleDateString('ru-RU')}`}
             className={cn(
               'group flex items-center gap-4 p-3 border rounded-lg bg-card transition-all cursor-pointer hover:shadow-sm',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
               isSelected && 'ring-2 ring-primary'
             )}
             onClick={() => onPreview(file)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onPreview(file);
+              }
+            }}
           >
             {/* Чекбокс выбора */}
             <div onClick={e => e.stopPropagation()}>
@@ -113,10 +132,20 @@ export function MediaList({
                     <Copy className='h-4 w-4 mr-2' />
                     Копировать URL
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => downloadFile(file.url, file.name)}
+                  >
                     <Download className='h-4 w-4 mr-2' />
                     Скачать
                   </DropdownMenuItem>
+                  {file.type === 'image' && (
+                    <DropdownMenuItem
+                      onClick={() => window.open(file.url, '_blank')}
+                    >
+                      <ExternalLink className='h-4 w-4 mr-2' />
+                      Открыть в новой вкладке
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className='text-destructive'
@@ -135,9 +164,17 @@ export function MediaList({
       {/* Загрузить ещё */}
       {hasMore && (
         <div className='flex justify-center pt-4'>
-          <Button variant='outline' onClick={onLoadMore}>
-            <RefreshCw className='h-4 w-4 mr-2' />
-            Загрузить ещё
+          <Button
+            variant='outline'
+            onClick={onLoadMore}
+            disabled={isFetchingMore}
+          >
+            {isFetchingMore ? (
+              <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+            ) : (
+              <ChevronDown className='h-4 w-4 mr-2' />
+            )}
+            {isFetchingMore ? 'Загрузка...' : 'Загрузить ещё'}
           </Button>
         </div>
       )}

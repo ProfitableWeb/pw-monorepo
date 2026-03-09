@@ -55,6 +55,13 @@ def _to_response(media: MediaFile) -> MediaFileResponse:
     # Количество связанных статей
     used_in = len(media.articles) if media.articles else 0
 
+    # Обогащаем ресайзы публичными URL
+    resizes_with_urls = None
+    if media.resizes:
+        resizes_with_urls = [
+            {**r, "url": storage.url(r["key"])} for r in media.resizes
+        ]
+
     return MediaFileResponse(
         id=str(media.id),
         filename=media.filename,
@@ -73,7 +80,7 @@ def _to_response(media: MediaFile) -> MediaFileResponse:
         caption=media.caption,
         exif_data=media.exif_data,
         purposes=media.purposes or [],
-        resizes=media.resizes,
+        resizes=resizes_with_urls,
         url=url,
         thumbnail_url=thumbnail_url,
         uploaded_by_id=str(media.uploaded_by_id) if media.uploaded_by_id else None,
@@ -182,6 +189,34 @@ def update_media(
         media = media_service.update_media(db, media, **fields)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+    return ApiResponse(success=True, data=_to_response(media))
+
+
+@router.put("/{media_id}/file", response_model=ApiResponse[MediaFileResponse])
+def replace_media_file(
+    media_id: str,
+    file: UploadFile,
+    db: Session = Depends(get_db),
+    _user: User = Depends(get_current_admin),
+) -> ApiResponse[MediaFileResponse]:
+    """Замена физического файла медиа-записи (сохраняет ID, slug, SEO, связи)."""
+    media = _get_media_or_404(db, media_id)
+    data = file.file.read()
+    content_type = file.content_type or "application/octet-stream"
+    filename = file.filename or "unnamed"
+
+    try:
+        media = media_service.replace_file(
+            db,
+            storage,
+            media,
+            data=data,
+            filename=filename,
+            content_type=content_type,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return ApiResponse(success=True, data=_to_response(media))
 
 
