@@ -192,6 +192,12 @@ git remote add github https://github.com/ProfitableWeb/pw-monorepo.git
 
 Весь код, инсайты и метрики публикуются открыто для репликации экспериментов и валидации гипотез сообществом.
 
+## Участие в проекте
+
+- [Правила участия](./docs/CONTRIBUTING.md) — как внести вклад
+- [Кодекс поведения](./docs/CODE_OF_CONDUCT.md) — нормы взаимодействия
+- [Политика безопасности](./docs/SECURITY.md) — сообщение об уязвимостях
+
 ## Лицензия
 
 MIT License - см. [LICENSE](./LICENSE)
