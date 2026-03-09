@@ -15,12 +15,14 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin, UUIDMixin
+from src.models.media_file import article_media
 from src.models.tag import article_tags
 
 if TYPE_CHECKING:
     from src.models.article_revision import ArticleRevision
     from src.models.category import Category
     from src.models.comment import Comment
+    from src.models.media_file import MediaFile
     from src.models.tag import Tag
     from src.models.user import User
 
@@ -93,6 +95,9 @@ class Article(UUIDMixin, TimestampMixin, Base):
     comments: Mapped[list["Comment"]] = relationship(back_populates="article")
     revisions: Mapped[list["ArticleRevision"]] = relationship(
         back_populates="article", cascade="all, delete-orphan"
+    )
+    media_files: Mapped[list["MediaFile"]] = relationship(
+        secondary=article_media, back_populates="articles"
     )
 
     def __repr__(self) -> str:

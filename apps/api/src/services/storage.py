@@ -1,5 +1,5 @@
 """
-PW-034 | Абстракция файлового хранилища (ADR-003).
+PW-034/PW-041 | Абстракция файлового хранилища (ADR-003).
 LocalStorage — запись на диск VM, nginx отдаёт как статику.
 """
 
@@ -11,7 +11,7 @@ from src.core.config import settings
 
 
 class StorageBackend(ABC):
-    """3 метода — весь интерфейс работы с файлами в проекте."""
+    """4 метода — весь интерфейс работы с файлами в проекте."""
 
     @abstractmethod
     def save(self, path: str, data: bytes) -> str:
@@ -26,6 +26,11 @@ class StorageBackend(ABC):
     @abstractmethod
     def url(self, path: str) -> str:
         """Возвращает публичный URL для path."""
+        ...
+
+    @abstractmethod
+    def exists(self, path: str) -> bool:
+        """Проверяет наличие файла по path."""
         ...
 
 
@@ -49,6 +54,9 @@ class LocalStorage(StorageBackend):
 
     def url(self, path: str) -> str:
         return f"{self._base_url}/{path}"
+
+    def exists(self, path: str) -> bool:
+        return (self._root / path).exists()
 
 
 # Синглтон — используется всем приложением

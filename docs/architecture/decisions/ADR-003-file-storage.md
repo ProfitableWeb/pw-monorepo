@@ -179,10 +179,10 @@ location /uploads/ {
 ```python
 class StorageBackend(ABC):
     """4 метода — весь интерфейс работы с файлами."""
-    async def save(self, path: str, data: bytes) -> str: ...   # → публичный URL
-    async def delete(self, path: str) -> None: ...
+    def save(self, path: str, data: bytes) -> str: ...   # → публичный URL
+    def delete(self, path: str) -> None: ...
     def url(self, path: str) -> str: ...                       # storage_key → URL
-    async def exists(self, path: str) -> bool: ...             # проверка наличия
+    def exists(self, path: str) -> bool: ...                   # проверка наличия
 
 class LocalStorage(StorageBackend):
     """Dev/staging: ~/profitableweb/uploads/, nginx раздаёт."""
@@ -300,7 +300,6 @@ systemctl restart pw-api
 ## Связанные задачи
 
 - PW-034: Управление профилем пользователя (аватарки)
-- PW-XXX: Media API (модель, эндпоинты, загрузка, ресайзы)
-- PW-XXX: Подключение админской галереи к Media API
-- PW-XXX: S3Storage реализация (Cloud.ru Evolution Object Storage)
-- PW-XXX: Настройка rclone sync (local ↔ Cloud.ru Evolution Object Storage)
+- PW-041-A: Media API Backend (модель, эндпоинты, загрузка, ресайзы)
+- PW-041-B: Подключение админской галереи к Media API
+- PW-041-C: S3Storage реализация (Cloud.ru Evolution Object Storage) + CI/CD + rclone sync
