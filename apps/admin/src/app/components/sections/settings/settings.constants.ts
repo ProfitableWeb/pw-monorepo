@@ -5,6 +5,7 @@ import {
   Shield,
   Bell,
   Zap,
+  HardDrive,
   Palette,
   Key,
 } from 'lucide-react';
@@ -70,6 +71,16 @@ export const settingsCategories: SettingsCategory[] = [
       { id: 'services', label: 'Внешние сервисы' },
       { id: 'api-keys', label: 'API ключи' },
       { id: 'webhooks', label: 'Webhooks' },
+    ],
+  },
+  {
+    id: 'storage',
+    label: 'Хранилище',
+    icon: HardDrive,
+    sections: [
+      { id: 'overview', label: 'Обзор' },
+      { id: 'stats', label: 'Статистика' },
+      { id: 'diagnostics', label: 'Диагностика' },
     ],
   },
   {
