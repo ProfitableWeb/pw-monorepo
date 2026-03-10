@@ -19,7 +19,7 @@ import {
   Database,
   Users,
 } from 'lucide-react';
-import { formatBytes } from '@/app/components/sections/media/media.utils';
+import { formatBytes } from '@/app/components/common';
 import type { StorageStats } from '../storage.types';
 
 interface StatsTabProps {

@@ -159,9 +159,14 @@ export function MediaSection() {
     setDeleteTarget(null);
 
     // Параллельное удаление (до 5 одновременно)
-    const results = await Promise.allSettled(
-      ids.map(id => deleteMutation.mutateAsync(id))
-    );
+    const results: PromiseSettledResult<void>[] = [];
+    for (let i = 0; i < ids.length; i += 5) {
+      const batch = ids.slice(i, i + 5);
+      const batchResults = await Promise.allSettled(
+        batch.map(id => deleteMutation.mutateAsync(id))
+      );
+      results.push(...batchResults);
+    }
 
     const failed = results.filter(r => r.status === 'rejected');
     const succeeded = results.filter(r => r.status === 'fulfilled');

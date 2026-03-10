@@ -37,10 +37,8 @@ export function StorageSettings() {
     testResult,
     testing,
     syncing,
-    savingLimits,
     runTest,
     runSync,
-    saveLimits,
     refresh,
   } = useStorageInfo();
 
@@ -88,8 +86,6 @@ export function StorageSettings() {
             loading={loading}
             syncing={syncing}
             onSync={runSync}
-            savingLimits={savingLimits}
-            onSaveLimits={saveLimits}
           />
         </TabsContent>
 

@@ -348,18 +348,20 @@ def update_media(db: Session, media: MediaFile, **fields: Any) -> MediaFile:
 
 def delete_media(db: Session, storage: StorageBackend, media: MediaFile) -> None:
     """Удаляет файл(ы) из storage + запись из БД."""
-    # Основной файл
-    storage.delete(media.storage_key)
+    # Сохраняем ключи до удаления из БД
+    storage_key = media.storage_key
+    resize_keys = [
+        r.get("key") for r in (media.resizes or []) if r.get("key")
+    ]
 
-    # Ресайзы
-    if media.resizes:
-        for resize in media.resizes:
-            key = resize.get("key")
-            if key:
-                storage.delete(key)
-
+    # Сначала БД — если commit упадёт, файлы останутся целы
     db.delete(media)
     db.commit()
+
+    # Потом storage — если что-то не удалится, записи уже нет (orphan, не broken ref)
+    storage.delete(storage_key)
+    for key in resize_keys:
+        storage.delete(key)
 
 
 def replace_file(
@@ -389,13 +391,11 @@ def replace_file(
     if content_type not in ALLOWED_MIME_TYPES:
         raise ValueError(f"Недопустимый тип файла: {content_type}")
 
-    # 1. Удалить старые файлы из storage
-    storage.delete(media.storage_key)
-    if media.resizes:
-        for resize in media.resizes:
-            key = resize.get("key")
-            if key:
-                storage.delete(key)
+    # 1. Сохраняем ключи старых файлов для удаления после успешного сохранения
+    old_storage_key = media.storage_key
+    old_resize_keys = [
+        r.get("key") for r in (media.resizes or []) if r.get("key")
+    ]
 
     # 2. Обработать новый файл (тот же pipeline, что upload_media)
     file_uuid = str(uuid.uuid4())
@@ -432,6 +432,12 @@ def replace_file(
 
     db.commit()
     db.refresh(media)
+
+    # 4. Удалить старые файлы после успешного коммита
+    storage.delete(old_storage_key)
+    for key in old_resize_keys:
+        storage.delete(key)
+
     return media
 
 

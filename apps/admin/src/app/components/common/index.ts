@@ -6,3 +6,4 @@ export { ContentDropdown } from './content-dropdown';
 export { EditorialDropdown } from './editorial-dropdown';
 export { SystemDropdown } from './system-dropdown';
 export { QuickActions } from './quick-actions';
+export { formatBytes } from './format.utils';
