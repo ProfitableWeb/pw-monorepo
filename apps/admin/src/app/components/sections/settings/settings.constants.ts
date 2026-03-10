@@ -6,6 +6,7 @@ import {
   Bell,
   Zap,
   HardDrive,
+  Activity,
   Palette,
   Key,
 } from 'lucide-react';
@@ -81,6 +82,16 @@ export const settingsCategories: SettingsCategory[] = [
       { id: 'overview', label: 'Обзор' },
       { id: 'stats', label: 'Статистика' },
       { id: 'diagnostics', label: 'Диагностика' },
+    ],
+  },
+  {
+    id: 'monitoring',
+    label: 'Мониторинг',
+    icon: Activity,
+    sections: [
+      { id: 'system', label: 'Система' },
+      { id: 'errors', label: 'Ошибки' },
+      { id: 'audit', label: 'Аудит' },
     ],
   },
   {

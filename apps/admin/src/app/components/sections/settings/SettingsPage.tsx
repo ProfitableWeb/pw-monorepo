@@ -33,6 +33,7 @@ import { IntegrationSettings } from './IntegrationSettings';
 import { AppearanceSettings } from './AppearanceSettings';
 import { DeveloperSettings } from './DeveloperSettings';
 import { StorageSettings } from './storage';
+import { MonitoringSettings } from './monitoring';
 
 export function SettingsPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();
@@ -95,6 +96,8 @@ export function SettingsPage() {
         );
       case 'storage':
         return <StorageSettings />;
+      case 'monitoring':
+        return <MonitoringSettings />;
       case 'appearance':
         return (
           <AppearanceSettings
@@ -170,11 +173,15 @@ export function SettingsPage() {
 
       {/* Основная область контента */}
       <div className='flex-1 flex flex-col min-w-0 min-h-0'>
-        <ScrollArea className='flex-1 min-h-0'>
-          <div className='max-w-4xl mx-auto p-6 pb-24'>
+        {activeCategory === 'monitoring' ? (
+          <div className='flex-1 min-h-0 p-6 pb-4 flex flex-col overflow-hidden'>
             {renderCategoryContent()}
           </div>
-        </ScrollArea>
+        ) : (
+          <ScrollArea className='flex-1 min-h-0'>
+            <div className='p-6 pb-24'>{renderCategoryContent()}</div>
+          </ScrollArea>
+        )}
 
         {/* Фиксированная панель действий */}
         {hasUnsavedChanges && (
