@@ -21,6 +21,8 @@ dependencies = [
     "python-slugify[transliterate]>=8.0.4",
     "boto3>=1.35.0",
     "psutil>=5.9.0",
+    "structlog>=24.1.0",
+    "asgi-correlation-id>=4.3.0",
 ]
 
 [project.optional-dependencies]

@@ -3,7 +3,6 @@ PW-030 | Auth router: register, login, refresh, logout, me, OAuth.
 Токены хранятся в httpOnly cookies (access_token: 15min, refresh_token: 7d).
 """
 
-import logging
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -21,6 +20,7 @@ from src.auth.jwt import (
 from src.auth.passwords import hash_password, verify_password
 from src.core.config import settings
 from src.core.database import get_db
+from src.core.logging import get_logger
 from src.models.user import User
 from src.schemas.auth import (
     AuthUserResponse,
@@ -31,7 +31,7 @@ from src.schemas.auth import (
 )
 from src.services import user as user_service
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -287,7 +287,7 @@ def oauth_callback(
         return redirect_response
 
     except Exception:
-        logger.exception("OAuth callback error for provider=%s", provider)
+        logger.exception("auth.oauth_callback_failed", provider=provider)
         params = urlencode({"error": "oauth_failed"})
         redirect_url = f"{redirect_base}/auth/callback?{params}"
         return Response(

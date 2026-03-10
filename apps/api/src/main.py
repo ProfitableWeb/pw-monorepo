@@ -1,13 +1,18 @@
 """
-PW-027 | Точка входа FastAPI. CORS настроен на web+admin фронтенды.
-Эндпоинты монтируются через api_router (/api/*), / и /health — служебные.
+PW-027/PW-042-A | Точка входа FastAPI.
+CORS, structured logging, request middleware. Эндпоинты через api_router (/api/*).
 """
 
+from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.router import api_router
 from src.core.config import settings
+from src.core.logging import setup_logging
+from src.middleware.logging import RequestLoggingMiddleware
+
+setup_logging()
 
 app = FastAPI(
     title=settings.app_name,
@@ -15,12 +20,17 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# Middleware stack (Starlette: первый add_middleware = innermost)
+# Результирующий порядок: CORS → CorrelationId → RequestLogging → handler
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(CorrelationIdMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["x-request-id"],
 )
 
 app.include_router(api_router)
