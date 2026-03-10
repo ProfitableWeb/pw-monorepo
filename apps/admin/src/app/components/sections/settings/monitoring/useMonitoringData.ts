@@ -1,6 +1,6 @@
 /**
  * PW-042-D2 | Хук для раздела «Мониторинг».
- * На моках — в D8 заменяется на реальные API-вызовы.
+ * Health — реальный API (PW-042-C). Ошибки/аудит — моки (до PW-042-B/D).
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,14 +14,14 @@ import type {
   LoadMoreState,
 } from './monitoring.types';
 import {
-  MOCK_SYSTEM_HEALTH,
   MOCK_ERROR_ENTRIES,
   MOCK_ERROR_STATS,
   MOCK_AUDIT_ENTRIES,
 } from './monitoring.mocks';
+import { adminGetSystemHealth } from '@/lib/api-client';
 import { DATE_RANGE_MS, DEFAULT_PER_PAGE } from './monitoring.utils';
 
-/** Имитация задержки сети */
+/** Имитация задержки сети (для моков) */
 function delay(ms = 600): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -67,13 +67,17 @@ export function useMonitoringData() {
     perPage: DEFAULT_PER_PAGE,
   });
 
-  // --- Загрузка данных (mock) ---
+  // --- Загрузка данных ---
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      await delay();
-      setHealth(MOCK_SYSTEM_HEALTH);
+      // Health — реальный API (PW-042-C)
+      const healthData = await adminGetSystemHealth();
+      setHealth(healthData as SystemHealth);
+
+      // Ошибки и аудит — моки (до PW-042-B/D)
+      await delay(200);
       setErrors(MOCK_ERROR_ENTRIES);
       setErrorStats(MOCK_ERROR_STATS);
       setAudit(MOCK_AUDIT_ENTRIES);

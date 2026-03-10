@@ -179,7 +179,9 @@ export function SettingsPage() {
           </div>
         ) : (
           <ScrollArea className='flex-1 min-h-0'>
-            <div className='p-6 pb-24'>{renderCategoryContent()}</div>
+            <div className='max-w-4xl mx-auto p-6 pb-24'>
+              {renderCategoryContent()}
+            </div>
           </ScrollArea>
         )}
 

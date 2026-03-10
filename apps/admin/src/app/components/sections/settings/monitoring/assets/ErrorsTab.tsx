@@ -147,7 +147,7 @@ export function ErrorsTab({
                 })
               }
             >
-              <SelectTrigger className='w-[130px] h-7 text-xs'>
+              <SelectTrigger className='w-[130px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Уровень' />
               </SelectTrigger>
               <SelectContent>
@@ -173,7 +173,7 @@ export function ErrorsTab({
                 })
               }
             >
-              <SelectTrigger className='w-[130px] h-7 text-xs'>
+              <SelectTrigger className='w-[130px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Статус' />
               </SelectTrigger>
               <SelectContent>
@@ -192,7 +192,7 @@ export function ErrorsTab({
                 })
               }
             >
-              <SelectTrigger className='w-[110px] h-7 text-xs'>
+              <SelectTrigger className='w-[110px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Период' />
               </SelectTrigger>
               <SelectContent>
@@ -203,12 +203,14 @@ export function ErrorsTab({
               </SelectContent>
             </Select>
 
-            <span className='text-xs text-muted-foreground'>{total}</span>
+            <span className='text-xs text-muted-foreground shrink-0'>
+              {total}
+            </span>
             <Select
               value={String(loadMore.perPage)}
               onValueChange={v => onPerPageChange(Number(v))}
             >
-              <SelectTrigger className='w-[60px] h-7 text-xs'>
+              <SelectTrigger className='w-[68px] shrink-0 h-7 text-xs'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

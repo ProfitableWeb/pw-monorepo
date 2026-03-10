@@ -1137,9 +1137,9 @@ interface MediaStatsRaw {
 
 const RESIZE_SUFFIX_NAMES: Record<string, string> = {
   _thumb: 'Thumbnail',
-  _small: 'Small',
-  _medium: 'Medium',
-  _large: 'Large',
+  _sm: 'Small',
+  _md: 'Medium',
+  _lg: 'Large',
 };
 
 function mapMediaFile(raw: MediaFileRaw): MediaFile {
@@ -1443,4 +1443,75 @@ export async function adminTestStorage(): Promise<StorageTestResult> {
   });
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapStorageTestResult(raw);
+}
+
+// ---------------------------------------------------------------------------
+// System Health (PW-042-C)
+// ---------------------------------------------------------------------------
+
+interface SystemHealthRaw {
+  status: string;
+  uptime_seconds: number;
+  version: string;
+  python_version: string;
+  cpu_percent: number;
+  disk: { total_gb: number; used_gb: number; percent: number };
+  memory: { total_gb: number; used_gb: number; percent: number };
+  services: {
+    name: string;
+    connected: boolean;
+    latency_ms: number | null;
+    error: string | null;
+  }[];
+  errors_24h: number;
+}
+
+export interface SystemHealth {
+  status: 'ok' | 'degraded' | 'down';
+  uptimeSeconds: number;
+  version: string;
+  pythonVersion: string;
+  cpuPercent: number;
+  disk: { totalGb: number; usedGb: number; percent: number };
+  memory: { totalGb: number; usedGb: number; percent: number };
+  services: {
+    name: string;
+    connected: boolean;
+    latencyMs: number | null;
+    error: string | null;
+  }[];
+  errors24h: number;
+}
+
+function mapSystemHealth(raw: SystemHealthRaw): SystemHealth {
+  return {
+    status: raw.status as SystemHealth['status'],
+    uptimeSeconds: raw.uptime_seconds,
+    version: raw.version,
+    pythonVersion: raw.python_version,
+    cpuPercent: raw.cpu_percent,
+    disk: {
+      totalGb: raw.disk.total_gb,
+      usedGb: raw.disk.used_gb,
+      percent: raw.disk.percent,
+    },
+    memory: {
+      totalGb: raw.memory.total_gb,
+      usedGb: raw.memory.used_gb,
+      percent: raw.memory.percent,
+    },
+    services: raw.services.map(s => ({
+      name: s.name,
+      connected: s.connected,
+      latencyMs: s.latency_ms,
+      error: s.error,
+    })),
+    errors24h: raw.errors_24h,
+  };
+}
+
+export async function adminGetSystemHealth(): Promise<SystemHealth> {
+  const raw = await apiFetch<SystemHealthRaw>('/admin/system/health');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSystemHealth(raw);
 }

@@ -52,9 +52,9 @@ function usageColor(percent: number): string {
 }
 
 function progressIndicator(percent: number): string {
-  if (percent >= 90) return '[&>div]:bg-red-500';
-  if (percent >= 70) return '[&>div]:bg-amber-500';
-  return '[&>div]:bg-emerald-500';
+  if (percent >= 90) return '[&>[data-slot=progress-indicator]]:bg-red-500';
+  if (percent >= 70) return '[&>[data-slot=progress-indicator]]:bg-amber-500';
+  return '[&>[data-slot=progress-indicator]]:bg-emerald-500';
 }
 
 /** Иконка сервиса */

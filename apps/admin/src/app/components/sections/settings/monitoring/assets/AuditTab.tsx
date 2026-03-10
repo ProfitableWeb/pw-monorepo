@@ -157,7 +157,7 @@ export function AuditTab({
                 onFiltersChange({ ...filters, action: v === 'all' ? null : v })
               }
             >
-              <SelectTrigger className='w-[140px] h-7 text-xs'>
+              <SelectTrigger className='w-[140px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Действие' />
               </SelectTrigger>
               <SelectContent>
@@ -176,7 +176,7 @@ export function AuditTab({
                 onFiltersChange({ ...filters, userId: v === 'all' ? null : v })
               }
             >
-              <SelectTrigger className='w-[140px] h-7 text-xs'>
+              <SelectTrigger className='w-[140px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Пользователь' />
               </SelectTrigger>
               <SelectContent>
@@ -198,7 +198,7 @@ export function AuditTab({
                 })
               }
             >
-              <SelectTrigger className='w-[110px] h-7 text-xs'>
+              <SelectTrigger className='w-[110px] shrink-0 h-7 text-xs'>
                 <SelectValue placeholder='Период' />
               </SelectTrigger>
               <SelectContent>
@@ -209,12 +209,14 @@ export function AuditTab({
               </SelectContent>
             </Select>
 
-            <span className='text-xs text-muted-foreground'>{total}</span>
+            <span className='text-xs text-muted-foreground shrink-0'>
+              {total}
+            </span>
             <Select
               value={String(loadMore.perPage)}
               onValueChange={v => onPerPageChange(Number(v))}
             >
-              <SelectTrigger className='w-[60px] h-7 text-xs'>
+              <SelectTrigger className='w-[68px] shrink-0 h-7 text-xs'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
