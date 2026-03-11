@@ -1521,6 +1521,7 @@ export async function adminGetSystemHealth(): Promise<SystemHealth> {
 // ---------------------------------------------------------------------------
 
 import type {
+  AuditLogEntry,
   ErrorLogEntry,
   ErrorStats,
 } from '@/app/components/sections/settings/monitoring/monitoring.types';
@@ -1613,4 +1614,74 @@ export async function adminGetErrorStats(): Promise<ErrorStats> {
 
 export async function adminResolveError(id: string): Promise<void> {
   await apiMutate(`/admin/errors/${id}/resolve`, { method: 'POST' });
+}
+
+// ---------------------------------------------------------------------------
+// Audit Log (PW-042-D)
+// ---------------------------------------------------------------------------
+
+interface RawAuditLogEntry {
+  id: string;
+  timestamp: string;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  changes: Record<string, { old: unknown; new: unknown }> | null;
+  request_id: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+}
+
+function mapAuditLogEntry(raw: RawAuditLogEntry): AuditLogEntry {
+  return {
+    id: raw.id,
+    timestamp: raw.timestamp,
+    userId: raw.user_id,
+    userName: raw.user_name,
+    userEmail: raw.user_email,
+    action: raw.action,
+    resourceType: raw.resource_type,
+    resourceId: raw.resource_id,
+    changes: raw.changes,
+    requestId: raw.request_id,
+    ipAddress: raw.ip_address,
+    userAgent: raw.user_agent,
+  };
+}
+
+export async function adminGetAudit(params?: {
+  limit?: number;
+  offset?: number;
+  action?: string;
+  userId?: string;
+  dateRange?: string;
+}): Promise<{ data: AuditLogEntry[]; meta: ApiMeta }> {
+  const q = new URLSearchParams();
+  if (params?.limit != null) q.set('limit', String(params.limit));
+  if (params?.offset != null) q.set('offset', String(params.offset));
+  if (params?.action) q.set('action', params.action);
+  if (params?.userId) q.set('userId', params.userId);
+  if (params?.dateRange) q.set('dateRange', params.dateRange);
+
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<RawAuditLogEntry[]>(
+    `/admin/audit${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapAuditLogEntry),
+    meta: result.meta,
+  };
+}
+
+export async function adminGetAuditActions(): Promise<string[]> {
+  const data = await apiFetch<string[]>('/admin/audit/actions');
+  return data ?? [];
+}
+
+export async function adminGetAuditUsers(): Promise<[string, string][]> {
+  const data = await apiFetch<[string, string][]>('/admin/audit/users');
+  return data ?? [];
 }

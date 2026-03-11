@@ -1,9 +1,9 @@
 /**
- * PW-042-B | Хук для раздела «Мониторинг».
- * Health — реальный API (PW-042-C). Ошибки — реальный API (PW-042-B). Аудит — моки (до PW-042-D).
+ * PW-042-D | Хук для раздела «Мониторинг».
+ * Health — реальный API (PW-042-C). Ошибки — реальный API (PW-042-B). Аудит — реальный API (PW-042-D).
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type {
   SystemHealth,
   ErrorLogEntry,
@@ -13,27 +13,16 @@ import type {
   AuditFilters,
   LoadMoreState,
 } from './monitoring.types';
-import { MOCK_AUDIT_ENTRIES } from './monitoring.mocks';
 import {
   adminGetSystemHealth,
   adminGetErrors,
   adminGetErrorStats,
   adminResolveError,
+  adminGetAudit,
+  adminGetAuditActions,
+  adminGetAuditUsers,
 } from '@/lib/api-client';
-import { DATE_RANGE_MS, DEFAULT_PER_PAGE } from './monitoring.utils';
-
-/** Имитация задержки сети (для моков аудита) */
-function delay(ms = 600): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/** Фильтрация по дате (для моков аудита) */
-function matchesDateRange(timestamp: string, dateRange: string): boolean {
-  if (dateRange === 'all') return true;
-  const maxMs = DATE_RANGE_MS[dateRange];
-  if (!maxMs) return true;
-  return Date.now() - new Date(timestamp).getTime() <= maxMs;
-}
+import { DEFAULT_PER_PAGE } from './monitoring.utils';
 
 export function useMonitoringData() {
   // --- Общее ---
@@ -58,8 +47,9 @@ export function useMonitoringData() {
   });
   const [errorsLoading, setErrorsLoading] = useState(false);
 
-  // --- Аудит (моки — до PW-042-D) ---
+  // --- Аудит (реальный API — PW-042-D) ---
   const [audit, setAudit] = useState<AuditLogEntry[]>([]);
+  const [auditTotal, setAuditTotal] = useState(0);
   const [auditFilters, setAuditFilters] = useState<AuditFilters>({
     action: null,
     userId: null,
@@ -69,6 +59,11 @@ export function useMonitoringData() {
     visible: DEFAULT_PER_PAGE,
     perPage: DEFAULT_PER_PAGE,
   });
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [uniqueAuditActions, setUniqueAuditActions] = useState<string[]>([]);
+  const [uniqueAuditUsers, setUniqueAuditUsers] = useState<[string, string][]>(
+    []
+  );
 
   // --- Загрузка ошибок (серверная фильтрация + пагинация) ---
   const fetchErrors = useCallback(
@@ -103,6 +98,39 @@ export function useMonitoringData() {
     []
   );
 
+  // --- Загрузка аудита (серверная фильтрация + пагинация) ---
+  const fetchAudit = useCallback(
+    async (
+      filters: AuditFilters,
+      limit: number,
+      offset: number,
+      append: boolean
+    ) => {
+      setAuditLoading(true);
+      try {
+        const result = await adminGetAudit({
+          limit,
+          offset,
+          action: filters.action ?? undefined,
+          userId: filters.userId ?? undefined,
+          dateRange:
+            filters.dateRange !== 'all' ? filters.dateRange : undefined,
+        });
+        if (append) {
+          setAudit(prev => [...prev, ...result.data]);
+        } else {
+          setAudit(result.data);
+        }
+        setAuditTotal(result.meta.total ?? 0);
+      } catch {
+        setError('Не удалось загрузить аудит');
+      } finally {
+        setAuditLoading(false);
+      }
+    },
+    []
+  );
+
   // --- Первоначальная загрузка ---
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -126,9 +154,21 @@ export function useMonitoringData() {
       });
       setErrorFilters({ level: null, resolved: null, dateRange: 'all' });
 
-      // Аудит — моки (до PW-042-D)
-      await delay(200);
-      setAudit(MOCK_AUDIT_ENTRIES);
+      // Аудит — реальный API (PW-042-D)
+      const [auditResult, actions, users] = await Promise.all([
+        adminGetAudit({ limit: DEFAULT_PER_PAGE, offset: 0 }),
+        adminGetAuditActions(),
+        adminGetAuditUsers(),
+      ]);
+      setAudit(auditResult.data);
+      setAuditTotal(auditResult.meta.total ?? 0);
+      setUniqueAuditActions(actions);
+      setUniqueAuditUsers(users);
+      setAuditLoadMore({
+        visible: DEFAULT_PER_PAGE,
+        perPage: DEFAULT_PER_PAGE,
+      });
+      setAuditFilters({ action: null, userId: null, dateRange: 'all' });
     } catch {
       setError('Не удалось загрузить данные мониторинга');
     } finally {
@@ -140,38 +180,6 @@ export function useMonitoringData() {
     loadAll();
   }, [loadAll]);
 
-  // --- Фильтрация аудита (мемоизированная, клиентская — моки) ---
-  const filteredAudit = useMemo(
-    () =>
-      audit.filter(a => {
-        if (auditFilters.action && a.action !== auditFilters.action)
-          return false;
-        if (auditFilters.userId && a.userId !== auditFilters.userId)
-          return false;
-        return matchesDateRange(a.timestamp, auditFilters.dateRange);
-      }),
-    [audit, auditFilters]
-  );
-
-  const visibleAudit = useMemo(
-    () => filteredAudit.slice(0, auditLoadMore.visible),
-    [filteredAudit, auditLoadMore.visible]
-  );
-
-  // --- Уникальные значения для фильтров аудита ---
-  const uniqueAuditActions = useMemo(() => {
-    const set = new Set(audit.map(e => e.action));
-    return Array.from(set).sort();
-  }, [audit]);
-
-  const uniqueAuditUsers = useMemo(() => {
-    const map = new Map<string, string>();
-    audit.forEach(e => {
-      if (e.userId && e.userName) map.set(e.userId, e.userName);
-    });
-    return Array.from(map.entries());
-  }, [audit]);
-
   // --- Действия: фильтры ошибок (серверная фильтрация) ---
   const handleSetErrorFilters = useCallback(
     (f: ErrorFilters) => {
@@ -182,10 +190,15 @@ export function useMonitoringData() {
     [fetchErrors, errorLoadMore.perPage]
   );
 
-  const handleSetAuditFilters = useCallback((f: AuditFilters) => {
-    setAuditFilters(f);
-    setAuditLoadMore(prev => ({ ...prev, visible: prev.perPage }));
-  }, []);
+  // --- Действия: фильтры аудита (серверная фильтрация) ---
+  const handleSetAuditFilters = useCallback(
+    (f: AuditFilters) => {
+      setAuditFilters(f);
+      setAuditLoadMore(prev => ({ ...prev, visible: prev.perPage }));
+      fetchAudit(f, auditLoadMore.perPage, 0, false);
+    },
+    [fetchAudit, auditLoadMore.perPage]
+  );
 
   // --- Действия: load more ---
   const loadMoreErrors = useCallback(() => {
@@ -195,11 +208,10 @@ export function useMonitoringData() {
   }, [errorLoadMore, errorFilters, errors.length, fetchErrors]);
 
   const loadMoreAudit = useCallback(() => {
-    setAuditLoadMore(prev => ({
-      ...prev,
-      visible: prev.visible + prev.perPage,
-    }));
-  }, []);
+    const newVisible = auditLoadMore.visible + auditLoadMore.perPage;
+    setAuditLoadMore(prev => ({ ...prev, visible: newVisible }));
+    fetchAudit(auditFilters, auditLoadMore.perPage, audit.length, true);
+  }, [auditLoadMore, auditFilters, audit.length, fetchAudit]);
 
   // --- Действия: изменение perPage ---
   const setErrorPerPage = useCallback(
@@ -210,9 +222,13 @@ export function useMonitoringData() {
     [errorFilters, fetchErrors]
   );
 
-  const setAuditPerPage = useCallback((perPage: number) => {
-    setAuditLoadMore({ visible: perPage, perPage });
-  }, []);
+  const setAuditPerPage = useCallback(
+    (perPage: number) => {
+      setAuditLoadMore({ visible: perPage, perPage });
+      fetchAudit(auditFilters, perPage, 0, false);
+    },
+    [auditFilters, fetchAudit]
+  );
 
   // --- Действия: resolve (реальный API) ---
   const resolveError = useCallback(async (id: string) => {
@@ -228,7 +244,7 @@ export function useMonitoringData() {
 
   return {
     // Общее
-    loading: loading || errorsLoading,
+    loading: loading || errorsLoading || auditLoading,
     error,
     refresh: loadAll,
 
@@ -248,14 +264,14 @@ export function useMonitoringData() {
     resolveError,
 
     // Аудит
-    audit: visibleAudit,
-    auditTotal: filteredAudit.length,
+    audit,
+    auditTotal,
     auditFilters,
     setAuditFilters: handleSetAuditFilters,
     auditLoadMore,
     loadMoreAudit,
     setAuditPerPage,
-    hasMoreAudit: auditLoadMore.visible < filteredAudit.length,
+    hasMoreAudit: audit.length < auditTotal,
     uniqueAuditActions,
     uniqueAuditUsers,
   };

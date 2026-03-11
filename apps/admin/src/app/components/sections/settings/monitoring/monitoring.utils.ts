@@ -12,13 +12,6 @@ export function formatDate(iso: string): string {
   });
 }
 
-/** Диапазоны фильтрации по дате (мс) */
-export const DATE_RANGE_MS: Record<string, number> = {
-  '24h': 86_400_000,
-  '7d': 604_800_000,
-  '30d': 2_592_000_000,
-};
-
 /** Варианты количества записей на подгрузку */
 export const PER_PAGE_OPTIONS = [10, 25, 50] as const;
 

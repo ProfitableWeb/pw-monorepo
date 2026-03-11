@@ -5,6 +5,7 @@ PW-027/PW-038/PW-041 | Центральный реэкспорт моделей.
 
 from src.models.article import Article
 from src.models.article_revision import ArticleRevision
+from src.models.audit_log import AuditLog
 from src.models.base import Base
 from src.models.category import Category
 from src.models.comment import Comment
@@ -26,6 +27,7 @@ __all__ = [
     "ArticleRevision",
     "SystemSettings",
     "Comment",
+    "AuditLog",
     "ErrorLog",
     "MediaFile",
     "article_media",
