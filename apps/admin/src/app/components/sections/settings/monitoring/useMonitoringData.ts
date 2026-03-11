@@ -202,16 +202,12 @@ export function useMonitoringData() {
 
   // --- Действия: load more ---
   const loadMoreErrors = useCallback(() => {
-    const newVisible = errorLoadMore.visible + errorLoadMore.perPage;
-    setErrorLoadMore(prev => ({ ...prev, visible: newVisible }));
     fetchErrors(errorFilters, errorLoadMore.perPage, errors.length, true);
-  }, [errorLoadMore, errorFilters, errors.length, fetchErrors]);
+  }, [errorLoadMore.perPage, errorFilters, errors.length, fetchErrors]);
 
   const loadMoreAudit = useCallback(() => {
-    const newVisible = auditLoadMore.visible + auditLoadMore.perPage;
-    setAuditLoadMore(prev => ({ ...prev, visible: newVisible }));
     fetchAudit(auditFilters, auditLoadMore.perPage, audit.length, true);
-  }, [auditLoadMore, auditFilters, audit.length, fetchAudit]);
+  }, [auditLoadMore.perPage, auditFilters, audit.length, fetchAudit]);
 
   // --- Действия: изменение perPage ---
   const setErrorPerPage = useCallback(

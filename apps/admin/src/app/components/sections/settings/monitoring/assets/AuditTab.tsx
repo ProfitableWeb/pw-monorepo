@@ -3,6 +3,7 @@
  */
 
 import { Fragment, useState } from 'react';
+import { ScrollText } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -244,11 +245,21 @@ export function AuditTab({
               </TableHeader>
               <TableBody>
                 {entries.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className='text-center py-8'>
-                      <p className='text-sm text-muted-foreground'>
-                        Записей не найдено
-                      </p>
+                  <TableRow className='hover:bg-transparent'>
+                    <TableCell colSpan={6} className='py-20'>
+                      <div className='flex flex-col items-center justify-center gap-3 text-muted-foreground'>
+                        <div className='flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10'>
+                          <ScrollText className='h-6 w-6 text-emerald-500' />
+                        </div>
+                        <div className='text-center'>
+                          <p className='text-sm font-medium'>
+                            Записей не найдено
+                          </p>
+                          <p className='mt-1 text-xs'>
+                            Действия пользователей будут отображаться здесь
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (

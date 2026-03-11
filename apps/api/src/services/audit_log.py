@@ -63,7 +63,11 @@ def get_entries(
     if action:
         query = query.filter(AuditLog.action == action)
     if user_id:
-        query = query.filter(AuditLog.user_id == uuid.UUID(user_id))
+        try:
+            uid = uuid.UUID(user_id)
+        except ValueError:
+            return [], 0
+        query = query.filter(AuditLog.user_id == uid)
     if date_range and date_range in _DATE_RANGE_MAP:
         cutoff = datetime.now(timezone.utc) - _DATE_RANGE_MAP[date_range]
         query = query.filter(AuditLog.timestamp >= cutoff)
