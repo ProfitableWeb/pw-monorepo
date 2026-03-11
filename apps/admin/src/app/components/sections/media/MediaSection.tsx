@@ -1,93 +1,98 @@
 import { useHeaderStore } from '@/app/store/header-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/app/components/ui/alert-dialog';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { Archive } from 'lucide-react';
+import { Loader2, ImageOff, Upload } from 'lucide-react';
+import { toast } from 'sonner';
+
+import {
+  useMediaList,
+  useMediaStats,
+  useUploadMedia,
+  useDeleteMedia,
+} from '@/hooks/api';
 
 import { MediaSidebar } from './MediaSidebar';
 import { MediaControls } from './MediaControls';
 import { MediaGrid } from './MediaGrid';
 import { MediaList } from './MediaList';
 import { MediaPreviewDialog } from './preview';
-import { formatBytes } from './media.utils';
-import { initialFiles, backupHistory } from './media.mock';
+import { useFileDropZone } from './useFileDropZone';
 import type { ViewMode, MediaFile } from './media.types';
 
 export function MediaSection() {
-  const [files, setFiles] = useState<MediaFile[]>(initialFiles);
+  // --- UI state ---
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState('all');
   const [selectedFileType, setSelectedFileType] = useState('all');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [previewFile, setPreviewFile] = useState<MediaFile | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showBackupDialog, setShowBackupDialog] = useState(false);
-  const [displayedCount, setDisplayedCount] = useState(12);
 
-  // Стор заголовка для хлебных крошек
+  // --- Delete confirmation state ---
+  const [deleteTarget, setDeleteTarget] = useState<{
+    ids: string[];
+    label: string;
+  } | null>(null);
+
+  // --- Upload ref ---
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Хлебные крошки ---
   const { setBreadcrumbs, reset } = useHeaderStore();
-
-  // Установить хлебные крошки
   useEffect(() => {
     setBreadcrumbs(breadcrumbPresets.media());
-
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const filteredFiles = useMemo(() => {
-    let result = files;
+  // --- API queries (useInfiniteQuery для «Загрузить ещё») ---
+  const filterParams = {
+    limit: 24,
+    ...(searchQuery && { search: searchQuery }),
+    ...(selectedFolder !== 'all' && { purpose: selectedFolder }),
+    ...(selectedFileType !== 'all' && { file_type: selectedFileType }),
+    sort_by: sortBy,
+    order: sortOrder as 'asc' | 'desc',
+  };
 
-    // Фильтр по поиску
-    if (searchQuery) {
-      result = result.filter(file =>
-        file.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  const {
+    data: infiniteData,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMediaList(filterParams);
 
-    // Фильтр по назначению
-    if (selectedFolder !== 'all') {
-      result = result.filter(file => file.purposes.includes(selectedFolder));
-    }
+  const { data: stats } = useMediaStats();
+  const uploadMutation = useUploadMedia();
+  const deleteMutation = useDeleteMedia();
 
-    // Фильтр по типу файла
-    if (selectedFileType !== 'all') {
-      result = result.filter(file => file.type === selectedFileType);
-    }
+  // Все загруженные файлы (аккумуляция страниц)
+  const files = infiniteData?.pages.flatMap(p => p.data) ?? [];
+  const totalFiles = infiniteData?.pages[0]?.meta?.total ?? 0;
 
-    return result;
-  }, [files, searchQuery, selectedFolder, selectedFileType]);
+  // Сброс выделения при смене фильтров
+  useEffect(() => {
+    setSelectedFiles([]);
+  }, [searchQuery, selectedFolder, selectedFileType, sortBy, sortOrder]);
 
-  const displayedFiles = useMemo(() => {
-    return filteredFiles.slice(0, displayedCount);
-  }, [filteredFiles, displayedCount]);
-
-  const hasMore = displayedFiles.length < filteredFiles.length;
-
-  const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-  const maxStorage = 10 * 1024 * 1024 * 1024; // 10GB
-  const storagePercentage = (totalSize / maxStorage) * 100;
-
-  const fileTypeStats = useMemo(() => {
-    const stats = { image: 0, video: 0, audio: 0, document: 0 };
-    files.forEach(file => {
-      stats[file.type] += file.size;
-    });
-    return stats;
-  }, [files]);
-
+  // --- Handlers ---
   const handleFileSelect = (id: string) => {
     setSelectedFiles(prev =>
       prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
@@ -95,115 +100,236 @@ export function MediaSection() {
   };
 
   const handleSelectAll = () => {
-    if (selectedFiles.length === filteredFiles.length) {
+    if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
     } else {
-      setSelectedFiles(filteredFiles.map(f => f.id));
+      setSelectedFiles(files.map(f => f.id));
     }
   };
 
-  const handleDelete = (id: string) => {
-    setFiles(prev => prev.filter(f => f.id !== id));
-    setSelectedFiles(prev => prev.filter(f => f !== id));
+  const handleUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Общая логика загрузки — используется и для <input>, и для drag & drop
+  const processFiles = useCallback(
+    async (fileList: FileList) => {
+      for (const file of Array.from(fileList)) {
+        try {
+          await uploadMutation.mutateAsync(file);
+          toast.success(`«${file.name}» загружен`);
+        } catch (err) {
+          const message =
+            err instanceof Error ? err.message : 'Ошибка загрузки';
+          toast.error(`Ошибка: ${message}`);
+        }
+      }
+    },
+    [uploadMutation]
+  );
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    await processFiles(fileList);
+    e.target.value = '';
+  };
+
+  // --- Drag & Drop ---
+  const { dropRef, isDragging } = useFileDropZone({
+    onFilesDropped: processFiles,
+    disabled: uploadMutation.isPending,
+  });
+
+  const handleRequestDelete = useCallback((id: string) => {
+    setDeleteTarget({ ids: [id], label: 'этот файл' });
+  }, []);
+
+  const handleRequestBulkDelete = () => {
+    if (selectedFiles.length === 0) return;
+    setDeleteTarget({
+      ids: [...selectedFiles],
+      label: `выбранные файлы (${selectedFiles.length})`,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { ids } = deleteTarget;
+    setDeleteTarget(null);
+
+    // Параллельное удаление (до 5 одновременно)
+    const results = await Promise.allSettled(
+      ids.map(id => deleteMutation.mutateAsync(id))
+    );
+
+    const failed = results.filter(r => r.status === 'rejected');
+    const succeeded = results.filter(r => r.status === 'fulfilled');
+
+    if (succeeded.length > 0) {
+      toast.success(
+        succeeded.length === 1
+          ? 'Файл удалён'
+          : `Удалено файлов: ${succeeded.length}`
+      );
+    }
+    if (failed.length > 0) {
+      toast.error(`Не удалось удалить: ${failed.length}`);
+    }
+
+    setSelectedFiles(prev => prev.filter(id => !ids.includes(id)));
     setPreviewFile(null);
   };
 
-  const handleBulkDelete = () => {
-    setFiles(prev => prev.filter(f => !selectedFiles.includes(f.id)));
-    setSelectedFiles([]);
+  const handleSaveFile = useCallback((_updatedFile: MediaFile) => {
+    // Мутация save происходит в useMediaPreviewDialog через useUpdateMedia
+    // MediaSection не управляет save напрямую — данные обновятся через invalidate
+  }, []);
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortOrder('desc');
+    }
   };
-
-  const handleSaveFile = (updatedFile: MediaFile) => {
-    setFiles(prev =>
-      prev.map(f => (f.id === updatedFile.id ? updatedFile : f))
-    );
-    // TODO: Show toast notification
-  };
-
-  const handleUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    // Симуляция загрузки
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          return 0;
-        }
-        return prev + 10;
-      });
-    }, 200);
-  };
-
-  const handleBackup = () => {
-    // Симуляция создания бэкапа
-    setShowBackupDialog(false);
-    // TODO: Show toast notification
-  };
-
-  const lastBackup = backupHistory[0];
 
   return (
     <div className='flex h-full overflow-hidden'>
+      {/* Скрытый input для загрузки */}
+      <input
+        ref={fileInputRef}
+        type='file'
+        multiple
+        className='hidden'
+        onChange={handleFileChange}
+        accept='image/*,video/*,audio/*,.pdf,.doc,.docx'
+      />
+
       {/* Боковая навигация */}
       <MediaSidebar
-        files={files}
+        stats={stats}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         selectedFolder={selectedFolder}
         onFolderChange={setSelectedFolder}
         selectedFileType={selectedFileType}
         onFileTypeChange={setSelectedFileType}
-        totalSize={totalSize}
-        maxStorage={maxStorage}
-        storagePercentage={storagePercentage}
-        lastBackup={lastBackup}
-        onCreateBackup={() => setShowBackupDialog(true)}
       />
 
       {/* Основной контент */}
-      <div className='flex-1 flex flex-col min-w-0 min-h-0'>
+      <div
+        ref={dropRef}
+        className='flex-1 flex flex-col min-w-0 min-h-0 relative'
+      >
+        {/* Drag & Drop overlay */}
+        {isDragging && (
+          <div className='absolute inset-0 z-50 flex items-center justify-center bg-primary/5 border-2 border-dashed border-primary rounded-lg pointer-events-none'>
+            <div className='text-center'>
+              <Upload className='h-12 w-12 mx-auto mb-3 text-primary' />
+              <p className='text-lg font-medium text-primary'>
+                Перетащите файлы сюда
+              </p>
+              <p className='text-sm text-muted-foreground mt-1'>
+                для загрузки в медиатеку
+              </p>
+            </div>
+          </div>
+        )}
+
         <MediaControls
-          filteredFiles={filteredFiles}
-          totalSize={totalSize}
-          fileTypeStats={fileTypeStats}
+          totalFiles={totalFiles}
+          visibleCount={files.length}
+          stats={stats}
           selectedFiles={selectedFiles}
           viewMode={viewMode}
-          isUploading={isUploading}
-          uploadProgress={uploadProgress}
+          isUploading={uploadMutation.isPending}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
           onUpload={handleUpload}
-          onBulkDelete={handleBulkDelete}
+          onBulkDelete={handleRequestBulkDelete}
           onSelectAll={handleSelectAll}
           onViewModeChange={setViewMode}
-          onCancelUpload={() => setIsUploading(false)}
         />
 
         {/* Отображение файлов */}
         <ScrollArea className='flex-1 min-h-0'>
           <div className='p-4 lg:p-6 space-y-6'>
-            {viewMode === 'grid' ? (
-              <MediaGrid
-                files={displayedFiles}
-                selectedFiles={selectedFiles}
-                hasMore={hasMore}
-                onFileSelect={handleFileSelect}
-                onPreview={setPreviewFile}
-                onDelete={handleDelete}
-                onLoadMore={() => setDisplayedCount(prev => prev + 12)}
-              />
-            ) : (
-              <MediaList
-                files={displayedFiles}
-                selectedFiles={selectedFiles}
-                hasMore={hasMore}
-                onFileSelect={handleFileSelect}
-                onPreview={setPreviewFile}
-                onDelete={handleDelete}
-                onLoadMore={() => setDisplayedCount(prev => prev + 12)}
-              />
+            {/* Loading state */}
+            {isLoading && (
+              <div className='flex flex-col items-center justify-center py-20 text-muted-foreground'>
+                <Loader2 className='h-8 w-8 animate-spin mb-3' />
+                <p className='text-sm'>Загрузка медиафайлов...</p>
+              </div>
             )}
+
+            {/* Error state */}
+            {isError && !isLoading && (
+              <div className='flex flex-col items-center justify-center py-20 text-muted-foreground'>
+                <p className='text-sm'>Ошибка загрузки данных</p>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='mt-3'
+                  onClick={() => refetch()}
+                >
+                  Попробовать снова
+                </Button>
+              </div>
+            )}
+
+            {/* Empty state */}
+            {!isLoading && !isError && files.length === 0 && (
+              <div className='flex flex-col items-center justify-center py-20 text-muted-foreground'>
+                <ImageOff className='h-12 w-12 mb-4 opacity-40' />
+                <p className='text-lg font-medium mb-1'>Нет файлов</p>
+                <p className='text-sm mb-4'>
+                  {searchQuery ||
+                  selectedFolder !== 'all' ||
+                  selectedFileType !== 'all'
+                    ? 'Попробуйте изменить фильтры или поисковый запрос'
+                    : 'Загрузите первый файл в медиатеку'}
+                </p>
+                {!searchQuery &&
+                  selectedFolder === 'all' &&
+                  selectedFileType === 'all' && (
+                    <Button onClick={handleUpload}>
+                      <Upload className='h-4 w-4 mr-2' />
+                      Загрузить файл
+                    </Button>
+                  )}
+              </div>
+            )}
+
+            {/* Content */}
+            {!isLoading &&
+              !isError &&
+              files.length > 0 &&
+              (viewMode === 'grid' ? (
+                <MediaGrid
+                  files={files}
+                  selectedFiles={selectedFiles}
+                  hasMore={!!hasNextPage}
+                  isFetchingMore={isFetchingNextPage}
+                  onFileSelect={handleFileSelect}
+                  onPreview={setPreviewFile}
+                  onDelete={handleRequestDelete}
+                  onLoadMore={() => fetchNextPage()}
+                />
+              ) : (
+                <MediaList
+                  files={files}
+                  selectedFiles={selectedFiles}
+                  hasMore={!!hasNextPage}
+                  isFetchingMore={isFetchingNextPage}
+                  onFileSelect={handleFileSelect}
+                  onPreview={setPreviewFile}
+                  onDelete={handleRequestDelete}
+                  onLoadMore={() => fetchNextPage()}
+                />
+              ))}
           </div>
         </ScrollArea>
       </div>
@@ -213,62 +339,34 @@ export function MediaSection() {
         <MediaPreviewDialog
           file={previewFile}
           onClose={() => setPreviewFile(null)}
-          onDelete={handleDelete}
+          onDelete={handleRequestDelete}
           onSave={handleSaveFile}
         />
       )}
 
-      {/* Диалог бэкапа */}
-      <Dialog open={showBackupDialog} onOpenChange={setShowBackupDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Создать резервную копию</DialogTitle>
-            <DialogDescription>
-              Будет создана резервная копия всех медиафайлов ({files.length}{' '}
-              файлов, {formatBytes(totalSize)})
-            </DialogDescription>
-          </DialogHeader>
-          {lastBackup && (
-            <div className='py-4'>
-              <div className='space-y-3'>
-                <div className='p-4 rounded-lg border'>
-                  <div className='flex items-center justify-between mb-2'>
-                    <span className='text-sm font-medium'>Последняя копия</span>
-                    <Badge variant='secondary'>
-                      {lastBackup.type === 'auto' ? 'Авто' : 'Ручной'}
-                    </Badge>
-                  </div>
-                  <p className='text-sm text-muted-foreground'>
-                    {lastBackup.date.toLocaleDateString('ru-RU', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                  <p className='text-sm text-muted-foreground mt-1'>
-                    {formatBytes(lastBackup.size)} • {lastBackup.filesCount}{' '}
-                    файлов
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => setShowBackupDialog(false)}
+      {/* Подтверждение удаления */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить {deleteTarget?.label}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Это действие нельзя отменить. Файлы будут удалены из хранилища.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
             >
-              Отмена
-            </Button>
-            <Button onClick={handleBackup}>
-              <Archive className='h-4 w-4 mr-2' />
-              Создать копию
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              Удалить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -51,6 +51,19 @@ class Settings(BaseSettings):
     # Файловое хранилище (ADR-003)
     upload_dir: str = "~/profitableweb/uploads"
     upload_base_url: str = "/uploads"
+    storage_backend: str = "local"  # "local" | "s3"
+
+    # S3 (Cloud.ru Evolution Object Storage) — PW-041-C
+    s3_endpoint: str = ""
+    s3_bucket: str = ""
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    s3_region: str = ""
+    s3_public_endpoint: str = ""  # для публичных URL (Cloud.ru: global.s3.cloud.ru)
+
+    # Лимиты загрузки (PW-041)
+    max_upload_size_image: int = 20 * 1024 * 1024  # 20 MB
+    max_upload_size_other: int = 50 * 1024 * 1024  # 50 MB
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

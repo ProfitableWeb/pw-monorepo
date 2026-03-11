@@ -2,48 +2,47 @@ import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { MediaImageWithLoader } from '../../MediaImageWithLoader';
-import { Copy, Upload, Image as ImageIcon } from 'lucide-react';
-import type { FileType, MediaFile } from '../../media.types';
+import { Copy, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
+import type { MediaFile } from '../../media.types';
 import {
   formatBytes,
   getFileIcon,
   handleCopyUrl,
   formatDuration,
+  pluralize,
 } from '../../media.utils';
 
 interface MediaPreviewPanelProps {
   file: MediaFile;
+  isReplacing?: boolean;
   onReplaceFile: () => void;
-  formatBytes?: (bytes: number) => string;
-  formatDuration?: (seconds: number) => string;
-  getFileIcon?: (type: FileType) => any;
-  handleCopyUrl?: (url: string) => void;
 }
 
 /** Левая колонка диалога: превью, URL, размеры, информация о файле */
 export function MediaPreviewPanel({
   file,
+  isReplacing,
   onReplaceFile,
-  formatBytes: formatBytesProp,
-  formatDuration: formatDurationProp,
-  getFileIcon: getFileIconProp,
-  handleCopyUrl: handleCopyUrlProp,
 }: MediaPreviewPanelProps) {
-  const fmtBytes = formatBytesProp || formatBytes;
-  const fmtDuration = formatDurationProp || formatDuration;
-  const fileIcon = getFileIconProp || getFileIcon;
-  const copyUrl = handleCopyUrlProp || handleCopyUrl;
-
-  const Icon = fileIcon(file.type);
+  const Icon = getFileIcon(file.type);
 
   return (
     <div className='space-y-4'>
       <div>
         <div className='flex items-center justify-between mb-3'>
           <h3 className='font-medium'>Предпросмотр</h3>
-          <Button size='sm' variant='outline' onClick={onReplaceFile}>
-            <Upload className='h-3.5 w-3.5 mr-1.5' />
-            Заменить файл
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={onReplaceFile}
+            disabled={isReplacing}
+          >
+            {isReplacing ? (
+              <Loader2 className='h-3.5 w-3.5 mr-1.5 animate-spin' />
+            ) : (
+              <Upload className='h-3.5 w-3.5 mr-1.5' />
+            )}
+            {isReplacing ? 'Замена...' : 'Заменить файл'}
           </Button>
         </div>
         <div className='rounded-lg border overflow-hidden bg-muted/30 max-h-[500px] flex items-center justify-center'>
@@ -68,7 +67,11 @@ export function MediaPreviewPanel({
         </Label>
         <div className='flex gap-2'>
           <Input value={file.url} readOnly className='text-sm font-mono' />
-          <Button size='sm' variant='outline' onClick={() => copyUrl(file.url)}>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={() => handleCopyUrl(file.url)}
+          >
             <Copy className='h-4 w-4' />
           </Button>
         </div>
@@ -82,9 +85,9 @@ export function MediaPreviewPanel({
             Доступные размеры
           </h3>
           <div className='space-y-2'>
-            {file.resizes.map((resize, index) => (
+            {file.resizes.map(resize => (
               <div
-                key={index}
+                key={resize.url}
                 className='flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-muted/50 transition-colors'
               >
                 <div>
@@ -95,12 +98,12 @@ export function MediaPreviewPanel({
                 </div>
                 <div className='flex items-center gap-3'>
                   <span className='text-sm text-muted-foreground'>
-                    {fmtBytes(resize.size)}
+                    {formatBytes(resize.size)}
                   </span>
                   <Button
                     size='sm'
                     variant='ghost'
-                    onClick={() => copyUrl(resize.url)}
+                    onClick={() => handleCopyUrl(resize.url)}
                   >
                     <Copy className='h-3.5 w-3.5' />
                   </Button>
@@ -117,7 +120,7 @@ export function MediaPreviewPanel({
         <div className='grid grid-cols-2 gap-3'>
           <div className='p-3 border rounded-lg bg-card'>
             <Label className='text-xs text-muted-foreground'>Размер</Label>
-            <p className='text-sm font-medium mt-1'>{fmtBytes(file.size)}</p>
+            <p className='text-sm font-medium mt-1'>{formatBytes(file.size)}</p>
           </div>
           <div className='p-3 border rounded-lg bg-card'>
             <Label className='text-xs text-muted-foreground'>Назначения</Label>
@@ -143,7 +146,7 @@ export function MediaPreviewPanel({
                 Длительность
               </Label>
               <p className='text-sm font-medium mt-1'>
-                {fmtDuration(file.duration)}
+                {formatDuration(file.duration)}
               </p>
             </div>
           )}
@@ -158,7 +161,8 @@ export function MediaPreviewPanel({
               Использований
             </Label>
             <p className='text-sm font-medium mt-1'>
-              {file.usedIn} {file.usedIn === 1 ? 'статья' : 'статей'}
+              {file.usedIn}{' '}
+              {pluralize(file.usedIn, 'статья', 'статьи', 'статей')}
             </p>
           </div>
         </div>

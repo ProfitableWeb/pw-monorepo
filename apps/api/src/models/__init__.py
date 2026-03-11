@@ -1,5 +1,5 @@
 """
-PW-027/PW-038 | Центральный реэкспорт моделей. Нужен для Alembic autogenerate —
+PW-027/PW-038/PW-041 | Центральный реэкспорт моделей. Нужен для Alembic autogenerate —
 без этого импорта alembic не увидит таблицы при генерации миграций.
 """
 
@@ -8,6 +8,7 @@ from src.models.article_revision import ArticleRevision
 from src.models.base import Base
 from src.models.category import Category
 from src.models.comment import Comment
+from src.models.media_file import MediaFile, article_media
 from src.models.oauth_link import UserOAuthLink
 from src.models.system_settings import SystemSettings
 from src.models.tag import Tag, article_tags
@@ -24,4 +25,6 @@ __all__ = [
     "ArticleRevision",
     "SystemSettings",
     "Comment",
+    "MediaFile",
+    "article_media",
 ]

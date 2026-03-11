@@ -32,6 +32,7 @@ import { NotificationSettings } from './NotificationSettings';
 import { IntegrationSettings } from './IntegrationSettings';
 import { AppearanceSettings } from './AppearanceSettings';
 import { DeveloperSettings } from './DeveloperSettings';
+import { StorageSettings } from './storage';
 
 export function SettingsPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();
@@ -92,6 +93,8 @@ export function SettingsPage() {
             onChangeDetected={() => setHasUnsavedChanges(true)}
           />
         );
+      case 'storage':
+        return <StorageSettings />;
       case 'appearance':
         return (
           <AppearanceSettings

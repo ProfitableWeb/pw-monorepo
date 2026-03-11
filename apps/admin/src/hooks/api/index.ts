@@ -17,3 +17,12 @@ export {
 export { useAdminTags, useCreateTag } from './useAdminTags';
 export { useAdminCategories } from './useAdminCategories';
 export { useSystemSettings, useUpdateSettings } from './useSystemSettings';
+export {
+  useMediaList,
+  useMedia,
+  useMediaStats,
+  useUploadMedia,
+  useReplaceMedia,
+  useUpdateMedia,
+  useDeleteMedia,
+} from './useMedia';

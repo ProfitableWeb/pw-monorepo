@@ -14,6 +14,7 @@ from src.models.base import Base, TimestampMixin, UUIDMixin
 if TYPE_CHECKING:
     from src.models.article import Article
     from src.models.comment import Comment
+    from src.models.media_file import MediaFile
     from src.models.oauth_link import UserOAuthLink
 
 
@@ -44,6 +45,9 @@ class User(UUIDMixin, TimestampMixin, Base):
     comments: Mapped[list["Comment"]] = relationship(back_populates="user")
     oauth_links: Mapped[list["UserOAuthLink"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
+    )
+    media_files: Mapped[list["MediaFile"]] = relationship(
+        back_populates="uploaded_by"
     )
 
     def __repr__(self) -> str:

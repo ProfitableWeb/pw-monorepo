@@ -38,6 +38,39 @@ export interface MediaFile {
     size: number;
     url: string;
   }>;
+  // API-поля (PW-041-B)
+  storageKey?: string;
+  mimeType?: string;
+  slug?: string;
+  uploadedById?: string;
+  updatedAt?: Date;
+}
+
+/** Параметры запроса списка медиафайлов */
+export interface MediaListParams {
+  page?: number;
+  limit?: number;
+  file_type?: string;
+  purpose?: string;
+  search?: string;
+  sort_by?: string;
+  order?: 'asc' | 'desc';
+}
+
+/** Payload обновления медиафайла */
+export interface MediaUpdatePayload {
+  slug?: string;
+  alt?: string;
+  caption?: string;
+  purposes?: string[];
+}
+
+/** Ответ API со статистикой медиатеки */
+export interface MediaStatsResponse {
+  totalCount: number;
+  totalSize: number;
+  byType: Record<string, number>;
+  allPurposes: string[];
 }
 
 /** Резервная копия */
