@@ -2,6 +2,8 @@
 
 import uuid
 
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -19,9 +21,9 @@ router = APIRouter(prefix="/errors", tags=["admin-errors"])
 def get_errors(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    level: str | None = Query(None),
+    level: Literal["warning", "error", "critical"] | None = Query(None),
     resolved: bool | None = Query(None),
-    date_range: str | None = Query(None, alias="dateRange"),
+    date_range: Literal["24h", "7d", "30d"] | None = Query(None, alias="dateRange"),
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[ErrorLogResponse]]:

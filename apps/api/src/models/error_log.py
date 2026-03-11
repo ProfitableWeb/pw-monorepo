@@ -16,7 +16,7 @@ class ErrorLog(Base, UUIDMixin):
     __tablename__ = "error_logs"
 
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, default=func.now(), server_default=func.now(), index=True
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), index=True
     )
     level: Mapped[str] = mapped_column(String(20))  # warning | error | critical
     event: Mapped[str] = mapped_column(String(255))  # тип: unhandled_exception и т.д.
