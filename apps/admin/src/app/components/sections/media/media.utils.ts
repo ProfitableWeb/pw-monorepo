@@ -2,14 +2,7 @@ import { Image as ImageIcon, Video, Music, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import type { FileType } from './media.types';
 
-/** Форматирование размера файла в человекочитаемый вид */
-export const formatBytes = (bytes: number): string => {
-  if (bytes === 0) return '0 Б';
-  const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const value = bytes / Math.pow(1024, i);
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[i]}`;
-};
+export { formatBytes } from '@/app/components/common';
 
 /** Форматирование длительности в минуты:секунды */
 export const formatDuration = (seconds: number) => {
@@ -57,15 +50,25 @@ export const handleCopyUrl = async (url: string) => {
   }
 };
 
-/** Скачивание файла по URL */
-export const downloadFile = (url: string, filename: string) => {
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+/** Скачивание файла по URL (поддержка cross-origin S3) */
+export const downloadFile = async (url: string, filename: string) => {
+  try {
+    // fetch + blob обходит ограничение cross-origin для <a download>
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch {
+    // Fallback: откроет в новой вкладке если fetch не удался (CORS)
+    window.open(url, '_blank');
+  }
 };
 
 /** Русская плюрализация: pluralize(1, 'статья', 'статьи', 'статей') → 'статья' */

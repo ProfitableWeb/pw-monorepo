@@ -1137,9 +1137,9 @@ interface MediaStatsRaw {
 
 const RESIZE_SUFFIX_NAMES: Record<string, string> = {
   _thumb: 'Thumbnail',
-  _small: 'Small',
-  _medium: 'Medium',
-  _large: 'Large',
+  _sm: 'Small',
+  _md: 'Medium',
+  _lg: 'Large',
 };
 
 function mapMediaFile(raw: MediaFileRaw): MediaFile {
@@ -1443,4 +1443,245 @@ export async function adminTestStorage(): Promise<StorageTestResult> {
   });
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapStorageTestResult(raw);
+}
+
+// ---------------------------------------------------------------------------
+// System Health (PW-042-C)
+// ---------------------------------------------------------------------------
+
+interface SystemHealthRaw {
+  status: string;
+  uptime_seconds: number;
+  version: string;
+  python_version: string;
+  cpu_percent: number;
+  disk: { total_gb: number; used_gb: number; percent: number };
+  memory: { total_gb: number; used_gb: number; percent: number };
+  services: {
+    name: string;
+    connected: boolean;
+    latency_ms: number | null;
+    error: string | null;
+  }[];
+  errors_24h: number;
+}
+
+export interface SystemHealth {
+  status: 'ok' | 'degraded' | 'down';
+  uptimeSeconds: number;
+  version: string;
+  pythonVersion: string;
+  cpuPercent: number;
+  disk: { totalGb: number; usedGb: number; percent: number };
+  memory: { totalGb: number; usedGb: number; percent: number };
+  services: {
+    name: string;
+    connected: boolean;
+    latencyMs: number | null;
+    error: string | null;
+  }[];
+  errors24h: number;
+}
+
+function mapSystemHealth(raw: SystemHealthRaw): SystemHealth {
+  return {
+    status: raw.status as SystemHealth['status'],
+    uptimeSeconds: raw.uptime_seconds,
+    version: raw.version,
+    pythonVersion: raw.python_version,
+    cpuPercent: raw.cpu_percent,
+    disk: {
+      totalGb: raw.disk.total_gb,
+      usedGb: raw.disk.used_gb,
+      percent: raw.disk.percent,
+    },
+    memory: {
+      totalGb: raw.memory.total_gb,
+      usedGb: raw.memory.used_gb,
+      percent: raw.memory.percent,
+    },
+    services: raw.services.map(s => ({
+      name: s.name,
+      connected: s.connected,
+      latencyMs: s.latency_ms,
+      error: s.error,
+    })),
+    errors24h: raw.errors_24h,
+  };
+}
+
+export async function adminGetSystemHealth(): Promise<SystemHealth> {
+  const raw = await apiFetch<SystemHealthRaw>('/admin/system/health');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSystemHealth(raw);
+}
+
+// ---------------------------------------------------------------------------
+// Error Tracking (PW-042-B)
+// ---------------------------------------------------------------------------
+
+import type {
+  AuditLogEntry,
+  ErrorLogEntry,
+  ErrorStats,
+} from '@/app/components/sections/settings/monitoring/monitoring.types';
+
+interface RawErrorLogEntry {
+  id: string;
+  timestamp: string;
+  level: string;
+  event: string;
+  message: string;
+  traceback: string | null;
+  request_method: string | null;
+  request_path: string | null;
+  request_id: string | null;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  status_code: number | null;
+  context: Record<string, unknown> | null;
+  resolved: boolean;
+}
+
+interface RawErrorStats {
+  last_24h: number;
+  last_7d: number;
+  last_30d: number;
+}
+
+function mapErrorLogEntry(raw: RawErrorLogEntry): ErrorLogEntry {
+  return {
+    id: raw.id,
+    timestamp: raw.timestamp,
+    level: raw.level as ErrorLogEntry['level'],
+    event: raw.event,
+    message: raw.message,
+    traceback: raw.traceback,
+    requestMethod: raw.request_method,
+    requestPath: raw.request_path,
+    requestId: raw.request_id,
+    userId: raw.user_id,
+    userName: raw.user_name,
+    userEmail: raw.user_email,
+    ipAddress: raw.ip_address,
+    userAgent: raw.user_agent,
+    statusCode: raw.status_code,
+    context: raw.context,
+    resolved: raw.resolved,
+  };
+}
+
+function mapErrorStats(raw: RawErrorStats): ErrorStats {
+  return {
+    last24h: raw.last_24h,
+    last7d: raw.last_7d,
+    last30d: raw.last_30d,
+  };
+}
+
+export async function adminGetErrors(params?: {
+  limit?: number;
+  offset?: number;
+  level?: string;
+  resolved?: boolean;
+  dateRange?: string;
+}): Promise<{ data: ErrorLogEntry[]; meta: ApiMeta }> {
+  const q = new URLSearchParams();
+  if (params?.limit != null) q.set('limit', String(params.limit));
+  if (params?.offset != null) q.set('offset', String(params.offset));
+  if (params?.level) q.set('level', params.level);
+  if (params?.resolved != null) q.set('resolved', String(params.resolved));
+  if (params?.dateRange) q.set('dateRange', params.dateRange);
+
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<RawErrorLogEntry[]>(
+    `/admin/errors${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapErrorLogEntry),
+    meta: result.meta,
+  };
+}
+
+export async function adminGetErrorStats(): Promise<ErrorStats> {
+  const raw = await apiFetch<RawErrorStats>('/admin/errors/stats');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapErrorStats(raw);
+}
+
+export async function adminResolveError(id: string): Promise<void> {
+  await apiMutate(`/admin/errors/${id}/resolve`, { method: 'POST' });
+}
+
+// ---------------------------------------------------------------------------
+// Audit Log (PW-042-D)
+// ---------------------------------------------------------------------------
+
+interface RawAuditLogEntry {
+  id: string;
+  timestamp: string;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  changes: Record<string, { old: unknown; new: unknown }> | null;
+  request_id: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+}
+
+function mapAuditLogEntry(raw: RawAuditLogEntry): AuditLogEntry {
+  return {
+    id: raw.id,
+    timestamp: raw.timestamp,
+    userId: raw.user_id,
+    userName: raw.user_name,
+    userEmail: raw.user_email,
+    action: raw.action,
+    resourceType: raw.resource_type,
+    resourceId: raw.resource_id,
+    changes: raw.changes,
+    requestId: raw.request_id,
+    ipAddress: raw.ip_address,
+    userAgent: raw.user_agent,
+  };
+}
+
+export async function adminGetAudit(params?: {
+  limit?: number;
+  offset?: number;
+  action?: string;
+  userId?: string;
+  dateRange?: string;
+}): Promise<{ data: AuditLogEntry[]; meta: ApiMeta }> {
+  const q = new URLSearchParams();
+  if (params?.limit != null) q.set('limit', String(params.limit));
+  if (params?.offset != null) q.set('offset', String(params.offset));
+  if (params?.action) q.set('action', params.action);
+  if (params?.userId) q.set('userId', params.userId);
+  if (params?.dateRange) q.set('dateRange', params.dateRange);
+
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<RawAuditLogEntry[]>(
+    `/admin/audit${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapAuditLogEntry),
+    meta: result.meta,
+  };
+}
+
+export async function adminGetAuditActions(): Promise<string[]> {
+  const data = await apiFetch<string[]>('/admin/audit/actions');
+  return data ?? [];
+}
+
+export async function adminGetAuditUsers(): Promise<[string, string][]> {
+  const data = await apiFetch<[string, string][]>('/admin/audit/users');
+  return data ?? [];
 }

@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-import { useEffect, useState } from 'react';
 import {
   Cloud,
   HardDrive,
@@ -21,12 +20,10 @@ import {
   Loader2,
   AlertTriangle,
   CheckCircle2,
-  Save,
   Image,
   File,
 } from 'lucide-react';
 import { Progress } from '@/app/components/ui/progress';
-import { NumberInput } from '@/app/components/ui/number-input';
 import { Button } from '@/app/components/ui/button';
 import type { StorageInfo } from '../storage.types';
 
@@ -36,8 +33,6 @@ interface OverviewTabProps {
   loading: boolean;
   syncing: boolean;
   onSync: () => void;
-  savingLimits: boolean;
-  onSaveLimits: (imageMb: number, otherMb: number) => void;
 }
 
 function ConfigRow({
@@ -75,27 +70,12 @@ export function OverviewTab({
   loading,
   syncing,
   onSync,
-  savingLimits,
-  onSaveLimits,
 }: OverviewTabProps) {
   const isS3 = info.backend === 's3';
   const { sync } = info;
   const total = sync.localOnly + sync.s3Only + sync.synced;
   const needsSync = sync.localOnly > 0 || sync.s3Only > 0;
   const syncPercent = total > 0 ? Math.round((sync.synced / total) * 100) : 100;
-
-  // Редактируемые лимиты (синхронизируются при обновлении info)
-  const [imageMb, setImageMb] = useState(info.config.maxUploadImageMb);
-  const [otherMb, setOtherMb] = useState(info.config.maxUploadOtherMb);
-
-  useEffect(() => {
-    setImageMb(info.config.maxUploadImageMb);
-    setOtherMb(info.config.maxUploadOtherMb);
-  }, [info.config.maxUploadImageMb, info.config.maxUploadOtherMb]);
-
-  const limitsChanged =
-    imageMb !== info.config.maxUploadImageMb ||
-    otherMb !== info.config.maxUploadOtherMb;
 
   return (
     <div className='space-y-6'>
@@ -199,34 +179,17 @@ export function OverviewTab({
         </CardContent>
       </Card>
 
-      {/* Лимиты загрузки */}
+      {/* Лимиты загрузки (read-only из env) */}
       <Card>
         <CardHeader>
-          <div className='flex items-center justify-between'>
-            <div>
-              <CardTitle className='text-lg flex items-center gap-2'>
-                <Upload className='size-4' />
-                Лимиты загрузки
-              </CardTitle>
-              <CardDescription>
-                Максимальный размер файлов при загрузке
-              </CardDescription>
-            </div>
-            {limitsChanged && (
-              <Button
-                size='sm'
-                onClick={() => onSaveLimits(imageMb, otherMb)}
-                disabled={savingLimits}
-              >
-                {savingLimits ? (
-                  <Loader2 className='size-4 mr-2 animate-spin' />
-                ) : (
-                  <Save className='size-4 mr-2' />
-                )}
-                Сохранить
-              </Button>
-            )}
-          </div>
+          <CardTitle className='text-lg flex items-center gap-2'>
+            <Upload className='size-4' />
+            Лимиты загрузки
+          </CardTitle>
+          <CardDescription>
+            Максимальный размер файлов при загрузке (настраивается через
+            переменные окружения)
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className='grid grid-cols-2 gap-4'>
@@ -235,28 +198,18 @@ export function OverviewTab({
                 <Image className='size-4 text-muted-foreground' />
                 <span className='text-sm font-medium'>Изображения</span>
               </div>
-              <NumberInput
-                value={imageMb}
-                onChange={setImageMb}
-                min={1}
-                max={500}
-                step={5}
-                suffix='МБ'
-              />
+              <span className='text-sm font-mono font-medium'>
+                {info.config.maxUploadImageMb} МБ
+              </span>
             </div>
             <div className='flex items-center justify-between p-3 rounded-lg bg-muted/50'>
               <div className='flex items-center gap-2'>
                 <File className='size-4 text-muted-foreground' />
                 <span className='text-sm font-medium'>Прочие файлы</span>
               </div>
-              <NumberInput
-                value={otherMb}
-                onChange={setOtherMb}
-                min={1}
-                max={500}
-                step={10}
-                suffix='МБ'
-              />
+              <span className='text-sm font-mono font-medium'>
+                {info.config.maxUploadOtherMb} МБ
+              </span>
             </div>
           </div>
         </CardContent>

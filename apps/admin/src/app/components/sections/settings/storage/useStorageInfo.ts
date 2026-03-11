@@ -49,13 +49,6 @@ export function useStorageInfo() {
   }, []);
 
   // Лимиты — read-only из env, runtime-обновление не поддерживается.
-  // Кнопка «Сохранить» не появится, т.к. значения синхронизированы с API.
-  const [savingLimits] = useState(false);
-
-  const saveLimits = useCallback(
-    async (_imageMb: number, _otherMb: number) => {},
-    []
-  );
 
   // Синхронизация — пока не реализована (sync возвращает zeros).
   const runSync = useCallback(async () => {}, []);
@@ -71,10 +64,8 @@ export function useStorageInfo() {
     testResult,
     testing,
     syncing,
-    savingLimits,
     runTest,
     runSync,
-    saveLimits,
     refresh: loadInfo,
   };
 }

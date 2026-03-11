@@ -290,6 +290,12 @@
     }
   }
 
+  /* Таблицы мониторинга внутри Radix ScrollArea — отключаем overflow у table-container,
+     чтобы ScrollArea viewport стал контейнером прокрутки и sticky thead работал */
+  .monitoring-table [data-slot="table-container"] {
+    overflow: visible !important;
+  }
+
   /* Scroll fade - scrollbar hidden by default, visible on hover */
   .scroll-fade {
     scrollbar-width: thin;
@@ -320,7 +326,22 @@
   .scroll-fade:hover::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--muted-foreground) / 0.5);
   }
+}
 
+/** Анимация диалога: выезд сверху (без зума и горизонтального сдвига) */
+.dialog-slide-top[data-state='open'] {
+  --tw-enter-translate-y: -100%;
+  --tw-enter-translate-x: 0;
+  --tw-enter-scale: 1;
+}
+
+.dialog-slide-top[data-state='closed'] {
+  --tw-exit-translate-y: -100%;
+  --tw-exit-translate-x: 0;
+  --tw-exit-scale: 1;
+}
+
+@layer base {
   /* Markdown prose styles for AI assistant messages */
   .prose {
     color: var(--foreground);
