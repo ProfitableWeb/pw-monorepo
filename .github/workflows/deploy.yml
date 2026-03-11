@@ -106,6 +106,8 @@ jobs:
 
             # API: установка зависимостей + миграции БД
             cd apps/api
+            echo "📋 Проверка .env (ключи без значений):"
+            cat .env | sed 's/=.*/=***/'
             uv sync
             uv run alembic upgrade head
 
