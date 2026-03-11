@@ -106,10 +106,6 @@ jobs:
 
             # API: установка зависимостей + миграции БД
             cd apps/api
-            echo "📋 Проверка .env (ключи без значений):"
-            cat .env | sed 's/=.*/=***/'
-            echo "📋 Длина DATABASE_URL: $(grep DATABASE_URL .env | cut -d= -f2- | wc -c) символов"
-            echo "📋 Первые 15 символов DATABASE_URL: $(grep DATABASE_URL .env | cut -d= -f2- | cut -c1-15)"
             uv sync
             uv run alembic upgrade head
 
