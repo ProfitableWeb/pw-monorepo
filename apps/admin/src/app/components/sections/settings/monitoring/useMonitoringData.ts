@@ -1,6 +1,6 @@
 /**
- * PW-042-D2 | Хук для раздела «Мониторинг».
- * Health — реальный API (PW-042-C). Ошибки/аудит — моки (до PW-042-B/D).
+ * PW-042-B | Хук для раздела «Мониторинг».
+ * Health — реальный API (PW-042-C). Ошибки — реальный API (PW-042-B). Аудит — моки (до PW-042-D).
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,20 +13,21 @@ import type {
   AuditFilters,
   LoadMoreState,
 } from './monitoring.types';
+import { MOCK_AUDIT_ENTRIES } from './monitoring.mocks';
 import {
-  MOCK_ERROR_ENTRIES,
-  MOCK_ERROR_STATS,
-  MOCK_AUDIT_ENTRIES,
-} from './monitoring.mocks';
-import { adminGetSystemHealth } from '@/lib/api-client';
+  adminGetSystemHealth,
+  adminGetErrors,
+  adminGetErrorStats,
+  adminResolveError,
+} from '@/lib/api-client';
 import { DATE_RANGE_MS, DEFAULT_PER_PAGE } from './monitoring.utils';
 
-/** Имитация задержки сети (для моков) */
+/** Имитация задержки сети (для моков аудита) */
 function delay(ms = 600): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/** Фильтрация по дате (общая для ошибок и аудита) */
+/** Фильтрация по дате (для моков аудита) */
 function matchesDateRange(timestamp: string, dateRange: string): boolean {
   if (dateRange === 'all') return true;
   const maxMs = DATE_RANGE_MS[dateRange];
@@ -42,8 +43,9 @@ export function useMonitoringData() {
   // --- Система ---
   const [health, setHealth] = useState<SystemHealth | null>(null);
 
-  // --- Ошибки ---
+  // --- Ошибки (реальный API) ---
   const [errors, setErrors] = useState<ErrorLogEntry[]>([]);
+  const [errorsTotal, setErrorsTotal] = useState(0);
   const [errorStats, setErrorStats] = useState<ErrorStats | null>(null);
   const [errorFilters, setErrorFilters] = useState<ErrorFilters>({
     level: null,
@@ -54,8 +56,9 @@ export function useMonitoringData() {
     visible: DEFAULT_PER_PAGE,
     perPage: DEFAULT_PER_PAGE,
   });
+  const [errorsLoading, setErrorsLoading] = useState(false);
 
-  // --- Аудит ---
+  // --- Аудит (моки — до PW-042-D) ---
   const [audit, setAudit] = useState<AuditLogEntry[]>([]);
   const [auditFilters, setAuditFilters] = useState<AuditFilters>({
     action: null,
@@ -67,7 +70,40 @@ export function useMonitoringData() {
     perPage: DEFAULT_PER_PAGE,
   });
 
-  // --- Загрузка данных ---
+  // --- Загрузка ошибок (серверная фильтрация + пагинация) ---
+  const fetchErrors = useCallback(
+    async (
+      filters: ErrorFilters,
+      limit: number,
+      offset: number,
+      append: boolean
+    ) => {
+      setErrorsLoading(true);
+      try {
+        const result = await adminGetErrors({
+          limit,
+          offset,
+          level: filters.level ?? undefined,
+          resolved: filters.resolved ?? undefined,
+          dateRange:
+            filters.dateRange !== 'all' ? filters.dateRange : undefined,
+        });
+        if (append) {
+          setErrors(prev => [...prev, ...result.data]);
+        } else {
+          setErrors(result.data);
+        }
+        setErrorsTotal(result.meta.total ?? 0);
+      } catch {
+        setError('Не удалось загрузить ошибки');
+      } finally {
+        setErrorsLoading(false);
+      }
+    },
+    []
+  );
+
+  // --- Первоначальная загрузка ---
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -76,10 +112,22 @@ export function useMonitoringData() {
       const healthData = await adminGetSystemHealth();
       setHealth(healthData as SystemHealth);
 
-      // Ошибки и аудит — моки (до PW-042-B/D)
+      // Ошибки — реальный API (PW-042-B)
+      const [errorResult, stats] = await Promise.all([
+        adminGetErrors({ limit: DEFAULT_PER_PAGE, offset: 0 }),
+        adminGetErrorStats(),
+      ]);
+      setErrors(errorResult.data);
+      setErrorsTotal(errorResult.meta.total ?? 0);
+      setErrorStats(stats);
+      setErrorLoadMore({
+        visible: DEFAULT_PER_PAGE,
+        perPage: DEFAULT_PER_PAGE,
+      });
+      setErrorFilters({ level: null, resolved: null, dateRange: 'all' });
+
+      // Аудит — моки (до PW-042-D)
       await delay(200);
-      setErrors(MOCK_ERROR_ENTRIES);
-      setErrorStats(MOCK_ERROR_STATS);
       setAudit(MOCK_AUDIT_ENTRIES);
     } catch {
       setError('Не удалось загрузить данные мониторинга');
@@ -92,27 +140,7 @@ export function useMonitoringData() {
     loadAll();
   }, [loadAll]);
 
-  // --- Фильтрация ошибок (мемоизированная) ---
-  const filteredErrors = useMemo(
-    () =>
-      errors.filter(e => {
-        if (errorFilters.level && e.level !== errorFilters.level) return false;
-        if (
-          errorFilters.resolved !== null &&
-          e.resolved !== errorFilters.resolved
-        )
-          return false;
-        return matchesDateRange(e.timestamp, errorFilters.dateRange);
-      }),
-    [errors, errorFilters]
-  );
-
-  const visibleErrors = useMemo(
-    () => filteredErrors.slice(0, errorLoadMore.visible),
-    [filteredErrors, errorLoadMore.visible]
-  );
-
-  // --- Фильтрация аудита (мемоизированная) ---
+  // --- Фильтрация аудита (мемоизированная, клиентская — моки) ---
   const filteredAudit = useMemo(
     () =>
       audit.filter(a => {
@@ -130,7 +158,7 @@ export function useMonitoringData() {
     [filteredAudit, auditLoadMore.visible]
   );
 
-  // --- Уникальные значения для фильтров (из ВСЕХ данных, не только видимых) ---
+  // --- Уникальные значения для фильтров аудита ---
   const uniqueAuditActions = useMemo(() => {
     const set = new Set(audit.map(e => e.action));
     return Array.from(set).sort();
@@ -144,11 +172,15 @@ export function useMonitoringData() {
     return Array.from(map.entries());
   }, [audit]);
 
-  // --- Действия: фильтры (сброс видимых при изменении) ---
-  const handleSetErrorFilters = useCallback((f: ErrorFilters) => {
-    setErrorFilters(f);
-    setErrorLoadMore(prev => ({ ...prev, visible: prev.perPage }));
-  }, []);
+  // --- Действия: фильтры ошибок (серверная фильтрация) ---
+  const handleSetErrorFilters = useCallback(
+    (f: ErrorFilters) => {
+      setErrorFilters(f);
+      setErrorLoadMore(prev => ({ ...prev, visible: prev.perPage }));
+      fetchErrors(f, errorLoadMore.perPage, 0, false);
+    },
+    [fetchErrors, errorLoadMore.perPage]
+  );
 
   const handleSetAuditFilters = useCallback((f: AuditFilters) => {
     setAuditFilters(f);
@@ -157,11 +189,10 @@ export function useMonitoringData() {
 
   // --- Действия: load more ---
   const loadMoreErrors = useCallback(() => {
-    setErrorLoadMore(prev => ({
-      ...prev,
-      visible: prev.visible + prev.perPage,
-    }));
-  }, []);
+    const newVisible = errorLoadMore.visible + errorLoadMore.perPage;
+    setErrorLoadMore(prev => ({ ...prev, visible: newVisible }));
+    fetchErrors(errorFilters, errorLoadMore.perPage, errors.length, true);
+  }, [errorLoadMore, errorFilters, errors.length, fetchErrors]);
 
   const loadMoreAudit = useCallback(() => {
     setAuditLoadMore(prev => ({
@@ -171,25 +202,33 @@ export function useMonitoringData() {
   }, []);
 
   // --- Действия: изменение perPage ---
-  const setErrorPerPage = useCallback((perPage: number) => {
-    setErrorLoadMore({ visible: perPage, perPage });
-  }, []);
+  const setErrorPerPage = useCallback(
+    (perPage: number) => {
+      setErrorLoadMore({ visible: perPage, perPage });
+      fetchErrors(errorFilters, perPage, 0, false);
+    },
+    [errorFilters, fetchErrors]
+  );
 
   const setAuditPerPage = useCallback((perPage: number) => {
     setAuditLoadMore({ visible: perPage, perPage });
   }, []);
 
-  // --- Действия: resolve ---
+  // --- Действия: resolve (реальный API) ---
   const resolveError = useCallback(async (id: string) => {
-    await delay(300);
-    setErrors(prev =>
-      prev.map(e => (e.id === id ? { ...e, resolved: true } : e))
-    );
+    try {
+      await adminResolveError(id);
+      setErrors(prev =>
+        prev.map(e => (e.id === id ? { ...e, resolved: true } : e))
+      );
+    } catch {
+      setError('Не удалось отметить ошибку как решённую');
+    }
   }, []);
 
   return {
     // Общее
-    loading,
+    loading: loading || errorsLoading,
     error,
     refresh: loadAll,
 
@@ -197,15 +236,15 @@ export function useMonitoringData() {
     health,
 
     // Ошибки
-    errors: visibleErrors,
-    errorsTotal: filteredErrors.length,
+    errors,
+    errorsTotal,
     errorStats,
     errorFilters,
     setErrorFilters: handleSetErrorFilters,
     errorLoadMore,
     loadMoreErrors,
     setErrorPerPage,
-    hasMoreErrors: errorLoadMore.visible < filteredErrors.length,
+    hasMoreErrors: errors.length < errorsTotal,
     resolveError,
 
     // Аудит

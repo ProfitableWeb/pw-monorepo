@@ -8,6 +8,7 @@ from src.models.article_revision import ArticleRevision
 from src.models.base import Base
 from src.models.category import Category
 from src.models.comment import Comment
+from src.models.error_log import ErrorLog
 from src.models.media_file import MediaFile, article_media
 from src.models.oauth_link import UserOAuthLink
 from src.models.system_settings import SystemSettings
@@ -25,6 +26,7 @@ __all__ = [
     "ArticleRevision",
     "SystemSettings",
     "Comment",
+    "ErrorLog",
     "MediaFile",
     "article_media",
 ]

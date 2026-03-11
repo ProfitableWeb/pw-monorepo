@@ -9,13 +9,13 @@ import psutil
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from src.core.config import settings
 from src.schemas.monitoring import (
     DiskInfo,
     MemoryInfo,
     ServiceStatusInfo,
     SystemHealthResponse,
 )
+from src.services.error_log import count_errors_24h
 from src.services.storage_info import _check_health as _check_storage_health
 
 APP_VERSION = "0.1.0"
@@ -67,7 +67,7 @@ def get_system_health(db: Session) -> SystemHealthResponse:
             percent=mem.percent,
         ),
         services=services,
-        errors_24h=0,  # TODO: PW-042-B — подсчёт из error_log
+        errors_24h=count_errors_24h(db),
     )
 
 

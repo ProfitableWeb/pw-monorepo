@@ -1515,3 +1515,102 @@ export async function adminGetSystemHealth(): Promise<SystemHealth> {
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapSystemHealth(raw);
 }
+
+// ---------------------------------------------------------------------------
+// Error Tracking (PW-042-B)
+// ---------------------------------------------------------------------------
+
+import type {
+  ErrorLogEntry,
+  ErrorStats,
+} from '@/app/components/sections/settings/monitoring/monitoring.types';
+
+interface RawErrorLogEntry {
+  id: string;
+  timestamp: string;
+  level: string;
+  event: string;
+  message: string;
+  traceback: string | null;
+  request_method: string | null;
+  request_path: string | null;
+  request_id: string | null;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  status_code: number | null;
+  context: Record<string, unknown> | null;
+  resolved: boolean;
+}
+
+interface RawErrorStats {
+  last_24h: number;
+  last_7d: number;
+  last_30d: number;
+}
+
+function mapErrorLogEntry(raw: RawErrorLogEntry): ErrorLogEntry {
+  return {
+    id: raw.id,
+    timestamp: raw.timestamp,
+    level: raw.level as ErrorLogEntry['level'],
+    event: raw.event,
+    message: raw.message,
+    traceback: raw.traceback,
+    requestMethod: raw.request_method,
+    requestPath: raw.request_path,
+    requestId: raw.request_id,
+    userId: raw.user_id,
+    userName: raw.user_name,
+    userEmail: raw.user_email,
+    ipAddress: raw.ip_address,
+    userAgent: raw.user_agent,
+    statusCode: raw.status_code,
+    context: raw.context,
+    resolved: raw.resolved,
+  };
+}
+
+function mapErrorStats(raw: RawErrorStats): ErrorStats {
+  return {
+    last24h: raw.last_24h,
+    last7d: raw.last_7d,
+    last30d: raw.last_30d,
+  };
+}
+
+export async function adminGetErrors(params?: {
+  limit?: number;
+  offset?: number;
+  level?: string;
+  resolved?: boolean;
+  dateRange?: string;
+}): Promise<{ data: ErrorLogEntry[]; meta: ApiMeta }> {
+  const q = new URLSearchParams();
+  if (params?.limit != null) q.set('limit', String(params.limit));
+  if (params?.offset != null) q.set('offset', String(params.offset));
+  if (params?.level) q.set('level', params.level);
+  if (params?.resolved != null) q.set('resolved', String(params.resolved));
+  if (params?.dateRange) q.set('dateRange', params.dateRange);
+
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<RawErrorLogEntry[]>(
+    `/admin/errors${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapErrorLogEntry),
+    meta: result.meta,
+  };
+}
+
+export async function adminGetErrorStats(): Promise<ErrorStats> {
+  const raw = await apiFetch<RawErrorStats>('/admin/errors/stats');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapErrorStats(raw);
+}
+
+export async function adminResolveError(id: string): Promise<void> {
+  await apiMutate(`/admin/errors/${id}/resolve`, { method: 'POST' });
+}
