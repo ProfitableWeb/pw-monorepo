@@ -33,6 +33,7 @@ import {
   ChevronDown,
   ChevronRight,
   Info,
+  ShieldCheck,
   XCircle,
 } from 'lucide-react';
 import type {
@@ -240,11 +241,21 @@ export function ErrorsTab({
               </TableHeader>
               <TableBody>
                 {errors.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className='text-center py-8'>
-                      <p className='text-sm text-muted-foreground'>
-                        Ошибок не найдено
-                      </p>
+                  <TableRow className='hover:bg-transparent'>
+                    <TableCell colSpan={8} className='py-20'>
+                      <div className='flex flex-col items-center justify-center gap-3 text-muted-foreground'>
+                        <div className='flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10'>
+                          <ShieldCheck className='h-6 w-6 text-emerald-500' />
+                        </div>
+                        <div className='text-center'>
+                          <p className='text-sm font-medium'>
+                            Ошибок не найдено
+                          </p>
+                          <p className='mt-1 text-xs'>
+                            Все системы работают штатно
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
