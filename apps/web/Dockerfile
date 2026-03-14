@@ -6,9 +6,11 @@ FROM oven/bun:1.2.17 AS deps
 
 WORKDIR /app
 
-# Копируем workspace-файлы для корректной установки
+# Копируем workspace-файлы для корректной установки (все workspace package.json нужны для lockfile)
 COPY package.json bun.lock ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/admin/package.json ./apps/admin/
+COPY apps/api/package.json ./apps/api/
 COPY packages/types/package.json ./packages/types/
 
 # Устанавливаем зависимости
