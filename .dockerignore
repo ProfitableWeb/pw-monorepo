@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs (rebuilt in container)
+.next
+**/dist
+**/__pycache__
+**/*.pyc
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment files (injected via compose env_file)
+.env
+.env.*
+!.env.example
+
+# Docs & config not needed in image
+docs
+*.md
+!README.md
+LICENSE
+
+# Tests
+**/tests
+**/*.test.*
+**/*.spec.*
+**/vitest.config.*
+**/.coverage
+**/htmlcov
+
+# Dev tools
+.husky
+.lint-staged*
+.prettier*
+.eslintcache
+turbo.json
+
+# OS
+Thumbs.db
+.DS_Store

@@ -21,11 +21,10 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
-  // SEO-friendly static exports for better performance (commented out for dev)
-  // output: 'export',
-  // trailingSlash: true,
+  // Standalone output для Docker-контейнеризации (PW-043)
+  output: 'standalone',
 
-  // Image optimization for static export
+  // Image optimization (без встроенного оптимизатора)
   images: {
     unoptimized: true,
   },

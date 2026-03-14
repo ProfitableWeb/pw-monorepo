@@ -1,16 +1,15 @@
-name: Deploy to Cloud.ru
+name: Deploy Prod
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
     paths:
       - "apps/**"
       - "packages/**"
-      - "ecosystem.config.js"
+      - "docker-compose.prod.yml"
+      - "**/Dockerfile"
       - ".github/workflows/deploy.yml"
       - "infra/nginx/**"
-      - "infra/scripts/**"
   workflow_dispatch:
 
 jobs:
@@ -31,36 +30,40 @@ jobs:
         env:
           SSH_PORT: ${{ secrets.SSH_PORT }}
 
-      - name: Write API env file
+      - name: Write prod env file
         run: |
           ENV_CONTENT=""
-          [ -n "$DATABASE_URL" ]        && ENV_CONTENT="${ENV_CONTENT}DATABASE_URL=${DATABASE_URL}\n"
-          [ -n "$JWT_SECRET" ]          && ENV_CONTENT="${ENV_CONTENT}JWT_SECRET=${JWT_SECRET}\n"
-          [ -n "$YANDEX_CLIENT_ID" ]    && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}\n"
+          ENV_CONTENT="${ENV_CONTENT}POSTGRES_DB=${POSTGRES_DB:-profitableweb}\n"
+          ENV_CONTENT="${ENV_CONTENT}POSTGRES_USER=${POSTGRES_USER:-pw}\n"
+          ENV_CONTENT="${ENV_CONTENT}POSTGRES_PASSWORD=${POSTGRES_PASSWORD}\n"
+          [ -n "$JWT_SECRET" ]           && ENV_CONTENT="${ENV_CONTENT}JWT_SECRET=${JWT_SECRET}\n"
+          [ -n "$FRONTEND_URL" ]         && ENV_CONTENT="${ENV_CONTENT}FRONTEND_URL=${FRONTEND_URL}\n"
+          [ -n "$ADMIN_URL" ]            && ENV_CONTENT="${ENV_CONTENT}ADMIN_URL=${ADMIN_URL}\n"
+          [ -n "$CORS_ORIGINS" ]         && ENV_CONTENT="${ENV_CONTENT}CORS_ORIGINS=${CORS_ORIGINS}\n"
+          [ -n "$YANDEX_CLIENT_ID" ]     && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}\n"
           [ -n "$YANDEX_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}\n"
-          [ -n "$GOOGLE_CLIENT_ID" ]    && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}\n"
+          [ -n "$GOOGLE_CLIENT_ID" ]     && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}\n"
           [ -n "$GOOGLE_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}\n"
-          [ -n "$TELEGRAM_BOT_TOKEN" ]  && ENV_CONTENT="${ENV_CONTENT}TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}\n"
-          [ -n "$FRONTEND_URL" ]        && ENV_CONTENT="${ENV_CONTENT}FRONTEND_URL=${FRONTEND_URL}\n"
-          [ -n "$ADMIN_URL" ]           && ENV_CONTENT="${ENV_CONTENT}ADMIN_URL=${ADMIN_URL}\n"
-          [ -n "$CORS_ORIGINS" ]        && ENV_CONTENT="${ENV_CONTENT}CORS_ORIGINS=${CORS_ORIGINS}\n"
-          [ -n "$STORAGE_BACKEND" ]    && ENV_CONTENT="${ENV_CONTENT}STORAGE_BACKEND=${STORAGE_BACKEND}\n"
-          [ -n "$S3_ENDPOINT" ]        && ENV_CONTENT="${ENV_CONTENT}S3_ENDPOINT=${S3_ENDPOINT}\n"
-          [ -n "$S3_BUCKET" ]          && ENV_CONTENT="${ENV_CONTENT}S3_BUCKET=${S3_BUCKET}\n"
-          [ -n "$S3_ACCESS_KEY" ]      && ENV_CONTENT="${ENV_CONTENT}S3_ACCESS_KEY=${S3_ACCESS_KEY}\n"
-          [ -n "$S3_SECRET_KEY" ]      && ENV_CONTENT="${ENV_CONTENT}S3_SECRET_KEY=${S3_SECRET_KEY}\n"
-          [ -n "$S3_REGION" ]          && ENV_CONTENT="${ENV_CONTENT}S3_REGION=${S3_REGION}\n"
-          [ -n "$S3_PUBLIC_ENDPOINT" ] && ENV_CONTENT="${ENV_CONTENT}S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}\n"
+          [ -n "$TELEGRAM_BOT_TOKEN" ]   && ENV_CONTENT="${ENV_CONTENT}TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}\n"
+          [ -n "$STORAGE_BACKEND" ]      && ENV_CONTENT="${ENV_CONTENT}STORAGE_BACKEND=${STORAGE_BACKEND}\n"
+          [ -n "$S3_ENDPOINT" ]          && ENV_CONTENT="${ENV_CONTENT}S3_ENDPOINT=${S3_ENDPOINT}\n"
+          [ -n "$S3_BUCKET" ]            && ENV_CONTENT="${ENV_CONTENT}S3_BUCKET=${S3_BUCKET}\n"
+          [ -n "$S3_ACCESS_KEY" ]        && ENV_CONTENT="${ENV_CONTENT}S3_ACCESS_KEY=${S3_ACCESS_KEY}\n"
+          [ -n "$S3_SECRET_KEY" ]        && ENV_CONTENT="${ENV_CONTENT}S3_SECRET_KEY=${S3_SECRET_KEY}\n"
+          [ -n "$S3_REGION" ]            && ENV_CONTENT="${ENV_CONTENT}S3_REGION=${S3_REGION}\n"
+          [ -n "$S3_PUBLIC_ENDPOINT" ]   && ENV_CONTENT="${ENV_CONTENT}S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}\n"
 
           echo -e "$ENV_CONTENT" | ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/apps/api/.env"
+              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/.env.prod"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           YANDEX_CLIENT_ID: ${{ secrets.YANDEX_CLIENT_ID }}
           YANDEX_CLIENT_SECRET: ${{ secrets.YANDEX_CLIENT_SECRET }}
@@ -85,52 +88,34 @@ jobs:
               -p ${SSH_PORT:-22} \
               ${SSH_USER}@${SSH_HOST} << 'EOF'
             set -e
-            export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
             cd ~/profitableweb
 
             # Переключение remote на GitHub (если ещё GitVerse)
             CURRENT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "")
             if echo "$CURRENT_ORIGIN" | grep -q "gitverse"; then
-              echo "🔄 Переключение origin на GitHub..."
               git remote set-url origin https://github.com/ProfitableWeb/pw-monorepo.git
             fi
 
             # Обновление кода
-            echo "📥 Обновление репозитория..."
             git fetch origin
             git reset --hard origin/master
 
-            # Установка JS-зависимостей из корня монорепо
-            bun install
+            # Обновление nginx-конфига
+            sudo cp infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
+            sudo nginx -t && sudo systemctl reload nginx
 
-            # API: установка зависимостей + миграции БД
-            cd apps/api
-            uv sync
-            uv run alembic upgrade head
+            # Сборка и запуск Docker-контейнеров
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build --remove-orphans
 
-            # Web: проверка типов + сборка
-            cd ../web
-            bun run type-check
-            bun run build
-
-            # Admin: сборка
-            cd ../admin
-            bun run build
-
-            # Перезапуск всех сервисов
-            cd ~/profitableweb
-            pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
-
-            echo "✅ Deploy completed!"
+            echo "Deploy completed!"
           EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
 
-      - name: Verify deployment
+      - name: Health check
         run: |
-          echo "🔍 Проверка доступности сервиса..."
-          sleep 5
-          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "⚠️ Health check failed, but deploy might still be running"
+          sleep 10
+          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "Health check failed"
