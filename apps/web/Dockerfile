@@ -2,7 +2,7 @@
 # Build context: repo root (docker-compose context: .)
 
 # --- Stage 1: Install dependencies ---
-FROM oven/bun:1.2.17 AS deps
+FROM oven/bun:1.2.17-alpine AS deps
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY packages/types/package.json ./packages/types/
 RUN bun install --frozen-lockfile
 
 # --- Stage 2: Build ---
-FROM oven/bun:1.2.17 AS builder
+FROM oven/bun:1.2.17-alpine AS builder
 
 WORKDIR /app
 
@@ -35,7 +35,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN cd apps/web && bun run build
 
 # --- Stage 3: Production runtime ---
-FROM node:22-alpine AS runner
+FROM oven/bun:1.2.17-alpine AS runner
 
 WORKDIR /app
 
@@ -44,16 +44,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Создаём непривилегированного пользователя
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+    adduser --system --uid 1001 -G nodejs nextjs
 
 # Копируем standalone-сервер и статику
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./.next/static
 COPY --from=builder /app/apps/web/public ./public
 
-# Bun не включает node_modules в standalone — копируем next отдельно
-COPY --from=deps /app/node_modules/next ./node_modules/next
-COPY --from=deps /app/node_modules/@next ./node_modules/@next
+# Копируем node_modules (Bun standalone не включает их автоматически)
+COPY --from=deps /app/node_modules ./node_modules
 
 USER nextjs
 
@@ -61,4 +60,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["bun", "run", "server.js"]
