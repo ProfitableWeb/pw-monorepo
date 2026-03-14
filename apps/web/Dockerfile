@@ -48,8 +48,12 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Копируем standalone-сервер и статику
 COPY --from=builder /app/apps/web/.next/standalone ./
-COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder /app/apps/web/.next/static ./.next/static
+COPY --from=builder /app/apps/web/public ./public
+
+# Bun не включает node_modules в standalone — копируем next отдельно
+COPY --from=deps /app/node_modules/next ./node_modules/next
+COPY --from=deps /app/node_modules/@next ./node_modules/@next
 
 USER nextjs
 
