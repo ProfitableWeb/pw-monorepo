@@ -2,7 +2,7 @@
 # Build context: repo root (docker-compose context: .)
 
 # --- Stage 1: Install dependencies ---
-FROM oven/bun:1 AS deps
+FROM oven/bun:1.2 AS deps
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY packages/types/package.json ./packages/types/
 RUN bun install --frozen-lockfile
 
 # --- Stage 2: Build ---
-FROM oven/bun:1 AS builder
+FROM oven/bun:1.2 AS builder
 
 WORKDIR /app
 
