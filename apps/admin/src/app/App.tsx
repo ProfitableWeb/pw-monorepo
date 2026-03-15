@@ -22,6 +22,7 @@ import { PromotionPage } from '@/app/components/sections/promotion';
 import { AnalyticsPage } from '@/app/components/sections/analytics';
 import { AdsPage } from '@/app/components/sections/ads';
 import { SeoPage } from '@/app/components/sections/seo';
+import { SystemHub } from '@/app/components/sections/system-hub';
 import { CommandPalette } from '@/app/components/layout/command-palette';
 import {
   ResearchListPage,
@@ -102,6 +103,8 @@ function App() {
         return 'Форматы издания';
       case 'socials':
         return 'Социальные сети';
+      case 'system-hub':
+        return 'Центр системы';
       case 'settings':
         return 'Настройки';
       case 'users':
@@ -143,6 +146,8 @@ function App() {
         return <MediaSection />;
       case 'content-hub':
         return <ContentHub />;
+      case 'system-hub':
+        return <SystemHub />;
       case 'manifest':
         return (
           <ManifestPage onNavigateToAI={() => setActiveSection('ai-center')} />

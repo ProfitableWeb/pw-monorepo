@@ -27,6 +27,7 @@ export type PageId =
   | 'analytics'
   | 'ads'
   | 'seo'
+  | 'system-hub'
   | 'research'
   | 'research-workspace'
   | 'article-editor';
@@ -176,6 +177,14 @@ export const navigationItems: NavigationItem[] = [
   },
 
   // Система
+  {
+    id: 'system-hub',
+    title: 'Система',
+    icon: 'Wrench',
+    section: 'Система',
+    path: 'system-hub',
+    keywords: ['обзор системы'],
+  },
   {
     id: 'settings',
     title: 'Настройки',

@@ -112,6 +112,7 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Система',
+    hubId: 'system-hub',
     items: [
       {
         id: 'settings',

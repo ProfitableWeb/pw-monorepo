@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
@@ -17,14 +16,12 @@ import {
   Tag,
   Image,
   FolderKanban,
-  Download,
-  Upload,
-  Filter,
   ChevronRight,
   Clock,
   Activity,
   Layers,
   LayoutDashboard,
+  Circle,
 } from 'lucide-react';
 
 interface ContentSection {
@@ -114,30 +111,8 @@ export function ContentHub() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const overallProgress = Math.round(
-    contentSections.reduce((sum, section) => sum + section.progress, 0) /
-      contentSections.length
-  );
-
-  const totalItems = contentSections.reduce(
-    (sum, section) => sum + section.itemsCount,
-    0
-  );
-
   const handleSectionClick = (sectionId: ContentSection['id']) => {
     navigateTo(sectionId);
-  };
-
-  const handleExport = () => {
-    console.log('Экспорт контента');
-  };
-
-  const handleBulkEdit = () => {
-    console.log('Массовое редактирование');
-  };
-
-  const handleImport = () => {
-    console.log('Импорт контента');
   };
 
   return (
@@ -205,71 +180,57 @@ export function ContentHub() {
         })}
       </div>
 
-      {/* Общая статистика */}
+      {/* Последняя активность */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Общая статистика</CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-            {/* Общий прогресс */}
-            <div className='space-y-2'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-muted-foreground'>
-                  Заполненность контента
-                </span>
-                <span className='text-sm font-medium'>{overallProgress}%</span>
-              </div>
-              <Progress value={overallProgress} className='h-2' />
-            </div>
-
-            {/* Всего элементов */}
-            <div className='space-y-2'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-muted-foreground'>
-                  Всего элементов
-                </span>
-                <span className='text-sm font-medium'>{totalItems}</span>
-              </div>
-              <Progress value={85} className='h-2' />
-            </div>
-
-            {/* Недавняя активность */}
-            <div className='flex items-start gap-2'>
-              <Activity className='size-4 text-muted-foreground mt-0.5' />
-              <div className='flex-1 min-w-0'>
-                <p className='text-sm text-muted-foreground'>
-                  Последняя активность
-                </p>
-                <p className='text-sm font-medium truncate'>
-                  Добавлена новая медиа (5 минут назад)
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Быстрые действия */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='text-lg'>Быстрые действия</CardTitle>
-          <CardDescription>Управление контентом всего раздела</CardDescription>
+          <CardTitle className='text-lg'>Последняя активность</CardTitle>
+          <CardDescription>Недавние изменения в контенте</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='flex flex-wrap gap-2'>
-            <Button variant='outline' size='sm' onClick={handleExport}>
-              <Download className='size-4 mr-2' />
-              Экспорт контента
-            </Button>
-            <Button variant='outline' size='sm' onClick={handleBulkEdit}>
-              <Filter className='size-4 mr-2' />
-              Массовое редактирование
-            </Button>
-            <Button variant='outline' size='sm' onClick={handleImport}>
-              <Upload className='size-4 mr-2' />
-              Импорт контента
-            </Button>
+          <div className='space-y-3'>
+            {[
+              {
+                text: 'Добавлены 3 новых изображения',
+                time: '5 минут назад',
+                section: 'Медиа',
+              },
+              {
+                text: 'Опубликована статья «Автоматизация рутины»',
+                time: '10 минут назад',
+                section: 'Статьи',
+              },
+              {
+                text: 'Обновлён календарь на следующую неделю',
+                time: '15 минут назад',
+                section: 'Календарь',
+              },
+              {
+                text: 'Создана новая категория «Инструменты»',
+                time: '1 час назад',
+                section: 'Категории',
+              },
+              {
+                text: 'Добавлено 5 новых меток',
+                time: '2 часа назад',
+                section: 'Метки',
+              },
+            ].map((item, i) => (
+              <div key={i} className='flex items-start gap-3'>
+                <Circle className='size-2 mt-2 fill-muted-foreground text-muted-foreground flex-shrink-0' />
+                <div className='flex-1 min-w-0'>
+                  <p className='text-sm'>{item.text}</p>
+                  <div className='flex items-center gap-2 mt-0.5'>
+                    <span className='text-xs text-muted-foreground'>
+                      {item.section}
+                    </span>
+                    <span className='text-xs text-muted-foreground'>·</span>
+                    <span className='text-xs text-muted-foreground'>
+                      {item.time}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

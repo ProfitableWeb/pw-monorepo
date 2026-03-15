@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Layers,
   Pencil,
+  Wrench,
   FileText,
   Calendar,
   FolderOpen,
@@ -12,6 +13,12 @@ import {
   Layout,
   Share2,
   FlaskConical,
+  Settings,
+  Users,
+  TrendingUp,
+  BarChart,
+  LayoutPanelTop,
+  SearchCheck,
   type LucideIcon,
 } from 'lucide-react';
 import { BreadcrumbItem } from '@/app/store/header-store';
@@ -38,6 +45,15 @@ const iconMap: Record<string, LucideIcon> = {
   Стиль: Palette,
   Форматы: Layout,
   Соцсети: Share2,
+
+  // Система
+  Система: Wrench,
+  Настройки: Settings,
+  Пользователи: Users,
+  Продвижение: TrendingUp,
+  Аналитика: BarChart,
+  Реклама: LayoutPanelTop,
+  SEO: SearchCheck,
 };
 
 /**
@@ -163,5 +179,54 @@ export const breadcrumbPresets = {
     createBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard' },
       { label: 'Редакция' },
+    ]),
+
+  // Система
+  systemHub: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система' },
+    ]),
+
+  settings: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'Настройки' },
+    ]),
+
+  users: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'Пользователи' },
+    ]),
+
+  promotion: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'Продвижение' },
+    ]),
+
+  analytics: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'Аналитика' },
+    ]),
+
+  ads: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'Реклама' },
+    ]),
+
+  seoPage: () =>
+    createBreadcrumbs([
+      { label: 'Дашборд', href: 'dashboard' },
+      { label: 'Система', href: 'system-hub' },
+      { label: 'SEO' },
     ]),
 };

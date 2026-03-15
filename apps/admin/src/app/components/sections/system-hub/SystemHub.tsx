@@ -10,88 +10,108 @@ import { Progress } from '@/app/components/ui/progress';
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import {
-  FileHeart,
-  Palette,
-  Layout,
-  Share2,
+  Settings,
+  Users,
+  TrendingUp,
+  BarChart,
+  LayoutPanelTop,
+  SearchCheck,
   ChevronRight,
   Clock,
   Activity,
-  BookOpen,
   LayoutDashboard,
+  Wrench,
   Circle,
 } from 'lucide-react';
 
-interface EditorialSection {
-  id: 'manifest' | 'style' | 'formats' | 'socials';
+interface SystemSection {
+  id: 'settings' | 'users' | 'promotion' | 'analytics' | 'ads' | 'seo';
   title: string;
   description: string;
-  icon: typeof FileHeart;
+  icon: typeof Settings;
   progress: number;
   itemsCount: number;
   itemsLabel: string;
   lastUpdate: string;
 }
 
-const editorialSections: EditorialSection[] = [
+const systemSections: SystemSection[] = [
   {
-    id: 'manifest',
-    title: 'Манифест',
-    description: 'Миссия, ценности и целевая аудитория издания',
-    icon: FileHeart,
-    progress: 87,
-    itemsCount: 24,
+    id: 'settings',
+    title: 'Настройки',
+    description: 'Конфигурация и параметры системы',
+    icon: Settings,
+    progress: 95,
+    itemsCount: 32,
     itemsLabel: 'параметра',
-    lastUpdate: '5 минут назад',
+    lastUpdate: '1 час назад',
   },
   {
-    id: 'style',
-    title: 'Стиль',
-    description: 'Голос бренда, правила написания и терминология',
-    icon: Palette,
-    progress: 72,
-    itemsCount: 18,
-    itemsLabel: 'правил',
-    lastUpdate: '2 часа назад',
+    id: 'users',
+    title: 'Пользователи',
+    description: 'Управление командой и правами доступа',
+    icon: Users,
+    progress: 80,
+    itemsCount: 5,
+    itemsLabel: 'пользователей',
+    lastUpdate: '3 часа назад',
   },
   {
-    id: 'formats',
-    title: 'Форматы',
-    description: 'Шаблоны статей и структуры контента',
-    icon: Layout,
-    progress: 45,
-    itemsCount: 8,
-    itemsLabel: 'шаблонов',
-    lastUpdate: '1 день назад',
+    id: 'promotion',
+    title: 'Продвижение',
+    description: 'Маркетинг и стратегия продвижения',
+    icon: TrendingUp,
+    progress: 40,
+    itemsCount: 6,
+    itemsLabel: 'каналов',
+    lastUpdate: '2 дня назад',
   },
   {
-    id: 'socials',
-    title: 'Соцсети',
-    description: 'Стратегия публикаций в социальных медиа',
-    icon: Share2,
-    progress: 90,
+    id: 'analytics',
+    title: 'Аналитика',
+    description: 'Статистика и метрики эффективности',
+    icon: BarChart,
+    progress: 60,
+    itemsCount: 12,
+    itemsLabel: 'метрик',
+    lastUpdate: '30 минут назад',
+  },
+  {
+    id: 'ads',
+    title: 'Реклама',
+    description: 'Рекламные объявления и монетизация',
+    icon: LayoutPanelTop,
+    progress: 25,
     itemsCount: 3,
-    itemsLabel: 'платформы',
-    lastUpdate: '10 минут назад',
+    itemsLabel: 'кампании',
+    lastUpdate: '1 неделю назад',
+  },
+  {
+    id: 'seo',
+    title: 'SEO',
+    description: 'Поисковая оптимизация и видимость',
+    icon: SearchCheck,
+    progress: 70,
+    itemsCount: 48,
+    itemsLabel: 'правил',
+    lastUpdate: '15 минут назад',
   },
 ];
 
-export function EditorialHub() {
+export function SystemHub() {
   const { setBreadcrumbs, reset } = useHeaderStore();
   const { navigateTo } = useNavigationStore();
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      { label: 'Редакция', icon: BookOpen },
+      { label: 'Система', icon: Wrench },
     ]);
 
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const handleSectionClick = (
-    sectionId: 'manifest' | 'style' | 'formats' | 'socials'
-  ) => {
+  const handleSectionClick = (sectionId: SystemSection['id']) => {
     navigateTo(sectionId);
   };
 
@@ -99,15 +119,15 @@ export function EditorialHub() {
     <div className='container mx-auto p-6 space-y-6'>
       {/* Заголовок */}
       <div className='space-y-2'>
-        <h1 className='text-3xl font-semibold tracking-tight'>Редакция</h1>
+        <h1 className='text-3xl font-semibold tracking-tight'>Система</h1>
         <p className='text-muted-foreground'>
-          Определите identity вашего издания — от миссии до стиля написания
+          Настройки, пользователи, аналитика и инструменты управления платформой
         </p>
       </div>
 
-      {/* Сетка редакционных разделов */}
+      {/* Сетка системных разделов */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {editorialSections.map(section => {
+        {systemSections.map(section => {
           const Icon = section.icon;
           return (
             <Card
@@ -164,30 +184,35 @@ export function EditorialHub() {
       <Card>
         <CardHeader>
           <CardTitle className='text-lg'>Последняя активность</CardTitle>
-          <CardDescription>Недавние изменения в редакции</CardDescription>
+          <CardDescription>Недавние изменения в системе</CardDescription>
         </CardHeader>
         <CardContent>
           <div className='space-y-3'>
             {[
               {
-                text: 'Обновлён манифест — добавлены ценности',
-                time: '5 минут назад',
-                section: 'Манифест',
+                text: 'Обновлены SEO правила для новых страниц',
+                time: '15 минут назад',
+                section: 'SEO',
               },
               {
-                text: 'Изменены правила тона для соцсетей',
-                time: '10 минут назад',
-                section: 'Соцсети',
+                text: 'Добавлен новый пользователь в команду',
+                time: '3 часа назад',
+                section: 'Пользователи',
               },
               {
-                text: 'Добавлен новый шаблон «Кейс-стади»',
-                time: '1 день назад',
-                section: 'Форматы',
+                text: 'Изменены параметры уведомлений',
+                time: '1 час назад',
+                section: 'Настройки',
               },
               {
-                text: 'Обновлён голос бренда',
-                time: '2 часа назад',
-                section: 'Стиль',
+                text: 'Обновлены метрики аналитики',
+                time: '30 минут назад',
+                section: 'Аналитика',
+              },
+              {
+                text: 'Создана новая рекламная кампания',
+                time: '1 неделю назад',
+                section: 'Реклама',
               },
             ].map((item, i) => (
               <div key={i} className='flex items-start gap-3'>
