@@ -2,250 +2,48 @@
  * Стор навигации — клиентский роутинг админ-панели.
  *
  * Вместо файлового роутинга используется Zustand-стор с `navigateTo(pageId)`.
- * `navigationItems` определяет структуру бокового меню (секции, иконки, ключевые слова для поиска).
+ * Типы и данные навигации — в `navigation.constants.ts`.
+ * Утилиты маршрутизации — в `lib/routes.ts`.
  * История последних 5 страниц хранится в `recentPages` для быстрого возврата.
  */
 import { create } from 'zustand';
+import { pageIdToUrl } from '@/app/lib/routes';
+import {
+  type PageId,
+  type NavigationItem,
+  navigationItems,
+} from '@/app/store/navigation.constants';
 
-export type PageId =
-  | 'dashboard'
-  | 'ai-center'
-  | 'articles'
-  | 'calendar'
-  | 'categories'
-  | 'tags'
-  | 'media'
-  | 'content-hub'
-  | 'editorial-hub'
-  | 'manifest'
-  | 'style'
-  | 'formats'
-  | 'socials'
-  | 'settings'
-  | 'users'
-  | 'promotion'
-  | 'analytics'
-  | 'ads'
-  | 'seo'
-  | 'system-hub'
-  | 'research'
-  | 'research-workspace'
-  | 'article-editor';
+// Реэкспорт для обратной совместимости — все существующие импортеры продолжают работать
+export { type PageId, type NavigationItem, navigationItems };
 
-export interface NavigationItem {
-  id: PageId;
-  title: string;
-  icon: string;
-  section: 'Главное' | 'Контент' | 'Редакция' | 'Система';
-  path: string;
-  keywords?: string[];
+interface NavigateOptions {
+  /** Не вызывать history.pushState (для popstate и начальной загрузки) */
+  skipPush?: boolean;
 }
-
-export const navigationItems: NavigationItem[] = [
-  // Главное
-  {
-    id: 'dashboard',
-    title: 'Дашборд',
-    icon: 'LayoutDashboard',
-    section: 'Главное',
-    path: 'dashboard',
-    keywords: ['главная', 'home', 'панель'],
-  },
-  {
-    id: 'ai-center',
-    title: 'AI центр',
-    icon: 'Sparkles',
-    section: 'Главное',
-    path: 'ai-center',
-    keywords: ['искусственный интеллект', 'нейросеть'],
-  },
-
-  // Контент
-  {
-    id: 'content-hub',
-    title: 'Контент',
-    icon: 'Layers',
-    section: 'Контент',
-    path: 'content-hub',
-    keywords: ['обзор контента'],
-  },
-  {
-    id: 'articles',
-    title: 'Статьи',
-    icon: 'FileText',
-    section: 'Контент',
-    path: 'articles',
-    keywords: ['посты', 'публикации', 'записи'],
-  },
-  {
-    id: 'calendar',
-    title: 'Календарь',
-    icon: 'Calendar',
-    section: 'Контент',
-    path: 'calendar',
-    keywords: ['расписание', 'планирование'],
-  },
-  {
-    id: 'categories',
-    title: 'Категории',
-    icon: 'FolderTree',
-    section: 'Контент',
-    path: 'categories',
-    keywords: ['рубрики'],
-  },
-  {
-    id: 'tags',
-    title: 'Метки',
-    icon: 'Tag',
-    section: 'Контент',
-    path: 'tags',
-    keywords: ['теги', 'labels'],
-  },
-  {
-    id: 'media',
-    title: 'Медиа',
-    icon: 'Image',
-    section: 'Контент',
-    path: 'media',
-    keywords: ['изображения', 'картинки', 'файлы'],
-  },
-  {
-    id: 'research',
-    title: 'Проекты',
-    icon: 'FolderKanban',
-    section: 'Контент',
-    path: 'research',
-    keywords: ['проекты', 'исследование', 'research', 'заметки'],
-  },
-  {
-    id: 'research-workspace',
-    title: 'Рабочее пространство',
-    icon: 'FlaskConical',
-    section: 'Контент',
-    path: 'research-workspace',
-    keywords: [],
-  },
-  {
-    id: 'article-editor',
-    title: 'Редактор статьи',
-    icon: 'PenLine',
-    section: 'Контент',
-    path: 'article-editor',
-    keywords: [],
-  },
-
-  // Редакция
-  {
-    id: 'editorial-hub',
-    title: 'Редакция',
-    icon: 'BookOpen',
-    section: 'Редакция',
-    path: 'editorial-hub',
-    keywords: ['обзор редакции'],
-  },
-  {
-    id: 'manifest',
-    title: 'Манифест',
-    icon: 'FileHeart',
-    section: 'Редакция',
-    path: 'manifest',
-    keywords: ['миссия', 'ценности'],
-  },
-  {
-    id: 'style',
-    title: 'Стиль',
-    icon: 'Palette',
-    section: 'Редакция',
-    path: 'style',
-    keywords: ['голос', 'тон', 'стайл гайд'],
-  },
-  {
-    id: 'formats',
-    title: 'Форматы',
-    icon: 'Layout',
-    section: 'Редакция',
-    path: 'formats',
-    keywords: ['шаблоны', 'структура'],
-  },
-  {
-    id: 'socials',
-    title: 'Соцсети',
-    icon: 'Share2',
-    section: 'Редакция',
-    path: 'socials',
-    keywords: ['социальные сети', 'smm'],
-  },
-
-  // Система
-  {
-    id: 'system-hub',
-    title: 'Система',
-    icon: 'Wrench',
-    section: 'Система',
-    path: 'system-hub',
-    keywords: ['обзор системы'],
-  },
-  {
-    id: 'settings',
-    title: 'Настройки',
-    icon: 'Settings',
-    section: 'Система',
-    path: 'settings',
-    keywords: ['конфигурация', 'параметры'],
-  },
-  {
-    id: 'users',
-    title: 'Пользователи',
-    icon: 'Users',
-    section: 'Система',
-    path: 'users',
-    keywords: ['команда', 'авторы'],
-  },
-  {
-    id: 'promotion',
-    title: 'Продвижение',
-    icon: 'TrendingUp',
-    section: 'Система',
-    path: 'promotion',
-    keywords: ['маркетинг', 'seo'],
-  },
-  {
-    id: 'analytics',
-    title: 'Аналитика',
-    icon: 'BarChart3',
-    section: 'Система',
-    path: 'analytics',
-    keywords: ['статистика', 'метрики'],
-  },
-  {
-    id: 'ads',
-    title: 'Реклама',
-    icon: 'Megaphone',
-    section: 'Система',
-    path: 'ads',
-    keywords: ['объявления', 'монетизация'],
-  },
-  {
-    id: 'seo',
-    title: 'SEO',
-    icon: 'Search',
-    section: 'Система',
-    path: 'seo',
-    keywords: ['оптимизация', 'поисковые системы'],
-  },
-];
 
 interface NavigationStore {
   currentPage: PageId;
   recentPages: PageId[];
   seoKbArticleId?: string;
   editArticleId?: string;
-  navigateTo: (pageId: PageId) => void;
-  navigateToArticleEditor: (articleId?: string) => void;
-  navigateToSeoKb: (articleId: string) => void;
+  navigateTo: (pageId: PageId, options?: NavigateOptions) => void;
+  navigateToArticleEditor: (
+    articleId?: string,
+    options?: NavigateOptions
+  ) => void;
+  navigateToResearchWorkspace: (
+    researchId: string,
+    options?: NavigateOptions
+  ) => void;
+  navigateToSeoKb: (articleId: string, options?: NavigateOptions) => void;
   clearSeoKbArticleId: () => void;
   getPageTitle: (pageId: PageId) => string;
   getNavigationItem: (pageId: PageId) => NavigationItem | undefined;
+}
+
+function pushUrl(pageId: PageId, url: string) {
+  window.history.pushState({ pageId }, '', url);
 }
 
 export const useNavigationStore = create<NavigationStore>(set => ({
@@ -254,7 +52,7 @@ export const useNavigationStore = create<NavigationStore>(set => ({
   seoKbArticleId: undefined,
   editArticleId: undefined,
 
-  navigateTo: (pageId: PageId) => {
+  navigateTo: (pageId: PageId, options?: NavigateOptions) => {
     set(state => {
       const recentPages = [
         pageId,
@@ -262,9 +60,12 @@ export const useNavigationStore = create<NavigationStore>(set => ({
       ].slice(0, 5);
       return { currentPage: pageId, recentPages };
     });
+    if (!options?.skipPush) {
+      pushUrl(pageId, pageIdToUrl(pageId));
+    }
   },
 
-  navigateToSeoKb: (articleId: string) => {
+  navigateToSeoKb: (articleId: string, options?: NavigateOptions) => {
     set(state => {
       const recentPages = [
         'seo' as PageId,
@@ -272,9 +73,12 @@ export const useNavigationStore = create<NavigationStore>(set => ({
       ].slice(0, 5);
       return { currentPage: 'seo', recentPages, seoKbArticleId: articleId };
     });
+    if (!options?.skipPush) {
+      pushUrl('seo', pageIdToUrl('seo'));
+    }
   },
 
-  navigateToArticleEditor: (articleId?: string) => {
+  navigateToArticleEditor: (articleId?: string, options?: NavigateOptions) => {
     set(state => {
       const recentPages = [
         'article-editor' as PageId,
@@ -286,6 +90,34 @@ export const useNavigationStore = create<NavigationStore>(set => ({
         editArticleId: articleId,
       };
     });
+    if (!options?.skipPush) {
+      const url = articleId
+        ? pageIdToUrl('article-editor', { id: articleId })
+        : pageIdToUrl('article-editor', { id: 'new' });
+      pushUrl('article-editor', url);
+    }
+  },
+
+  navigateToResearchWorkspace: (
+    researchId: string,
+    options?: NavigateOptions
+  ) => {
+    set(state => {
+      const recentPages = [
+        'research-workspace' as PageId,
+        ...state.recentPages.filter(p => p !== 'research-workspace'),
+      ].slice(0, 5);
+      return {
+        currentPage: 'research-workspace',
+        recentPages,
+      };
+    });
+    if (!options?.skipPush) {
+      pushUrl(
+        'research-workspace',
+        pageIdToUrl('research-workspace', { id: researchId })
+      );
+    }
   },
 
   clearSeoKbArticleId: () => {

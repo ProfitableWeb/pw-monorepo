@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AccessDenied } from '@/app/components/layout/access-denied';
 import { ThemeProvider } from '@/app/components/layout/theme-provider';
 import { SidebarNav } from '@/app/components/layout/sidebar-nav';
@@ -36,7 +36,28 @@ import { useIsMobile } from '@/app/components/ui/use-mobile';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { useAuthStore } from '@/app/store/auth-store';
 import { LoginPage } from '@/app/components/layout/login-page';
+import { urlToPageId } from '@/app/lib/routes';
+import type { PageId } from '@/app/store/navigation.constants';
+import { useResearchStore } from '@/app/store/research-store';
 import { Drawer } from 'vaul';
+
+/** Восстановить навигацию из распарсенного маршрута (включая параметрические) */
+function restoreRoute(
+  route: { pageId: PageId; params?: Record<string, string> },
+  options?: { skipPush?: boolean }
+) {
+  const nav = useNavigationStore.getState();
+  const { setCurrentResearch } = useResearchStore.getState();
+
+  if (route.pageId === 'article-editor' && route.params?.id) {
+    nav.navigateToArticleEditor(route.params.id, options);
+  } else if (route.pageId === 'research-workspace' && route.params?.id) {
+    setCurrentResearch(route.params.id);
+    nav.navigateToResearchWorkspace(route.params.id, options);
+  } else {
+    nav.navigateTo(route.pageId, options);
+  }
+}
 
 function App() {
   const { currentPage, navigateTo } = useNavigationStore();
@@ -47,23 +68,71 @@ function App() {
   const [aiSidebarOpen, setAiSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  // Проверка авторизации при загрузке + обработка OAuth callback
+  /** URL, на который нужно перенаправить после логина */
+  const intendedUrlRef = useRef<string | null>(null);
+
+  // Восстановление навигации из URL при загрузке
   useEffect(() => {
     const url = new URL(window.location.href);
+
+    // OAuth callback
     if (url.pathname.endsWith('/auth/callback')) {
       const success = url.searchParams.get('success');
       if (success === 'true') {
-        // Cookies уже установлены бэкендом — проверяем auth
         checkAuth().then(() => {
           window.history.replaceState({}, '', '/admin/');
         });
       } else {
         window.history.replaceState({}, '', '/admin/');
       }
-    } else {
-      checkAuth();
+      return;
+    }
+
+    checkAuth();
+
+    // Парсим URL → pageId и восстанавливаем состояние
+    const route = urlToPageId(url.pathname);
+    if (route) {
+      restoreRoute(route, { skipPush: true });
+      window.history.replaceState({ pageId: route.pageId }, '', url.pathname);
+      // Сохраняем intended URL для редиректа после логина
+      if (route.pageId !== 'dashboard') {
+        intendedUrlRef.current = url.pathname;
+      }
+    } else if (url.pathname !== '/admin/' && url.pathname !== '/admin') {
+      // Неизвестный путь — перенаправляем на дашборд
+      window.history.replaceState({ pageId: 'dashboard' }, '', '/admin/');
     }
   }, []);
+
+  // Popstate — back/forward браузера
+  // Всегда парсим URL а не state, чтобы корректно восстанавливать параметрические маршруты
+  useEffect(() => {
+    const handler = () => {
+      const route = urlToPageId(window.location.pathname);
+      if (route) {
+        restoreRoute(route, { skipPush: true });
+      } else {
+        navigateTo('dashboard', { skipPush: true });
+      }
+    };
+    window.addEventListener('popstate', handler);
+    return () => window.removeEventListener('popstate', handler);
+  }, []);
+
+  // Редирект на intended URL после успешного логина
+  useEffect(() => {
+    if (isAuthenticated && intendedUrlRef.current) {
+      const intended = intendedUrlRef.current;
+      intendedUrlRef.current = null;
+      // Если уже на нужной странице — не навигировать повторно
+      if (window.location.pathname === intended) return;
+      const route = urlToPageId(intended);
+      if (route && route.pageId !== 'dashboard') {
+        restoreRoute(route);
+      }
+    }
+  }, [isAuthenticated]);
 
   // Sync navigation store with local state
   useEffect(() => {
@@ -149,9 +218,7 @@ function App() {
       case 'system-hub':
         return <SystemHub />;
       case 'manifest':
-        return (
-          <ManifestPage onNavigateToAI={() => setActiveSection('ai-center')} />
-        );
+        return <ManifestPage onNavigateToAI={() => navigateTo('ai-center')} />;
       case 'style':
         return <StyleDashboard />;
       case 'editorial-hub':
@@ -285,9 +352,7 @@ function App() {
                 <AICenter />
               </div>
             ) : activeSection === 'manifest' ? (
-              <ManifestPage
-                onNavigateToAI={() => setActiveSection('ai-center')}
-              />
+              <ManifestPage onNavigateToAI={() => navigateTo('ai-center')} />
             ) : activeSection === 'style' ? (
               <StyleDashboard />
             ) : activeSection === 'media' ? (

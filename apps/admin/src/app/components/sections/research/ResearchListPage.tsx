@@ -60,7 +60,7 @@ export function ResearchListPage() {
     getFilteredResearches,
     getResearchCounts,
   } = useResearchStore();
-  const { navigateTo } = useNavigationStore();
+  const { navigateToResearchWorkspace } = useNavigationStore();
   const { setBreadcrumbs, reset } = useHeaderStore();
   const researches = getFilteredResearches();
 
@@ -75,7 +75,7 @@ export function ResearchListPage() {
 
   const handleOpenResearch = (id: string) => {
     setCurrentResearch(id);
-    navigateTo('research-workspace');
+    navigateToResearchWorkspace(id);
   };
 
   const handleCreate = () => {
