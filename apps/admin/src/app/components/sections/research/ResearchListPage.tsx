@@ -18,7 +18,7 @@ import {
   FileEdit,
   ImageIcon,
   BookOpen,
-  FlaskConical,
+  FolderKanban,
 } from 'lucide-react';
 import { useResearchStore } from '@/app/store/research-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
@@ -92,14 +92,14 @@ export function ResearchListPage() {
       {/* Заголовок */}
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight'>Исследования</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>Проекты</h1>
           <p className='text-muted-foreground mt-1'>
             Рабочие пространства для сбора материалов и создания публикаций
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className='h-4 w-4' />
-          Новое исследование
+          Новый проект
         </Button>
       </div>
 
@@ -108,7 +108,7 @@ export function ResearchListPage() {
         <div className='relative flex-1 max-w-sm'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
           <Input
-            placeholder='Поиск исследований...'
+            placeholder='Поиск проектов...'
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className='pl-9'
@@ -131,8 +131,8 @@ export function ResearchListPage() {
       {/* Сетка карточек */}
       {researches.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-16 text-center'>
-          <FlaskConical className='h-12 w-12 text-muted-foreground/40 mb-4' />
-          <p className='text-muted-foreground'>Исследований не найдено</p>
+          <FolderKanban className='h-12 w-12 text-muted-foreground/40 mb-4' />
+          <p className='text-muted-foreground'>Проектов не найдено</p>
         </div>
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
@@ -227,7 +227,7 @@ export function ResearchListPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Новое исследование</DialogTitle>
+            <DialogTitle>Новый проект</DialogTitle>
           </DialogHeader>
           <div className='space-y-4 py-2'>
             <div>
@@ -247,7 +247,7 @@ export function ResearchListPage() {
                 Описание
               </label>
               <Textarea
-                placeholder='Краткое описание цели и охвата исследования...'
+                placeholder='Краткое описание цели и охвата проекта...'
                 value={newDescription}
                 onChange={e => setNewDescription(e.target.value)}
                 rows={3}

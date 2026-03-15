@@ -16,6 +16,7 @@ import {
   FolderOpen,
   Tag,
   Image,
+  FolderKanban,
   Download,
   Upload,
   Filter,
@@ -25,10 +26,9 @@ import {
   Layers,
   LayoutDashboard,
 } from 'lucide-react';
-import { cn } from '@/app/components/ui/utils';
 
 interface ContentSection {
-  id: 'articles' | 'calendar' | 'categories' | 'tags' | 'media';
+  id: 'articles' | 'calendar' | 'categories' | 'tags' | 'media' | 'research';
   title: string;
   description: string;
   icon: typeof FileText;
@@ -36,7 +36,6 @@ interface ContentSection {
   itemsCount: number;
   itemsLabel: string;
   lastUpdate: string;
-  color: string;
 }
 
 const contentSections: ContentSection[] = [
@@ -49,7 +48,6 @@ const contentSections: ContentSection[] = [
     itemsCount: 142,
     itemsLabel: 'статьи',
     lastUpdate: '10 минут назад',
-    color: 'text-blue-500',
   },
   {
     id: 'calendar',
@@ -60,7 +58,6 @@ const contentSections: ContentSection[] = [
     itemsCount: 28,
     itemsLabel: 'запланировано',
     lastUpdate: '15 минут назад',
-    color: 'text-green-500',
   },
   {
     id: 'categories',
@@ -71,7 +68,6 @@ const contentSections: ContentSection[] = [
     itemsCount: 12,
     itemsLabel: 'категорий',
     lastUpdate: '1 час назад',
-    color: 'text-purple-500',
   },
   {
     id: 'tags',
@@ -82,7 +78,6 @@ const contentSections: ContentSection[] = [
     itemsCount: 45,
     itemsLabel: 'меток',
     lastUpdate: '30 минут назад',
-    color: 'text-orange-500',
   },
   {
     id: 'media',
@@ -93,7 +88,16 @@ const contentSections: ContentSection[] = [
     itemsCount: 357,
     itemsLabel: 'файлов',
     lastUpdate: '5 минут назад',
-    color: 'text-pink-500',
+  },
+  {
+    id: 'research',
+    title: 'Проекты',
+    description: 'Исследования и рабочие проекты',
+    icon: FolderKanban,
+    progress: 45,
+    itemsCount: 8,
+    itemsLabel: 'проектов',
+    lastUpdate: '2 часа назад',
   },
 ];
 
@@ -120,9 +124,7 @@ export function ContentHub() {
     0
   );
 
-  const handleSectionClick = (
-    sectionId: 'articles' | 'calendar' | 'categories' | 'tags' | 'media'
-  ) => {
+  const handleSectionClick = (sectionId: ContentSection['id']) => {
     navigateTo(sectionId);
   };
 
@@ -161,12 +163,7 @@ export function ContentHub() {
               <CardHeader className='pb-3'>
                 <div className='flex items-start justify-between'>
                   <div className='flex items-center gap-3'>
-                    <div
-                      className={cn(
-                        'p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-muted',
-                        section.color
-                      )}
-                    >
+                    <div className='p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-muted text-muted-foreground'>
                       <Icon className='size-5' />
                     </div>
                     <div>

@@ -31,7 +31,7 @@ const iconMap: Record<string, LucideIcon> = {
   Категории: FolderOpen,
   Метки: Tag,
   Медиа: Image,
-  Исследования: FlaskConical,
+  Проекты: FlaskConical,
 
   // Редакция
   Манифест: FileHeart,
@@ -112,14 +112,14 @@ export const breadcrumbPresets = {
     createBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard' },
       { label: 'Контент', href: 'content-hub' },
-      { label: 'Исследования' },
+      { label: 'Проекты' },
     ]),
 
   researchWorkspace: (researchTitle: string) =>
     createBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard' },
       { label: 'Контент', href: 'content-hub' },
-      { label: 'Исследования', href: 'research' },
+      { label: 'Проекты', href: 'research' },
       { label: researchTitle },
     ]),
 

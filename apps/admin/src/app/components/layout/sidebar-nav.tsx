@@ -33,7 +33,7 @@ import {
   SearchCheck,
   PanelLeftClose,
   LogOut,
-  FlaskConical,
+  FolderKanban,
 } from 'lucide-react';
 
 interface NavItem {
@@ -44,6 +44,7 @@ interface NavItem {
 
 interface NavSection {
   title: string;
+  hubId?: string;
   items: NavItem[];
 }
 
@@ -65,6 +66,7 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Контент',
+    hubId: 'content-hub',
     items: [
       {
         id: 'articles',
@@ -85,13 +87,14 @@ const navSections: NavSection[] = [
       { id: 'media', title: 'Медиа', icon: <Image className='h-5 w-5' /> },
       {
         id: 'research',
-        title: 'Исследования',
-        icon: <FlaskConical className='h-5 w-5' />,
+        title: 'Проекты',
+        icon: <FolderKanban className='h-5 w-5' />,
       },
     ],
   },
   {
     title: 'Редакция',
+    hubId: 'editorial-hub',
     items: [
       {
         id: 'manifest',
@@ -182,11 +185,19 @@ export function SidebarNav({
         >
           {navSections.map(section => (
             <div key={section.title}>
-              {!collapsed && (
-                <h3 className='mb-2 px-3 text-xs font-semibold tracking-wide text-muted-foreground/60'>
-                  {section.title}
-                </h3>
-              )}
+              {!collapsed &&
+                (section.hubId ? (
+                  <button
+                    onClick={() => onSectionChange(section.hubId!)}
+                    className='mb-2 px-3 text-xs font-semibold tracking-wide text-muted-foreground/60 transition-colors hover:text-muted-foreground'
+                  >
+                    {section.title}
+                  </button>
+                ) : (
+                  <h3 className='mb-2 px-3 text-xs font-semibold tracking-wide text-muted-foreground/60'>
+                    {section.title}
+                  </h3>
+                ))}
               <div className='space-y-1'>
                 {section.items.map(item => (
                   <button

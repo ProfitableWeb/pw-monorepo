@@ -110,11 +110,11 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     id: 'research',
-    title: 'Исследования',
-    icon: 'FlaskConical',
+    title: 'Проекты',
+    icon: 'FolderKanban',
     section: 'Контент',
     path: 'research',
-    keywords: ['исследование', 'research', 'заметки'],
+    keywords: ['проекты', 'исследование', 'research', 'заметки'],
   },
   {
     id: 'research-workspace',
