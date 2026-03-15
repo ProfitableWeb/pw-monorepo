@@ -4,6 +4,7 @@ PW-030 | Модель пользователя с поддержкой password_
 """
 
 import enum
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, String, UniqueConstraint
@@ -36,6 +37,7 @@ class User(UUIDMixin, TimestampMixin, Base):
     avatar: Mapped[str | None] = mapped_column(String(500))
     role: Mapped[UserRole] = mapped_column(default=UserRole.VIEWER)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_login_at: Mapped[datetime | None] = mapped_column(default=None)
 
     password_hash: Mapped[str | None] = mapped_column(String(200))
     oauth_provider: Mapped[str | None] = mapped_column(String(50))

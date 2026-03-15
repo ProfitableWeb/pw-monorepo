@@ -5,16 +5,10 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import {
-  Ban,
-  Settings,
-  Activity,
-  CheckCircle,
-  HeadphonesIcon,
-} from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/app/components/ui/avatar';
-import { users, roleLabels, roleIcons } from '../users.constants';
-import type { User } from '../users.types';
+import { Ban, Settings, Activity, HeadphonesIcon } from 'lucide-react';
+import { roleLabels, roleIcons } from '../users.constants';
+import type { UserBrief } from '../users.types';
+import { useAdminUserStats } from '../useAdminUsers';
 
 // Заглушка: Комментарии
 export function CommentsSection() {
@@ -71,6 +65,9 @@ export function BlacklistSection() {
 
 // Заглушка: Роли и права
 export function RolesSection() {
+  const { data: stats } = useAdminUserStats();
+  const byRole = stats?.byRole ?? {};
+
   return (
     <div className='space-y-6'>
       <div>
@@ -81,29 +78,30 @@ export function RolesSection() {
       </div>
 
       <div className='grid gap-4'>
-        {['admin', 'editor', 'author', 'viewer'].map(role => {
-          const RoleIcon = roleIcons[role as User['role']];
-          return (
-            <Card key={role}>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <RoleIcon className='size-5' />
-                  {roleLabels[role as User['role']]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className='text-sm text-muted-foreground mb-3'>
-                  Пользователей с этой ролью:{' '}
-                  {users.filter(u => u.role === role).length}
-                </p>
-                <Button variant='outline' size='sm'>
-                  <Settings className='h-4 w-4 mr-2' />
-                  Настроить права
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {(['admin', 'editor', 'author', 'viewer'] as UserBrief['role'][]).map(
+          role => {
+            const RoleIcon = roleIcons[role];
+            return (
+              <Card key={role}>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-2'>
+                    <RoleIcon className='size-5' />
+                    {roleLabels[role]}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className='text-sm text-muted-foreground mb-3'>
+                    Пользователей с этой ролью: {byRole[role] ?? 0}
+                  </p>
+                  <Button variant='outline' size='sm'>
+                    <Settings className='h-4 w-4 mr-2' />
+                    Настроить права
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          }
+        )}
       </div>
     </div>
   );
@@ -129,27 +127,7 @@ export function ActivitySection() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='space-y-2'>
-            {users.slice(0, 5).map(user => (
-              <div
-                key={user.id}
-                className='flex items-center gap-3 p-2 rounded-lg border'
-              >
-                <Avatar className='h-8 w-8'>
-                  <AvatarFallback className='text-xs'>
-                    {user.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium'>{user.name}</p>
-                  <p className='text-xs text-muted-foreground'>
-                    {user.lastActive}
-                  </p>
-                </div>
-                <CheckCircle className='h-4 w-4 text-green-500' />
-              </div>
-            ))}
-          </div>
+          <p className='text-muted-foreground'>Функционал в разработке</p>
         </CardContent>
       </Card>
     </div>

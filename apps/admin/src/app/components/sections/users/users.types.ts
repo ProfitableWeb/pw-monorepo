@@ -1,15 +1,15 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'editor' | 'author' | 'viewer';
-  status: 'active' | 'inactive' | 'invited';
-  avatar: string;
-  lastActive: string;
-  articlesCount: number;
-  joinedDate?: string;
-  department?: string;
-}
+import type {
+  AdminUserBrief,
+  AdminUserDetail,
+  AdminUserListStats,
+} from '@/lib/api-client';
+
+/** Алиасы для краткости внутри секции users/ */
+export type UserBrief = AdminUserBrief;
+export type UserDetail = AdminUserDetail;
+export type UserListStats = AdminUserListStats;
+
+export type UserStatus = 'active' | 'inactive';
 
 export interface NavigationItem {
   id: string;

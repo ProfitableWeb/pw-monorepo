@@ -1685,3 +1685,200 @@ export async function adminGetAuditUsers(): Promise<[string, string][]> {
   const data = await apiFetch<[string, string][]>('/admin/audit/users');
   return data ?? [];
 }
+
+// ---------------------------------------------------------------------------
+// Admin Users API (PW-045)
+// ---------------------------------------------------------------------------
+
+interface UserAdminBriefRaw {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  role: string;
+  is_active: boolean;
+  created_at: string;
+  last_login_at: string | null;
+  articles_count: number;
+}
+
+interface UserAdminDetailRaw extends UserAdminBriefRaw {
+  oauth_providers: string[];
+  has_password: boolean;
+  updated_at: string;
+}
+
+interface UserListStatsRaw {
+  total: number;
+  active: number;
+  inactive: number;
+  by_role: Record<string, number>;
+  total_articles: number;
+}
+
+export interface AdminUserBrief {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  role: 'admin' | 'editor' | 'author' | 'viewer';
+  isActive: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+  articlesCount: number;
+}
+
+export interface AdminUserDetail extends AdminUserBrief {
+  oauthProviders: string[];
+  hasPassword: boolean;
+  updatedAt: string;
+}
+
+export interface AdminUserListStats {
+  total: number;
+  active: number;
+  inactive: number;
+  byRole: Record<string, number>;
+  totalArticles: number;
+}
+
+export interface AdminUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  isActive?: boolean;
+  sort?: string;
+  order?: string;
+}
+
+function mapAdminUserBrief(raw: UserAdminBriefRaw): AdminUserBrief {
+  return {
+    id: raw.id,
+    name: raw.name,
+    email: raw.email,
+    avatar: raw.avatar,
+    role: raw.role as AdminUserBrief['role'],
+    isActive: raw.is_active,
+    createdAt: raw.created_at,
+    lastLoginAt: raw.last_login_at,
+    articlesCount: raw.articles_count,
+  };
+}
+
+export async function adminGetUsers(
+  params?: AdminUsersParams
+): Promise<PaginatedResult<AdminUserBrief>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.search) q.set('search', params.search);
+  if (params?.role) q.set('role', params.role);
+  if (params?.isActive !== undefined)
+    q.set('is_active', String(params.isActive));
+  if (params?.sort) q.set('sort', params.sort);
+  if (params?.order) q.set('order', params.order);
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<UserAdminBriefRaw[]>(
+    `/admin/users${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapAdminUserBrief),
+    meta: result.meta,
+  };
+}
+
+export async function adminGetUserStats(): Promise<AdminUserListStats> {
+  const raw = await apiFetch<UserListStatsRaw>('/admin/users/stats');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return {
+    total: raw.total,
+    active: raw.active,
+    inactive: raw.inactive,
+    byRole: raw.by_role,
+    totalArticles: raw.total_articles,
+  };
+}
+
+export async function adminUpdateUser(
+  userId: string,
+  data: { name?: string; email?: string; role?: string; is_active?: boolean }
+): Promise<AdminUserBrief> {
+  const raw = await apiMutate<UserAdminBriefRaw>(
+    `/admin/users/${encodeURIComponent(userId)}`,
+    { method: 'PATCH', body: data }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminUserBrief(raw);
+}
+
+export async function adminDeleteUser(userId: string): Promise<void> {
+  await apiMutate(`/admin/users/${encodeURIComponent(userId)}`, {
+    method: 'DELETE',
+  });
+}
+
+function mapAdminUserDetail(raw: UserAdminDetailRaw): AdminUserDetail {
+  return {
+    ...mapAdminUserBrief(raw),
+    oauthProviders: raw.oauth_providers,
+    hasPassword: raw.has_password,
+    updatedAt: raw.updated_at,
+  };
+}
+
+export async function adminGetUserDetail(
+  userId: string
+): Promise<AdminUserDetail> {
+  const raw = await apiFetch<UserAdminDetailRaw>(
+    `/admin/users/${encodeURIComponent(userId)}`
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminUserDetail(raw);
+}
+
+export async function adminUploadUserAvatar(
+  userId: string,
+  file: File
+): Promise<AdminUserDetail> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(
+    `${API_BASE}/admin/users/${encodeURIComponent(userId)}/avatar`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, err.detail ?? 'Ошибка загрузки аватара');
+  }
+  const json: ApiResponseRaw<UserAdminDetailRaw> = await res.json();
+  if (!json.data) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminUserDetail(json.data);
+}
+
+export async function adminDeleteUserAvatar(
+  userId: string
+): Promise<AdminUserDetail> {
+  const raw = await apiMutate<UserAdminDetailRaw>(
+    `/admin/users/${encodeURIComponent(userId)}/avatar`,
+    { method: 'DELETE' }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminUserDetail(raw);
+}
+
+export async function adminSetUserPassword(
+  userId: string,
+  newPassword: string
+): Promise<AdminUserDetail> {
+  const raw = await apiMutate<UserAdminDetailRaw>(
+    `/admin/users/${encodeURIComponent(userId)}/password`,
+    { method: 'POST', body: { new_password: newPassword } }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminUserDetail(raw);
+}

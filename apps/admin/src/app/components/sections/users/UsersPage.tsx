@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/app/components/ui/input';
-import { useHeaderStore } from '@/app/store/header-store';
+import { useHeaderStore, type BreadcrumbItem } from '@/app/store/header-store';
 import {
   Users,
   LayoutDashboard,
@@ -17,6 +17,7 @@ import { cn } from '@/app/components/ui/utils';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { NAVIGATION_ITEMS } from './users.constants';
 import { UsersList } from './assets/UsersList';
+import { UserProfile } from './assets/UserProfile';
 import { TeamSection } from './assets/TeamSection';
 import { InvitesSection } from './assets/InvitesSection';
 import { AccessSection } from './access';
@@ -32,9 +33,13 @@ export function UsersPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();
   const [activeSubsection, setActiveSubsection] = useState('list');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
-    setBreadcrumbs([
+    const crumbs: BreadcrumbItem[] = [
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
       {
         label: 'Система',
@@ -48,16 +53,44 @@ export function UsersPage() {
           { label: 'SEO', icon: SearchCheck, href: 'seo' },
         ],
       },
-      { label: 'Пользователи', icon: Users },
-    ]);
+    ];
 
+    if (selectedUser) {
+      crumbs.push({
+        label: 'Пользователи',
+        icon: Users,
+        onClick: () => setSelectedUser(null),
+      });
+      crumbs.push({ label: selectedUser.name });
+    } else {
+      crumbs.push({ label: 'Пользователи', icon: Users });
+    }
+
+    setBreadcrumbs(crumbs);
     return () => reset();
-  }, [setBreadcrumbs, reset]);
+  }, [selectedUser, setBreadcrumbs, reset]);
+
+  const handleSelectUser = (userId: string, userName: string) => {
+    setSelectedUser({ id: userId, name: userName });
+  };
+
+  const handleBackToList = () => {
+    setSelectedUser(null);
+  };
 
   const renderSubsection = () => {
+    if (activeSubsection === 'list' && selectedUser) {
+      return <UserProfile userId={selectedUser.id} onBack={handleBackToList} />;
+    }
+
     switch (activeSubsection) {
       case 'list':
-        return <UsersList searchQuery={searchQuery} />;
+        return (
+          <UsersList
+            searchQuery={searchQuery}
+            onSelectUser={handleSelectUser}
+          />
+        );
       case 'team':
         return <TeamSection />;
       case 'invites':
@@ -75,7 +108,12 @@ export function UsersPage() {
       case 'support':
         return <SupportSection />;
       default:
-        return <UsersList searchQuery={searchQuery} />;
+        return (
+          <UsersList
+            searchQuery={searchQuery}
+            onSelectUser={handleSelectUser}
+          />
+        );
     }
   };
 
@@ -104,7 +142,10 @@ export function UsersPage() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSubsection(item.id)}
+                  onClick={() => {
+                    setActiveSubsection(item.id);
+                    setSelectedUser(null);
+                  }}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1',
                     isActive
@@ -129,9 +170,14 @@ export function UsersPage() {
 
       {/* Основной контент */}
       <div className='flex-1 flex flex-col min-w-0 min-h-0'>
-        <ScrollArea className='flex-1 min-h-0'>
-          <div className='max-w-6xl mx-auto p-6'>{renderSubsection()}</div>
-        </ScrollArea>
+        {activeSubsection === 'list' ? (
+          /* UsersList и UserProfile управляют своим скроллом */
+          renderSubsection()
+        ) : (
+          <ScrollArea className='flex-1 min-h-0'>
+            <div className='max-w-6xl mx-auto p-6'>{renderSubsection()}</div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );

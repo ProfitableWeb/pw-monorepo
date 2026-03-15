@@ -101,6 +101,7 @@ def login(
             detail="Аккаунт заблокирован",
         )
 
+    user_service.update_last_login(db, user)
     _issue_tokens(response, user)
     return _user_response(user)
 
@@ -277,6 +278,7 @@ def oauth_callback(
             email=profile["email"],
             avatar=profile.get("avatar"),
         )
+        user_service.update_last_login(db, user)
 
         redirect_url = f"{redirect_base}/auth/callback?success=true"
         redirect_response = Response(
@@ -337,6 +339,7 @@ def telegram_verify(
         email=email,
         avatar=body.photo_url,
     )
+    user_service.update_last_login(db, user)
 
     _issue_tokens(response, user)
     return _user_response(user)

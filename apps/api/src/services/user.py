@@ -3,9 +3,10 @@ PW-030 | Сервис пользователей: CRUD + OAuth find-or-create.
 """
 
 import uuid
+from datetime import datetime, timezone
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, selectinload
 
 from src.models.oauth_link import UserOAuthLink
 from src.models.user import User, UserRole
@@ -199,6 +200,108 @@ def update_avatar(db: Session, user: User, avatar_url: str | None) -> User:
 
 def set_password(db: Session, user: User, password_hash: str) -> User:
     user.password_hash = password_hash
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+# -----------------------------------------------------------------------
+# Admin: управление пользователями
+# -----------------------------------------------------------------------
+
+
+def update_last_login(db: Session, user: User) -> None:
+    """Обновить время последнего входа."""
+    user.last_login_at = datetime.now(timezone.utc)
+    db.commit()
+
+
+def list_users(
+    db: Session,
+    *,
+    page: int = 1,
+    limit: int = 20,
+    search: str | None = None,
+    role: str | None = None,
+    is_active: bool | None = None,
+    sort: str = "created_at",
+    order: str = "desc",
+) -> tuple[list[User], int]:
+    """Список пользователей с фильтрацией и пагинацией."""
+    stmt = select(User).options(selectinload(User.articles))
+
+    if search:
+        pattern = f"%{search}%"
+        stmt = stmt.where(
+            User.name.ilike(pattern) | User.email.ilike(pattern)
+        )
+    if role:
+        roles = [r.strip() for r in role.split(",")]
+        stmt = stmt.where(User.role.in_(roles))
+    if is_active is not None:
+        stmt = stmt.where(User.is_active.is_(is_active))
+
+    # Count
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = db.scalar(count_stmt) or 0
+
+    # Sort
+    allowed_sorts = {"created_at", "name", "email", "last_login_at", "role"}
+    sort_col = getattr(User, sort) if sort in allowed_sorts else User.created_at
+    stmt = stmt.order_by(sort_col.desc() if order == "desc" else sort_col.asc())
+
+    # Paginate
+    stmt = stmt.offset((page - 1) * limit).limit(limit)
+
+    return list(db.scalars(stmt).all()), total
+
+
+def get_user_stats(db: Session) -> dict:
+    """Статистика пользователей: total, active, inactive, by_role, total_articles."""
+    from src.models.article import Article
+
+    total = db.scalar(select(func.count(User.id))) or 0
+    active = db.scalar(select(func.count(User.id)).where(User.is_active.is_(True))) or 0
+    inactive = total - active
+
+    role_rows = db.execute(
+        select(User.role, func.count(User.id)).group_by(User.role)
+    ).all()
+    by_role = {str(r[0].value if hasattr(r[0], 'value') else r[0]): r[1] for r in role_rows}
+
+    total_articles = db.scalar(select(func.count(Article.id))) or 0
+
+    return {
+        "total": total,
+        "active": active,
+        "inactive": inactive,
+        "by_role": by_role,
+        "total_articles": total_articles,
+    }
+
+
+def update_user_admin(
+    db: Session,
+    user: User,
+    *,
+    name: str | None = None,
+    email: str | None = None,
+    role: str | None = None,
+    is_active: bool | None = None,
+) -> User:
+    """Обновление пользователя администратором (включая роль)."""
+    if name is not None:
+        user.name = name
+    if email is not None:
+        existing = get_by_email(db, email)
+        if existing and existing.id != user.id:
+            msg = "Пользователь с таким email уже существует"
+            raise ValueError(msg)
+        user.email = email
+    if role is not None:
+        user.role = UserRole(role)
+    if is_active is not None:
+        user.is_active = is_active
     db.commit()
     db.refresh(user)
     return user
