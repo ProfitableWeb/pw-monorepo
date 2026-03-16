@@ -33,9 +33,16 @@ class Settings(BaseSettings):
     jwt_access_expire_minutes: int = 15
     jwt_refresh_expire_days: int = 7
 
-    # OAuth — Yandex
+    # OAuth — Yandex (логин пользователей)
     yandex_client_id: str = ""
     yandex_client_secret: str = ""
+
+    # OAuth — Yandex SEO (Метрика + Вебмастер, PW-048)
+    yandex_seo_client_id: str = ""
+    yandex_seo_client_secret: str = ""
+
+    # Шифрование OAuth-токенов (Fernet, PW-048)
+    encryption_key: str = ""
 
     # OAuth — Google
     google_client_id: str = ""

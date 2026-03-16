@@ -63,13 +63,22 @@ def update_settings(
 # --- PW-047: SEO-настройки ---
 
 
+def _deep_merge(base: dict, override: dict) -> dict:
+    """Рекурсивно мержит override в base (base не мутируется)."""
+    result = base.copy()
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = _deep_merge(result[key], value)
+        else:
+            result[key] = value
+    return result
+
+
 def _merge_with_defaults(stored: dict, defaults: dict) -> dict:
     """Объединяет сохранённые JSONB-данные с дефолтами (для пустых полей после миграции)."""
     if not stored:
         return defaults.copy()
-    merged = defaults.copy()
-    merged.update(stored)
-    return merged
+    return _deep_merge(defaults, stored)
 
 
 def get_seo_settings(db: Session) -> SeoSettingsResponse:
@@ -113,17 +122,20 @@ def update_seo_settings(
     settings.updated_by = updated_by
 
     if sitemap_config is not None:
-        settings.sitemap_config = sitemap_config.model_dump()
+        existing = settings.sitemap_config or {}
+        settings.sitemap_config = _deep_merge(existing, sitemap_config.model_dump())
     if robots_txt is not None:
         settings.robots_txt = robots_txt
     if rss_config is not None:
-        settings.rss_config = rss_config.model_dump()
+        existing = settings.rss_config or {}
+        settings.rss_config = _deep_merge(existing, rss_config.model_dump())
     if default_meta_directives is not None:
-        settings.default_meta_directives = {
-            k: v.model_dump() for k, v in default_meta_directives.items()
-        }
+        existing = settings.default_meta_directives or {}
+        incoming = {k: v.model_dump() for k, v in default_meta_directives.items()}
+        settings.default_meta_directives = _deep_merge(existing, incoming)
     if metrika_config is not None:
-        settings.metrika_config = metrika_config.model_dump()
+        existing = settings.metrika_config or {}
+        settings.metrika_config = _deep_merge(existing, metrika_config.model_dump())
 
     db.commit()
     db.refresh(settings)

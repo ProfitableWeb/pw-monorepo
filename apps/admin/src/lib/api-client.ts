@@ -2046,3 +2046,191 @@ export async function updateSeoSettings(
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapSeoSettings(raw);
 }
+
+// ---------------------------------------------------------------------------
+// PW-048: Yandex OAuth + Stats API
+// ---------------------------------------------------------------------------
+
+/** Статус подключения Yandex OAuth */
+export interface YandexConnectionStatus {
+  connected: boolean;
+  account: string | null;
+  permissions: string[] | null;
+  connectedAt: string | null;
+}
+
+interface YandexConnectionStatusRaw {
+  connected: boolean;
+  account: string | null;
+  permissions: string[] | null;
+  connected_at: string | null;
+}
+
+function mapYandexStatus(
+  raw: YandexConnectionStatusRaw
+): YandexConnectionStatus {
+  return {
+    connected: raw.connected,
+    account: raw.account,
+    permissions: raw.permissions,
+    connectedAt: raw.connected_at,
+  };
+}
+
+export async function getYandexAuthUrl(): Promise<string> {
+  const data = await apiFetch<{ url: string }>('/admin/seo/yandex/auth-url');
+  if (!data) throw new ApiError(500, 'Пустой ответ API');
+  return data.url;
+}
+
+export async function connectYandex(
+  code: string
+): Promise<YandexConnectionStatus> {
+  const raw = await apiMutate<YandexConnectionStatusRaw>(
+    '/admin/seo/yandex/connect',
+    {
+      method: 'POST',
+      body: { code },
+    }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapYandexStatus(raw);
+}
+
+export async function disconnectYandex(): Promise<YandexConnectionStatus> {
+  const raw = await apiMutate<YandexConnectionStatusRaw>(
+    '/admin/seo/yandex/disconnect',
+    {
+      method: 'POST',
+      body: {},
+    }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapYandexStatus(raw);
+}
+
+export async function getYandexStatus(): Promise<YandexConnectionStatus> {
+  const raw = await apiFetch<YandexConnectionStatusRaw>(
+    '/admin/seo/yandex/status'
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapYandexStatus(raw);
+}
+
+/** Статистика Метрики */
+export interface MetrikaStatsData {
+  period: string;
+  visitors: { value: number; change: number };
+  pageviews: { value: number; change: number };
+  pageDepth: { value: number; change: number };
+  avgDuration: { value: number; change: number };
+  bounceRate: { value: number; change: number };
+  dailyVisits: number[];
+}
+
+interface MetrikaStatsRaw {
+  period: string;
+  visitors: { value: number; change: number };
+  pageviews: { value: number; change: number };
+  page_depth: { value: number; change: number };
+  avg_duration: { value: number; change: number };
+  bounce_rate: { value: number; change: number };
+  daily_visits: number[];
+}
+
+function mapMetrikaStats(raw: MetrikaStatsRaw): MetrikaStatsData {
+  return {
+    period: raw.period,
+    visitors: raw.visitors,
+    pageviews: raw.pageviews,
+    pageDepth: raw.page_depth,
+    avgDuration: raw.avg_duration,
+    bounceRate: raw.bounce_rate,
+    dailyVisits: raw.daily_visits,
+  };
+}
+
+export async function getMetrikaStats(
+  period = '7d'
+): Promise<MetrikaStatsData> {
+  const raw = await apiFetch<MetrikaStatsRaw>(
+    `/admin/seo/metrika/stats?period=${period}`
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapMetrikaStats(raw);
+}
+
+/** Данные Вебмастера */
+export interface WebmasterSummaryData {
+  sqi: number;
+  searchablePages: number;
+  excludedPages: number;
+  siteProblems: number;
+  sqiHistory: number[];
+}
+
+interface WebmasterSummaryRaw {
+  sqi: number;
+  searchable_pages: number;
+  excluded_pages: number;
+  site_problems: number;
+  sqi_history: number[];
+}
+
+export async function getWebmasterSummary(): Promise<WebmasterSummaryData> {
+  const raw = await apiFetch<WebmasterSummaryRaw>(
+    '/admin/seo/webmaster/summary'
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return {
+    sqi: raw.sqi,
+    searchablePages: raw.searchable_pages,
+    excludedPages: raw.excluded_pages,
+    siteProblems: raw.site_problems,
+    sqiHistory: raw.sqi_history,
+  };
+}
+
+export interface WebmasterIndexingData {
+  indexed: { count: number; percent: number };
+  pending: { count: number; percent: number };
+  excluded: { count: number; percent: number };
+  history: number[];
+  lastUpdated: string;
+}
+
+interface WebmasterIndexingRaw {
+  indexed: { count: number; percent: number };
+  pending: { count: number; percent: number };
+  excluded: { count: number; percent: number };
+  history: number[];
+  last_updated: string;
+}
+
+export async function getWebmasterIndexing(): Promise<WebmasterIndexingData> {
+  const raw = await apiFetch<WebmasterIndexingRaw>(
+    '/admin/seo/webmaster/indexing'
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return {
+    indexed: raw.indexed,
+    pending: raw.pending,
+    excluded: raw.excluded,
+    history: raw.history,
+    lastUpdated: raw.last_updated,
+  };
+}
+
+export interface WebmasterQueryData {
+  query: string;
+  position: number;
+  impressions: number;
+}
+
+export async function getWebmasterQueries(): Promise<WebmasterQueryData[]> {
+  const raw = await apiFetch<{ queries: WebmasterQueryData[] }>(
+    '/admin/seo/webmaster/queries'
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return raw.queries;
+}

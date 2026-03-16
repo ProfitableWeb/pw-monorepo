@@ -1,13 +1,15 @@
 """
-PW-038/PW-047 | Системные настройки редакции (синглтон).
+PW-038/PW-047/PW-048 | Системные настройки редакции (синглтон).
 Часовой пояс единый для всей системы — published_at в UTC,
 фронтенд конвертирует для отображения.
 PW-047: SEO-настройки — sitemap, robots.txt, RSS, мета-директивы, Метрика.
+PW-048: Yandex OAuth — зашифрованный токен, аккаунт, scopes.
 """
 
 import uuid
+from datetime import datetime
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -94,6 +96,19 @@ class SystemSettings(UUIDMixin, TimestampMixin, Base):
     )
     metrika_config: Mapped[dict] = mapped_column(
         JSONB, nullable=False, default=dict, server_default="{}"
+    )
+
+    # PW-048: Yandex OAuth (сервисный токен для Метрики + Вебмастера)
+    yandex_oauth_token: Mapped[str | None] = mapped_column(Text, nullable=True)
+    yandex_oauth_account: Mapped[str | None] = mapped_column(
+        String(200), nullable=True
+    )
+    yandex_oauth_scopes: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    yandex_oauth_connected_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    yandex_oauth_user_id: Mapped[str | None] = mapped_column(
+        String(50), nullable=True
     )
 
     def __repr__(self) -> str:

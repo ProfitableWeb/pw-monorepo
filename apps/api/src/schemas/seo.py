@@ -1,4 +1,4 @@
-"""PW-047 | Pydantic-схемы SEO-настроек (admin + public)."""
+"""PW-047/PW-048 | Pydantic-схемы SEO-настроек (admin + public) + Yandex OAuth/Stats."""
 
 from typing import Literal
 
@@ -104,3 +104,67 @@ class SeoPublicConfigResponse(BaseModel):
     robots_txt: str
     rss_config: RssConfigSchema
     metrika_config: MetrikaConfigSchema
+
+
+# --- PW-048: Yandex OAuth + статистика ---
+
+
+class YandexAuthUrlResponse(BaseModel):
+    url: str
+
+
+class YandexConnectRequest(BaseModel):
+    code: str
+
+
+class YandexConnectionStatus(BaseModel):
+    connected: bool
+    account: str | None = None
+    permissions: list[str] | None = None
+    connected_at: str | None = None
+
+
+class MetricWithChange(BaseModel):
+    value: float
+    change: float
+
+
+class MetrikaStatsResponse(BaseModel):
+    period: str
+    visitors: MetricWithChange
+    pageviews: MetricWithChange
+    page_depth: MetricWithChange
+    avg_duration: MetricWithChange
+    bounce_rate: MetricWithChange
+    daily_visits: list[int]
+
+
+class IndexingCounts(BaseModel):
+    count: int
+    percent: int
+
+
+class WebmasterSummaryResponse(BaseModel):
+    sqi: int
+    searchable_pages: int
+    excluded_pages: int
+    site_problems: int
+    sqi_history: list[int]
+
+
+class WebmasterIndexingResponse(BaseModel):
+    indexed: IndexingCounts
+    pending: IndexingCounts
+    excluded: IndexingCounts
+    history: list[int]
+    last_updated: str
+
+
+class WebmasterQueryItem(BaseModel):
+    query: str
+    position: float
+    impressions: int
+
+
+class WebmasterQueriesResponse(BaseModel):
+    queries: list[WebmasterQueryItem]

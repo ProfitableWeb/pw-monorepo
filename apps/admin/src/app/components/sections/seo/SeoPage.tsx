@@ -29,8 +29,10 @@ import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/components/ui/utils';
 import {
   getSeoSettings,
+  getYandexStatus,
   updateSeoSettings,
   type SeoSettings,
+  type YandexConnectionStatus,
 } from '@/lib/api-client';
 
 import { seoCategories } from './seo.constants';
@@ -54,14 +56,33 @@ export function SeoPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [seoSettings, setSeoSettings] = useState<SeoSettings | null>(null);
+  const [isSeoLoading, setIsSeoLoading] = useState(true);
+  const [yandexConnection, setYandexConnection] =
+    useState<YandexConnectionStatus | null>(null);
   const pendingChanges = useRef<Partial<SeoSettings>>({});
   const isKnowledgeBase = activeCategory === 'knowledge-base';
 
-  // Загрузка SEO-настроек из API
+  // Загрузка SEO-настроек + статус Yandex OAuth (параллельно)
   useEffect(() => {
-    getSeoSettings()
-      .then(setSeoSettings)
-      .catch(err => console.error('Ошибка загрузки SEO-настроек:', err));
+    Promise.all([
+      getSeoSettings().catch(err => {
+        console.error('Ошибка загрузки SEO-настроек:', err);
+        return null;
+      }),
+      getYandexStatus().catch(
+        () =>
+          ({
+            connected: false,
+            account: null,
+            permissions: null,
+            connectedAt: null,
+          }) as YandexConnectionStatus
+      ),
+    ]).then(([settings, connection]) => {
+      if (settings) setSeoSettings(settings);
+      setYandexConnection(connection);
+      setIsSeoLoading(false);
+    });
   }, []);
 
   /** Принимает обновления от дочерних компонентов, накапливает до сохранения */
@@ -141,6 +162,13 @@ export function SeoPage() {
           />
         );
       case 'indexing':
+        if (isSeoLoading) {
+          return (
+            <div className='flex items-center justify-center py-12'>
+              <Loader2 className='size-6 animate-spin text-muted-foreground' />
+            </div>
+          );
+        }
         return (
           <IndexingFeedsSettings
             initialData={seoSettings}
@@ -152,15 +180,32 @@ export function SeoPage() {
           <SchemaSettings onChangeDetected={() => setHasUnsavedChanges(true)} />
         );
       case 'metrika':
+        if (isSeoLoading) {
+          return (
+            <div className='flex items-center justify-center py-12'>
+              <Loader2 className='size-6 animate-spin text-muted-foreground' />
+            </div>
+          );
+        }
         return (
           <YandexMetrikaSettings
             initialData={seoSettings}
             onDataChange={handleSeoDataChange}
+            connection={yandexConnection}
+            onConnectionChange={setYandexConnection}
           />
         );
       case 'webmaster':
+        if (isSeoLoading) {
+          return (
+            <div className='flex items-center justify-center py-12'>
+              <Loader2 className='size-6 animate-spin text-muted-foreground' />
+            </div>
+          );
+        }
         return (
           <YandexWebmasterSettings
+            connection={yandexConnection}
             onChangeDetected={() => setHasUnsavedChanges(true)}
           />
         );
@@ -210,9 +255,26 @@ export function SeoPage() {
     // Перезагружаем настройки из API, сбрасывая все изменения
     pendingChanges.current = {};
     setHasUnsavedChanges(false);
-    getSeoSettings()
-      .then(setSeoSettings)
-      .catch(err => console.error('Ошибка загрузки SEO-настроек:', err));
+    setIsSeoLoading(true);
+    Promise.all([
+      getSeoSettings().catch(err => {
+        console.error('Ошибка загрузки SEO-настроек:', err);
+        return null;
+      }),
+      getYandexStatus().catch(
+        () =>
+          ({
+            connected: false,
+            account: null,
+            permissions: null,
+            connectedAt: null,
+          }) as YandexConnectionStatus
+      ),
+    ]).then(([settings, connection]) => {
+      if (settings) setSeoSettings(settings);
+      setYandexConnection(connection);
+      setIsSeoLoading(false);
+    });
   };
 
   return (
