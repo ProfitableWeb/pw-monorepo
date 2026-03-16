@@ -29,9 +29,10 @@ import { cn } from '@/app/components/ui/utils';
 import { seoCategories } from './seo.constants';
 import { GeneralSeoSettings } from './assets/GeneralSeoSettings';
 import { MetaTagsSettings } from './assets/MetaTagsSettings';
-import { SitemapSettings } from './assets/SitemapSettings';
+import { IndexingFeedsSettings } from './assets/IndexingFeedsSettings';
 import { SchemaSettings } from './assets/SchemaSettings';
-import { MonitoringSettings } from './assets/MonitoringSettings';
+import { YandexMetrikaSettings } from './assets/YandexMetrikaSettings';
+import { YandexWebmasterSettings } from './assets/YandexWebmasterSettings';
 import { PerformanceSettings } from './assets/PerformanceSettings';
 import { UrlSettings } from './assets/UrlSettings';
 import { ContentAnalysisSettings } from './assets/ContentAnalysisSettings';
@@ -115,9 +116,9 @@ export function SeoPage() {
             onChangeDetected={() => setHasUnsavedChanges(true)}
           />
         );
-      case 'sitemap':
+      case 'indexing':
         return (
-          <SitemapSettings
+          <IndexingFeedsSettings
             onChangeDetected={() => setHasUnsavedChanges(true)}
           />
         );
@@ -125,9 +126,15 @@ export function SeoPage() {
         return (
           <SchemaSettings onChangeDetected={() => setHasUnsavedChanges(true)} />
         );
-      case 'monitoring':
+      case 'metrika':
         return (
-          <MonitoringSettings
+          <YandexMetrikaSettings
+            onChangeDetected={() => setHasUnsavedChanges(true)}
+          />
+        );
+      case 'webmaster':
+        return (
+          <YandexWebmasterSettings
             onChangeDetected={() => setHasUnsavedChanges(true)}
           />
         );
