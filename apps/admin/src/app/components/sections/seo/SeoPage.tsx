@@ -1,10 +1,11 @@
 /**
- * Оркестратор SEO-раздела.
+ * PW-046/PW-047 | Оркестратор SEO-раздела.
  * Управляет sidebar-навигацией, маршрутизацией контента по категориям
  * и отображением базы знаний.
+ * PW-047: загрузка SEO-настроек из API, сохранение через PATCH.
  */
 import { useHeaderStore } from '@/app/store/header-store';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   LayoutDashboard,
   Settings,
@@ -18,6 +19,7 @@ import {
   ChevronRight,
   Save,
   X,
+  Loader2,
 } from 'lucide-react';
 import { KnowledgeBase } from './knowledge-base';
 import { useNavigationStore } from '@/app/store/navigation-store';
@@ -25,6 +27,11 @@ import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/components/ui/utils';
+import {
+  getSeoSettings,
+  updateSeoSettings,
+  type SeoSettings,
+} from '@/lib/api-client';
 
 import { seoCategories } from './seo.constants';
 import { GeneralSeoSettings } from './assets/GeneralSeoSettings';
@@ -45,7 +52,24 @@ export function SeoPage() {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [seoSettings, setSeoSettings] = useState<SeoSettings | null>(null);
+  const pendingChanges = useRef<Partial<SeoSettings>>({});
   const isKnowledgeBase = activeCategory === 'knowledge-base';
+
+  // Загрузка SEO-настроек из API
+  useEffect(() => {
+    getSeoSettings()
+      .then(setSeoSettings)
+      .catch(err => console.error('Ошибка загрузки SEO-настроек:', err));
+  }, []);
+
+  /** Принимает обновления от дочерних компонентов, накапливает до сохранения */
+  const handleSeoDataChange = useCallback((update: Partial<SeoSettings>) => {
+    pendingChanges.current = { ...pendingChanges.current, ...update };
+    setSeoSettings(prev => (prev ? { ...prev, ...update } : null));
+    setHasUnsavedChanges(true);
+  }, []);
 
   // Реакция на навигацию из InfoHint
   useEffect(() => {
@@ -119,7 +143,8 @@ export function SeoPage() {
       case 'indexing':
         return (
           <IndexingFeedsSettings
-            onChangeDetected={() => setHasUnsavedChanges(true)}
+            initialData={seoSettings}
+            onDataChange={handleSeoDataChange}
           />
         );
       case 'schema':
@@ -129,7 +154,8 @@ export function SeoPage() {
       case 'metrika':
         return (
           <YandexMetrikaSettings
-            onChangeDetected={() => setHasUnsavedChanges(true)}
+            initialData={seoSettings}
+            onDataChange={handleSeoDataChange}
           />
         );
       case 'webmaster':
@@ -161,12 +187,32 @@ export function SeoPage() {
     }
   };
 
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
+  const handleSave = async () => {
+    const changes = pendingChanges.current;
+    if (Object.keys(changes).length === 0) {
+      setHasUnsavedChanges(false);
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const updated = await updateSeoSettings(changes);
+      setSeoSettings(updated);
+      pendingChanges.current = {};
+      setHasUnsavedChanges(false);
+    } catch (err) {
+      console.error('Ошибка сохранения SEO-настроек:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
+    // Перезагружаем настройки из API, сбрасывая все изменения
+    pendingChanges.current = {};
     setHasUnsavedChanges(false);
+    getSeoSettings()
+      .then(setSeoSettings)
+      .catch(err => console.error('Ошибка загрузки SEO-настроек:', err));
   };
 
   return (
@@ -238,12 +284,21 @@ export function SeoPage() {
               У вас есть несохраненные изменения
             </p>
             <div className='flex gap-2'>
-              <Button variant='outline' size='sm' onClick={handleCancel}>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={handleCancel}
+                disabled={isSaving}
+              >
                 <X className='size-4 mr-2' />
                 Отменить
               </Button>
-              <Button size='sm' onClick={handleSave}>
-                <Save className='size-4 mr-2' />
+              <Button size='sm' onClick={handleSave} disabled={isSaving}>
+                {isSaving ? (
+                  <Loader2 className='size-4 mr-2 animate-spin' />
+                ) : (
+                  <Save className='size-4 mr-2' />
+                )}
                 Сохранить изменения
               </Button>
             </div>

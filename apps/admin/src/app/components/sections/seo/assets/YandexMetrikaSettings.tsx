@@ -35,22 +35,26 @@ import {
   MOCK_YANDEX_API_CONNECTION,
   MOCK_METRIKA_STATS,
 } from '../seo.constants';
+import type { SeoSettings } from '@/lib/api-client';
 
 interface YandexMetrikaSettingsProps {
-  onChangeDetected: () => void;
+  initialData?: SeoSettings | null;
+  onDataChange: (update: Partial<SeoSettings>) => void;
 }
 
 export function YandexMetrikaSettings({
-  onChangeDetected,
+  initialData,
+  onDataChange,
 }: YandexMetrikaSettingsProps) {
-  const [counterId, setCounterId] = useState(MOCK_METRIKA_CONFIG.counterId);
-  const [clickmap, setClickmap] = useState(MOCK_METRIKA_CONFIG.clickmap);
-  const [trackLinks, setTrackLinks] = useState(MOCK_METRIKA_CONFIG.trackLinks);
+  const mc = initialData?.metrikaConfig ?? MOCK_METRIKA_CONFIG;
+  const [counterId, setCounterId] = useState(mc.counterId);
+  const [clickmap, setClickmap] = useState(mc.clickmap);
+  const [trackLinks, setTrackLinks] = useState(mc.trackLinks);
   const [accurateTrackBounce, setAccurateTrackBounce] = useState(
-    MOCK_METRIKA_CONFIG.accurateTrackBounce
+    mc.accurateTrackBounce
   );
-  const [webvisor, setWebvisor] = useState(MOCK_METRIKA_CONFIG.webvisor);
-  const [trackHash, setTrackHash] = useState(MOCK_METRIKA_CONFIG.trackHash);
+  const [webvisor, setWebvisor] = useState(mc.webvisor);
+  const [trackHash, setTrackHash] = useState(mc.trackHash);
 
   const [isConnected, setIsConnected] = useState(
     MOCK_YANDEX_API_CONNECTION.connected
@@ -60,10 +64,22 @@ export function YandexMetrikaSettings({
   const [tokenOpen, setTokenOpen] = useState(false);
   const [period, setPeriod] = useState('30');
 
-  const handleToggle = (setter: (v: boolean) => void) => (checked: boolean) => {
-    setter(checked);
-    onChangeDetected();
-  };
+  /** Обновляет булевый параметр Метрики и уведомляет оркестратор */
+  const handleToggle =
+    (setter: (v: boolean) => void, field: string) => (checked: boolean) => {
+      setter(checked);
+      onDataChange({
+        metrikaConfig: {
+          counterId,
+          clickmap,
+          trackLinks,
+          accurateTrackBounce,
+          webvisor,
+          trackHash,
+          [field]: checked,
+        },
+      });
+    };
 
   return (
     <div className='space-y-6'>
@@ -100,7 +116,16 @@ export function YandexMetrikaSettings({
               value={counterId}
               onChange={e => {
                 setCounterId(e.target.value);
-                onChangeDetected();
+                onDataChange({
+                  metrikaConfig: {
+                    counterId: e.target.value,
+                    clickmap,
+                    trackLinks,
+                    accurateTrackBounce,
+                    webvisor,
+                    trackHash,
+                  },
+                });
               }}
             />
           </div>
@@ -113,26 +138,31 @@ export function YandexMetrikaSettings({
                   label: 'Карта кликов (clickmap)',
                   checked: clickmap,
                   setter: setClickmap,
+                  field: 'clickmap',
                 },
                 {
                   label: 'Отслеживание ссылок (trackLinks)',
                   checked: trackLinks,
                   setter: setTrackLinks,
+                  field: 'trackLinks',
                 },
                 {
                   label: 'Точный подсчёт отказов (accurateTrackBounce)',
                   checked: accurateTrackBounce,
                   setter: setAccurateTrackBounce,
+                  field: 'accurateTrackBounce',
                 },
                 {
                   label: 'Вебвизор (webvisor)',
                   checked: webvisor,
                   setter: setWebvisor,
+                  field: 'webvisor',
                 },
                 {
                   label: 'Отслеживание hash (trackHash)',
                   checked: trackHash,
                   setter: setTrackHash,
+                  field: 'trackHash',
                 },
               ].map(item => (
                 <div
@@ -142,7 +172,7 @@ export function YandexMetrikaSettings({
                   <Label className='font-normal'>{item.label}</Label>
                   <Switch
                     checked={item.checked}
-                    onCheckedChange={handleToggle(item.setter)}
+                    onCheckedChange={handleToggle(item.setter, item.field)}
                   />
                 </div>
               ))}
@@ -262,7 +292,6 @@ export function YandexMetrikaSettings({
                       size='sm'
                       onClick={() => {
                         setIsConnected(true);
-                        onChangeDetected();
                       }}
                     >
                       Сохранить

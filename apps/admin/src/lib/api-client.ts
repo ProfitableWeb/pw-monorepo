@@ -1882,3 +1882,167 @@ export async function adminSetUserPassword(
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapAdminUserDetail(raw);
 }
+
+// ---------------------------------------------------------------------------
+// PW-047: Admin SEO Settings API
+// ---------------------------------------------------------------------------
+
+/** Raw-тип ответа API (snake_case JSONB) */
+interface SeoSettingsRaw {
+  sitemap_config: {
+    enabled: boolean;
+    include_articles: boolean;
+    include_categories: boolean;
+    include_tags: boolean;
+    include_static_pages: boolean;
+    priorities: Record<string, number>;
+    changefreq: Record<string, string>;
+  };
+  robots_txt: string;
+  rss_config: {
+    enabled: boolean;
+    format: 'rss2' | 'atom';
+    item_count: number;
+    content_mode: 'full' | 'excerpt';
+    include_articles: boolean;
+    include_category_updates: boolean;
+  };
+  default_meta_directives: Record<
+    string,
+    { index: boolean; follow: boolean; noarchive: boolean }
+  >;
+  metrika_config: {
+    counter_id: string;
+    clickmap: boolean;
+    track_links: boolean;
+    accurate_track_bounce: boolean;
+    webvisor: boolean;
+    track_hash: boolean;
+  };
+}
+
+/** Публичные типы SEO-настроек (camelCase) */
+export interface SeoSettings {
+  sitemapConfig: {
+    enabled: boolean;
+    includeArticles: boolean;
+    includeCategories: boolean;
+    includeTags: boolean;
+    includeStaticPages: boolean;
+    priorities: Record<string, number>;
+    changefreq: Record<string, string>;
+  };
+  robotsTxt: string;
+  rssConfig: {
+    enabled: boolean;
+    format: 'rss2' | 'atom';
+    itemCount: number;
+    contentMode: 'full' | 'excerpt';
+    includeArticles: boolean;
+    includeCategoryUpdates: boolean;
+  };
+  defaultMetaDirectives: Record<
+    string,
+    { index: boolean; follow: boolean; noarchive: boolean }
+  >;
+  metrikaConfig: {
+    counterId: string;
+    clickmap: boolean;
+    trackLinks: boolean;
+    accurateTrackBounce: boolean;
+    webvisor: boolean;
+    trackHash: boolean;
+  };
+}
+
+function mapSeoSettings(raw: SeoSettingsRaw): SeoSettings {
+  return {
+    sitemapConfig: {
+      enabled: raw.sitemap_config.enabled,
+      includeArticles: raw.sitemap_config.include_articles,
+      includeCategories: raw.sitemap_config.include_categories,
+      includeTags: raw.sitemap_config.include_tags,
+      includeStaticPages: raw.sitemap_config.include_static_pages,
+      priorities: raw.sitemap_config.priorities,
+      changefreq: raw.sitemap_config.changefreq,
+    },
+    robotsTxt: raw.robots_txt,
+    rssConfig: {
+      enabled: raw.rss_config.enabled,
+      format: raw.rss_config.format,
+      itemCount: raw.rss_config.item_count,
+      contentMode: raw.rss_config.content_mode,
+      includeArticles: raw.rss_config.include_articles,
+      includeCategoryUpdates: raw.rss_config.include_category_updates,
+    },
+    defaultMetaDirectives: raw.default_meta_directives,
+    metrikaConfig: {
+      counterId: raw.metrika_config.counter_id,
+      clickmap: raw.metrika_config.clickmap,
+      trackLinks: raw.metrika_config.track_links,
+      accurateTrackBounce: raw.metrika_config.accurate_track_bounce,
+      webvisor: raw.metrika_config.webvisor,
+      trackHash: raw.metrika_config.track_hash,
+    },
+  };
+}
+
+function unmapSeoSettings(data: Partial<SeoSettings>): Record<string, unknown> {
+  const body: Record<string, unknown> = {};
+  if (data.sitemapConfig) {
+    body.sitemap_config = {
+      enabled: data.sitemapConfig.enabled,
+      include_articles: data.sitemapConfig.includeArticles,
+      include_categories: data.sitemapConfig.includeCategories,
+      include_tags: data.sitemapConfig.includeTags,
+      include_static_pages: data.sitemapConfig.includeStaticPages,
+      priorities: data.sitemapConfig.priorities,
+      changefreq: data.sitemapConfig.changefreq,
+    };
+  }
+  if (data.robotsTxt !== undefined) {
+    body.robots_txt = data.robotsTxt;
+  }
+  if (data.rssConfig) {
+    body.rss_config = {
+      enabled: data.rssConfig.enabled,
+      format: data.rssConfig.format,
+      item_count: data.rssConfig.itemCount,
+      content_mode: data.rssConfig.contentMode,
+      include_articles: data.rssConfig.includeArticles,
+      include_category_updates: data.rssConfig.includeCategoryUpdates,
+    };
+  }
+  if (data.defaultMetaDirectives) {
+    body.default_meta_directives = data.defaultMetaDirectives;
+  }
+  if (data.metrikaConfig) {
+    body.metrika_config = {
+      counter_id: data.metrikaConfig.counterId,
+      clickmap: data.metrikaConfig.clickmap,
+      track_links: data.metrikaConfig.trackLinks,
+      accurate_track_bounce: data.metrikaConfig.accurateTrackBounce,
+      webvisor: data.metrikaConfig.webvisor,
+      track_hash: data.metrikaConfig.trackHash,
+    };
+  }
+  return body;
+}
+
+export async function getSeoSettings(): Promise<SeoSettings> {
+  const raw = await apiFetch<SeoSettingsRaw>('/admin/seo/settings');
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSeoSettings(raw);
+}
+
+export async function updateSeoSettings(
+  data: Partial<SeoSettings>
+): Promise<SeoSettings> {
+  const body = unmapSeoSettings(data);
+  const raw = await apiMutate<SeoSettingsRaw>('/admin/seo/settings', {
+    method: 'PATCH',
+    body,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapSeoSettings(raw);
+}

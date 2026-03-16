@@ -28,20 +28,32 @@ import {
   MOCK_DEFAULT_DIRECTIVES,
 } from '../seo.constants';
 import type { SitemapConfig, RssConfig, MetaDirectives } from '../seo.types';
+import type { SeoSettings } from '@/lib/api-client';
 
 interface IndexingFeedsSettingsProps {
-  onChangeDetected: () => void;
+  initialData?: SeoSettings | null;
+  onDataChange: (update: Partial<SeoSettings>) => void;
 }
 
 export function IndexingFeedsSettings({
-  onChangeDetected,
+  initialData,
+  onDataChange,
 }: IndexingFeedsSettingsProps) {
-  const [sitemapConfig, setSitemapConfig] =
-    useState<SitemapConfig>(MOCK_SITEMAP_CONFIG);
-  const [robotsTxt, setRobotsTxt] = useState(MOCK_ROBOTS_TXT);
-  const [rssConfig, setRssConfig] = useState<RssConfig>(MOCK_RSS_CONFIG);
+  const [sitemapConfig, setSitemapConfig] = useState<SitemapConfig>(() =>
+    initialData
+      ? { ...MOCK_SITEMAP_CONFIG, ...initialData.sitemapConfig }
+      : MOCK_SITEMAP_CONFIG
+  );
+  const [robotsTxt, setRobotsTxt] = useState(
+    () => initialData?.robotsTxt ?? MOCK_ROBOTS_TXT
+  );
+  const [rssConfig, setRssConfig] = useState<RssConfig>(() =>
+    initialData
+      ? { ...MOCK_RSS_CONFIG, ...initialData.rssConfig }
+      : MOCK_RSS_CONFIG
+  );
   const [directives, setDirectives] = useState<Record<string, MetaDirectives>>(
-    MOCK_DEFAULT_DIRECTIVES
+    () => initialData?.defaultMetaDirectives ?? MOCK_DEFAULT_DIRECTIVES
   );
 
   /** Типы контента для sitemap с маппингом на поля SitemapConfig */
@@ -68,32 +80,41 @@ export function IndexingFeedsSettings({
     includeField: keyof SitemapConfig,
     value: boolean
   ) => {
-    setSitemapConfig(prev => ({
-      ...prev,
-      [includeField]: value,
-    }));
-    onChangeDetected();
+    setSitemapConfig(prev => {
+      const next = { ...prev, [includeField]: value };
+      onDataChange({ sitemapConfig: next });
+      return next;
+    });
   };
 
   const updateSitemapPriority = (key: string, value: string) => {
-    setSitemapConfig(prev => ({
-      ...prev,
-      priorities: { ...prev.priorities, [key]: parseFloat(value) },
-    }));
-    onChangeDetected();
+    setSitemapConfig(prev => {
+      const next = {
+        ...prev,
+        priorities: { ...prev.priorities, [key]: parseFloat(value) },
+      };
+      onDataChange({ sitemapConfig: next });
+      return next;
+    });
   };
 
   const updateSitemapChangefreq = (key: string, value: string) => {
-    setSitemapConfig(prev => ({
-      ...prev,
-      changefreq: { ...prev.changefreq, [key]: value },
-    }));
-    onChangeDetected();
+    setSitemapConfig(prev => {
+      const next = {
+        ...prev,
+        changefreq: { ...prev.changefreq, [key]: value },
+      };
+      onDataChange({ sitemapConfig: next });
+      return next;
+    });
   };
 
   const updateRss = (patch: Partial<RssConfig>) => {
-    setRssConfig(prev => ({ ...prev, ...patch }));
-    onChangeDetected();
+    setRssConfig(prev => {
+      const next = { ...prev, ...patch };
+      onDataChange({ rssConfig: next });
+      return next;
+    });
   };
 
   const updateDirective = (
@@ -113,9 +134,10 @@ export function IndexingFeedsSettings({
         noarchive: current.noarchive,
         [field]: value,
       };
-      return { ...prev, [type]: patched };
+      const next = { ...prev, [type]: patched };
+      onDataChange({ defaultMetaDirectives: next });
+      return next;
     });
-    onChangeDetected();
   };
 
   const priorities = Array.from({ length: 10 }, (_, i) =>
@@ -254,7 +276,7 @@ export function IndexingFeedsSettings({
             value={robotsTxt}
             onChange={e => {
               setRobotsTxt(e.target.value);
-              onChangeDetected();
+              onDataChange({ robotsTxt: e.target.value });
             }}
             className='font-mono text-sm'
             rows={10}
@@ -263,7 +285,7 @@ export function IndexingFeedsSettings({
             variant='outline'
             onClick={() => {
               setRobotsTxt(MOCK_ROBOTS_TXT);
-              onChangeDetected();
+              onDataChange({ robotsTxt: MOCK_ROBOTS_TXT });
             }}
           >
             Восстановить по умолчанию
