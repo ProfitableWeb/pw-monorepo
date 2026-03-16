@@ -49,7 +49,7 @@ function MiniBarChart({
       {data.map((value, i) => (
         <div
           key={i}
-          className='flex-1 bg-primary/60 rounded-t-sm min-h-[2px]'
+          className='flex-1 bg-muted-foreground/20 rounded-t-sm min-h-[2px]'
           style={{ height: `${(value / max) * 100}%` }}
         />
       ))}

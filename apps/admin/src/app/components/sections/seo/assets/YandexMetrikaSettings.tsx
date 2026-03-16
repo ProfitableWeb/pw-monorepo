@@ -357,7 +357,7 @@ export function YandexMetrikaSettings({
                 return (
                   <div
                     key={i}
-                    className='flex-1 bg-primary rounded-t'
+                    className='flex-1 bg-muted-foreground/20 rounded-t'
                     style={{ height: `${height}%` }}
                   />
                 );
