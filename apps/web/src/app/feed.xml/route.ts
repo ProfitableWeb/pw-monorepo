@@ -65,12 +65,17 @@ export async function GET() {
   }
 
   const isAtom = rssConfig.format === 'atom';
-  const xml = isAtom ? feed.atom1() : feed.rss2();
-  const contentType = isAtom
-    ? 'application/atom+xml; charset=utf-8'
-    : 'application/rss+xml; charset=utf-8';
+  let xml = isAtom ? feed.atom1() : feed.rss2();
 
+  // Вставляем XSL processing instruction после XML-декларации
+  xml = xml.replace(
+    /(<\?xml[^?]*\?>)/,
+    '$1\n<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>'
+  );
+
+  // application/xml позволяет браузерам применить XSL-стилизацию;
+  // RSS-ридеры корректно определяют формат по содержимому XML.
   return new Response(xml, {
-    headers: { 'Content-Type': contentType },
+    headers: { 'Content-Type': 'application/xml; charset=utf-8' },
   });
 }
