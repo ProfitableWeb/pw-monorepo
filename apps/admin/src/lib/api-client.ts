@@ -613,7 +613,7 @@ export async function deleteAvatar(): Promise<UserProfile> {
 // ---------------------------------------------------------------------------
 
 interface ApiMutateOptions {
-  method: 'POST' | 'PATCH' | 'DELETE';
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
 }
 
@@ -750,6 +750,8 @@ interface AdminCategoryFullRaw {
   description: string | null;
   icon: string | null;
   color: string | null;
+  parent_id: string | null;
+  order: number;
   article_count: number;
 }
 
@@ -849,6 +851,8 @@ function mapAdminCategoryFullItem(
     description: raw.description,
     icon: raw.icon,
     color: raw.color,
+    parentId: raw.parent_id,
+    order: raw.order,
     articleCount: raw.article_count,
   };
 }
@@ -1038,6 +1042,53 @@ export async function createTag(name: string): Promise<AdminTagType> {
 export async function getAdminCategories(): Promise<AdminCategoryFull[]> {
   const data = await apiFetch<AdminCategoryFullRaw[]>('/admin/categories');
   return (data ?? []).map(mapAdminCategoryFullItem);
+}
+
+export interface CategoryCreatePayload {
+  name: string;
+  slug?: string;
+  subtitle?: string | null;
+  description?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  parent_id?: string | null;
+  order?: number;
+}
+
+export async function createCategory(
+  data: CategoryCreatePayload
+): Promise<AdminCategoryFull> {
+  const raw = await apiMutate<AdminCategoryFullRaw>('/admin/categories', {
+    method: 'POST',
+    body: data,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminCategoryFullItem(raw);
+}
+
+export async function updateCategory(
+  id: string,
+  data: Partial<CategoryCreatePayload>
+): Promise<AdminCategoryFull> {
+  const raw = await apiMutate<AdminCategoryFullRaw>(`/admin/categories/${id}`, {
+    method: 'PUT',
+    body: data,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminCategoryFullItem(raw);
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  await apiMutate('/admin/categories/' + id, { method: 'DELETE' });
+}
+
+export async function reorderCategories(
+  items: { id: string; parent_id: string | null; order: number }[]
+): Promise<void> {
+  await apiMutate('/admin/categories/order', {
+    method: 'PUT',
+    body: { items },
+  });
 }
 
 // ---------------------------------------------------------------------------

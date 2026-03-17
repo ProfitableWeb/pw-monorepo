@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   PointerSensor,
   useSensor,
@@ -9,10 +9,16 @@ import {
 } from '@dnd-kit/core';
 import type { Category, DropIndicator, DropPosition } from './categories.types';
 
+interface ReorderItem {
+  id: string;
+  parent_id: string | null;
+  order: number;
+}
+
 /** Логика drag-and-drop для списка категорий */
 export function useCategoryDnd(
   categories: Category[],
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>
+  onReorder: (items: ReorderItem[]) => void
 ) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(
@@ -36,7 +42,6 @@ export function useCategoryDnd(
     const activatorEvent = event.activatorEvent as PointerEvent | undefined;
     const overEvent = event.over;
 
-    // Используем дельту перетаскивания для оценки позиции курсора
     if (overEvent?.rect) {
       const pointerY = activatorEvent
         ? activatorEvent.clientY + (event.delta?.y ?? 0)
@@ -53,90 +58,77 @@ export function useCategoryDnd(
     return 'after';
   };
 
-  const handleMove = (
-    draggedId: string,
-    targetId: string | null,
-    position: DropPosition
-  ) => {
-    setCategories(prev => {
-      const newCategories = [...prev];
-      const draggedIndex = newCategories.findIndex(c => c.id === draggedId);
-      const draggedItem = newCategories[draggedIndex];
-
-      if (!draggedItem) return prev;
+  /** Вычисляет новый порядок после DnD и вызывает onReorder */
+  const handleMove = useCallback(
+    (draggedId: string, targetId: string | null, position: DropPosition) => {
+      const newCategories = categories.map(c => ({
+        ...c,
+        parentId: c.parentId,
+        order: c.order,
+      }));
+      const draggedItem = newCategories.find(c => c.id === draggedId);
+      if (!draggedItem) return;
 
       if (position === 'child') {
-        // Сделать дочерним элементом цели
         const oldParentId = draggedItem.parentId;
         const childrenCount = newCategories.filter(
           c => c.parentId === targetId && c.id !== draggedId
         ).length;
 
-        // Обновить перетаскиваемый элемент
-        const updatedCategories = newCategories.map(c => {
-          if (c.id === draggedId) {
-            return { ...c, parentId: targetId, order: childrenCount };
-          }
-          // Переупорядочить старых соседей
-          if (c.parentId === oldParentId && c.order > draggedItem.order) {
-            return { ...c, order: c.order - 1 };
-          }
-          return c;
-        });
+        draggedItem.parentId = targetId;
+        draggedItem.order = childrenCount;
 
-        return updatedCategories;
+        // Пересчёт порядка у старых соседей
+        newCategories
+          .filter(c => c.parentId === oldParentId && c.id !== draggedId)
+          .sort((a, b) => a.order - b.order)
+          .forEach((c, i) => {
+            c.order = i;
+          });
       } else {
-        const targetIndex = newCategories.findIndex(c => c.id === targetId);
-        const targetItem = newCategories[targetIndex];
-
-        if (!targetItem) return prev;
+        const targetItem = newCategories.find(c => c.id === targetId);
+        if (!targetItem) return;
 
         const oldParentId = draggedItem.parentId;
         const newParentId = targetItem.parentId;
-        const targetOrder = targetItem.order;
-        const newOrder = position === 'before' ? targetOrder : targetOrder + 1;
 
-        // Обновить все затронутые категории
-        const updatedCategories = newCategories.map(c => {
-          if (c.id === draggedId) {
-            return { ...c, parentId: newParentId, order: newOrder };
-          }
+        draggedItem.parentId = newParentId;
 
-          // Перемещение внутри одного родителя
-          if (oldParentId === newParentId) {
-            if (c.parentId === newParentId && c.id !== draggedId) {
-              const oldOrder = draggedItem.order;
-              if (oldOrder < newOrder) {
-                // Вниз: сдвинуть элементы между старой и новой позицией
-                if (c.order > oldOrder && c.order <= newOrder) {
-                  return { ...c, order: c.order - 1 };
-                }
-              } else {
-                // Вверх: сдвинуть элементы между новой и старой позицией
-                if (c.order >= newOrder && c.order < oldOrder) {
-                  return { ...c, order: c.order + 1 };
-                }
-              }
-            }
-          } else {
-            // Перемещение к другому родителю
-            // Переупорядочить старых соседей
-            if (c.parentId === oldParentId && c.order > draggedItem.order) {
-              return { ...c, order: c.order - 1 };
-            }
-            // Освободить место в новом родителе
-            if (c.parentId === newParentId && c.order >= newOrder) {
-              return { ...c, order: c.order + 1 };
-            }
-          }
+        // Пересчёт порядка у старых соседей (если сменился родитель)
+        if (oldParentId !== newParentId) {
+          newCategories
+            .filter(c => c.parentId === oldParentId && c.id !== draggedId)
+            .sort((a, b) => a.order - b.order)
+            .forEach((c, i) => {
+              c.order = i;
+            });
+        }
 
-          return c;
+        // Вставка в нужную позицию среди новых соседей
+        const siblings = newCategories
+          .filter(c => c.parentId === newParentId && c.id !== draggedId)
+          .sort((a, b) => a.order - b.order);
+
+        const targetIdx = siblings.findIndex(c => c.id === targetId);
+        const insertIdx = position === 'before' ? targetIdx : targetIdx + 1;
+
+        siblings.splice(insertIdx, 0, draggedItem);
+        siblings.forEach((c, i) => {
+          c.order = i;
         });
-
-        return updatedCategories;
       }
-    });
-  };
+
+      // Отправляем полный массив {id, parent_id, order}
+      onReorder(
+        newCategories.map(c => ({
+          id: c.id,
+          parent_id: c.parentId,
+          order: c.order,
+        }))
+      );
+    },
+    [categories, onReorder]
+  );
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);

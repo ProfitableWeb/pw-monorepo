@@ -10,6 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
+import { Loader2 } from 'lucide-react';
 import { COLORS } from '../categories.constants';
 import type { Category, CategoryFormData } from '../categories.types';
 
@@ -17,6 +25,7 @@ interface CategoryDialogProps {
   open: boolean;
   onClose: () => void;
   onSave: () => void;
+  isSaving?: boolean;
   editingCategory: Category | null;
   formData: CategoryFormData;
   setFormData: React.Dispatch<React.SetStateAction<CategoryFormData>>;
@@ -27,11 +36,16 @@ export function CategoryDialog({
   open,
   onClose,
   onSave,
+  isSaving,
   editingCategory,
   formData,
   setFormData,
   rootCategories,
 }: CategoryDialogProps) {
+  const availableParents = rootCategories.filter(
+    c => c.id !== editingCategory?.id
+  );
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -52,14 +66,9 @@ export function CategoryDialog({
             <Input
               id='name'
               value={formData.name}
-              onChange={e => {
-                const name = e.target.value;
-                setFormData(prev => ({
-                  ...prev,
-                  name,
-                  slug: prev.slug || name.toLowerCase().replace(/\s+/g, '-'),
-                }));
-              }}
+              onChange={e =>
+                setFormData(prev => ({ ...prev, name: e.target.value }))
+              }
               placeholder='Например: Веб-разработка'
             />
           </div>
@@ -72,7 +81,7 @@ export function CategoryDialog({
               onChange={e =>
                 setFormData(prev => ({ ...prev, slug: e.target.value }))
               }
-              placeholder='web-development'
+              placeholder='Авто из названия если пусто'
             />
           </div>
 
@@ -81,14 +90,14 @@ export function CategoryDialog({
             <div className='flex gap-2 flex-wrap'>
               {COLORS.map(color => (
                 <button
-                  key={color.value}
+                  key={color.tw}
                   onClick={() =>
-                    setFormData(prev => ({ ...prev, color: color.value }))
+                    setFormData(prev => ({ ...prev, color: color.tw }))
                   }
                   className={cn(
                     'w-10 h-10 rounded-lg transition-all',
-                    color.value,
-                    formData.color === color.value &&
+                    color.tw,
+                    formData.color === color.tw &&
                       'ring-2 ring-offset-2 ring-foreground scale-110'
                   )}
                   title={color.name}
@@ -98,35 +107,39 @@ export function CategoryDialog({
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='parent'>Родительская категория</Label>
-            <select
-              id='parent'
-              value={formData.parentId || ''}
-              onChange={e =>
+            <Label>Родительская категория</Label>
+            <Select
+              value={formData.parentId ?? '__none__'}
+              onValueChange={val =>
                 setFormData(prev => ({
                   ...prev,
-                  parentId: e.target.value || null,
+                  parentId: val === '__none__' ? null : val,
                 }))
               }
-              className='w-full p-2 border rounded-lg bg-background'
             >
-              <option value=''>Без родителя (корневая)</option>
-              {rootCategories
-                .filter(c => c.id !== editingCategory?.id)
-                .map(cat => (
-                  <option key={cat.id} value={cat.id}>
+              <SelectTrigger>
+                <SelectValue placeholder='Без родителя (корневая)' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='__none__'>
+                  Без родителя (корневая)
+                </SelectItem>
+                {availableParents.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
-                  </option>
+                  </SelectItem>
                 ))}
-            </select>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant='outline' onClick={onClose}>
+          <Button variant='outline' onClick={onClose} disabled={isSaving}>
             Отмена
           </Button>
-          <Button onClick={onSave} disabled={!formData.name || !formData.slug}>
+          <Button onClick={onSave} disabled={!formData.name || isSaving}>
+            {isSaving && <Loader2 className='size-4 mr-2 animate-spin' />}
             {editingCategory ? 'Сохранить' : 'Создать'}
           </Button>
         </DialogFooter>

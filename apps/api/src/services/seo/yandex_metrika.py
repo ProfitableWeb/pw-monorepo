@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import httpx
 
 from src.schemas.seo import MetricWithChange, MetrikaStatsResponse
-from src.services.seo._common import TokenExpiredError, check_response, oauth_headers
+from src.services.seo._common import check_response, oauth_headers
 
 METRIKA_API = "https://api-metrika.yandex.net"
 

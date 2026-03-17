@@ -28,6 +28,8 @@ def _category_to_response(db: Session, cat: Category) -> CategoryResponse:
         description=cat.description,
         icon=cat.icon,
         color=cat.color,
+        parent_id=str(cat.parent_id) if cat.parent_id else None,
+        order=cat.order,
         article_count=count,
     )
 

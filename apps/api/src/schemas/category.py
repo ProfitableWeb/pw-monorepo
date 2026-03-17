@@ -14,6 +14,8 @@ class CategoryResponse(BaseModel):
     description: str | None = None
     icon: str | None = None
     color: str | None = None
+    parent_id: str | None = None
+    order: int = 0
     article_count: int = 0
 
     model_config = {"from_attributes": True}

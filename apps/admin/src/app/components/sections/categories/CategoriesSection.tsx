@@ -1,20 +1,27 @@
 import { useHeaderStore } from '@/app/store/header-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
-import { useCategories } from '@/hooks/api';
-import { useState, useEffect, useRef } from 'react';
+import {
+  useAdminCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+  useReorderCategories,
+} from '@/hooks/api';
+import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Button } from '@/app/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { SortableCategoryCard } from './assets/SortableCategoryCard';
 import { DragOverlayCard } from './assets/DragOverlayCard';
 import { CategoryDialog } from './assets/CategoryDialog';
 import { useCategoryDnd } from './useCategoryDnd';
-import { FALLBACK_COLORS } from './categories.constants';
+import { hexToTw, twToHex, fallbackColor } from './categories.constants';
 import type { Category, CategoryFormData } from './categories.types';
 
 const INITIAL_FORM_DATA: CategoryFormData = {
@@ -25,27 +32,22 @@ const INITIAL_FORM_DATA: CategoryFormData = {
 };
 
 export function CategoriesSection() {
-  const { data: apiCategories, isLoading } = useCategories();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const initialized = useRef(false);
+  const { data: apiCategories, isLoading } = useAdminCategories();
+  const createMutation = useCreateCategory();
+  const updateMutation = useUpdateCategory();
+  const deleteMutation = useDeleteCategory();
+  const reorderMutation = useReorderCategories();
 
-  // Синхронизация данных API → локальное состояние (сохраняет порядок DnD)
-  useEffect(() => {
-    if (apiCategories && !initialized.current) {
-      initialized.current = true;
-      setCategories(
-        apiCategories.map((cat, i) => ({
-          id: cat.id,
-          name: cat.name,
-          slug: cat.slug,
-          color: FALLBACK_COLORS[i % FALLBACK_COLORS.length] ?? 'bg-gray-500',
-          articlesCount: cat.articleCount,
-          parentId: null,
-          order: i,
-        }))
-      );
-    }
-  }, [apiCategories]);
+  // Маппинг API → UI категории
+  const categories: Category[] = (apiCategories ?? []).map((cat, i) => ({
+    id: cat.id,
+    name: cat.name,
+    slug: cat.slug,
+    color: cat.color ? hexToTw(cat.color) : fallbackColor(i),
+    articlesCount: cat.articleCount,
+    parentId: cat.parentId,
+    order: cat.order,
+  }));
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -59,6 +61,15 @@ export function CategoriesSection() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
+  const handleReorder = useCallback(
+    (items: { id: string; parent_id: string | null; order: number }[]) => {
+      reorderMutation.mutate(items, {
+        onError: () => toast.error('Не удалось сохранить порядок'),
+      });
+    },
+    [reorderMutation]
+  );
+
   const {
     sensors,
     activeCategory,
@@ -67,7 +78,7 @@ export function CategoriesSection() {
     handleDragOver,
     handleDragEnd,
     handleDragCancel,
-  } = useCategoryDnd(categories, setCategories);
+  } = useCategoryDnd(categories, handleReorder);
 
   const rootCategories = categories
     .filter(c => c.parentId === null)
@@ -86,34 +97,54 @@ export function CategoriesSection() {
   ]);
 
   const handleSave = () => {
+    const colorHex = twToHex(formData.color);
+
     if (editingCategory) {
-      setCategories(prev =>
-        prev.map(c => (c.id === editingCategory.id ? { ...c, ...formData } : c))
+      updateMutation.mutate(
+        {
+          id: editingCategory.id,
+          data: {
+            name: formData.name,
+            slug: formData.slug || undefined,
+            color: colorHex,
+            parent_id: formData.parentId,
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success('Категория обновлена');
+            handleCloseDialog();
+          },
+          onError: err => toast.error(`Ошибка: ${err.message}`),
+        }
       );
     } else {
-      const newCategory: Category = {
-        id: Date.now().toString(),
-        name: formData.name,
-        slug: formData.slug,
-        color: formData.color,
-        articlesCount: 0,
-        parentId: formData.parentId,
-        order: formData.parentId
-          ? getChildCategories(formData.parentId).length
-          : rootCategories.length,
-      };
-      setCategories(prev => [...prev, newCategory]);
+      createMutation.mutate(
+        {
+          name: formData.name,
+          slug: formData.slug || undefined,
+          color: colorHex,
+          parent_id: formData.parentId,
+          order: formData.parentId
+            ? getChildCategories(formData.parentId).length
+            : rootCategories.length,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Категория создана');
+            handleCloseDialog();
+          },
+          onError: err => toast.error(`Ошибка: ${err.message}`),
+        }
+      );
     }
-    handleCloseDialog();
   };
 
   const handleDelete = (id: string) => {
-    const childrenIds = categories
-      .filter(c => c.parentId === id)
-      .map(c => c.id);
-    setCategories(prev =>
-      prev.filter(c => c.id !== id && !childrenIds.includes(c.id))
-    );
+    deleteMutation.mutate(id, {
+      onSuccess: () => toast.success('Категория удалена'),
+      onError: err => toast.error(`Ошибка: ${err.message}`),
+    });
   };
 
   const handleEdit = (category: Category) => {
@@ -138,6 +169,11 @@ export function CategoriesSection() {
     0
   );
 
+  const isMutating =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    deleteMutation.isPending;
+
   return (
     <DndContext
       sensors={sensors}
@@ -155,10 +191,13 @@ export function CategoriesSection() {
               Управление категориями статей
             </h1>
             <p className='text-muted-foreground mt-1'>
-              {categories.length} категорий • {totalArticles} статей • 0 тегов
+              {categories.length} категорий • {totalArticles} статей
             </p>
           </div>
-          <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Button
+            onClick={() => setIsAddDialogOpen(true)}
+            disabled={isMutating}
+          >
             <Plus className='h-4 w-4 mr-2' />
             Новая категория
           </Button>
@@ -174,9 +213,13 @@ export function CategoriesSection() {
         </div>
 
         {/* Список категорий */}
-        {isLoading && categories.length === 0 ? (
+        {isLoading ? (
+          <div className='flex items-center justify-center py-8'>
+            <Loader2 className='size-6 animate-spin text-muted-foreground' />
+          </div>
+        ) : categories.length === 0 ? (
           <div className='text-center py-8 text-muted-foreground'>
-            Загрузка категорий...
+            Нет категорий. Создайте первую!
           </div>
         ) : (
           <SortableContext
@@ -219,6 +262,7 @@ export function CategoriesSection() {
           open={isAddDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSave}
+          isSaving={isMutating}
           editingCategory={editingCategory}
           formData={formData}
           setFormData={setFormData}

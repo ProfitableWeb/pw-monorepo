@@ -157,6 +157,8 @@ export interface AdminCategoryFull {
   description: string | null;
   icon: string | null;
   color: string | null;
+  parentId: string | null;
+  order: number;
   articleCount: number;
 }
 

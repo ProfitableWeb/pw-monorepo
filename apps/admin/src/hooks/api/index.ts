@@ -15,7 +15,13 @@ export {
   useRestoreRevision,
 } from './useAdminArticles';
 export { useAdminTags, useCreateTag } from './useAdminTags';
-export { useAdminCategories } from './useAdminCategories';
+export {
+  useAdminCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+  useReorderCategories,
+} from './useAdminCategories';
 export { useSystemSettings, useUpdateSettings } from './useSystemSettings';
 export {
   useMediaList,

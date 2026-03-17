@@ -1,7 +1,6 @@
 """PW-042-B | Admin-эндпоинты для error tracking."""
 
 import uuid
-
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
