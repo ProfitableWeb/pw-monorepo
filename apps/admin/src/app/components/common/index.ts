@@ -6,5 +6,6 @@ export { ContentDropdown } from './content-dropdown';
 export { EditorialDropdown } from './editorial-dropdown';
 export { SystemDropdown } from './system-dropdown';
 export { QuickActions } from './quick-actions';
-export { formatBytes } from './format.utils';
+export { formatBytes, formatDate } from './format.utils';
+export { LoadingSpinner } from './LoadingSpinner';
 export { COLORS, hexToTw, twToHex, fallbackColor } from './colors';

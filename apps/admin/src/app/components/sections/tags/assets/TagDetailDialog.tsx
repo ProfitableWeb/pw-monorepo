@@ -10,6 +10,7 @@ import {
 } from '@/app/components/ui/dialog';
 import { Label } from '@/app/components/ui/label';
 import { Hash, Pencil } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 
 import type { Tag } from '../tags.types';
 
@@ -59,9 +60,7 @@ export function TagDetailDialog({
               <div>
                 <Label className='text-xs text-muted-foreground'>Создана</Label>
                 <p className='text-sm font-medium mt-1'>
-                  {tag.createdAt
-                    ? new Date(tag.createdAt).toLocaleDateString('ru-RU')
-                    : '—'}
+                  {formatDate(tag.createdAt)}
                 </p>
               </div>
             </div>

@@ -4,8 +4,9 @@ import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
 import { useAdminArticles, useAdminCategories } from '@/hooks/api';
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
+import { LoadingSpinner } from '@/app/components/common';
 
 import type { Article } from './articles.types';
 import { VALID_STATUSES } from './articles.constants';
@@ -133,10 +134,7 @@ export function ArticlesSection() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className='flex items-center justify-center py-8 text-muted-foreground'>
-              <Loader2 className='h-5 w-5 animate-spin mr-2' />
-              Загрузка статей...
-            </div>
+            <LoadingSpinner label='Загрузка статей...' size='size-5' />
           ) : (
             <ArticlesTable
               articles={filteredArticles}

@@ -1,5 +1,7 @@
 """PW-052 | Admin-схемы меток."""
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -10,7 +12,7 @@ class TagAdminResponse(BaseModel):
     color: str | None = None
     group: str | None = None
     article_count: int = 0
-    created_at: str | None = None
+    created_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 

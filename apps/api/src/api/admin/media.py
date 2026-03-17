@@ -3,11 +3,10 @@ PW-041 | Admin CRUD эндпоинты для медиа-библиотеки.
 Все защищены get_current_admin (admin/editor).
 """
 
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
+from src.api.admin.utils import parse_uuid
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
 from src.models.media_file import MediaFile
@@ -23,17 +22,9 @@ router = APIRouter(prefix="/media", tags=["admin-media"])
 # --- Хелперы ---
 
 
-def _parse_uuid(value: str, label: str = "UUID") -> uuid.UUID:
-    """Валидация и парсинг UUID строки."""
-    try:
-        return uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(status_code=400, detail=f"Невалидный {label}")
-
-
 def _get_media_or_404(db: Session, media_id: str) -> MediaFile:
     """Получает медиафайл или 404."""
-    uid = _parse_uuid(media_id, "UUID медиафайла")
+    uid = parse_uuid(media_id, "UUID медиафайла")
     media = media_service.get_media(db, uid)
     if not media:
         raise HTTPException(status_code=404, detail="Медиафайл не найден")

@@ -1,10 +1,9 @@
 """PW-052 | Admin эндпоинты меток: CRUD."""
 
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.api.admin.utils import parse_uuid
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
 from src.models.tag import Tag
@@ -16,13 +15,6 @@ from src.services import tag as tag_service
 router = APIRouter(prefix="/tags", tags=["admin-tags"])
 
 
-def _parse_uuid(value: str) -> uuid.UUID:
-    try:
-        return uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(400, "Невалидный UUID")
-
-
 def _to_response(tag: Tag, article_count: int = 0) -> TagAdminResponse:
     return TagAdminResponse(
         id=str(tag.id),
@@ -31,7 +23,7 @@ def _to_response(tag: Tag, article_count: int = 0) -> TagAdminResponse:
         color=tag.color,
         group=tag.group,
         article_count=article_count,
-        created_at=tag.created_at.isoformat() if tag.created_at else None,
+        created_at=tag.created_at,
     )
 
 
@@ -66,7 +58,7 @@ def update_tag(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[TagAdminResponse]:
-    uid = _parse_uuid(tag_id)
+    uid = parse_uuid(tag_id)
     try:
         tag = tag_service.update_tag(db, uid, body)
     except ValueError as exc:
@@ -83,7 +75,7 @@ def delete_tag(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> None:
-    uid = _parse_uuid(tag_id)
+    uid = parse_uuid(tag_id)
     try:
         tag_service.delete_tag(db, uid)
     except ValueError as exc:

@@ -8,6 +8,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from src.api.admin.utils import parse_uuid
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
 from src.models.article import Article
@@ -124,22 +125,15 @@ def _to_list_item(article: Article) -> ArticleAdminListItem:
     )
 
 
-def _parse_uuid(value: str, label: str = "UUID") -> uuid.UUID:
-    try:
-        return uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(status_code=400, detail=f"Невалидный {label}")
-
-
 def _validate_category(db: Session, category_id: str) -> uuid.UUID:
-    uid = _parse_uuid(category_id, "UUID категории")
+    uid = parse_uuid(category_id, "UUID категории")
     if not db.get(Category, uid):
         raise HTTPException(status_code=422, detail="Категория не найдена")
     return uid
 
 
 def _get_article_or_404(db: Session, article_id: str) -> Article:
-    uid = _parse_uuid(article_id, "UUID статьи")
+    uid = parse_uuid(article_id, "UUID статьи")
     article = admin_service.get_article_by_id(db, uid)
     if not article:
         raise HTTPException(status_code=404, detail="Статья не найдена")
@@ -207,7 +201,7 @@ def list_articles(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[ArticleAdminListItem]]:
-    author_uuid = _parse_uuid(author_id, "UUID автора") if author_id else None
+    author_uuid = parse_uuid(author_id, "UUID автора") if author_id else None
     articles, total = admin_service.get_all_articles(
         db,
         page=page,
@@ -362,7 +356,7 @@ def get_revision(
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[RevisionResponse]:
     _get_article_or_404(db, article_id)
-    rev_uid = _parse_uuid(revision_id, "UUID ревизии")
+    rev_uid = parse_uuid(revision_id, "UUID ревизии")
     revision = revision_service.get_revision_by_id(db, rev_uid)
     if not revision or str(revision.article_id) != article_id:
         raise HTTPException(status_code=404, detail="Ревизия не найдена")
@@ -390,7 +384,7 @@ def restore_revision(
     user: User = Depends(get_current_admin),
 ) -> ApiResponse[ArticleAdminResponse]:
     article = _get_article_or_404(db, article_id)
-    rev_uid = _parse_uuid(revision_id, "UUID ревизии")
+    rev_uid = parse_uuid(revision_id, "UUID ревизии")
     revision = revision_service.get_revision_by_id(db, rev_uid)
     if not revision or str(revision.article_id) != article_id:
         raise HTTPException(status_code=404, detail="Ревизия не найдена")

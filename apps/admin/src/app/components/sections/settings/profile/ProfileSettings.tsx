@@ -1,10 +1,10 @@
-import { Loader2 } from 'lucide-react';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/app/components/ui/tabs';
+import { LoadingSpinner } from '@/app/components/common';
 import { useProfileSettings } from './useProfileSettings';
 import { AvatarCard } from './assets/AvatarCard';
 import { PersonalDataCard } from './assets/PersonalDataCard';
@@ -16,11 +16,7 @@ export function ProfileSettings() {
   const s = useProfileSettings();
 
   if (s.loading) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <Loader2 className='size-6 animate-spin text-muted-foreground' />
-      </div>
-    );
+    return <LoadingSpinner className='py-12' />;
   }
 
   return (

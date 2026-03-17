@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { MoreVertical, Trash2, Pencil } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 
 import type { Tag } from '../tags.types';
 
@@ -66,13 +67,7 @@ export function TagListView({
                 </Badge>
               </td>
               <td className='p-3 text-sm text-muted-foreground'>
-                {tag.createdAt
-                  ? new Date(tag.createdAt).toLocaleDateString('ru-RU', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  : '—'}
+                {formatDate(tag.createdAt)}
               </td>
               <td className='p-3 text-right' onClick={e => e.stopPropagation()}>
                 <DropdownMenu>

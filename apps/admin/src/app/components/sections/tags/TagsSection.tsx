@@ -10,8 +10,8 @@ import {
   Cloud,
   Grid3x3,
   List,
-  Loader2,
 } from 'lucide-react';
+import { LoadingSpinner } from '@/app/components/common';
 
 import { TAG_GROUPS } from './tags.constants';
 import { useTagsState } from './useTagsState';
@@ -200,9 +200,7 @@ export function TagsSection() {
 
       {/* Отображение тегов */}
       {isLoading ? (
-        <div className='flex items-center justify-center py-8'>
-          <Loader2 className='size-6 animate-spin text-muted-foreground' />
-        </div>
+        <LoadingSpinner />
       ) : tags.length === 0 ? (
         <div className='text-center py-8 text-muted-foreground'>
           Нет меток. Создайте первую!
