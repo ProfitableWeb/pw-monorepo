@@ -1,7 +1,6 @@
 /**
- * PW-049-B | Динамический robots.txt
- * Возвращает текст из SEO-настроек API.
- * Next.js Metadata API генерирует /robots.txt автоматически.
+ * PW-049-B | robots.txt
+ * Статическая конфигурация через Next.js Metadata API.
  */
 
 import type { MetadataRoute } from 'next';

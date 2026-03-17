@@ -3,9 +3,7 @@
  * Используется sitemap.ts, feed.xml/route.ts и layout.tsx (Метрика).
  */
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window === 'undefined' ? 'http://localhost:8000/api' : '/api');
+import { API_BASE } from './api-base';
 
 // ---------------------------------------------------------------------------
 // Типы (camelCase, маппятся из snake_case API)
@@ -119,10 +117,14 @@ export async function getSeoConfig(): Promise<SeoConfig | null> {
     const res = await fetch(`${API_BASE}/seo/config`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[SEO Config] API returned ${res.status}`);
+      return null;
+    }
     const json = await res.json();
     return mapSeoConfig(json.data);
-  } catch {
+  } catch (error) {
+    console.error('[SEO Config] Fetch error:', error);
     return null;
   }
 }

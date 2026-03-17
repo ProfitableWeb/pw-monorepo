@@ -11,51 +11,67 @@ import { getSeoConfig } from '@/lib/seo-config';
 
 export const revalidate = 3600; // 1 час
 
+type ChangeFrequency = MetadataRoute.Sitemap[number]['changeFrequency'];
+
+const VALID_FREQUENCIES = new Set([
+  'always',
+  'hourly',
+  'daily',
+  'weekly',
+  'monthly',
+  'yearly',
+  'never',
+]);
+
+function toChangeFrequency(value: string | undefined): ChangeFrequency {
+  return value && VALID_FREQUENCIES.has(value)
+    ? (value as ChangeFrequency)
+    : 'weekly';
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const config = await getSeoConfig();
 
   if (!config || !config.sitemapConfig.enabled) return [];
 
   const { sitemapConfig } = config;
+
+  // Параллельная загрузка контента
+  const [articles, categories] = await Promise.all([
+    sitemapConfig.includeArticles ? getAllArticles() : [],
+    sitemapConfig.includeCategories ? getAllCategories() : [],
+  ]);
+
   const entries: MetadataRoute.Sitemap = [];
 
   // Главная
   entries.push({
     url: baseUrl,
     lastModified: new Date(),
-    changeFrequency: sitemapConfig.changefreq
-      .home as MetadataRoute.Sitemap[number]['changeFrequency'],
+    changeFrequency: toChangeFrequency(sitemapConfig.changefreq.home),
     priority: sitemapConfig.priorities.home,
   });
 
   // Статьи
-  if (sitemapConfig.includeArticles) {
-    const articles = await getAllArticles();
-    for (const article of articles) {
-      entries.push({
-        url: `${baseUrl}/${article.slug}`,
-        lastModified: article.createdAt
-          ? new Date(article.createdAt)
-          : new Date(),
-        changeFrequency: sitemapConfig.changefreq
-          .articles as MetadataRoute.Sitemap[number]['changeFrequency'],
-        priority: sitemapConfig.priorities.articles,
-      });
-    }
+  for (const article of articles) {
+    entries.push({
+      url: `${baseUrl}/${article.slug}`,
+      lastModified: article.createdAt
+        ? new Date(article.createdAt)
+        : new Date(),
+      changeFrequency: toChangeFrequency(sitemapConfig.changefreq.articles),
+      priority: sitemapConfig.priorities.articles,
+    });
   }
 
   // Категории
-  if (sitemapConfig.includeCategories) {
-    const categories = await getAllCategories();
-    for (const category of categories) {
-      entries.push({
-        url: `${baseUrl}/${category.slug}`,
-        lastModified: new Date(),
-        changeFrequency: sitemapConfig.changefreq
-          .categories as MetadataRoute.Sitemap[number]['changeFrequency'],
-        priority: sitemapConfig.priorities.categories,
-      });
-    }
+  for (const category of categories) {
+    entries.push({
+      url: `${baseUrl}/${category.slug}`,
+      lastModified: new Date(),
+      changeFrequency: toChangeFrequency(sitemapConfig.changefreq.categories),
+      priority: sitemapConfig.priorities.categories,
+    });
   }
 
   // Статические страницы
@@ -65,8 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       entries.push({
         url: `${baseUrl}/${page}`,
         lastModified: new Date(),
-        changeFrequency: sitemapConfig.changefreq
-          .static as MetadataRoute.Sitemap[number]['changeFrequency'],
+        changeFrequency: toChangeFrequency(sitemapConfig.changefreq.static),
         priority: sitemapConfig.priorities.static,
       });
     }
