@@ -3,7 +3,7 @@ PW-027/PW-038/PW-041 | Центральный реэкспорт моделей.
 без этого импорта alembic не увидит таблицы при генерации миграций.
 """
 
-from src.models.article import Article
+from src.models.article import Article, article_categories
 from src.models.article_revision import ArticleRevision
 from src.models.audit_log import AuditLog
 from src.models.base import Base
@@ -31,4 +31,5 @@ __all__ = [
     "ErrorLog",
     "MediaFile",
     "article_media",
+    "article_categories",
 ]

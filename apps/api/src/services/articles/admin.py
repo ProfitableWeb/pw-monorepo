@@ -7,10 +7,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
-from src.models.article import Article, ArticleStatus
+from src.models.article import Article, ArticleStatus, article_categories
 from src.models.category import Category
 from src.models.tag import Tag
 from src.services.articles import revisions as revision_service
@@ -28,7 +28,7 @@ UPDATABLE_FIELDS = {
     "content",
     "content_format",
     "excerpt",
-    "category_id",
+    "primary_category_id",
     "image_url",
     "image_alt",
     "layout",
@@ -49,7 +49,8 @@ UPDATABLE_FIELDS = {
 
 def _base_admin_query():
     return select(Article).options(
-        joinedload(Article.category),
+        joinedload(Article.primary_category),
+        joinedload(Article.categories),
         joinedload(Article.tags),
         joinedload(Article.author),
     )
@@ -65,7 +66,8 @@ def create_article(
     content: str = "",
     content_format: str = "html",
     excerpt: str = "",
-    category_id: uuid.UUID,
+    primary_category_id: uuid.UUID,
+    additional_category_ids: list[uuid.UUID] | None = None,
     tags: list[str] | None = None,
     image_url: str | None = None,
     image_alt: str | None = None,
@@ -96,7 +98,7 @@ def create_article(
         content=content,
         content_format=content_format,
         excerpt=excerpt,
-        category_id=category_id,
+        primary_category_id=primary_category_id,
         author_id=author_id,
         image_url=image_url,
         image_alt=image_alt,
@@ -118,6 +120,8 @@ def create_article(
     )
     db.add(article)
     db.flush()
+
+    sync_categories(db, article, primary_category_id, additional_category_ids)
 
     if tags:
         sync_tags(db, article, tags)
@@ -161,8 +165,18 @@ def get_all_articles(
         count_stmt = count_stmt.where(Article.status == status)
 
     if category:
-        stmt = stmt.join(Article.category).where(Category.slug == category)
-        count_stmt = count_stmt.join(Article.category).where(Category.slug == category)
+        # Статьи где категория — primary ИЛИ additional
+        cat_subq = select(Category.id).where(Category.slug == category).scalar_subquery()
+        cat_filter = or_(
+            Article.primary_category_id == cat_subq,
+            Article.id.in_(
+                select(article_categories.c.article_id).where(
+                    article_categories.c.category_id == cat_subq
+                )
+            ),
+        )
+        stmt = stmt.where(cat_filter)
+        count_stmt = count_stmt.where(cat_filter)
 
     if search:
         escaped = search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -197,6 +211,7 @@ def update_article(
     content_changed = "content" in fields and fields["content"] != article.content
 
     tag_names = fields.pop("tags", None)
+    additional_category_ids = fields.pop("additional_category_ids", None)
 
     new_status = fields.get("status")
     if new_status is not None:
@@ -241,6 +256,15 @@ def update_article(
     if tag_names is not None:
         sync_tags(db, article, tag_names)
 
+    # Синхронизация M2M категорий (если менялись primary или additional)
+    if additional_category_ids is not None or "primary_category_id" in fields:
+        sync_categories(
+            db,
+            article,
+            article.primary_category_id,
+            additional_category_ids,
+        )
+
     db.commit()
     db.refresh(article)
     return article
@@ -282,6 +306,22 @@ def unpublish_article(db: Session, article: Article) -> Article:
     return article
 
 
+def sync_categories(
+    db: Session,
+    article: Article,
+    primary_category_id: uuid.UUID,
+    additional_category_ids: list[uuid.UUID] | None = None,
+) -> None:
+    """Синхронизация M2M категорий (primary всегда включена в junction)."""
+    all_ids = {primary_category_id}
+    if additional_category_ids:
+        all_ids.update(additional_category_ids)
+    categories = list(
+        db.scalars(select(Category).where(Category.id.in_(all_ids))).all()
+    )
+    article.categories = categories
+
+
 def sync_tags(db: Session, article: Article, tag_names: list[str]) -> None:
     tags = []
     for name in tag_names:
@@ -305,7 +345,7 @@ def _validate_publishable(article: Article) -> None:
         errors.append("content")
     if not article.excerpt:
         errors.append("excerpt")
-    if not article.category_id:
-        errors.append("category_id")
+    if not article.primary_category_id:
+        errors.append("primary_category_id")
     if errors:
         raise ValueError(f"Для публикации необходимы: {', '.join(errors)}")

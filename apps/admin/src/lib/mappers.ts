@@ -39,7 +39,8 @@ export function apiToFormData(
     status: article.status as ArticleStatus,
     publishedAt: article.publishedAt ?? '',
     publishTimezone: timezone,
-    category: article.category.slug,
+    category: article.primaryCategory.slug,
+    additionalCategories: article.additionalCategories.map(c => c.slug),
     tags: article.tags.map(t => t.name),
     excerpt: article.excerpt,
     imageUrl: article.imageUrl ?? undefined,
@@ -69,13 +70,20 @@ export function formDataToUpdatePayload(
     ? categories.find(c => c.slug === form.category)
     : undefined;
   if (form.category && !cat) throw new Error('Категория не найдена');
+
+  const additionalIds = (form.additionalCategories ?? [])
+    .map(slug => categories.find(c => c.slug === slug)?.id)
+    .filter((id): id is string => !!id);
+
   return {
     title: form.h1,
     subtitle: form.subtitle || null,
     slug: form.slug,
     content: form.content,
     excerpt: form.excerpt,
-    category_id: cat?.id,
+    primary_category_id: cat?.id,
+    additional_category_ids:
+      additionalIds.length > 0 ? additionalIds : undefined,
     tags: form.tags,
     image_url: form.imageUrl || null,
     image_alt: form.imageAlt || null,
@@ -101,6 +109,11 @@ export function formDataToCreatePayload(
 ): ArticleCreatePayload {
   const cat = categories.find(c => c.slug === form.category);
   if (!cat) throw new Error('Категория не выбрана');
+
+  const additionalIds = (form.additionalCategories ?? [])
+    .map(slug => categories.find(c => c.slug === slug)?.id)
+    .filter((id): id is string => !!id);
+
   return {
     title: form.h1,
     subtitle: form.subtitle || null,
@@ -108,7 +121,9 @@ export function formDataToCreatePayload(
     content: form.content,
     content_format: 'html',
     excerpt: form.excerpt,
-    category_id: cat.id,
+    primary_category_id: cat.id,
+    additional_category_ids:
+      additionalIds.length > 0 ? additionalIds : undefined,
     tags: form.tags,
     image_url: form.imageUrl || null,
     image_alt: form.imageAlt || null,
@@ -138,6 +153,7 @@ export function getEmptyFormData(timezone: string): ArticleFormData {
     publishedAt: '',
     publishTimezone: timezone,
     category: '',
+    additionalCategories: [],
     tags: [],
     excerpt: '',
     imageUrl: undefined,

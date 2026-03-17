@@ -42,7 +42,15 @@ class Category(UUIDMixin, TimestampMixin, Base):
     )
     children: Mapped[list["Category"]] = relationship(back_populates="parent")
 
-    articles: Mapped[list["Article"]] = relationship(back_populates="category")
+    # PW-054: split — primary FK + M2M junction
+    primary_articles: Mapped[list["Article"]] = relationship(
+        back_populates="primary_category",
+        foreign_keys="[Article.primary_category_id]",
+    )
+    articles: Mapped[list["Article"]] = relationship(
+        secondary="article_categories",
+        back_populates="categories",
+    )
 
     def __repr__(self) -> str:
         return f"<Category {self.slug}>"

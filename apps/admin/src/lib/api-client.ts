@@ -711,7 +711,8 @@ interface AdminArticleRaw {
   schema_type: string | null;
   robots_no_index: boolean;
   robots_no_follow: boolean;
-  category: { id: string; name: string; slug: string };
+  primary_category: { id: string; name: string; slug: string };
+  additional_categories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   author: { id: string; name: string } | null;
   artifacts: any;
@@ -724,7 +725,8 @@ interface AdminArticleListItemRaw {
   slug: string;
   status: string;
   excerpt: string;
-  category: { id: string; name: string; slug: string };
+  primary_category: { id: string; name: string; slug: string };
+  additional_categories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   author: { id: string; name: string } | null;
   image_url: string | null;
@@ -806,7 +808,8 @@ function mapAdminArticleFull(raw: AdminArticleRaw): AdminArticleResponseType {
     schemaType: raw.schema_type,
     robotsNoIndex: raw.robots_no_index,
     robotsNoFollow: raw.robots_no_follow,
-    category: raw.category,
+    primaryCategory: raw.primary_category,
+    additionalCategories: raw.additional_categories ?? [],
     tags: raw.tags,
     author: raw.author,
     artifacts: raw.artifacts,
@@ -823,7 +826,8 @@ function mapAdminArticleListItem(
     slug: raw.slug,
     status: raw.status,
     excerpt: raw.excerpt,
-    category: raw.category,
+    primaryCategory: raw.primary_category,
+    additionalCategories: raw.additional_categories ?? [],
     tags: raw.tags,
     author: raw.author,
     imageUrl: raw.image_url,

@@ -51,7 +51,10 @@ export interface ArticleFormData {
   publishedAt: string;
   /** Часовой пояс публикации (UTC-смещение, напр. '+03:00') */
   publishTimezone: string;
+  /** Slug основной категории (для URL/breadcrumbs) */
   category: string;
+  /** Slugs дополнительных категорий */
+  additionalCategories: string[];
   tags: string[];
   excerpt: string;
   imageUrl?: string;

@@ -44,7 +44,8 @@ export interface AdminArticleResponse {
   robotsNoIndex: boolean;
   robotsNoFollow: boolean;
   // Relations
-  category: { id: string; name: string; slug: string };
+  primaryCategory: { id: string; name: string; slug: string };
+  additionalCategories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   author: { id: string; name: string } | null;
   // Extra
@@ -58,7 +59,8 @@ export interface AdminArticleListItem {
   slug: string;
   status: string;
   excerpt: string;
-  category: { id: string; name: string; slug: string };
+  primaryCategory: { id: string; name: string; slug: string };
+  additionalCategories: { id: string; name: string; slug: string }[];
   tags: { id: string; name: string; slug: string }[];
   author: { id: string; name: string } | null;
   imageUrl: string | null;
@@ -91,7 +93,8 @@ export interface ArticleCreatePayload {
   content?: string;
   content_format?: 'html' | 'markdown';
   excerpt?: string;
-  category_id: string;
+  primary_category_id: string;
+  additional_category_ids?: string[];
   tags?: string[];
   image_url?: string | null;
   image_alt?: string | null;
@@ -119,7 +122,8 @@ export interface ArticleUpdatePayload {
   content?: string;
   content_format?: 'html' | 'markdown';
   excerpt?: string;
-  category_id?: string;
+  primary_category_id?: string;
+  additional_category_ids?: string[];
   tags?: string[];
   image_url?: string | null;
   image_alt?: string | null;

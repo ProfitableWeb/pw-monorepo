@@ -44,7 +44,8 @@ class ArticleCreateRequest(BaseModel):
     content: str = ""
     content_format: Literal["html", "markdown"] = "html"
     excerpt: str = ""
-    category_id: str
+    primary_category_id: str
+    additional_category_ids: list[str] = []
     tags: list[str] = []
     image_url: str | None = None
     image_alt: str | None = None
@@ -74,7 +75,8 @@ class ArticleUpdateRequest(BaseModel):
     content: str | None = None
     content_format: Literal["html", "markdown"] | None = None
     excerpt: str | None = None
-    category_id: str | None = None
+    primary_category_id: str | None = None
+    additional_category_ids: list[str] | None = None
     tags: list[str] | None = None
     image_url: str | None = None
     image_alt: str | None = None
@@ -133,7 +135,8 @@ class ArticleAdminResponse(BaseModel):
     robots_no_index: bool = False
     robots_no_follow: bool = False
     # Relations
-    category: CategoryBrief
+    primary_category: CategoryBrief
+    additional_categories: list[CategoryBrief] = []
     tags: list[TagBrief] = []
     author: AuthorBrief | None = None
     # Artifacts
@@ -149,7 +152,8 @@ class ArticleAdminListItem(BaseModel):
     slug: str
     status: str
     excerpt: str
-    category: CategoryBrief
+    primary_category: CategoryBrief
+    additional_categories: list[CategoryBrief] = []
     tags: list[TagBrief] = []
     author: AuthorBrief | None = None
     image_url: str | None = None

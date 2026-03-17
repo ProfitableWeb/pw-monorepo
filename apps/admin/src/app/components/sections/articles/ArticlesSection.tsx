@@ -28,7 +28,7 @@ export function ArticlesSection() {
         status: (VALID_STATUSES.has(a.status)
           ? a.status
           : 'draft') as Article['status'],
-        category: a.category.name,
+        category: a.primaryCategory.name,
         author: a.author?.name ?? '—',
         views: a.views,
         date: a.publishedAt ?? '',

@@ -3,6 +3,7 @@ PW-027/PW-038 | Центральная модель контента.
 ArticleLayout, ArticleStatus, ContentFormat — enum-зеркала фронтовых типов.
 По умолчанию публичный API отдаёт только status=PUBLISHED (фильтр в services).
 PW-038 добавил SEO-поля, артефакты (JSONB), content_format.
+PW-054 | M2M категории: primary_category_id FK + article_categories junction.
 """
 
 import enum
@@ -10,13 +11,29 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin, UUIDMixin
 from src.models.media_file import article_media
 from src.models.tag import article_tags
+
+# PW-054: M2M связка article ↔ category (primary всегда включена)
+article_categories = Table(
+    "article_categories",
+    Base.metadata,
+    Column(
+        "article_id",
+        ForeignKey("articles.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "category_id",
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
 
 if TYPE_CHECKING:
     from src.models.article_revision import ArticleRevision
@@ -82,14 +99,22 @@ class Article(UUIDMixin, TimestampMixin, Base):
     # Артефакты (PW-038) — JSONB, структура см. docs/tasks/PW-038
     artifacts: Mapped[Any | None] = mapped_column(JSONB)
 
-    category_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("categories.id", ondelete="CASCADE")
+    # PW-054: primary_category_id (обязательная, для URL/breadcrumbs/SEO)
+    primary_category_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("categories.id", ondelete="RESTRICT")
     )
     author_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL")
     )
 
-    category: Mapped["Category"] = relationship(back_populates="articles")
+    primary_category: Mapped["Category"] = relationship(
+        back_populates="primary_articles",
+        foreign_keys=[primary_category_id],
+    )
+    categories: Mapped[list["Category"]] = relationship(
+        secondary=article_categories,
+        back_populates="articles",
+    )
     author: Mapped["User | None"] = relationship(back_populates="articles")
     tags: Mapped[list["Tag"]] = relationship(secondary=article_tags)
     comments: Mapped[list["Comment"]] = relationship(back_populates="article")

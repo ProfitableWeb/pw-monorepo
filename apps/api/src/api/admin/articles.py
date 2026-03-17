@@ -78,13 +78,18 @@ def _to_response(article: Article, revision_count: int = 0) -> ArticleAdminRespo
         schema_type=article.schema_type,
         robots_no_index=article.robots_no_index,
         robots_no_follow=article.robots_no_follow,
-        category=CategoryBrief(
-            id=str(article.category.id),
-            name=article.category.name,
-            slug=article.category.slug,
+        primary_category=CategoryBrief(
+            id=str(article.primary_category.id),
+            name=article.primary_category.name,
+            slug=article.primary_category.slug,
         )
-        if article.category
+        if article.primary_category
         else CategoryBrief(id="", name="", slug=""),
+        additional_categories=[
+            CategoryBrief(id=str(c.id), name=c.name, slug=c.slug)
+            for c in article.categories
+            if c.id != article.primary_category_id
+        ],
         tags=[TagBrief(id=str(t.id), name=t.name, slug=t.slug) for t in article.tags],
         author=AuthorBrief(id=str(article.author.id), name=article.author.name)
         if article.author
@@ -105,13 +110,18 @@ def _to_list_item(article: Article) -> ArticleAdminListItem:
             else str(article.status)
         ),
         excerpt=article.excerpt,
-        category=CategoryBrief(
-            id=str(article.category.id),
-            name=article.category.name,
-            slug=article.category.slug,
+        primary_category=CategoryBrief(
+            id=str(article.primary_category.id),
+            name=article.primary_category.name,
+            slug=article.primary_category.slug,
         )
-        if article.category
+        if article.primary_category
         else CategoryBrief(id="", name="", slug=""),
+        additional_categories=[
+            CategoryBrief(id=str(c.id), name=c.name, slug=c.slug)
+            for c in article.categories
+            if c.id != article.primary_category_id
+        ],
         tags=[TagBrief(id=str(t.id), name=t.name, slug=t.slug) for t in article.tags],
         author=AuthorBrief(id=str(article.author.id), name=article.author.name)
         if article.author
@@ -157,7 +167,8 @@ def create_article(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_admin),
 ) -> ApiResponse[ArticleAdminResponse]:
-    cat_id = _validate_category(db, body.category_id)
+    cat_id = _validate_category(db, body.primary_category_id)
+    additional_ids = [_validate_category(db, cid) for cid in body.additional_category_ids]
     article = admin_service.create_article(
         db,
         author_id=user.id,
@@ -167,7 +178,8 @@ def create_article(
         content=body.content,
         content_format=body.content_format,
         excerpt=body.excerpt,
-        category_id=cat_id,
+        primary_category_id=cat_id,
+        additional_category_ids=additional_ids or None,
         tags=body.tags or [],
         image_url=body.image_url,
         image_alt=body.image_alt,
@@ -246,8 +258,14 @@ def update_article(
 ) -> ApiResponse[ArticleAdminResponse]:
     article = _get_article_or_404(db, article_id)
     fields = body.model_dump(exclude_unset=True)
-    if "category_id" in fields and fields["category_id"] is not None:
-        fields["category_id"] = _validate_category(db, fields["category_id"])
+    if "primary_category_id" in fields and fields["primary_category_id"] is not None:
+        fields["primary_category_id"] = _validate_category(
+            db, fields["primary_category_id"]
+        )
+    if "additional_category_ids" in fields and fields["additional_category_ids"] is not None:
+        fields["additional_category_ids"] = [
+            _validate_category(db, cid) for cid in fields["additional_category_ids"]
+        ]
     try:
         article = admin_service.update_article(db, article, author_id=user.id, **fields)
     except ValueError as e:

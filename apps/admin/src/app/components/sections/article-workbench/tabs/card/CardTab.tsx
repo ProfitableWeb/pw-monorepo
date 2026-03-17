@@ -63,6 +63,7 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
   const h1 = watch('h1');
   const subtitle = watch('subtitle');
   const category = watch('category');
+  const additionalCategories = watch('additionalCategories') ?? [];
   const excerpt = watch('excerpt');
   const tags = watch('tags');
   const imageUrl = watch('imageUrl');
@@ -462,10 +463,19 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
               </div>
             </FormFieldInput>
 
-            <FormFieldInput label='Категория'>
+            <FormFieldInput label='Основная категория'>
               <Select
                 value={category}
-                onValueChange={v => setValue('category', v)}
+                onValueChange={v => {
+                  setValue('category', v);
+                  // Убираем из дополнительных, если совпадает
+                  if (additionalCategories.includes(v)) {
+                    setValue(
+                      'additionalCategories',
+                      additionalCategories.filter(s => s !== v)
+                    );
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder='Выберите категорию' />
@@ -478,6 +488,72 @@ export function CardTab({ register, watch, setValue }: CardTabProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </FormFieldInput>
+
+            <FormFieldInput label='Дополнительные категории'>
+              <div className='space-y-2'>
+                <Select
+                  value=''
+                  onValueChange={v => {
+                    if (
+                      v &&
+                      !additionalCategories.includes(v) &&
+                      v !== category
+                    ) {
+                      setValue('additionalCategories', [
+                        ...additionalCategories,
+                        v,
+                      ]);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='Добавить категорию...' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {apiCategories
+                      .filter(
+                        cat =>
+                          cat.slug !== category &&
+                          !additionalCategories.includes(cat.slug)
+                      )
+                      .map(cat => (
+                        <SelectItem key={cat.slug} value={cat.slug}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                {additionalCategories.length > 0 && (
+                  <div className='flex flex-wrap gap-1.5'>
+                    {additionalCategories.map(slug => {
+                      const catInfo = apiCategories.find(c => c.slug === slug);
+                      return (
+                        <Badge
+                          key={slug}
+                          variant='secondary'
+                          className='gap-1 pr-1'
+                        >
+                          {catInfo?.name ?? slug}
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='h-4 w-4 hover:bg-transparent'
+                            onClick={() =>
+                              setValue(
+                                'additionalCategories',
+                                additionalCategories.filter(s => s !== slug)
+                              )
+                            }
+                          >
+                            <X className='h-3 w-3' />
+                          </Button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </FormFieldInput>
 
             <FormFieldInput label='Метки'>

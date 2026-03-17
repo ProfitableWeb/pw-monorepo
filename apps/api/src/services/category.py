@@ -5,10 +5,11 @@ PW-054 | Категория по умолчанию: get_default_category, reass
 
 import uuid
 
+import sqlalchemy as sa
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
-from src.models.article import Article, ArticleStatus
+from src.models.article import Article, ArticleStatus, article_categories
 from src.models.category import Category
 from src.schemas.admin_category import (
     CategoryCreateRequest,
@@ -28,14 +29,20 @@ def get_all_categories(db: Session) -> list[Category]:
 def get_all_categories_with_counts(
     db: Session,
 ) -> list[tuple[Category, int]]:
-    """Категории + число опубликованных статей (один JOIN-запрос)."""
-    count_col = func.count(Article.id).label("article_count")
+    """Категории + число опубликованных статей через junction table."""
+    # Подзапрос: опубликованные article_id
+    published_ids = (
+        select(Article.id)
+        .where(Article.status == ArticleStatus.PUBLISHED)
+        .scalar_subquery()
+    )
+    count_col = func.count(article_categories.c.article_id).label("article_count")
     stmt = (
         select(Category, count_col)
         .outerjoin(
-            Article,
-            (Article.category_id == Category.id)
-            & (Article.status == ArticleStatus.PUBLISHED),
+            article_categories,
+            (article_categories.c.category_id == Category.id)
+            & (article_categories.c.article_id.in_(published_ids)),
         )
         .group_by(Category.id)
         .order_by(Category.order, Category.name)
@@ -53,11 +60,13 @@ def get_category_by_id(db: Session, category_id: uuid.UUID) -> Category | None:
 
 
 def get_article_count(db: Session, category_id: uuid.UUID) -> int:
+    """Опубликованные статьи через junction (primary + additional)."""
     stmt = (
         select(func.count())
-        .select_from(Article)
+        .select_from(article_categories)
+        .join(Article, Article.id == article_categories.c.article_id)
         .where(
-            Article.category_id == category_id,
+            article_categories.c.category_id == category_id,
             Article.status == ArticleStatus.PUBLISHED,
         )
     )
@@ -65,11 +74,11 @@ def get_article_count(db: Session, category_id: uuid.UUID) -> int:
 
 
 def get_total_article_count(db: Session, category_id: uuid.UUID) -> int:
-    """Все статьи (любой статус) — для проверки перед удалением."""
+    """Все статьи (любой статус) через junction."""
     stmt = (
         select(func.count())
-        .select_from(Article)
-        .where(Article.category_id == category_id)
+        .select_from(article_categories)
+        .where(article_categories.c.category_id == category_id)
     )
     return db.execute(stmt).scalar() or 0
 
@@ -153,13 +162,21 @@ def delete_category(db: Session, category_id: uuid.UUID) -> None:
     if category.is_default:
         raise ValueError("Нельзя удалить категорию по умолчанию")
 
-    # Перекидываем статьи на категорию по умолчанию
+    # Перекидываем primary на категорию по умолчанию
     default = get_default_category(db)
     db.execute(
         update(Article)
-        .where(Article.category_id == category_id)
-        .values(category_id=default.id)
+        .where(Article.primary_category_id == category_id)
+        .values(primary_category_id=default.id)
     )
+    # Junction-записи для удаляемой категории — CASCADE удалит автоматически.
+    # Добавляем default в junction для переназначенных статей (если ещё нет).
+    db.execute(sa.text("""
+        INSERT INTO article_categories (article_id, category_id)
+        SELECT id, :default_id FROM articles
+        WHERE primary_category_id = :default_id
+        ON CONFLICT DO NOTHING
+    """), {"default_id": default.id})
 
     # Дочерние категории становятся корневыми
     db.execute(

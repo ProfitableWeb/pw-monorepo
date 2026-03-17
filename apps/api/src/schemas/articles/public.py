@@ -16,7 +16,8 @@ class ArticleResponse(BaseModel):
     content: str
     excerpt: str
     summary: str | None = None
-    category: str  # category slug
+    category: str  # primary category slug (backward compat)
+    categories: list[str] = []  # все категории (primary + additional)
     tags: list[str] = []
     author: str | None = None
     reading_time: int | None = None
@@ -37,7 +38,8 @@ class ArticleListItem(BaseModel):
     subtitle: str | None = None
     excerpt: str
     summary: str | None = None
-    category: str  # category slug
+    category: str  # primary category slug (backward compat)
+    categories: list[str] = []  # все категории (primary + additional)
     tags: list[str] = []
     reading_time: int | None = None
     image_url: str | None = None
