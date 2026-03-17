@@ -21,6 +21,7 @@
   "dependencies": {
     "@profitable-web/types": "workspace:*",
     "@tanstack/react-query": "^5.87.1",
+    "feed": "^5.2.0",
     "framer-motion": "^12.23.12",
     "next": "^16.0.0",
     "react": "^19.2.0",

@@ -4,6 +4,8 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import '@/styles/globals.scss';
 import { metadata as siteMetadata } from '@/config/metadata';
 import { Providers } from '@/components/providers';
+import { YandexMetrika } from '@/components/seo/YandexMetrika';
+import { getSeoConfig } from '@/lib/seo-config';
 
 // Font configurations
 const inter = Inter({
@@ -21,11 +23,14 @@ const playfair = Playfair_Display({
 // Export metadata from configuration
 export const metadata: Metadata = siteMetadata;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const seoConfig = await getSeoConfig();
+  const metrika = seoConfig?.metrikaConfig;
+
   return (
     <html
       lang='ru'
@@ -45,6 +50,12 @@ export default function RootLayout({
             `,
           }}
         />
+        <link
+          rel='alternate'
+          type='application/atom+xml'
+          title='ProfitableWeb RSS'
+          href='/feed.xml'
+        />
         {/* Фолбэк: без JS контент не должен быть скрыт inline-стилями Framer Motion */}
         <noscript>
           <style
@@ -58,6 +69,16 @@ export default function RootLayout({
         <Providers>
           <div className='main-layout'>{children}</div>
         </Providers>
+        {metrika?.counterId && (
+          <YandexMetrika
+            counterId={metrika.counterId}
+            clickmap={metrika.clickmap}
+            trackLinks={metrika.trackLinks}
+            accurateTrackBounce={metrika.accurateTrackBounce}
+            webvisor={metrika.webvisor}
+            trackHash={metrika.trackHash}
+          />
+        )}
       </body>
     </html>
   );
