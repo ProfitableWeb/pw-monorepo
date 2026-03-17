@@ -82,23 +82,24 @@ def update_tag(db: Session, tag_id: uuid.UUID, data: TagUpdateRequest) -> Tag:
 
     updates = data.model_dump(exclude_unset=True)
 
-    if "name" in updates and updates["name"] != tag.name:
+    # Поля с валидацией — обрабатываем отдельно, удаляя из updates
+    new_name = updates.pop("name", None)
+    if new_name is not None and new_name != tag.name:
         dup = db.scalars(
-            select(Tag).where(Tag.name == updates["name"], Tag.id != tag_id)
+            select(Tag).where(Tag.name == new_name, Tag.id != tag_id)
         ).first()
         if dup:
             raise ValueError("Метка с таким именем уже существует")
-        tag.name = updates["name"]
+        tag.name = new_name
 
-    if "slug" in updates:
-        slug = updates["slug"] or generate_slug(tag.name)
+    new_slug = updates.pop("slug", None)
+    if new_slug is not None:
+        slug = new_slug or generate_slug(tag.name)
         tag.slug = ensure_unique_tag_slug(db, slug, exclude_id=tag_id)
 
-    if "color" in updates:
-        tag.color = updates["color"]
-
-    if "group" in updates:
-        tag.group = updates["group"]
+    # Простые поля (color, group, ...) — generic setattr
+    for field, value in updates.items():
+        setattr(tag, field, value)
 
     db.flush()
     return tag

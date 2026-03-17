@@ -1,3 +1,6 @@
+/** Sentinel-значение для «без группы» */
+export const NO_GROUP_VALUE = 'Без группы' as const;
+
 /** Группы меток */
 export const TAG_GROUPS = [
   'Технологии',
@@ -5,5 +8,5 @@ export const TAG_GROUPS = [
   'Маркетинг',
   'Бизнес',
   'Лайфстайл',
-  'Без группы',
+  NO_GROUP_VALUE,
 ];

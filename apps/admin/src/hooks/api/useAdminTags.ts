@@ -6,11 +6,12 @@ import {
   deleteTag,
   type TagCreatePayload,
 } from '@/lib/api-client';
-import { adminTagKeys } from '@/lib/query-keys';
+import { adminArticleKeys, adminTagKeys } from '@/lib/query-keys';
 
-/** Инвалидирует кеши меток */
+/** Инвалидирует кеши меток и статей (статьи содержат теги) */
 function invalidateTags(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: adminTagKeys.all });
+  qc.invalidateQueries({ queryKey: adminArticleKeys.all });
 }
 
 export function useAdminTags() {

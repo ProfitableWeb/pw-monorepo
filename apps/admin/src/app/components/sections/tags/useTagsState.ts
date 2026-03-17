@@ -11,12 +11,13 @@ import { hexToTw, twToHex } from '@/app/components/common/colors';
 import { toast } from 'sonner';
 
 import type { Tag, ViewMode, TagFormData } from './tags.types';
+import { NO_GROUP_VALUE } from './tags.constants';
 
 const DEFAULT_FORM_DATA: TagFormData = {
   name: '',
   slug: '',
   color: 'bg-gray-500',
-  group: 'Без группы',
+  group: NO_GROUP_VALUE,
 };
 
 export function useTagsState() {
@@ -70,14 +71,18 @@ export function useTagsState() {
     }
 
     if (selectedGroup) {
-      const groupValue = selectedGroup === 'Без группы' ? null : selectedGroup;
+      const groupValue =
+        selectedGroup === NO_GROUP_VALUE ? null : selectedGroup;
       result = result.filter(tag => tag.group === groupValue);
     }
 
     return result;
   }, [tags, searchQuery, selectedGroup]);
 
-  const maxCount = Math.max(...tags.map(t => t.articlesCount), 1);
+  const maxCount = useMemo(
+    () => Math.max(...tags.map(t => t.articlesCount), 1),
+    [tags]
+  );
 
   const topTags = useMemo(
     () =>
@@ -102,7 +107,7 @@ export function useTagsState() {
   const tagsByGroup = useMemo(() => {
     const groups: Record<string, Tag[]> = {};
     tags.forEach(tag => {
-      const group = tag.group || 'Без группы';
+      const group = tag.group || NO_GROUP_VALUE;
       if (!groups[group]) groups[group] = [];
       groups[group].push(tag);
     });
@@ -111,7 +116,8 @@ export function useTagsState() {
 
   const handleSave = () => {
     const colorHex = twToHex(formData.color);
-    const groupValue = formData.group === 'Без группы' ? null : formData.group;
+    const groupValue =
+      formData.group === NO_GROUP_VALUE ? null : formData.group;
 
     if (editingTag) {
       updateMutation.mutate(
@@ -167,7 +173,7 @@ export function useTagsState() {
       name: tag.name,
       slug: tag.slug,
       color: tag.color,
-      group: tag.group || 'Без группы',
+      group: tag.group || NO_GROUP_VALUE,
     });
     setIsAddDialogOpen(true);
   };
@@ -191,7 +197,10 @@ export function useTagsState() {
     }
   };
 
-  const totalArticles = tags.reduce((sum, tag) => sum + tag.articlesCount, 0);
+  const totalArticles = useMemo(
+    () => tags.reduce((sum, tag) => sum + tag.articlesCount, 0),
+    [tags]
+  );
 
   const isMutating =
     createMutation.isPending ||
