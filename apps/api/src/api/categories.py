@@ -30,6 +30,7 @@ def _category_to_response(cat: Category, article_count: int = 0) -> CategoryResp
         parent_id=str(cat.parent_id) if cat.parent_id else None,
         order=cat.order,
         article_count=article_count,
+        is_default=cat.is_default,
     )
 
 

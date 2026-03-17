@@ -1,10 +1,9 @@
 """PW-038 | Admin эндпоинты категорий. PW-051 | CRUD + reorder."""
 
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.api.admin.utils import parse_uuid
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
 from src.models.category import Category
@@ -24,13 +23,6 @@ router = APIRouter(prefix="/categories", tags=["admin-categories"])
 # --- Helpers ---
 
 
-def _parse_uuid(value: str, label: str = "id") -> uuid.UUID:
-    try:
-        return uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(400, f"Невалидный {label}: {value}")
-
-
 def _to_response(cat: Category, article_count: int = 0) -> CategoryAdminResponse:
     return CategoryAdminResponse(
         id=str(cat.id),
@@ -43,6 +35,7 @@ def _to_response(cat: Category, article_count: int = 0) -> CategoryAdminResponse
         parent_id=str(cat.parent_id) if cat.parent_id else None,
         order=cat.order,
         article_count=article_count,
+        is_default=cat.is_default,
     )
 
 
@@ -95,7 +88,7 @@ def update_category(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[CategoryAdminResponse]:
-    uid = _parse_uuid(category_id)
+    uid = parse_uuid(category_id)
     try:
         cat = category_service.update_category(db, uid, body)
     except ValueError as exc:
@@ -111,7 +104,7 @@ def delete_category(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> None:
-    uid = _parse_uuid(category_id)
+    uid = parse_uuid(category_id)
     try:
         category_service.delete_category(db, uid)
     except ValueError as exc:

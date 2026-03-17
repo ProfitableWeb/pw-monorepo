@@ -16,6 +16,7 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  Shield,
 } from 'lucide-react';
 import type { CategoryCardProps } from '../categories.types';
 
@@ -118,6 +119,15 @@ export function SortableCategoryCard({
         <div className='flex-1 min-w-0'>
           <div className='flex items-center gap-2'>
             <h3 className='font-medium truncate'>{category.name}</h3>
+            {category.isDefault && (
+              <Badge
+                variant='outline'
+                className='text-xs text-muted-foreground'
+              >
+                <Shield className='h-3 w-3 mr-1' />
+                По умолчанию
+              </Badge>
+            )}
             <Badge variant='secondary' className='text-xs'>
               <FileText className='h-3 w-3 mr-1' />
               {category.articlesCount}
@@ -142,13 +152,15 @@ export function SortableCategoryCard({
               <Pencil className='h-4 w-4 mr-2' />
               Редактировать
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(category.id)}
-              className='text-destructive'
-            >
-              <Trash2 className='h-4 w-4 mr-2' />
-              Удалить
-            </DropdownMenuItem>
+            {!category.isDefault && (
+              <DropdownMenuItem
+                onClick={() => onDelete(category.id)}
+                className='text-destructive'
+              >
+                <Trash2 className='h-4 w-4 mr-2' />
+                Удалить
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

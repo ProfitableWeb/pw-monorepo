@@ -16,6 +16,7 @@ class CategoryAdminResponse(BaseModel):
     parent_id: str | None = None
     order: int = 0
     article_count: int = 0
+    is_default: bool = False
 
     model_config = {"from_attributes": True}
 

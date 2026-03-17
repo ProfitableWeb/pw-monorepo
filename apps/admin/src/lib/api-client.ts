@@ -756,6 +756,7 @@ interface AdminCategoryFullRaw {
   parent_id: string | null;
   order: number;
   article_count: number;
+  is_default: boolean;
 }
 
 interface SystemSettingsRaw {
@@ -860,6 +861,7 @@ function mapAdminCategoryFullItem(
     parentId: raw.parent_id,
     order: raw.order,
     articleCount: raw.article_count,
+    isDefault: raw.is_default,
   };
 }
 

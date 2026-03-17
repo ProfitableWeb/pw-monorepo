@@ -14,8 +14,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Button } from '@/app/components/ui/button';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { LoadingSpinner } from '@/app/components/common';
 
 import { SortableCategoryCard } from './assets/SortableCategoryCard';
 import { DragOverlayCard } from './assets/DragOverlayCard';
@@ -49,6 +50,7 @@ export function CategoriesSection() {
         articlesCount: cat.articleCount,
         parentId: cat.parentId,
         order: cat.order,
+        isDefault: cat.isDefault,
       })),
     [apiCategories]
   );
@@ -173,6 +175,8 @@ export function CategoriesSection() {
   };
 
   const handleDelete = (id: string) => {
+    const cat = categories.find(c => c.id === id);
+    if (cat?.isDefault) return;
     deleteMutation.mutate(id, {
       onSuccess: () => toast.success('Категория удалена'),
       onError: err => toast.error(`Ошибка: ${err.message}`),
@@ -241,9 +245,7 @@ export function CategoriesSection() {
 
         {/* Список категорий */}
         {isLoading ? (
-          <div className='flex items-center justify-center py-8'>
-            <Loader2 className='size-6 animate-spin text-muted-foreground' />
-          </div>
+          <LoadingSpinner />
         ) : categories.length === 0 ? (
           <div className='text-center py-8 text-muted-foreground'>
             Нет категорий. Создайте первую!

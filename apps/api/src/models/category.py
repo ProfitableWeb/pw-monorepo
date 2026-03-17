@@ -2,12 +2,13 @@
 PW-027 | Категории статей (6 шт. в seed). article_count вычисляется при запросе,
 не хранится — избегаем рассинхрона при добавлении/удалении статей.
 PW-051 | Добавлены parent_id (1 уровень вложенности) и order (сортировка).
+PW-054 | is_default — системная категория (нельзя удалить, seed при миграции).
 """
 
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin, UUIDMixin
@@ -25,6 +26,9 @@ class Category(UUIDMixin, TimestampMixin, Base):
     description: Mapped[str | None] = mapped_column(Text)
     icon: Mapped[str | None] = mapped_column(String(100))
     color: Mapped[str | None] = mapped_column(String(7))
+    is_default: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false"
+    )
 
     # PW-051: иерархия (макс. 1 уровень) + порядок сортировки
     parent_id: Mapped[uuid.UUID | None] = mapped_column(

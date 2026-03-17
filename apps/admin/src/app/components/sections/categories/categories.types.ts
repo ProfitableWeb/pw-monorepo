@@ -8,6 +8,7 @@ export interface Category {
   articlesCount: number;
   parentId: string | null;
   order: number;
+  isDefault: boolean;
 }
 
 export type DropPosition = 'before' | 'after' | 'child';

@@ -1,10 +1,11 @@
 """
 PW-027 | Сервис категорий. PW-051 | CRUD + reorder.
+PW-054 | Категория по умолчанию: get_default_category, reassign при удалении.
 """
 
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from src.models.article import Article, ArticleStatus
@@ -73,6 +74,15 @@ def get_total_article_count(db: Session, category_id: uuid.UUID) -> int:
     return db.execute(stmt).scalar() or 0
 
 
+def get_default_category(db: Session) -> Category:
+    """Системная категория по умолчанию (ровно одна, защищена partial unique index)."""
+    stmt = select(Category).where(Category.is_default.is_(True))
+    cat = db.scalars(stmt).first()
+    if not cat:
+        raise RuntimeError("Категория по умолчанию не найдена — запустите миграцию")
+    return cat
+
+
 # --- Создание ---
 
 
@@ -110,6 +120,9 @@ def update_category(
 
     updates = data.model_dump(exclude_unset=True)
 
+    # is_default нельзя менять через API
+    updates.pop("is_default", None)
+
     if "slug" in updates and updates["slug"]:
         updates["slug"] = ensure_unique_category_slug(
             db, updates["slug"], exclude_id=category_id
@@ -137,16 +150,23 @@ def delete_category(db: Session, category_id: uuid.UUID) -> None:
     if not category:
         raise ValueError("Категория не найдена")
 
-    total = get_total_article_count(db, category_id)
-    if total > 0:
-        raise ValueError(
-            f"Нельзя удалить категорию: привязано статей: {total}"
-        )
+    if category.is_default:
+        raise ValueError("Нельзя удалить категорию по умолчанию")
+
+    # Перекидываем статьи на категорию по умолчанию
+    default = get_default_category(db)
+    db.execute(
+        update(Article)
+        .where(Article.category_id == category_id)
+        .values(category_id=default.id)
+    )
 
     # Дочерние категории становятся корневыми
-    children_stmt = select(Category).where(Category.parent_id == category_id)
-    for child in db.scalars(children_stmt).all():
-        child.parent_id = None
+    db.execute(
+        update(Category)
+        .where(Category.parent_id == category_id)
+        .values(parent_id=None)
+    )
 
     db.delete(category)
     db.flush()

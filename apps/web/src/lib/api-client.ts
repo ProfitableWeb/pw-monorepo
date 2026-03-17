@@ -41,6 +41,7 @@ interface CategoryRaw {
   icon?: string | null;
   color?: string | null;
   article_count: number;
+  is_default?: boolean;
 }
 
 interface ArticleListItemRaw {
@@ -91,6 +92,7 @@ function mapCategory(raw: CategoryRaw): Category {
     icon: raw.icon ?? undefined,
     color: raw.color ?? undefined,
     articleCount: raw.article_count,
+    isDefault: raw.is_default,
   };
 }
 

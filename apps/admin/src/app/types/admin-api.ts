@@ -163,6 +163,7 @@ export interface AdminCategoryFull {
   parentId: string | null;
   order: number;
   articleCount: number;
+  isDefault: boolean;
 }
 
 // ---------------------------------------------------------------------------

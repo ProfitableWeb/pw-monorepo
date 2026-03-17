@@ -80,6 +80,7 @@ export interface Category {
   color?: string;
   parent?: string;
   articleCount?: number; // Количество статей в категории
+  isDefault?: boolean; // Системная категория по умолчанию (нельзя удалить)
 }
 
 export interface Article {
