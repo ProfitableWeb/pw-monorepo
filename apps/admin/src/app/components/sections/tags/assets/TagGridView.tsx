@@ -75,10 +75,8 @@ export function TagGridView({
             <Badge variant='secondary' className='text-xs'>
               {tag.articlesCount} статей
             </Badge>
-            {tag.category && (
-              <span className='text-xs text-muted-foreground'>
-                {tag.category}
-              </span>
+            {tag.group && (
+              <span className='text-xs text-muted-foreground'>{tag.group}</span>
             )}
           </div>
         </div>

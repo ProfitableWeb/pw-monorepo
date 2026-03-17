@@ -1,19 +1,38 @@
-"""PW-038 | Admin эндпоинты тегов."""
+"""PW-052 | Admin эндпоинты меток: CRUD."""
+
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
-from src.models.article import Article, ArticleStatus
-from src.models.tag import Tag, article_tags
+from src.models.tag import Tag
 from src.models.user import User
-from src.schemas.admin_tag import TagAdminResponse, TagCreateRequest
+from src.schemas.admin_tag import TagAdminResponse, TagCreateRequest, TagUpdateRequest
 from src.schemas.common import ApiResponse
-from src.services.slug import generate_slug
+from src.services import tag as tag_service
 
 router = APIRouter(prefix="/tags", tags=["admin-tags"])
+
+
+def _parse_uuid(value: str) -> uuid.UUID:
+    try:
+        return uuid.UUID(value)
+    except ValueError:
+        raise HTTPException(400, "Невалидный UUID")
+
+
+def _to_response(tag: Tag, article_count: int = 0) -> TagAdminResponse:
+    return TagAdminResponse(
+        id=str(tag.id),
+        name=tag.name,
+        slug=tag.slug,
+        color=tag.color,
+        group=tag.group,
+        article_count=article_count,
+        created_at=tag.created_at.isoformat() if tag.created_at else None,
+    )
 
 
 @router.get("", response_model=ApiResponse[list[TagAdminResponse]])
@@ -21,28 +40,8 @@ def list_tags(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[TagAdminResponse]]:
-    count_col = func.count(Article.id).label("article_count")
-    stmt = (
-        select(Tag, count_col)
-        .outerjoin(article_tags, Tag.id == article_tags.c.tag_id)
-        .outerjoin(
-            Article,
-            (Article.id == article_tags.c.article_id)
-            & (Article.status != ArticleStatus.ARCHIVED),
-        )
-        .group_by(Tag.id)
-        .order_by(Tag.name)
-    )
-    rows = db.execute(stmt).all()
-    data = [
-        TagAdminResponse(
-            id=str(tag.id),
-            name=tag.name,
-            slug=tag.slug,
-            article_count=count,
-        )
-        for tag, count in rows
-    ]
+    rows = tag_service.get_all_tags_with_counts(db)
+    data = [_to_response(tag, count) for tag, count in rows]
     return ApiResponse(success=True, data=data)
 
 
@@ -52,17 +51,41 @@ def create_tag(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[TagAdminResponse]:
-    existing = db.scalars(select(Tag).where(Tag.name == body.name)).first()
-    if existing:
-        raise HTTPException(status_code=409, detail="Тег уже существует")
-
-    tag = Tag(name=body.name, slug=generate_slug(body.name))
-    db.add(tag)
+    try:
+        tag = tag_service.create_tag(db, body)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
     db.commit()
-    db.refresh(tag)
-    return ApiResponse(
-        success=True,
-        data=TagAdminResponse(
-            id=str(tag.id), name=tag.name, slug=tag.slug, article_count=0
-        ),
-    )
+    return ApiResponse(success=True, data=_to_response(tag))
+
+
+@router.put("/{tag_id}", response_model=ApiResponse[TagAdminResponse])
+def update_tag(
+    tag_id: str,
+    body: TagUpdateRequest,
+    db: Session = Depends(get_db),
+    _user: User = Depends(get_current_admin),
+) -> ApiResponse[TagAdminResponse]:
+    uid = _parse_uuid(tag_id)
+    try:
+        tag = tag_service.update_tag(db, uid, body)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    db.commit()
+
+    count = tag_service.get_article_count_for_tag(db, uid)
+    return ApiResponse(success=True, data=_to_response(tag, count))
+
+
+@router.delete("/{tag_id}", status_code=204)
+def delete_tag(
+    tag_id: str,
+    db: Session = Depends(get_db),
+    _user: User = Depends(get_current_admin),
+) -> None:
+    uid = _parse_uuid(tag_id)
+    try:
+        tag_service.delete_tag(db, uid)
+    except ValueError as exc:
+        raise HTTPException(404, str(exc))
+    db.commit()

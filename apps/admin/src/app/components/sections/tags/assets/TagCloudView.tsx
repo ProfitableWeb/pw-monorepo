@@ -1,4 +1,5 @@
 import { cn } from '@/app/components/ui/utils';
+import { twToHex } from '@/app/components/common/colors';
 
 import type { Tag } from '../tags.types';
 import { getTagSize, getTagOpacity } from '../tags.utils';
@@ -29,7 +30,7 @@ export function TagCloudView({
             selectedTagId === tag.id && 'scale-125 text-primary'
           )}
           style={{
-            color: tag.color.replace('bg-', ''),
+            color: selectedTagId === tag.id ? undefined : twToHex(tag.color),
             filter: 'saturate(0.8)',
           }}
         >

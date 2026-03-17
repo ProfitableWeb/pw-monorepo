@@ -20,6 +20,8 @@ class Tag(UUIDMixin, TimestampMixin, Base):
 
     name: Mapped[str] = mapped_column(String(100), unique=True)
     slug: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    color: Mapped[str | None] = mapped_column(String(7), nullable=True)
+    group: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     def __repr__(self) -> str:
         return f"<Tag {self.slug}>"

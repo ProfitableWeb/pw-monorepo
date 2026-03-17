@@ -58,7 +58,7 @@ export function TagListView({
                 </div>
               </td>
               <td className='p-3 text-sm text-muted-foreground'>
-                {tag.category || '—'}
+                {tag.group || '—'}
               </td>
               <td className='p-3'>
                 <Badge variant='secondary' className='text-xs'>
@@ -66,11 +66,13 @@ export function TagListView({
                 </Badge>
               </td>
               <td className='p-3 text-sm text-muted-foreground'>
-                {tag.createdAt.toLocaleDateString('ru-RU', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+                {tag.createdAt
+                  ? new Date(tag.createdAt).toLocaleDateString('ru-RU', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  : '—'}
               </td>
               <td className='p-3 text-right' onClick={e => e.stopPropagation()}>
                 <DropdownMenu>

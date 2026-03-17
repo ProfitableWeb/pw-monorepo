@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from src.models.article import Article
 from src.models.category import Category
+from src.models.tag import Tag
 
 
 def generate_slug(text: str) -> str:
@@ -41,3 +42,10 @@ def ensure_unique_category_slug(
 ) -> str:
     """Уникальный slug для категорий."""
     return _ensure_unique(db, Category, slug, exclude_id)
+
+
+def ensure_unique_tag_slug(
+    db: Session, slug: str, exclude_id: object = None
+) -> str:
+    """Уникальный slug для меток."""
+    return _ensure_unique(db, Tag, slug, exclude_id)

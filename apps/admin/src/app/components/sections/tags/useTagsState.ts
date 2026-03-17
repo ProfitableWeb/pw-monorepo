@@ -1,19 +1,30 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useHeaderStore } from '@/app/store/header-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
+import {
+  useAdminTags,
+  useCreateTag,
+  useUpdateTag,
+  useDeleteTag,
+} from '@/hooks/api';
+import { hexToTw, twToHex } from '@/app/components/common/colors';
+import { toast } from 'sonner';
 
 import type { Tag, ViewMode, TagFormData } from './tags.types';
-import { initialTags } from './tags.constants';
 
 const DEFAULT_FORM_DATA: TagFormData = {
   name: '',
   slug: '',
   color: 'bg-gray-500',
-  category: 'Без группы',
+  group: 'Без группы',
 };
 
 export function useTagsState() {
-  const [tags, setTags] = useState<Tag[]>(initialTags);
+  const { data: apiTags, isLoading } = useAdminTags();
+  const createMutation = useCreateTag();
+  const updateMutation = useUpdateTag();
+  const deleteMutation = useDeleteTag();
+
   const [viewMode, setViewMode] = useState<ViewMode>('cloud');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
@@ -22,52 +33,76 @@ export function useTagsState() {
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [formData, setFormData] = useState<TagFormData>(DEFAULT_FORM_DATA);
 
+  // Маппинг API → UI (мемоизировано)
+  const tags = useMemo<Tag[]>(
+    () =>
+      (apiTags ?? []).map(t => ({
+        id: t.id,
+        name: t.name,
+        slug: t.slug,
+        color: t.color ? hexToTw(t.color) : 'bg-gray-500',
+        articlesCount: t.articleCount,
+        group: t.group,
+        createdAt: t.createdAt,
+      })),
+    [apiTags]
+  );
+
   // Стор заголовка для хлебных крошек
   const { setBreadcrumbs, reset } = useHeaderStore();
 
-  // Установить хлебные крошки
   useEffect(() => {
     setBreadcrumbs(breadcrumbPresets.tags());
-
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
+  // Фильтрация по поиску и группе
   const filteredTags = useMemo(() => {
     let result = tags;
 
     if (searchQuery) {
+      const q = searchQuery.toLowerCase();
       result = result.filter(
         tag =>
-          tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          tag.slug.toLowerCase().includes(searchQuery.toLowerCase())
+          tag.name.toLowerCase().includes(q) ||
+          tag.slug.toLowerCase().includes(q)
       );
     }
 
+    if (selectedGroup) {
+      const groupValue = selectedGroup === 'Без группы' ? null : selectedGroup;
+      result = result.filter(tag => tag.group === groupValue);
+    }
+
     return result;
-  }, [tags, searchQuery]);
+  }, [tags, searchQuery, selectedGroup]);
 
   const maxCount = Math.max(...tags.map(t => t.articlesCount), 1);
 
-  const topTags = useMemo(() => {
-    return [...tags]
-      .sort((a, b) => b.articlesCount - a.articlesCount)
-      .slice(0, 10);
-  }, [tags]);
+  const topTags = useMemo(
+    () =>
+      [...tags].sort((a, b) => b.articlesCount - a.articlesCount).slice(0, 10),
+    [tags]
+  );
 
-  const recentTags = useMemo(() => {
-    return [...tags]
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, 5);
-  }, [tags]);
+  const recentTags = useMemo(
+    () =>
+      [...tags]
+        .filter(t => t.createdAt)
+        .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+        .slice(0, 5),
+    [tags]
+  );
 
-  const unusedTags = useMemo(() => {
-    return tags.filter(t => t.articlesCount === 0);
-  }, [tags]);
+  const unusedTags = useMemo(
+    () => tags.filter(t => t.articlesCount === 0),
+    [tags]
+  );
 
   const tagsByGroup = useMemo(() => {
     const groups: Record<string, Tag[]> = {};
     tags.forEach(tag => {
-      const group = tag.category || 'Без группы';
+      const group = tag.group || 'Без группы';
       if (!groups[group]) groups[group] = [];
       groups[group].push(tag);
     });
@@ -75,28 +110,55 @@ export function useTagsState() {
   }, [tags]);
 
   const handleSave = () => {
+    const colorHex = twToHex(formData.color);
+    const groupValue = formData.group === 'Без группы' ? null : formData.group;
+
     if (editingTag) {
-      setTags(prev =>
-        prev.map(t => (t.id === editingTag.id ? { ...t, ...formData } : t))
+      updateMutation.mutate(
+        {
+          id: editingTag.id,
+          data: {
+            name: formData.name,
+            slug: formData.slug || undefined,
+            color: colorHex,
+            group: groupValue,
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success('Метка обновлена');
+            handleCloseDialog();
+          },
+          onError: err => toast.error(`Ошибка: ${err.message}`),
+        }
       );
     } else {
-      const newTag: Tag = {
-        id: Date.now().toString(),
-        name: formData.name,
-        slug: formData.slug,
-        color: formData.color,
-        articlesCount: 0,
-        category: formData.category,
-        createdAt: new Date(),
-      };
-      setTags(prev => [...prev, newTag]);
+      createMutation.mutate(
+        {
+          name: formData.name,
+          slug: formData.slug || undefined,
+          color: colorHex,
+          group: groupValue,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Метка создана');
+            handleCloseDialog();
+          },
+          onError: err => toast.error(`Ошибка: ${err.message}`),
+        }
+      );
     }
-    handleCloseDialog();
   };
 
   const handleDelete = (id: string) => {
-    setTags(prev => prev.filter(t => t.id !== id));
-    setSelectedTag(null);
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success('Метка удалена');
+        setSelectedTag(null);
+      },
+      onError: err => toast.error(`Ошибка: ${err.message}`),
+    });
   };
 
   const handleEdit = (tag: Tag) => {
@@ -105,7 +167,7 @@ export function useTagsState() {
       name: tag.name,
       slug: tag.slug,
       color: tag.color,
-      category: tag.category || 'Без группы',
+      group: tag.group || 'Без группы',
     });
     setIsAddDialogOpen(true);
   };
@@ -122,10 +184,8 @@ export function useTagsState() {
       !tags.find(t => t.name.toLowerCase() === searchQuery.toLowerCase())
     ) {
       setFormData({
+        ...DEFAULT_FORM_DATA,
         name: searchQuery,
-        slug: searchQuery.toLowerCase().replace(/\s+/g, '-'),
-        color: 'bg-gray-500',
-        category: 'Без группы',
       });
       setIsAddDialogOpen(true);
     }
@@ -133,8 +193,15 @@ export function useTagsState() {
 
   const totalArticles = tags.reduce((sum, tag) => sum + tag.articlesCount, 0);
 
+  const isMutating =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    deleteMutation.isPending;
+
   return {
     tags,
+    isLoading,
+    isMutating,
     viewMode,
     setViewMode,
     searchQuery,

@@ -146,7 +146,10 @@ export interface AdminTag {
   id: string;
   name: string;
   slug: string;
+  color: string | null;
+  group: string | null;
   articleCount: number;
+  createdAt: string | null;
 }
 
 export interface AdminCategoryFull {

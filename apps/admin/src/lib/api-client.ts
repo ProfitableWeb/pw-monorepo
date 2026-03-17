@@ -739,7 +739,10 @@ interface AdminTagRaw {
   id: string;
   name: string;
   slug: string;
+  color: string | null;
+  group: string | null;
   article_count: number;
+  created_at: string | null;
 }
 
 interface AdminCategoryFullRaw {
@@ -836,7 +839,10 @@ function mapAdminTagItem(raw: AdminTagRaw): AdminTagType {
     id: raw.id,
     name: raw.name,
     slug: raw.slug,
+    color: raw.color,
+    group: raw.group,
     articleCount: raw.article_count,
+    createdAt: raw.created_at,
   };
 }
 
@@ -1026,13 +1032,36 @@ export async function getAdminTags(): Promise<AdminTagType[]> {
   return (data ?? []).map(mapAdminTagItem);
 }
 
-export async function createTag(name: string): Promise<AdminTagType> {
+export interface TagCreatePayload {
+  name: string;
+  slug?: string;
+  color?: string | null;
+  group?: string | null;
+}
+
+export async function createTag(data: TagCreatePayload): Promise<AdminTagType> {
   const raw = await apiMutate<AdminTagRaw>('/admin/tags', {
     method: 'POST',
-    body: { name },
+    body: data,
   });
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return mapAdminTagItem(raw);
+}
+
+export async function updateTag(
+  id: string,
+  data: Partial<TagCreatePayload>
+): Promise<AdminTagType> {
+  const raw = await apiMutate<AdminTagRaw>(`/admin/tags/${id}`, {
+    method: 'PUT',
+    body: data,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAdminTagItem(raw);
+}
+
+export async function deleteTag(id: string): Promise<void> {
+  await apiMutate(`/admin/tags/${id}`, { method: 'DELETE' });
 }
 
 // ---------------------------------------------------------------------------

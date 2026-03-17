@@ -1,6 +1,5 @@
 import { cn } from '@/app/components/ui/utils';
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +9,7 @@ import {
   DialogTitle,
 } from '@/app/components/ui/dialog';
 import { Label } from '@/app/components/ui/label';
-import { Hash, Pencil, Link2 } from 'lucide-react';
+import { Hash, Pencil } from 'lucide-react';
 
 import type { Tag } from '../tags.types';
 
@@ -47,9 +46,7 @@ export function TagDetailDialog({
               </div>
               <div>
                 <Label className='text-xs text-muted-foreground'>Группа</Label>
-                <p className='text-sm font-medium mt-1'>
-                  {tag.category || '—'}
-                </p>
+                <p className='text-sm font-medium mt-1'>{tag.group || '—'}</p>
               </div>
               <div>
                 <Label className='text-xs text-muted-foreground'>
@@ -62,26 +59,10 @@ export function TagDetailDialog({
               <div>
                 <Label className='text-xs text-muted-foreground'>Создана</Label>
                 <p className='text-sm font-medium mt-1'>
-                  {tag.createdAt.toLocaleDateString('ru-RU')}
+                  {tag.createdAt
+                    ? new Date(tag.createdAt).toLocaleDateString('ru-RU')
+                    : '—'}
                 </p>
-              </div>
-            </div>
-
-            <div className='p-3 border rounded-lg bg-muted/30'>
-              <div className='flex items-center gap-2 text-sm text-muted-foreground mb-2'>
-                <Link2 className='h-4 w-4' />
-                Часто используется с:
-              </div>
-              <div className='flex flex-wrap gap-1.5'>
-                <Badge variant='outline' className='text-xs'>
-                  React
-                </Badge>
-                <Badge variant='outline' className='text-xs'>
-                  TypeScript
-                </Badge>
-                <Badge variant='outline' className='text-xs'>
-                  UI/UX
-                </Badge>
               </div>
             </div>
           </div>

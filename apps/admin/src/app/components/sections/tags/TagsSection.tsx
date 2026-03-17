@@ -10,6 +10,7 @@ import {
   Cloud,
   Grid3x3,
   List,
+  Loader2,
 } from 'lucide-react';
 
 import { TAG_GROUPS } from './tags.constants';
@@ -23,6 +24,8 @@ import { TagFormDialog } from './assets/TagFormDialog';
 export function TagsSection() {
   const {
     tags,
+    isLoading,
+    isMutating,
     viewMode,
     setViewMode,
     searchQuery,
@@ -61,7 +64,7 @@ export function TagsSection() {
             {unusedTags.length} неиспользуемых
           </p>
         </div>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button onClick={() => setIsAddDialogOpen(true)} disabled={isMutating}>
           <Plus className='h-4 w-4 mr-2' />
           Новая метка
         </Button>
@@ -196,31 +199,43 @@ export function TagsSection() {
       </div>
 
       {/* Отображение тегов */}
-      {viewMode === 'cloud' && (
-        <TagCloudView
-          tags={filteredTags}
-          maxCount={maxCount}
-          selectedTagId={selectedTag?.id ?? null}
-          onSelect={setSelectedTag}
-        />
-      )}
+      {isLoading ? (
+        <div className='flex items-center justify-center py-8'>
+          <Loader2 className='size-6 animate-spin text-muted-foreground' />
+        </div>
+      ) : tags.length === 0 ? (
+        <div className='text-center py-8 text-muted-foreground'>
+          Нет меток. Создайте первую!
+        </div>
+      ) : (
+        <>
+          {viewMode === 'cloud' && (
+            <TagCloudView
+              tags={filteredTags}
+              maxCount={maxCount}
+              selectedTagId={selectedTag?.id ?? null}
+              onSelect={setSelectedTag}
+            />
+          )}
 
-      {viewMode === 'grid' && (
-        <TagGridView
-          tags={filteredTags}
-          onSelect={setSelectedTag}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      )}
+          {viewMode === 'grid' && (
+            <TagGridView
+              tags={filteredTags}
+              onSelect={setSelectedTag}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
 
-      {viewMode === 'list' && (
-        <TagListView
-          tags={filteredTags}
-          onSelect={setSelectedTag}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+          {viewMode === 'list' && (
+            <TagListView
+              tags={filteredTags}
+              onSelect={setSelectedTag}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
+        </>
       )}
 
       {/* Диалог деталей тега */}
@@ -235,6 +250,7 @@ export function TagsSection() {
         open={isAddDialogOpen}
         editingTag={editingTag}
         formData={formData}
+        isSaving={isMutating}
         onFormChange={setFormData}
         onSave={handleSave}
         onClose={handleCloseDialog}

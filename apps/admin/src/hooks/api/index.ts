@@ -14,7 +14,12 @@ export {
   useUnpublishArticle,
   useRestoreRevision,
 } from './useAdminArticles';
-export { useAdminTags, useCreateTag } from './useAdminTags';
+export {
+  useAdminTags,
+  useCreateTag,
+  useUpdateTag,
+  useDeleteTag,
+} from './useAdminTags';
 export {
   useAdminCategories,
   useCreateCategory,

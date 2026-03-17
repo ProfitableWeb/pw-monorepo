@@ -17,14 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
+import { Loader2 } from 'lucide-react';
+import { COLORS } from '@/app/components/common/colors';
 
 import type { Tag, TagFormData } from '../tags.types';
-import { COLORS, TAG_GROUPS } from '../tags.constants';
+import { TAG_GROUPS } from '../tags.constants';
 
 interface TagFormDialogProps {
   open: boolean;
   editingTag: Tag | null;
   formData: TagFormData;
+  isSaving?: boolean;
   onFormChange: (data: TagFormData) => void;
   onSave: () => void;
   onClose: () => void;
@@ -34,6 +37,7 @@ export function TagFormDialog({
   open,
   editingTag,
   formData,
+  isSaving,
   onFormChange,
   onSave,
   onClose,
@@ -58,15 +62,9 @@ export function TagFormDialog({
             <Input
               id='name'
               value={formData.name}
-              onChange={e => {
-                const name = e.target.value;
-                onFormChange({
-                  ...formData,
-                  name,
-                  slug:
-                    formData.slug || name.toLowerCase().replace(/\s+/g, '-'),
-                });
-              }}
+              onChange={e =>
+                onFormChange({ ...formData, name: e.target.value })
+              }
               placeholder='Например: React'
             />
           </div>
@@ -79,7 +77,7 @@ export function TagFormDialog({
               onChange={e =>
                 onFormChange({ ...formData, slug: e.target.value })
               }
-              placeholder='react'
+              placeholder='Авто из названия если пусто'
             />
           </div>
 
@@ -88,14 +86,12 @@ export function TagFormDialog({
             <div className='flex gap-2 flex-wrap'>
               {COLORS.map(color => (
                 <button
-                  key={color.value}
-                  onClick={() =>
-                    onFormChange({ ...formData, color: color.value })
-                  }
+                  key={color.tw}
+                  onClick={() => onFormChange({ ...formData, color: color.tw })}
                   className={cn(
                     'w-10 h-10 rounded-lg transition-all',
-                    color.value,
-                    formData.color === color.value &&
+                    color.tw,
+                    formData.color === color.tw &&
                       'ring-2 ring-offset-2 ring-foreground scale-110'
                   )}
                   title={color.name}
@@ -105,17 +101,15 @@ export function TagFormDialog({
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='category'>Группа</Label>
+            <Label htmlFor='group'>Группа</Label>
             <Select
-              value={formData.category}
+              value={formData.group}
               onValueChange={value =>
-                onFormChange({ ...formData, category: value })
+                onFormChange({ ...formData, group: value })
               }
             >
-              <SelectTrigger className='w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring'>
-                <SelectValue placeholder='Выберите группу'>
-                  {formData.category}
-                </SelectValue>
+              <SelectTrigger>
+                <SelectValue placeholder='Выберите группу' />
               </SelectTrigger>
               <SelectContent>
                 {TAG_GROUPS.map(group => (
@@ -129,10 +123,11 @@ export function TagFormDialog({
         </div>
 
         <DialogFooter>
-          <Button variant='outline' onClick={onClose}>
+          <Button variant='outline' onClick={onClose} disabled={isSaving}>
             Отмена
           </Button>
-          <Button onClick={onSave} disabled={!formData.name || !formData.slug}>
+          <Button onClick={onSave} disabled={!formData.name || isSaving}>
+            {isSaving && <Loader2 className='size-4 mr-2 animate-spin' />}
             {editingTag ? 'Сохранить' : 'Создать'}
           </Button>
         </DialogFooter>

@@ -7,3 +7,4 @@ export { EditorialDropdown } from './editorial-dropdown';
 export { SystemDropdown } from './system-dropdown';
 export { QuickActions } from './quick-actions';
 export { formatBytes } from './format.utils';
+export { COLORS, hexToTw, twToHex, fallbackColor } from './colors';

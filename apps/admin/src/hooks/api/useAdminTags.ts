@@ -1,6 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAdminTags, createTag } from '@/lib/api-client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  getAdminTags,
+  createTag,
+  updateTag,
+  deleteTag,
+  type TagCreatePayload,
+} from '@/lib/api-client';
 import { adminTagKeys } from '@/lib/query-keys';
+
+/** Инвалидирует кеши меток */
+function invalidateTags(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: adminTagKeys.all });
+}
 
 export function useAdminTags() {
   return useQuery({
@@ -13,9 +24,29 @@ export function useAdminTags() {
 export function useCreateTag() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (name: string) => createTag(name),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: adminTagKeys.all });
-    },
+    mutationFn: (data: TagCreatePayload) => createTag(data),
+    onSuccess: () => invalidateTags(qc),
+  });
+}
+
+export function useUpdateTag() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<TagCreatePayload>;
+    }) => updateTag(id, data),
+    onSuccess: () => invalidateTags(qc),
+  });
+}
+
+export function useDeleteTag() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteTag(id),
+    onSuccess: () => invalidateTags(qc),
   });
 }

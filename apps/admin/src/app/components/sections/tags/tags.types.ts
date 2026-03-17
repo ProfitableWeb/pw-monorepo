@@ -1,12 +1,12 @@
-/** Интерфейс метки */
+/** Интерфейс метки (UI-представление) */
 export interface Tag {
   id: string;
   name: string;
   slug: string;
   color: string;
   articlesCount: number;
-  category?: string;
-  createdAt: Date;
+  group: string | null;
+  createdAt: string | null;
 }
 
 /** Режим отображения меток */
@@ -17,5 +17,5 @@ export interface TagFormData {
   name: string;
   slug: string;
   color: string;
-  category: string;
+  group: string;
 }
