@@ -7,7 +7,13 @@ import {
   reorderCategories,
   type CategoryCreatePayload,
 } from '@/lib/api-client';
-import { adminCategoryKeys } from '@/lib/query-keys';
+import { adminCategoryKeys, queryKeys } from '@/lib/query-keys';
+
+/** Инвалидирует и админские, и публичные кеши категорий */
+function invalidateCategories(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: adminCategoryKeys.all });
+  qc.invalidateQueries({ queryKey: queryKeys.categories.all });
+}
 
 export function useAdminCategories() {
   return useQuery({
@@ -21,7 +27,7 @@ export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CategoryCreatePayload) => createCategory(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminCategoryKeys.all }),
+    onSuccess: () => invalidateCategories(qc),
   });
 }
 
@@ -35,7 +41,7 @@ export function useUpdateCategory() {
       id: string;
       data: Partial<CategoryCreatePayload>;
     }) => updateCategory(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminCategoryKeys.all }),
+    onSuccess: () => invalidateCategories(qc),
   });
 }
 
@@ -43,7 +49,7 @@ export function useDeleteCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteCategory(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminCategoryKeys.all }),
+    onSuccess: () => invalidateCategories(qc),
   });
 }
 
@@ -53,6 +59,6 @@ export function useReorderCategories() {
     mutationFn: (
       items: { id: string; parent_id: string | null; order: number }[]
     ) => reorderCategories(items),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminCategoryKeys.all }),
+    onSuccess: () => invalidateCategories(qc),
   });
 }

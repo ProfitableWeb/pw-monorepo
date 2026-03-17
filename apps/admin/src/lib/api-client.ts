@@ -1079,7 +1079,7 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  await apiMutate('/admin/categories/' + id, { method: 'DELETE' });
+  await apiMutate(`/admin/categories/${id}`, { method: 'DELETE' });
 }
 
 export async function reorderCategories(

@@ -1,3 +1,6 @@
+/** Sentinel-значение для Radix Select: «нет родителя» */
+export const NO_PARENT_VALUE = '__none__' as const;
+
 /** Константы цветов для категорий */
 
 export const COLORS = [

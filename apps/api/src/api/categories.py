@@ -18,8 +18,7 @@ from src.services.articles import queries as article_service
 router = APIRouter(prefix="/categories", tags=["categories"])
 
 
-def _category_to_response(db: Session, cat: Category) -> CategoryResponse:
-    count = category_service.get_article_count(db, cat.id)
+def _category_to_response(cat: Category, article_count: int = 0) -> CategoryResponse:
     return CategoryResponse(
         id=str(cat.id),
         name=cat.name,
@@ -30,7 +29,7 @@ def _category_to_response(db: Session, cat: Category) -> CategoryResponse:
         color=cat.color,
         parent_id=str(cat.parent_id) if cat.parent_id else None,
         order=cat.order,
-        article_count=count,
+        article_count=article_count,
     )
 
 
@@ -38,8 +37,8 @@ def _category_to_response(db: Session, cat: Category) -> CategoryResponse:
 def list_categories(
     db: Session = Depends(get_db),
 ) -> ApiResponse[list[CategoryResponse]]:
-    categories = category_service.get_all_categories(db)
-    data = [_category_to_response(db, c) for c in categories]
+    rows = category_service.get_all_categories_with_counts(db)
+    data = [_category_to_response(c, count) for c, count in rows]
     return ApiResponse(success=True, data=data)
 
 
@@ -50,7 +49,8 @@ def get_category(
     cat = category_service.get_category_by_slug(db, slug)
     if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
-    return ApiResponse(success=True, data=_category_to_response(db, cat))
+    count = category_service.get_article_count(db, cat.id)
+    return ApiResponse(success=True, data=_category_to_response(cat, count))
 
 
 def _article_to_list_item(article: Article) -> ArticleListItem:

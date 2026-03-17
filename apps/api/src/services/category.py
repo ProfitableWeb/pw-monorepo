@@ -24,17 +24,34 @@ def get_all_categories(db: Session) -> list[Category]:
     return list(db.scalars(stmt).all())
 
 
+def get_all_categories_with_counts(
+    db: Session,
+) -> list[tuple[Category, int]]:
+    """Категории + число опубликованных статей (один JOIN-запрос)."""
+    count_col = func.count(Article.id).label("article_count")
+    stmt = (
+        select(Category, count_col)
+        .outerjoin(
+            Article,
+            (Article.category_id == Category.id)
+            & (Article.status == ArticleStatus.PUBLISHED),
+        )
+        .group_by(Category.id)
+        .order_by(Category.order, Category.name)
+    )
+    return list(db.execute(stmt).all())
+
+
 def get_category_by_slug(db: Session, slug: str) -> Category | None:
     stmt = select(Category).where(Category.slug == slug)
     return db.scalars(stmt).first()
 
 
 def get_category_by_id(db: Session, category_id: uuid.UUID) -> Category | None:
-    stmt = select(Category).where(Category.id == category_id)
-    return db.scalars(stmt).first()
+    return db.get(Category, category_id)
 
 
-def get_article_count(db: Session, category_id: object) -> int:
+def get_article_count(db: Session, category_id: uuid.UUID) -> int:
     stmt = (
         select(func.count())
         .select_from(Article)
@@ -46,7 +63,7 @@ def get_article_count(db: Session, category_id: object) -> int:
     return db.execute(stmt).scalar() or 0
 
 
-def get_total_article_count(db: Session, category_id: object) -> int:
+def get_total_article_count(db: Session, category_id: uuid.UUID) -> int:
     """Все статьи (любой статус) — для проверки перед удалением."""
     stmt = (
         select(func.count())
@@ -97,9 +114,6 @@ def update_category(
         updates["slug"] = ensure_unique_category_slug(
             db, updates["slug"], exclude_id=category_id
         )
-    elif "name" in updates and "slug" not in updates:
-        # Если slug не передан, но name изменился — не менять slug автоматически
-        pass
 
     if "parent_id" in updates:
         parent_id = updates["parent_id"]
@@ -130,9 +144,7 @@ def delete_category(db: Session, category_id: uuid.UUID) -> None:
         )
 
     # Дочерние категории становятся корневыми
-    children_stmt = (
-        select(Category).where(Category.parent_id == category_id)
-    )
+    children_stmt = select(Category).where(Category.parent_id == category_id)
     for child in db.scalars(children_stmt).all():
         child.parent_id = None
 
@@ -150,6 +162,21 @@ def reorder_categories(db: Session, items: list[CategoryOrderItem]) -> None:
         db.scalars(select(Category).where(Category.id.in_(ids))).all()
     )
     cat_map = {c.id: c for c in categories}
+
+    # Валидация: parent_id должен ссылаться на существующую корневую категорию
+    all_ids = set(ids)
+    for item in items:
+        if item.parent_id:
+            if item.parent_id not in all_ids:
+                raise ValueError(
+                    f"parent_id {item.parent_id} не найден в списке"
+                )
+            # Проверка что parent сам не является дочерним
+            parent_item = next(
+                (i for i in items if i.id == item.parent_id), None
+            )
+            if parent_item and parent_item.parent_id is not None:
+                raise ValueError("Вложенность более 1 уровня не поддерживается")
 
     for item in items:
         cat = cat_map.get(item.id)

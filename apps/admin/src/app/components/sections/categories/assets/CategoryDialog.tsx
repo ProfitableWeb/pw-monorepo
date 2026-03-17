@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { COLORS } from '../categories.constants';
+import { COLORS, NO_PARENT_VALUE } from '../categories.constants';
 import type { Category, CategoryFormData } from '../categories.types';
 
 interface CategoryDialogProps {
@@ -109,11 +109,11 @@ export function CategoryDialog({
           <div className='space-y-2'>
             <Label>Родительская категория</Label>
             <Select
-              value={formData.parentId ?? '__none__'}
+              value={formData.parentId ?? NO_PARENT_VALUE}
               onValueChange={val =>
                 setFormData(prev => ({
                   ...prev,
-                  parentId: val === '__none__' ? null : val,
+                  parentId: val === NO_PARENT_VALUE ? null : val,
                 }))
               }
             >
@@ -121,7 +121,7 @@ export function CategoryDialog({
                 <SelectValue placeholder='Без родителя (корневая)' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='__none__'>
+                <SelectItem value={NO_PARENT_VALUE}>
                   Без родителя (корневая)
                 </SelectItem>
                 {availableParents.map(cat => (

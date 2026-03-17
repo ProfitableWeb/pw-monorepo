@@ -7,7 +7,7 @@ import {
   useDeleteCategory,
   useReorderCategories,
 } from '@/hooks/api';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, Fragment } from 'react';
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -38,16 +38,59 @@ export function CategoriesSection() {
   const deleteMutation = useDeleteCategory();
   const reorderMutation = useReorderCategories();
 
-  // Маппинг API → UI категории
-  const categories: Category[] = (apiCategories ?? []).map((cat, i) => ({
-    id: cat.id,
-    name: cat.name,
-    slug: cat.slug,
-    color: cat.color ? hexToTw(cat.color) : fallbackColor(i),
-    articlesCount: cat.articleCount,
-    parentId: cat.parentId,
-    order: cat.order,
-  }));
+  // Маппинг API → UI категории (мемоизировано)
+  const categories = useMemo<Category[]>(
+    () =>
+      (apiCategories ?? []).map((cat, i) => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        color: cat.color ? hexToTw(cat.color) : fallbackColor(i),
+        articlesCount: cat.articleCount,
+        parentId: cat.parentId,
+        order: cat.order,
+      })),
+    [apiCategories]
+  );
+
+  // Предвычисленная карта детей (вместо повторных filter+sort)
+  const { rootCategories, childrenMap, allItemIds, totalArticles } =
+    useMemo(() => {
+      const roots: Category[] = [];
+      const children = new Map<string, Category[]>();
+
+      for (const c of categories) {
+        if (c.parentId === null) {
+          roots.push(c);
+        } else {
+          const list = children.get(c.parentId) ?? [];
+          list.push(c);
+          children.set(c.parentId, list);
+        }
+      }
+
+      roots.sort((a, b) => a.order - b.order);
+      for (const list of children.values()) {
+        list.sort((a, b) => a.order - b.order);
+      }
+
+      const ids = roots.flatMap(cat => [
+        cat.id,
+        ...(children.get(cat.id) ?? []).map(child => child.id),
+      ]);
+
+      const total = categories.reduce((sum, cat) => sum + cat.articlesCount, 0);
+
+      return {
+        rootCategories: roots,
+        childrenMap: children,
+        allItemIds: ids,
+        totalArticles: total,
+      };
+    }, [categories]);
+
+  const getChildCategories = (parentId: string) =>
+    childrenMap.get(parentId) ?? [];
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -61,13 +104,18 @@ export function CategoriesSection() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const handleReorder = useCallback(
-    (items: { id: string; parent_id: string | null; order: number }[]) => {
-      reorderMutation.mutate(items, {
-        onError: () => toast.error('Не удалось сохранить порядок'),
-      });
-    },
-    [reorderMutation]
+  // Ref для стабильной ссылки на mutate (не пересоздаёт useCallback)
+  const reorderRef = useRef(reorderMutation.mutate);
+  reorderRef.current = reorderMutation.mutate;
+
+  const handleReorder = useMemo(
+    () =>
+      (items: { id: string; parent_id: string | null; order: number }[]) => {
+        reorderRef.current(items, {
+          onError: () => toast.error('Не удалось сохранить порядок'),
+        });
+      },
+    []
   );
 
   const {
@@ -79,22 +127,6 @@ export function CategoriesSection() {
     handleDragEnd,
     handleDragCancel,
   } = useCategoryDnd(categories, handleReorder);
-
-  const rootCategories = categories
-    .filter(c => c.parentId === null)
-    .sort((a, b) => a.order - b.order);
-
-  const getChildCategories = (parentId: string) => {
-    return categories
-      .filter(c => c.parentId === parentId)
-      .sort((a, b) => a.order - b.order);
-  };
-
-  // Плоский список ID категорий в порядке рендера (для SortableContext)
-  const allItemIds = rootCategories.flatMap(cat => [
-    cat.id,
-    ...getChildCategories(cat.id).map(child => child.id),
-  ]);
 
   const handleSave = () => {
     const colorHex = twToHex(formData.color);
@@ -164,11 +196,6 @@ export function CategoriesSection() {
     setFormData(INITIAL_FORM_DATA);
   };
 
-  const totalArticles = categories.reduce(
-    (sum, cat) => sum + cat.articlesCount,
-    0
-  );
-
   const isMutating =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -228,7 +255,7 @@ export function CategoriesSection() {
           >
             <div className='space-y-1'>
               {rootCategories.map(category => (
-                <div key={category.id}>
+                <Fragment key={category.id}>
                   <SortableCategoryCard
                     category={category}
                     level={0}
@@ -246,7 +273,7 @@ export function CategoriesSection() {
                       dropIndicator={dropIndicator}
                     />
                   ))}
-                </div>
+                </Fragment>
               ))}
             </div>
           </SortableContext>

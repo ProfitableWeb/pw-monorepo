@@ -3,12 +3,10 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.auth.dependencies import get_current_admin
 from src.core.database import get_db
-from src.models.article import Article, ArticleStatus
 from src.models.category import Category
 from src.models.user import User
 from src.schemas.admin_category import (
@@ -30,7 +28,7 @@ def _parse_uuid(value: str, label: str = "id") -> uuid.UUID:
     try:
         return uuid.UUID(value)
     except ValueError:
-        raise HTTPException(400, f"Некорректный {label}: {value}")
+        raise HTTPException(400, f"Невалидный {label}: {value}")
 
 
 def _to_response(cat: Category, article_count: int = 0) -> CategoryAdminResponse:
@@ -56,18 +54,7 @@ def list_categories(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[CategoryAdminResponse]]:
-    count_col = func.count(Article.id).label("article_count")
-    stmt = (
-        select(Category, count_col)
-        .outerjoin(
-            Article,
-            (Article.category_id == Category.id)
-            & (Article.status == ArticleStatus.PUBLISHED),
-        )
-        .group_by(Category.id)
-        .order_by(Category.order, Category.name)
-    )
-    rows = db.execute(stmt).all()
+    rows = category_service.get_all_categories_with_counts(db)
     data = [_to_response(c, count) for c, count in rows]
     return ApiResponse(success=True, data=data)
 
@@ -93,7 +80,10 @@ def reorder_categories(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[None]:
-    category_service.reorder_categories(db, body.items)
+    try:
+        category_service.reorder_categories(db, body.items)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
     db.commit()
     return ApiResponse(success=True, data=None)
 

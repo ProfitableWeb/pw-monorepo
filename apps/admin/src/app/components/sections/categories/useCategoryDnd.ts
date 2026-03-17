@@ -61,11 +61,7 @@ export function useCategoryDnd(
   /** Вычисляет новый порядок после DnD и вызывает onReorder */
   const handleMove = useCallback(
     (draggedId: string, targetId: string | null, position: DropPosition) => {
-      const newCategories = categories.map(c => ({
-        ...c,
-        parentId: c.parentId,
-        order: c.order,
-      }));
+      const newCategories = categories.map(c => ({ ...c }));
       const draggedItem = newCategories.find(c => c.id === draggedId);
       if (!draggedItem) return;
 
