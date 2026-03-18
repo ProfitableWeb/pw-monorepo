@@ -1,4 +1,5 @@
 import { FileIcon, ImageIcon } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 import { useResearchStore } from '@/app/store/research-store';
 import type { PanelComponentProps } from '@/app/components/workspace/panel-registry';
 
@@ -48,10 +49,7 @@ export function MediaGalleryPanel({ itemId }: PanelComponentProps) {
         <div className='space-y-1 text-xs text-muted-foreground'>
           <p>Тип: {singleItem.mimeType}</p>
           <p>Размер: {formatFileSize(singleItem.size)}</p>
-          <p>
-            Загружено:{' '}
-            {new Date(singleItem.createdAt).toLocaleDateString('ru-RU')}
-          </p>
+          <p>Загружено: {formatDate(singleItem.createdAt)}</p>
         </div>
       </div>
     );

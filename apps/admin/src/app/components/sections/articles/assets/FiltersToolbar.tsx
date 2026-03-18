@@ -2,6 +2,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Checkbox } from '@/app/components/ui/checkbox';
+import { formatDate } from '@/app/components/common';
 import { Input } from '@/app/components/ui/input';
 import {
   Popover,
@@ -227,10 +228,10 @@ export function FiltersToolbar({
         {(dateRange.from || dateRange.to) && (
           <Badge variant='secondary' className='h-8 gap-1 pl-3 pr-2'>
             {dateRange.from && dateRange.to
-              ? `${dateRange.from.toLocaleDateString('ru-RU')} - ${dateRange.to.toLocaleDateString('ru-RU')}`
+              ? `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`
               : dateRange.from
-                ? `С ${dateRange.from.toLocaleDateString('ru-RU')}`
-                : `До ${dateRange.to?.toLocaleDateString('ru-RU')}`}
+                ? `С ${formatDate(dateRange.from)}`
+                : `До ${formatDate(dateRange.to)}`}
             <button
               onClick={() => onDateRangeChange({})}
               className='ml-1 hover:bg-muted rounded-sm p-0.5'

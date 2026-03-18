@@ -14,8 +14,9 @@ import {
   AlertDialogTitle,
 } from '@/app/components/ui/alert-dialog';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { Loader2, ImageOff, Upload } from 'lucide-react';
+import { ImageOff, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { LoadingSpinner } from '@/app/components/common';
 
 import {
   useMediaList,
@@ -264,10 +265,11 @@ export function MediaSection() {
           <div className='p-4 lg:p-6 space-y-6'>
             {/* Loading state */}
             {isLoading && (
-              <div className='flex flex-col items-center justify-center py-20 text-muted-foreground'>
-                <Loader2 className='h-8 w-8 animate-spin mb-3' />
-                <p className='text-sm'>Загрузка медиафайлов...</p>
-              </div>
+              <LoadingSpinner
+                label='Загрузка медиафайлов...'
+                className='py-20'
+                size='size-8'
+              />
             )}
 
             {/* Error state */}

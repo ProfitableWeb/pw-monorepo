@@ -17,6 +17,7 @@ import {
   TableRow,
 } from '@/app/components/ui/table';
 import { MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 import type { Article } from '../articles.types';
 import { getStatusColor, getStatusLabel } from '../articles.utils';
 
@@ -68,11 +69,7 @@ export function ArticlesTable({ articles, onEdit }: ArticlesTableProps) {
                   {article.views.toLocaleString()}
                 </div>
               </TableCell>
-              <TableCell>
-                {article.date
-                  ? new Date(article.date).toLocaleDateString('ru-RU')
-                  : '—'}
-              </TableCell>
+              <TableCell>{formatDate(article.date)}</TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

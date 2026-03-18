@@ -20,6 +20,7 @@ import {
   Power,
 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
+import { LoadingSpinner } from '@/app/components/common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -338,10 +339,11 @@ export function UsersList({
       {/* Скроллируемый список */}
       <div className='flex-1 overflow-y-auto min-h-0'>
         {usersLoading ? (
-          <div className='flex items-center justify-center py-12 text-muted-foreground'>
-            <Loader2 className='size-5 animate-spin mr-2' />
-            Загрузка пользователей...
-          </div>
+          <LoadingSpinner
+            label='Загрузка пользователей...'
+            className='py-12'
+            size='size-5'
+          />
         ) : users.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-12 text-muted-foreground'>
             <Users className='size-10 mb-3 opacity-40' />

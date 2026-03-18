@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Crown, PenTool, BookOpen, Eye, Loader2 } from 'lucide-react';
+import { Crown, PenTool, BookOpen, Eye } from 'lucide-react';
+import { LoadingSpinner } from '@/app/components/common';
 import { useAdminUserStats } from '../useAdminUsers';
 
 export function TeamSection() {
@@ -14,10 +15,7 @@ export function TeamSection() {
 
   if (isLoading) {
     return (
-      <div className='flex items-center justify-center py-12 text-muted-foreground'>
-        <Loader2 className='size-5 animate-spin mr-2' />
-        Загрузка...
-      </div>
+      <LoadingSpinner label='Загрузка...' className='py-12' size='size-5' />
     );
   }
 

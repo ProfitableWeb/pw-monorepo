@@ -1,4 +1,5 @@
 import { cn } from '@/app/components/ui/utils';
+import { formatDate } from '@/app/components/common';
 import { Button } from '@/app/components/ui/button';
 import {
   DropdownMenu,
@@ -59,7 +60,7 @@ export function MediaList({
             key={file.id}
             role='button'
             tabIndex={0}
-            aria-label={`${file.name}, ${formatBytes(file.size)}, ${file.uploadedAt.toLocaleDateString('ru-RU')}`}
+            aria-label={`${file.name}, ${formatBytes(file.size)}, ${formatDate(file.uploadedAt)}`}
             className={cn(
               'group flex items-center gap-4 p-3 border rounded-lg bg-card transition-all cursor-pointer hover:shadow-sm',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -109,7 +110,7 @@ export function MediaList({
               <div className='flex items-center gap-3 mt-1 text-sm text-muted-foreground'>
                 <span>{formatBytes(file.size)}</span>
                 <span>•</span>
-                <span>{file.uploadedAt.toLocaleDateString('ru-RU')}</span>
+                <span>{formatDate(file.uploadedAt)}</span>
                 {file.usedIn > 0 && (
                   <>
                     <span>•</span>

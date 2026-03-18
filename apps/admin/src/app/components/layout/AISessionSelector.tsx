@@ -1,4 +1,5 @@
 import { Plus, MessageSquare, Check } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 import { Badge } from '@/app/components/ui/badge';
 import {
   DropdownMenu,
@@ -61,7 +62,7 @@ export function AISessionSelector() {
               </div>
               <p className='text-xs text-muted-foreground mt-1'>
                 {session.messages.length} сообщений ·{' '}
-                {session.updatedAt.toLocaleDateString('ru-RU', {
+                {formatDate(session.updatedAt, {
                   day: 'numeric',
                   month: 'short',
                 })}

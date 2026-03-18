@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatDate } from '@/app/components/common';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
@@ -214,7 +215,7 @@ export function ResearchListPage() {
                     )}
                   </div>
                   <span className='text-xs text-muted-foreground'>
-                    {formatDate(research.updatedAt)}
+                    {formatRelativeDate(research.updatedAt)}
                   </span>
                 </div>
               </button>
@@ -286,7 +287,7 @@ function CounterBadge({
   );
 }
 
-function formatDate(iso: string): string {
+function formatRelativeDate(iso: string): string {
   const date = new Date(iso);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -296,9 +297,10 @@ function formatDate(iso: string): string {
   if (diffDays === 1) return 'вчера';
   if (diffDays < 7) return `${diffDays} дн. назад`;
 
-  return date.toLocaleDateString('ru-RU', {
+  const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-  });
+  };
+  return formatDate(iso, options);
 }

@@ -21,7 +21,6 @@ import {
   Mail,
   Clock,
   Calendar,
-  FileText,
   Key,
   Link2,
   Loader2,
@@ -33,6 +32,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
+import { formatDate, LoadingSpinner } from '@/app/components/common';
 import { toast } from 'sonner';
 import {
   roleLabels,
@@ -51,16 +51,6 @@ import {
 import { DeactivateUserDialog } from './DeactivateUserDialog';
 import { ChangePasswordDialog } from './ChangePasswordDialog';
 import type { UserBrief, UserStatus } from '../users.types';
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 /** Карточка-секция внутри профиля */
 function InfoSection({
@@ -133,10 +123,11 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
 
   if (isLoading) {
     return (
-      <div className='flex items-center justify-center h-full text-muted-foreground'>
-        <Loader2 className='size-5 animate-spin mr-2' />
-        Загрузка профиля...
-      </div>
+      <LoadingSpinner
+        label='Загрузка профиля...'
+        className='h-full'
+        size='size-5'
+      />
     );
   }
 
@@ -467,19 +458,17 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
             <InfoRow
               icon={Calendar}
               label='Регистрация'
-              value={formatDate(user.createdAt)}
+              value={formatDate(user.createdAt, 'datetime')}
             />
             <InfoRow
               icon={Clock}
               label='Последний вход'
-              value={
-                user.lastLoginAt ? formatDate(user.lastLoginAt) : 'Не заходил'
-              }
+              value={formatDate(user.lastLoginAt, 'datetime', 'Не заходил')}
             />
             <InfoRow
               icon={Clock}
               label='Обновлено'
-              value={formatDate(user.updatedAt)}
+              value={formatDate(user.updatedAt, 'datetime')}
             />
           </InfoSection>
 

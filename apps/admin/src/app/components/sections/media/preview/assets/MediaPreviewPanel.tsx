@@ -1,6 +1,7 @@
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
+import { formatDate } from '@/app/components/common';
 import { MediaImageWithLoader } from '../../MediaImageWithLoader';
 import { Copy, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 import type { MediaFile } from '../../media.types';
@@ -153,7 +154,7 @@ export function MediaPreviewPanel({
           <div className='p-3 border rounded-lg bg-card'>
             <Label className='text-xs text-muted-foreground'>Загружен</Label>
             <p className='text-sm font-medium mt-1'>
-              {file.uploadedAt.toLocaleDateString('ru-RU')}
+              {formatDate(file.uploadedAt)}
             </p>
           </div>
           <div className='p-3 border rounded-lg bg-card'>

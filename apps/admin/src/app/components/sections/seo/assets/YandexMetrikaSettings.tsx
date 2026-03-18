@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { cn } from '@/app/components/ui/utils';
+import { LoadingSpinner } from '@/app/components/common';
 import { MOCK_METRIKA_CONFIG } from '../seo.constants';
 import type { SeoSettings, YandexConnectionStatus } from '@/lib/api-client';
 import {
@@ -399,9 +400,7 @@ export function YandexMetrikaSettings({
           </CardHeader>
           <CardContent className='space-y-4'>
             {isLoadingStats ? (
-              <div className='flex items-center justify-center py-8'>
-                <Loader2 className='size-6 animate-spin text-muted-foreground' />
-              </div>
+              <LoadingSpinner />
             ) : stats ? (
               <>
                 <div className='grid grid-cols-4 gap-4'>

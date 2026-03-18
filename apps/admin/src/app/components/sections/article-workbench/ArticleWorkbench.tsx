@@ -35,6 +35,7 @@ import {
 import { Calendar } from '@/app/components/ui/calendar';
 import { Input } from '@/app/components/ui/input';
 import { Save, Loader2, CalendarClock, Trash2 } from 'lucide-react';
+import { LoadingSpinner } from '@/app/components/common';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -471,10 +472,11 @@ export function ArticleWorkbench() {
   // --- Loading state ---
   if (!isCreateMode && isLoadingArticle) {
     return (
-      <div className='flex items-center justify-center h-full text-muted-foreground'>
-        <Loader2 className='h-5 w-5 animate-spin mr-2' />
-        Загрузка статьи...
-      </div>
+      <LoadingSpinner
+        label='Загрузка статьи...'
+        className='h-full'
+        size='size-5'
+      />
     );
   }
 

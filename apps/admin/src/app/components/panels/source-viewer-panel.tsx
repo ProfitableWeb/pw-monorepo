@@ -1,4 +1,5 @@
 import { ExternalLink, Quote } from 'lucide-react';
+import { formatDate } from '@/app/components/common';
 import { useResearchStore } from '@/app/store/research-store';
 import type { PanelComponentProps } from '@/app/components/workspace/panel-registry';
 
@@ -64,7 +65,7 @@ export function SourceViewerPanel({ itemId }: PanelComponentProps) {
 
       {/* Метаданные */}
       <div className='text-xs text-muted-foreground/60 pt-2 border-t'>
-        Добавлено {new Date(source.createdAt).toLocaleDateString('ru-RU')}
+        Добавлено {formatDate(source.createdAt)}
       </div>
     </div>
   );

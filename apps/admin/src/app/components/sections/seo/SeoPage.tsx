@@ -27,6 +27,7 @@ import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/components/ui/utils';
+import { LoadingSpinner } from '@/app/components/common';
 import {
   getSeoSettings,
   getYandexStatus,
@@ -163,11 +164,7 @@ export function SeoPage() {
         );
       case 'indexing':
         if (isSeoLoading) {
-          return (
-            <div className='flex items-center justify-center py-12'>
-              <Loader2 className='size-6 animate-spin text-muted-foreground' />
-            </div>
-          );
+          return <LoadingSpinner className='py-12' />;
         }
         return (
           <IndexingFeedsSettings
@@ -181,11 +178,7 @@ export function SeoPage() {
         );
       case 'metrika':
         if (isSeoLoading) {
-          return (
-            <div className='flex items-center justify-center py-12'>
-              <Loader2 className='size-6 animate-spin text-muted-foreground' />
-            </div>
-          );
+          return <LoadingSpinner className='py-12' />;
         }
         return (
           <YandexMetrikaSettings
@@ -197,11 +190,7 @@ export function SeoPage() {
         );
       case 'webmaster':
         if (isSeoLoading) {
-          return (
-            <div className='flex items-center justify-center py-12'>
-              <Loader2 className='size-6 animate-spin text-muted-foreground' />
-            </div>
-          );
+          return <LoadingSpinner className='py-12' />;
         }
         return (
           <YandexWebmasterSettings

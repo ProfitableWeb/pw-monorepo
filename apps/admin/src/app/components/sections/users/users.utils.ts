@@ -1,3 +1,5 @@
+import { formatDate } from '@/app/components/common';
+
 /** Форматирование даты в относительный вид ("5 мин назад", "Вчера" и т.д.) */
 export function formatRelativeTime(dateStr: string | null): string {
   if (!dateStr) return 'Не заходил';
@@ -16,11 +18,7 @@ export function formatRelativeTime(dateStr: string | null): string {
   if (diffDays < 7) return `${diffDays} дн назад`;
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} нед назад`;
 
-  return date.toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  return formatDate(dateStr);
 }
 
 /** Получить инициалы из имени */

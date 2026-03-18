@@ -1,3 +1,4 @@
+import { formatDate, LoadingSpinner } from '@/app/components/common';
 import { useArticles } from '@/hooks/api';
 import {
   Table,
@@ -17,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
-import { MoreHorizontal, Eye, Edit, Trash2, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -58,10 +59,7 @@ export function PostsTable() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className='flex items-center justify-center py-8 text-muted-foreground'>
-            <Loader2 className='h-5 w-5 animate-spin mr-2' />
-            Загрузка...
-          </div>
+          <LoadingSpinner label='Загрузка...' size='size-5' />
         ) : (
           <Table>
             <TableHeader>
@@ -92,11 +90,7 @@ export function PostsTable() {
                       {post.views.toLocaleString()}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {post.date
-                      ? new Date(post.date).toLocaleDateString('ru-RU')
-                      : '—'}
-                  </TableCell>
+                  <TableCell>{formatDate(post.date)}</TableCell>
                   <TableCell className='text-right'>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

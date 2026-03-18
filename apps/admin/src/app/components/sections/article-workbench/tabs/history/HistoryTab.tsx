@@ -15,8 +15,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/app/components/ui/alert-dialog';
-import { Clock, RotateCcw, Settings2, Loader2 } from 'lucide-react';
+import { Clock, RotateCcw, Settings2 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
+import { formatDate, LoadingSpinner } from '@/app/components/common';
 import {
   EditorSettingsPanel,
   useEditorSettingsPanel,
@@ -25,15 +26,6 @@ import {
 } from '../../editor-shared';
 import { useRevisions, useRevision, useRestoreRevision } from '@/hooks/api';
 import type { RevisionListItem } from '@/app/types/admin-api';
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 interface DiffSettings {
   fontSize: number;
@@ -127,9 +119,7 @@ export function HistoryTab({
 
         <div className='flex-1 overflow-auto'>
           {revisionsLoading ? (
-            <div className='flex items-center justify-center py-8'>
-              <Loader2 className='size-4 animate-spin text-muted-foreground' />
-            </div>
+            <LoadingSpinner size='size-4' />
           ) : revisions.length === 0 ? (
             <div className='px-4 py-6 text-xs text-muted-foreground text-center'>
               Нет ревизий
@@ -159,7 +149,7 @@ export function HistoryTab({
                         {rev.summary ?? 'Без описания'}
                       </p>
                       <p className='text-[10px] text-muted-foreground mt-0.5'>
-                        {formatDate(rev.createdAt)}
+                        {formatDate(rev.createdAt, 'compact')}
                       </p>
                     </div>
                   </button>
@@ -289,8 +279,10 @@ export function HistoryTab({
             <AlertDialogDescription>
               Текущий контент будет заменён версией «
               {restoreTarget?.summary ?? 'Без описания'}» от{' '}
-              {restoreTarget ? formatDate(restoreTarget.createdAt) : ''}. Это
-              действие можно отменить через Ctrl+Z.
+              {restoreTarget
+                ? formatDate(restoreTarget.createdAt, 'compact')
+                : ''}
+              . Это действие можно отменить через Ctrl+Z.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

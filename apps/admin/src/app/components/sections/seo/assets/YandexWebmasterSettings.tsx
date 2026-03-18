@@ -8,8 +8,8 @@ import {
   Clock,
   XCircle,
   Search,
-  Loader2,
 } from 'lucide-react';
+import { LoadingSpinner } from '@/app/components/common';
 import {
   Card,
   CardContent,
@@ -102,11 +102,7 @@ export function YandexWebmasterSettings({
   }, [isConnected]);
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <Loader2 className='size-6 animate-spin text-muted-foreground' />
-      </div>
-    );
+    return <LoadingSpinner className='py-12' />;
   }
 
   if (!isConnected) {
