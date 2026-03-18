@@ -52,6 +52,7 @@ interface ArticleListItemRaw {
   excerpt: string;
   summary?: string | null;
   category: string;
+  categories: string[];
   tags: string[];
   reading_time?: number | null;
   image_url?: string | null;
@@ -105,6 +106,7 @@ function mapArticleListItem(raw: ArticleListItemRaw): Article {
     // excerpt — редакторский текст из админки, приоритетнее автогенерированного summary
     summary: raw.excerpt || raw.summary || '',
     category: raw.category,
+    categories: raw.categories ?? [],
     readTime: raw.reading_time ?? undefined,
     imageUrl: raw.image_url ?? undefined,
     imageAlt: raw.image_alt ?? undefined,

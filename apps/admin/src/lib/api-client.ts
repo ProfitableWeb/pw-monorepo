@@ -41,6 +41,7 @@ interface ArticleListItemRaw {
   excerpt: string;
   summary?: string | null;
   category: string;
+  categories: string[];
   tags: string[];
   reading_time?: number | null;
   image_url?: string | null;
@@ -97,6 +98,7 @@ export interface AdminArticle {
   subtitle?: string;
   excerpt: string;
   category: string;
+  categories: string[];
   tags: string[];
   author?: string;
   views: number;
@@ -183,6 +185,7 @@ function mapArticle(raw: ArticleListItemRaw | ArticleFullRaw): AdminArticle {
     subtitle: raw.subtitle ?? undefined,
     excerpt: raw.excerpt,
     category: raw.category,
+    categories: raw.categories ?? [],
     tags: raw.tags,
     author: full.author ?? undefined,
     views: full.views ?? 0,

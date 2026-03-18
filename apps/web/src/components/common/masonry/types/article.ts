@@ -18,8 +18,10 @@ export interface Article {
   imageAlt?: string;
   /** URL-friendly идентификатор для SEO */
   slug: string;
-  /** Категория статьи */
+  /** Основная категория статьи (slug) */
   category?: string;
+  /** Все категории статьи (slugs, включая основную) */
+  categories?: string[];
   /** Время чтения в минутах */
   readTime?: number;
   /** Blur placeholder для изображения */
