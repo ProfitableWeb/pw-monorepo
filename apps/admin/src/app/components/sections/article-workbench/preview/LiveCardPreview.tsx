@@ -24,10 +24,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/components/ui/utils';
-
-const WEB_URL = (
-  import.meta.env.VITE_WEB_URL || 'http://localhost:3000'
-).replace(/\/$/, '');
+import { WEB_URL } from './preview.types';
 
 const DEFAULT_CARD_WIDTH = 360;
 const MIN_CARD_WIDTH = 280;

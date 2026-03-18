@@ -83,6 +83,7 @@ export interface PreviewArticleData {
   category: string;
   tags: string[];
   imageUrl?: string;
+  artifacts?: ArtifactsData;
 }
 
 /** postMessage: admin → iframe */

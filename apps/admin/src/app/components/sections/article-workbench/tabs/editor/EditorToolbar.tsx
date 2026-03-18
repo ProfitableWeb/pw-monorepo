@@ -21,16 +21,13 @@ import type {
   ArticleFormData,
   PreviewArticleData,
 } from '@/app/types/article-editor';
+import { WEB_URL } from '../../preview/preview.types';
 
 const MODE_LABELS: Record<EditorMode, string> = {
   html: 'HTML',
   markdown: 'Markdown',
   visual: 'Visual',
 };
-
-const WEB_URL = (
-  import.meta.env.VITE_WEB_URL || 'http://localhost:3000'
-).replace(/\/$/, '');
 
 function toPreviewData(form: ArticleFormData): PreviewArticleData {
   return {

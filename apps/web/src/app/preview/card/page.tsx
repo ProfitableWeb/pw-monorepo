@@ -33,6 +33,7 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3001',
   'http://127.0.0.1:3001',
   process.env.NEXT_PUBLIC_ADMIN_URL,
+  typeof window !== 'undefined' ? window.location.origin : '',
 ].filter(Boolean) as string[];
 
 interface PreviewCardData {

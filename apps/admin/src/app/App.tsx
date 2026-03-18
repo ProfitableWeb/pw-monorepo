@@ -50,7 +50,9 @@ function restoreRoute(
   const { setCurrentResearch } = useResearchStore.getState();
 
   if (route.pageId === 'article-editor' && route.params?.id) {
-    nav.navigateToArticleEditor(route.params.id, options);
+    // "new" — создание новой статьи, не передаём как articleId
+    const articleId = route.params.id === 'new' ? undefined : route.params.id;
+    nav.navigateToArticleEditor(articleId, options);
   } else if (route.pageId === 'research-workspace' && route.params?.id) {
     setCurrentResearch(route.params.id);
     nav.navigateToResearchWorkspace(route.params.id, options);

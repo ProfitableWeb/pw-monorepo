@@ -5,8 +5,14 @@
 import { Monitor, Tablet, Smartphone } from 'lucide-react';
 import type { DeviceType } from '@/app/types/article-editor';
 
+/**
+ * URL web-приложения для iframe-превью.
+ * - dev: `http://localhost:3000` (VITE_WEB_URL или fallback)
+ * - prod: `window.location.origin` (nginx проксирует web на /)
+ */
 export const WEB_URL = (
-  import.meta.env.VITE_WEB_URL || 'http://localhost:3000'
+  import.meta.env.VITE_WEB_URL ||
+  (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin)
 ).replace(/\/$/, '');
 
 export const DEVICE_TABS: Record<

@@ -91,6 +91,7 @@ function toPreviewData(form: ArticleFormData): PreviewArticleData {
     category: form.category,
     tags: form.tags,
     imageUrl: form.imageUrl,
+    artifacts: form.artifacts,
   };
 }
 
@@ -238,7 +239,9 @@ export function EditorTab({ formData }: EditorTabProps) {
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize={50} minSize={25}>
-            <DevicePreview articleData={toPreviewData(formData)} />
+            <DevicePreview
+              articleData={toPreviewData({ ...formData, content })}
+            />
           </ResizablePanel>
         </ResizablePanelGroup>
       )}
