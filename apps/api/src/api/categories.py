@@ -63,6 +63,7 @@ def _article_to_list_item(article: Article) -> ArticleListItem:
         excerpt=article.excerpt,
         summary=article.summary,
         category=article.primary_category.slug if article.primary_category else "",
+        categories=[c.slug for c in article.categories],
         tags=[t.name for t in article.tags],
         reading_time=article.reading_time,
         image_url=article.image_url,

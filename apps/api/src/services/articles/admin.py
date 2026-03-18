@@ -7,12 +7,13 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, joinedload, selectinload
 
-from src.models.article import Article, ArticleStatus, article_categories
+from src.models.article import Article, ArticleStatus
 from src.models.category import Category
 from src.models.tag import Tag
+from src.services.articles import category_filter_by_slug
 from src.services.articles import revisions as revision_service
 from src.services.articles.reading_time import calculate_reading_time
 from src.services.slug import ensure_unique_slug, generate_slug
@@ -50,8 +51,8 @@ UPDATABLE_FIELDS = {
 def _base_admin_query():
     return select(Article).options(
         joinedload(Article.primary_category),
-        joinedload(Article.categories),
-        joinedload(Article.tags),
+        selectinload(Article.categories),
+        selectinload(Article.tags),
         joinedload(Article.author),
     )
 
@@ -165,16 +166,7 @@ def get_all_articles(
         count_stmt = count_stmt.where(Article.status == status)
 
     if category:
-        # Статьи где категория — primary ИЛИ additional
-        cat_subq = select(Category.id).where(Category.slug == category).scalar_subquery()
-        cat_filter = or_(
-            Article.primary_category_id == cat_subq,
-            Article.id.in_(
-                select(article_categories.c.article_id).where(
-                    article_categories.c.category_id == cat_subq
-                )
-            ),
-        )
+        cat_filter = category_filter_by_slug(category)
         stmt = stmt.where(cat_filter)
         count_stmt = count_stmt.where(cat_filter)
 
@@ -258,11 +250,18 @@ def update_article(
 
     # Синхронизация M2M категорий (если менялись primary или additional)
     if additional_category_ids is not None or "primary_category_id" in fields:
+        # Если additional не передан явно — сохраняем текущие из junction
+        effective_additional = additional_category_ids
+        if effective_additional is None and "primary_category_id" in fields:
+            effective_additional = [
+                c.id for c in article.categories
+                if c.id != article.primary_category_id
+            ]
         sync_categories(
             db,
             article,
             article.primary_category_id,
-            additional_category_ids,
+            effective_additional,
         )
 
     db.commit()

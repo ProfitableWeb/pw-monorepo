@@ -5,13 +5,13 @@ draft/archived/scheduled видны только через будущий Admin
 
 from typing import Any
 
-from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.sql import Select
 
-from src.models.article import Article, ArticleStatus, article_categories
-from src.models.category import Category
+from src.models.article import Article, ArticleStatus
 from src.models.user import User
+from src.services.articles import category_filter_by_slug
 
 
 def _base_published_query() -> Select[Any]:
@@ -20,8 +20,8 @@ def _base_published_query() -> Select[Any]:
         .where(Article.status == ArticleStatus.PUBLISHED)
         .options(
             joinedload(Article.primary_category),
-            joinedload(Article.categories),
-            joinedload(Article.tags),
+            selectinload(Article.categories),
+            selectinload(Article.tags),
             joinedload(Article.author),
         )
     )
@@ -40,15 +40,7 @@ def get_all_articles(
     stmt = _base_published_query()
 
     if category_slug:
-        cat_subq = select(Category.id).where(Category.slug == category_slug).scalar_subquery()
-        cat_filter = or_(
-            Article.primary_category_id == cat_subq,
-            Article.id.in_(
-                select(article_categories.c.article_id).where(
-                    article_categories.c.category_id == cat_subq
-                )
-            ),
-        )
+        cat_filter = category_filter_by_slug(category_slug)
         stmt = stmt.where(cat_filter)
 
     if search:

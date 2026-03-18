@@ -82,8 +82,7 @@ export function formDataToUpdatePayload(
     content: form.content,
     excerpt: form.excerpt,
     primary_category_id: cat?.id,
-    additional_category_ids:
-      additionalIds.length > 0 ? additionalIds : undefined,
+    additional_category_ids: additionalIds,
     tags: form.tags,
     image_url: form.imageUrl || null,
     image_alt: form.imageAlt || null,
@@ -122,8 +121,7 @@ export function formDataToCreatePayload(
     content_format: 'html',
     excerpt: form.excerpt,
     primary_category_id: cat.id,
-    additional_category_ids:
-      additionalIds.length > 0 ? additionalIds : undefined,
+    additional_category_ids: additionalIds,
     tags: form.tags,
     image_url: form.imageUrl || null,
     image_alt: form.imageAlt || null,
