@@ -34,6 +34,13 @@ export interface GlossaryItem {
   definition: string;
 }
 
+export interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+  enabled: boolean;
+}
+
 export interface ArtifactsData {
   selfCheck: { enabled: boolean; items: SelfCheckItem[] };
   sources: { enabled: boolean; items: SourceItem[] };
@@ -72,6 +79,8 @@ export interface ArticleFormData {
   schemaType: string;
   author: string;
   artifacts: ArtifactsData;
+  toc: TocItem[];
+  layout: string;
 }
 
 /** Данные статьи для передачи в iframe-предпросмотр через postMessage */
@@ -84,6 +93,8 @@ export interface PreviewArticleData {
   tags: string[];
   imageUrl?: string;
   artifacts?: ArtifactsData;
+  layout?: string;
+  toc?: TocItem[];
 }
 
 /** postMessage: admin → iframe */

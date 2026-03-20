@@ -333,8 +333,9 @@ export function ArticleWorkbench() {
   );
 
   useEffect(() => {
-    const subscription = watch((data, { type }) => {
-      if (data.content != null) setContent(data.content);
+    const subscription = watch((data, { name, type }) => {
+      // Синхронизируем content → Zustand только если изменилось именно поле content
+      if (name === 'content' && data.content != null) setContent(data.content);
 
       // Автосохранение только для существующих статей
       if (type !== 'change' || !articleId) return;
@@ -660,7 +661,11 @@ export function ArticleWorkbench() {
       </TabsContent>
 
       <TabsContent value='editor' className='flex-1 min-h-0 mt-0'>
-        <EditorTab formData={watch()} />
+        <EditorTab
+          formData={watch()}
+          onTocChange={toc => setValue('toc', toc)}
+          onLayoutChange={layout => setValue('layout', layout)}
+        />
       </TabsContent>
 
       <TabsContent value='artifacts' className='flex-1 overflow-auto mt-0'>

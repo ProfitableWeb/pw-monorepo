@@ -719,6 +719,7 @@ interface AdminArticleRaw {
   tags: { id: string; name: string; slug: string }[];
   author: { id: string; name: string } | null;
   artifacts: any;
+  toc: any;
   revision_count: number;
 }
 
@@ -816,6 +817,7 @@ function mapAdminArticleFull(raw: AdminArticleRaw): AdminArticleResponseType {
     tags: raw.tags,
     author: raw.author,
     artifacts: raw.artifacts,
+    toc: raw.toc,
     revisionCount: raw.revision_count,
   };
 }

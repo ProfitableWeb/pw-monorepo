@@ -37,6 +37,8 @@ def _article_to_response(article: Article) -> ArticleResponse:
         image_alt=article.image_alt,
         published_at=article.published_at,
         updated_at=article.updated_at,
+        toc=article.toc,
+        artifacts=article.artifacts,
     )
 
 

@@ -7,7 +7,7 @@
  * @see lib/api-client.ts — admin-функции
  * @see lib/mappers.ts — трансформация API ↔ ArticleFormData
  */
-import type { ArtifactsData } from '@/app/types/article-editor';
+import type { ArtifactsData, TocItem } from '@/app/types/article-editor';
 
 // ---------------------------------------------------------------------------
 // Admin Articles
@@ -50,6 +50,7 @@ export interface AdminArticleResponse {
   author: { id: string; name: string } | null;
   // Extra
   artifacts: ArtifactsData | null;
+  toc: TocItem[] | null;
   revisionCount: number;
 }
 
@@ -111,6 +112,7 @@ export interface ArticleCreatePayload {
   robots_no_index?: boolean;
   robots_no_follow?: boolean;
   artifacts?: ArtifactsData | null;
+  toc?: TocItem[] | null;
 }
 
 export interface ArticleUpdatePayload {
@@ -140,6 +142,7 @@ export interface ArticleUpdatePayload {
   robots_no_index?: boolean;
   robots_no_follow?: boolean;
   artifacts?: ArtifactsData | null;
+  toc?: TocItem[] | null;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,13 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { ArticleHeader } from '@/components/app-layout/app-article-page-one-column/article-header';
+import { ArticleHeader } from '@/components/app-layout/article-header';
 import { ArticleContentOneColumn } from '@/components/common/article-content';
 import { ArticleLayout } from '@/components/common/article-layouts';
 import { SelfAssessment } from '@/components/common/self-assessment/SelfAssessment';
 import { ArticleResources } from '@/components/common/article-resources/ArticleResources';
+import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
+import { TableOfContents } from '@/components/common/table-of-contents';
+import { AuthorCard } from '@/components/common/sidebar-widgets/author-card';
+import type { ArticleLayoutType } from '@/components/common/article-layouts/types';
 
 // Разрешённые origin для postMessage
 const ALLOWED_ORIGINS = [
@@ -40,6 +44,13 @@ interface ArtifactsData {
   provenance: { enabled: boolean; workspaceId: string; showLink: boolean };
 }
 
+interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+  enabled: boolean;
+}
+
 interface PreviewArticleData {
   h1: string;
   subtitle: string;
@@ -49,6 +60,8 @@ interface PreviewArticleData {
   tags: string[];
   imageUrl?: string;
   artifacts?: ArtifactsData;
+  layout?: string;
+  toc?: TocItem[];
 }
 
 /**
@@ -125,6 +138,7 @@ export default function PreviewPage() {
   }
 
   const { artifacts } = article;
+  const layout = (article.layout ?? 'one-column') as ArticleLayoutType;
 
   // Вопросы для самопроверки — рендерим если секция включена и есть непустые вопросы
   const selfCheckQuestions =
@@ -140,27 +154,53 @@ export default function PreviewPage() {
           .map(s => ({ id: s.id, title: s.title, url: s.url, external: true }))
       : [];
 
+  // ToC sidebar для three-column layout
+  const enabledToc = article.toc?.filter(item => item.enabled) ?? [];
+  const tocSidebar =
+    enabledToc.length > 0 ? (
+      <TableOfContents
+        items={enabledToc.map(item => ({
+          id: item.id,
+          title: item.text,
+          level: item.level,
+        }))}
+      />
+    ) : undefined;
+
+  // Sidebar с автором для three-column / two-column
+  const hasSidebar = layout === 'three-column' || layout === 'two-column';
+  const authorSidebar = hasSidebar ? <AuthorCard /> : undefined;
+
   return (
-    <AppPageWrapper>
-      <main>
-        <ArticleHeader
-          title={article.h1}
-          subtitle={article.subtitle}
-          publishedAt={new Date()}
-          categoryName={article.category}
-        />
+    <>
+      <AppBar />
+      <AppPageWrapper>
+        <main>
+          <ArticleLayout
+            layout={layout}
+            toc={tocSidebar}
+            sidebar={authorSidebar}
+            header={
+              <ArticleHeader
+                title={article.h1}
+                subtitle={article.subtitle}
+                publishedAt={new Date()}
+                categoryName={article.category}
+                showAuthor={!hasSidebar}
+              />
+            }
+          >
+            <ArticleContentOneColumn html={article.content} />
 
-        <ArticleLayout layout='one-column'>
-          <ArticleContentOneColumn html={article.content} />
+            {selfCheckQuestions.length > 0 && (
+              <SelfAssessment questions={selfCheckQuestions} />
+            )}
 
-          {selfCheckQuestions.length > 0 && (
-            <SelfAssessment questions={selfCheckQuestions} />
-          )}
-
-          {resources.length > 0 && <ArticleResources resources={resources} />}
-        </ArticleLayout>
-      </main>
-      <AppFooter />
-    </AppPageWrapper>
+            {resources.length > 0 && <ArticleResources resources={resources} />}
+          </ArticleLayout>
+        </main>
+        <AppFooter />
+      </AppPageWrapper>
+    </>
   );
 }

@@ -11,7 +11,7 @@
  * Переключение режимов (HTML ↔ Markdown) требует конвертации через ИИ —
  * показывается AlertDialog с предупреждением.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MonacoEditor, { type Monaco } from '@monaco-editor/react';
 import { format as prettierFormat } from 'prettier/standalone';
 import htmlPlugin from 'prettier/plugins/html';
@@ -51,6 +51,8 @@ import type {
 } from '@/app/types/article-editor';
 import { EditorToolbar } from './EditorToolbar';
 import { FormatterSettings } from './FormatterSettings';
+import { TocModal } from './TocModal';
+import type { TocItem } from '@/app/types/article-editor';
 
 const MODE_LANGUAGES: Record<EditorMode, string> = {
   markdown: 'markdown',
@@ -92,14 +94,22 @@ function toPreviewData(form: ArticleFormData): PreviewArticleData {
     tags: form.tags,
     imageUrl: form.imageUrl,
     artifacts: form.artifacts,
+    layout: form.layout,
+    toc: form.toc,
   };
 }
 
 interface EditorTabProps {
   formData: ArticleFormData;
+  onTocChange: (toc: TocItem[]) => void;
+  onLayoutChange: (layout: string) => void;
 }
 
-export function EditorTab({ formData }: EditorTabProps) {
+export function EditorTab({
+  formData,
+  onTocChange,
+  onLayoutChange,
+}: EditorTabProps) {
   const {
     content,
     editorMode,
@@ -114,6 +124,12 @@ export function EditorTab({ formData }: EditorTabProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_SETTINGS);
   const settingsPanel = useEditorSettingsPanel();
+  const [tocModalOpen, setTocModalOpen] = useState(false);
+
+  const tocCount = useMemo(
+    () => formData.toc?.filter(i => i.enabled).length ?? 0,
+    [formData.toc]
+  );
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(prev => !prev);
@@ -202,6 +218,10 @@ export function EditorTab({ formData }: EditorTabProps) {
         onToggleSettings={settingsPanel.toggle}
         settingsBtnRef={settingsPanel.triggerRef}
         formData={formData}
+        onOpenToc={() => setTocModalOpen(true)}
+        tocCount={tocCount}
+        layout={formData.layout ?? 'three-column'}
+        onLayoutChange={onLayoutChange}
       />
 
       {editorMode === 'visual' ? (
@@ -272,6 +292,14 @@ export function EditorTab({ formData }: EditorTabProps) {
           }
         />
       </EditorSettingsPanel>
+
+      <TocModal
+        open={tocModalOpen}
+        onOpenChange={setTocModalOpen}
+        content={content}
+        toc={formData.toc ?? []}
+        onSave={onTocChange}
+      />
 
       <AlertDialog
         open={showConversionWarning}

@@ -14,7 +14,18 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { Button } from '@/app/components/ui/button';
-import { Eye, Maximize, Minimize, Settings2, WandSparkles } from 'lucide-react';
+import {
+  Columns3,
+  Eye,
+  List,
+  Maximize,
+  Minimize,
+  PanelRight,
+  Settings2,
+  Square,
+  WandSparkles,
+  Expand,
+} from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
 import type {
   EditorMode,
@@ -29,6 +40,17 @@ const MODE_LABELS: Record<EditorMode, string> = {
   visual: 'Visual',
 };
 
+const LAYOUT_OPTIONS: {
+  value: string;
+  label: string;
+  icon: typeof Columns3;
+}[] = [
+  { value: 'three-column', label: 'Три колонки', icon: Columns3 },
+  { value: 'two-column', label: 'Две колонки', icon: PanelRight },
+  { value: 'one-column', label: 'Одна колонка', icon: Square },
+  { value: 'full-width', label: 'Полная ширина', icon: Expand },
+];
+
 function toPreviewData(form: ArticleFormData): PreviewArticleData {
   return {
     h1: form.h1,
@@ -38,6 +60,8 @@ function toPreviewData(form: ArticleFormData): PreviewArticleData {
     category: form.category,
     tags: form.tags,
     imageUrl: form.imageUrl,
+    layout: form.layout,
+    toc: form.toc,
   };
 }
 
@@ -51,6 +75,10 @@ interface EditorToolbarProps {
   onToggleSettings: () => void;
   settingsBtnRef: React.RefObject<HTMLButtonElement | null>;
   formData: ArticleFormData;
+  onOpenToc: () => void;
+  tocCount: number;
+  layout: string;
+  onLayoutChange: (layout: string) => void;
 }
 
 export function EditorToolbar({
@@ -63,6 +91,10 @@ export function EditorToolbar({
   onToggleSettings,
   settingsBtnRef,
   formData,
+  onOpenToc,
+  tocCount,
+  layout,
+  onLayoutChange,
 }: EditorToolbarProps) {
   return (
     <div className='flex items-center justify-between gap-3 p-3 border-b'>
@@ -96,6 +128,25 @@ export function EditorToolbar({
               <WandSparkles className='size-3.5' />
             </Button>
             <Button
+              variant='ghost'
+              size='icon'
+              className={cn(
+                'size-8 relative',
+                tocCount > 0
+                  ? 'text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+              title='Оглавление (ToC)'
+              onClick={onOpenToc}
+            >
+              <List className='size-3.5' />
+              {tocCount > 0 && (
+                <span className='absolute -top-0.5 -right-0.5 size-3.5 rounded-full bg-primary text-[9px] font-medium text-primary-foreground flex items-center justify-center'>
+                  {tocCount}
+                </span>
+              )}
+            </Button>
+            <Button
               ref={settingsBtnRef}
               variant='ghost'
               size='icon'
@@ -115,6 +166,25 @@ export function EditorToolbar({
       </div>
 
       <div className='flex items-center gap-3'>
+        <Select value={layout} onValueChange={onLayoutChange}>
+          <SelectTrigger className='w-40 h-8 text-xs' size='sm'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {LAYOUT_OPTIONS.map(opt => {
+              const Icon = opt.icon;
+              return (
+                <SelectItem key={opt.value} value={opt.value}>
+                  <div className='flex items-center gap-2'>
+                    <Icon className='size-3.5' />
+                    {opt.label}
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+
         <Button
           variant='outline'
           size='sm'

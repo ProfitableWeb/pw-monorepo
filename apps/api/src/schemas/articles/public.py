@@ -4,6 +4,7 @@ ArticleListItem (карточка/masonry — без content). category и tags 
 """
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -27,6 +28,8 @@ class ArticleResponse(BaseModel):
     image_alt: str | None = None
     published_at: datetime | None = None
     updated_at: datetime | None = None
+    toc: Any | None = None
+    artifacts: Any | None = None
 
     model_config = {"from_attributes": True}
 

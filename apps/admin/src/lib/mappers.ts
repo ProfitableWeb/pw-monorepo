@@ -58,6 +58,8 @@ export function apiToFormData(
     schemaType: article.schemaType ?? 'BlogPosting',
     author: article.author?.name ?? '',
     artifacts: article.artifacts ?? defaultArtifacts,
+    toc: article.toc ?? [],
+    layout: article.layout ?? 'three-column',
   };
 }
 
@@ -98,6 +100,8 @@ export function formDataToUpdatePayload(
     robots_no_index: form.robotsNoIndex,
     robots_no_follow: form.robotsNoFollow,
     artifacts: form.artifacts,
+    toc: form.toc.length > 0 ? form.toc : null,
+    layout: form.layout,
   };
 }
 
@@ -137,6 +141,8 @@ export function formDataToCreatePayload(
     robots_no_index: form.robotsNoIndex,
     robots_no_follow: form.robotsNoFollow,
     artifacts: form.artifacts,
+    toc: form.toc.length > 0 ? form.toc : null,
+    layout: form.layout,
   };
 }
 
@@ -169,5 +175,7 @@ export function getEmptyFormData(timezone: string): ArticleFormData {
     schemaType: 'BlogPosting',
     author: '',
     artifacts: defaultArtifacts,
+    toc: [],
+    layout: 'three-column',
   };
 }
