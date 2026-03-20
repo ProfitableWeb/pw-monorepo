@@ -16,8 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/table';
-import { MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, Eye, Edit, Trash2 } from 'lucide-react';
 import { formatDate } from '@/app/components/common';
+import { WEB_URL } from '../../article-workbench/preview/preview.types';
 import type { Article } from '../articles.types';
 import { getStatusColor, getStatusLabel } from '../articles.utils';
 
@@ -54,7 +55,12 @@ export function ArticlesTable({ articles, onEdit }: ArticlesTableProps) {
           articles.map(article => (
             <TableRow key={article.id}>
               <TableCell className='font-medium max-w-md truncate'>
-                {article.title}
+                <button
+                  onClick={() => onEdit(article.id)}
+                  className='hover:underline text-left'
+                >
+                  {article.title}
+                </button>
               </TableCell>
               <TableCell>{article.author}</TableCell>
               <TableCell>
@@ -80,9 +86,15 @@ export function ArticlesTable({ articles, onEdit }: ArticlesTableProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align='end'>
                     <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                    <DropdownMenuItem>
-                      <Eye className='mr-2 h-4 w-4' />
-                      Просмотр
+                    <DropdownMenuItem asChild>
+                      <a
+                        href={`${WEB_URL}/${article.slug}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        <ExternalLink className='mr-2 h-4 w-4' />
+                        Просмотр на сайте
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onEdit(article.id)}>
                       <Edit className='mr-2 h-4 w-4' />

@@ -71,6 +71,7 @@ export function ArticlesSection() {
       (adminResult?.data ?? []).map(a => ({
         id: a.id,
         title: a.title,
+        slug: a.slug,
         status: (VALID_STATUSES.has(a.status)
           ? a.status
           : 'draft') as Article['status'],
