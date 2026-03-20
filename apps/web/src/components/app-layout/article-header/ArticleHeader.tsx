@@ -12,6 +12,8 @@ export interface ArticleHeaderProps {
   publishedAt?: Date;
   categorySlug?: string;
   categoryName?: string;
+  /** Показывать блок автора (default true). В three-column layout автор в sidebar. */
+  showAuthor?: boolean;
 }
 
 /**
@@ -30,6 +32,7 @@ export const ArticleHeader = ({
   publishedAt,
   categorySlug,
   categoryName,
+  showAuthor = true,
 }: ArticleHeaderProps) => {
   return (
     <header className='article-header'>
@@ -46,8 +49,8 @@ export const ArticleHeader = ({
         />
       )}
 
-      {/* Блок автора */}
-      <ArticleAuthorBlock />
+      {/* Блок автора — скрыт когда автор в sidebar (three-column, two-column) */}
+      {showAuthor && <ArticleAuthorBlock />}
     </header>
   );
 };

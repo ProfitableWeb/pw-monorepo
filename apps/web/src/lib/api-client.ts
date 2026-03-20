@@ -60,6 +60,67 @@ interface ArticleListItemRaw {
   published_at?: string | null;
 }
 
+/** Полный ответ статьи (включая content, toc, artifacts, layout) */
+interface ArticleFullRaw extends ArticleListItemRaw {
+  content: string;
+  author?: string | null;
+  views?: number;
+  layout?: string | null;
+  toc?: TocItemRaw[] | null;
+  artifacts?: ArtifactsRaw | null;
+  updated_at?: string | null;
+}
+
+interface TocItemRaw {
+  id: string;
+  text: string;
+  level: number;
+  enabled: boolean;
+}
+
+interface SelfCheckItemRaw {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+interface SourceItemRaw {
+  id: string;
+  title: string;
+  url: string;
+  type?: string;
+}
+
+interface ArtifactsRaw {
+  selfCheck?: { enabled: boolean; items: SelfCheckItemRaw[] };
+  sources?: { enabled: boolean; items: SourceItemRaw[] };
+  glossary?: { enabled: boolean; items: unknown[] };
+  provenance?: { enabled: boolean; workspaceId: string; showLink: boolean };
+}
+
+/** Полная статья для страницы */
+export interface FullArticle {
+  id: string;
+  title: string;
+  subtitle: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  category: string;
+  categories: string[];
+  tags: string[];
+  author?: string;
+  readTime?: number;
+  imageUrl?: string;
+  imageAlt?: string;
+  publishedAt: string;
+  updatedAt?: string;
+  layout: string;
+  toc: { id: string; text: string; level: number; enabled: boolean }[];
+  selfCheck: { id: string; question: string; answer: string }[];
+  sources: { id: string; title: string; url: string }[];
+}
+
 interface CommentRaw {
   id: string;
   user_id: string;
@@ -254,6 +315,54 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     `/articles/${encodeURIComponent(slug)}`
   );
   return data ? mapArticleListItem(data) : null;
+}
+
+/**
+ * Получает полную статью по slug (content, toc, artifacts, layout)
+ */
+export async function getFullArticleBySlug(
+  slug: string
+): Promise<FullArticle | null> {
+  const raw = await apiFetch<ArticleFullRaw>(
+    `/articles/${encodeURIComponent(slug)}`
+  );
+  if (!raw) return null;
+
+  const artifacts = raw.artifacts;
+  const selfCheck =
+    artifacts?.selfCheck?.enabled && artifacts.selfCheck.items.length > 0
+      ? artifacts.selfCheck.items
+      : [];
+  const sources =
+    artifacts?.sources?.enabled && artifacts.sources.items.length > 0
+      ? artifacts.sources.items.map(s => ({
+          id: s.id,
+          title: s.title,
+          url: s.url,
+        }))
+      : [];
+
+  return {
+    id: raw.id,
+    title: raw.title,
+    subtitle: raw.subtitle ?? '',
+    slug: raw.slug,
+    content: raw.content,
+    excerpt: raw.excerpt ?? '',
+    category: raw.category,
+    categories: raw.categories ?? [],
+    tags: raw.tags ?? [],
+    author: raw.author ?? undefined,
+    readTime: raw.reading_time ?? undefined,
+    imageUrl: raw.image_url ?? undefined,
+    imageAlt: raw.image_alt ?? undefined,
+    publishedAt: raw.published_at ?? '',
+    updatedAt: raw.updated_at ?? undefined,
+    layout: raw.layout ?? 'three-column',
+    toc: raw.toc ?? [],
+    selfCheck,
+    sources,
+  };
 }
 
 /**

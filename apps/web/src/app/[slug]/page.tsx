@@ -8,6 +8,7 @@ import {
   getCategoryBySlug,
   getArticlesByCategory,
   getArticleBySlug,
+  getFullArticleBySlug,
 } from '@/lib/api-client';
 import {
   generateCategoryJsonLd,
@@ -65,48 +66,53 @@ export default async function DynamicPage({
     );
   }
 
-  // Приоритет 2: Проверка статьи
-  const article = await getArticleBySlug(slug);
-  if (article) {
-    const articleJsonLd = generateArticleJsonLd(article);
+  // Приоритет 2: Проверка статьи (полная версия с content, toc, artifacts)
+  const fullArticle = await getFullArticleBySlug(slug);
+  if (fullArticle) {
+    // Для JSON-LD нужен masonry-тип Article — получим его тоже
+    const article = await getArticleBySlug(slug);
+    const articleJsonLd = article ? generateArticleJsonLd(article) : null;
 
     // Получаем категорию для breadcrumbs (если есть)
-    const category = article.category
-      ? await getCategoryBySlug(article.category)
+    const category = fullArticle.category
+      ? await getCategoryBySlug(fullArticle.category)
       : null;
 
-    const breadcrumbJsonLd = category
-      ? generateArticleBreadcrumbJsonLd(article, category)
-      : {
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              name: 'Главная',
-              item: 'https://profitableweb.ru/',
-            },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: article.title,
-              item: `https://profitableweb.ru/${article.slug}`,
-            },
-          ],
-        };
+    const breadcrumbJsonLd =
+      category && article
+        ? generateArticleBreadcrumbJsonLd(article, category)
+        : {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Главная',
+                item: 'https://profitableweb.ru/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: fullArticle.title,
+                item: `https://profitableweb.ru/${fullArticle.slug}`,
+              },
+            ],
+          };
 
     return (
       <>
-        <script
-          type='application/ld+json'
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-        />
+        {articleJsonLd && (
+          <script
+            type='application/ld+json'
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+          />
+        )}
         <script
           type='application/ld+json'
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
-        <ArticlePage article={article} category={category} />
+        <ArticlePage article={fullArticle} categoryName={category?.name} />
       </>
     );
   }

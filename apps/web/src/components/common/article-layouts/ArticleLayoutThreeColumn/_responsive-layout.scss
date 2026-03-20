@@ -56,16 +56,22 @@
   .article-layout-three-column {
     grid-template-columns: 1fr 280px;
 
+    &__header {
+      grid-column: 1 / -1;
+    }
+
     &__toc {
       display: none;
     }
 
     &__content {
+      grid-column: 1;
       max-width: 100%;
       margin: 0;
     }
 
     &__sidebar {
+      grid-column: 2;
       display: block;
       position: sticky;
       top: 100px;
@@ -88,12 +94,14 @@
     }
 
     &__content {
+      grid-column: 1;
       max-width: 700px; // Ограничиваем ширину для комфортного чтения
       margin: 0 auto; // Центрируем контент внутри колонки
       justify-self: center; // Дополнительное центрирование в grid
     }
 
     &__sidebar {
+      grid-column: 2;
       display: block;
       width: 300px;
     }
@@ -108,7 +116,12 @@
     // Трехколоночный режим только от 1400px
     grid-template-columns: 200px 1fr 280px;
 
+    &__header {
+      grid-column: 2;
+    }
+
     &__toc {
+      grid-column: 1;
       display: block; // TOC появляется
       position: sticky;
       top: 100px;
@@ -118,10 +131,12 @@
     }
 
     &__content {
+      grid-column: 2;
       max-width: 100%; // Убираем ограничение, контент расширяется в grid
     }
 
     &__sidebar {
+      grid-column: 3;
       width: 280px;
     }
   }
@@ -135,7 +150,16 @@
     // На очень широких экранах увеличиваем боковые колонки
     grid-template-columns: 220px 1fr 300px;
 
+    &__toc {
+      grid-column: 1;
+    }
+
+    &__content {
+      grid-column: 2;
+    }
+
     &__sidebar {
+      grid-column: 3;
       width: 300px;
     }
   }

@@ -16,6 +16,13 @@ interface TableOfContentsProps {
 export const TableOfContents = ({ items }: TableOfContentsProps) => {
   const [activeId, setActiveId] = useState<string>('');
 
+  // Нормализуем уровни: минимальный level = 1 (корневой, без отступа)
+  const minLevel = items.length > 0 ? Math.min(...items.map(i => i.level)) : 2;
+  const normalizedItems = items.map(item => ({
+    ...item,
+    normalizedLevel: item.level - minLevel + 1,
+  }));
+
   useEffect(() => {
     const container = document.querySelector('.main-layout');
 
@@ -67,10 +74,10 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
     <nav className='toc' aria-label='Table of contents'>
       <h2 className='toc__title'>Содержание</h2>
       <ul className='toc__list'>
-        {items.map(item => (
+        {normalizedItems.map(item => (
           <li
             key={item.id}
-            className={`toc__item toc__item--level-${item.level} ${
+            className={`toc__item toc__item--level-${item.normalizedLevel} ${
               activeId === item.id ? 'toc__item--active' : ''
             }`}
           >

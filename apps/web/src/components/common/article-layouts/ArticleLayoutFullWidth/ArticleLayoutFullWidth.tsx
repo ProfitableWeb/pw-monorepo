@@ -19,9 +19,12 @@ import './ArticleLayoutFullWidth.scss';
  * но отдельные элементы (текстовые блоки) могут иметь ограничение max-width.
  */
 export const ArticleLayoutFullWidth = memo<BaseArticleLayoutProps>(
-  ({ children, className }) => {
+  ({ children, header, className }) => {
     return (
       <div className={clsx('article-layout-full-width', className)}>
+        {header && (
+          <div className='article-layout-full-width__header'>{header}</div>
+        )}
         <main className='article-layout-full-width__content'>{children}</main>
       </div>
     );

@@ -19,9 +19,14 @@ import './ArticleLayoutTwoColumn.scss';
  * - Mobile (<768px): 1 колонка - только Content
  */
 export const ArticleLayoutTwoColumn = memo<ArticleLayoutWithSidebarProps>(
-  ({ children, sidebar, className }) => {
+  ({ children, sidebar, header, className }) => {
     return (
       <div className={clsx('article-layout-two-column', className)}>
+        {/* Шапка статьи — на всю ширину grid */}
+        {header && (
+          <div className='article-layout-two-column__header'>{header}</div>
+        )}
+
         {/* Основной контент */}
         <main className='article-layout-two-column__content'>{children}</main>
 

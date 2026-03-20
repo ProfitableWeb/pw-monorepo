@@ -16,13 +16,17 @@
 
   &__item {
     margin-bottom: 4px;
+
     &--level-2 {
-      padding-left: 12px; // Базовый отступ для mobile
+      padding-left: 12px;
+    }
+
+    &--level-3 {
+      padding-left: 24px;
     }
 
     &--active .toc__link {
       color: var(--color-text-primary);
-      font-weight: 600;
     }
   }
 
@@ -62,6 +66,10 @@
       &--level-2 {
         padding-left: 14px;
       }
+
+      &--level-3 {
+        padding-left: 28px;
+      }
     }
 
     &__link {
@@ -81,10 +89,14 @@
     }
 
     &__item {
-      margin-bottom: 6px; 
-      
+      margin-bottom: 6px;
+
       &--level-2 {
         padding-left: 16px;
+      }
+
+      &--level-3 {
+        padding-left: 32px;
       }
     }
 
@@ -109,6 +121,10 @@
 
       &--level-2 {
         padding-left: 16px;
+      }
+
+      &--level-3 {
+        padding-left: 32px;
       }
     }
 

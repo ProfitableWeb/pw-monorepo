@@ -1,62 +1,81 @@
 'use client';
 
-import React from 'react';
 import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
-import { Article } from '@/components/common/masonry/types';
-import { ArticleMeta } from '@/components/common/article-meta';
-import { Category } from '@/types';
+import { ArticleHeader } from '@/components/app-layout/article-header';
+import { ArticleLayout } from '@/components/common/article-layouts';
+import { ArticleContentOneColumn } from '@/components/common/article-content';
+import { SelfAssessment } from '@/components/common/self-assessment';
+import { ArticleResources } from '@/components/common/article-resources';
+import { TableOfContents } from '@/components/common/table-of-contents';
+import { AuthorCard } from '@/components/common/sidebar-widgets/author-card';
+import type { FullArticle } from '@/lib/api-client';
+import type { ArticleLayoutType } from '@/components/common/article-layouts/types';
 import './ArticlePage.scss';
 
 export interface ArticlePageProps {
-  article: Article;
-  /** Категория статьи (для ссылки), при наличии получается в [slug]/page */
-  category?: Category | null;
+  article: FullArticle;
+  categoryName?: string;
 }
 
-/**
- * Заглушка страницы статьи
- *
- * Базовая заглушка для проверки маршрутизации статей.
- * Полноценная реализация будет создана в отдельной задаче.
- *
- * @component
- * @param {ArticlePageProps} props - Свойства компонента
- * @returns {JSX.Element} Заглушка страницы статьи
- */
-const ArticlePage = ({ article, category }: ArticlePageProps) => {
+const ArticlePage = ({ article, categoryName }: ArticlePageProps) => {
+  const layout = (article.layout ?? 'three-column') as ArticleLayoutType;
+  const hasSidebar = layout === 'three-column' || layout === 'two-column';
+
+  const enabledToc = article.toc.filter(item => item.enabled);
+  const tocSidebar =
+    enabledToc.length > 0 ? (
+      <TableOfContents
+        items={enabledToc.map(item => ({
+          id: item.id,
+          title: item.text,
+          level: item.level,
+        }))}
+      />
+    ) : undefined;
+
   return (
     <div className='article-page'>
       <AppBar />
       <AppPageWrapper>
-        <main className='article-page__main'>
-          <article className='article-page__content'>
-            <header className='article-page__header'>
-              <h1 className='article-page__title'>{article.title}</h1>
-              <p className='article-page__subtitle'>{article.subtitle}</p>
-              <ArticleMeta
-                publishedAt={new Date(article.createdAt)}
+        <main>
+          <ArticleLayout
+            layout={layout}
+            toc={tocSidebar}
+            sidebar={hasSidebar ? <AuthorCard /> : undefined}
+            header={
+              <ArticleHeader
+                title={article.title}
+                subtitle={article.subtitle}
+                publishedAt={
+                  article.publishedAt
+                    ? new Date(article.publishedAt)
+                    : undefined
+                }
                 categorySlug={article.category}
-                categoryName={category?.name}
-                className='article-page__meta'
+                categoryName={categoryName}
+                showAuthor={!hasSidebar}
               />
-            </header>
+            }
+          >
+            <ArticleContentOneColumn html={article.content} />
 
-            <div className='article-page__body'>
-              <p className='article-page__excerpt'>{article.subtitle}</p>
+            {article.selfCheck.length > 0 && (
+              <SelfAssessment questions={article.selfCheck} />
+            )}
 
-              <div className='article-page__placeholder'>
-                <p>
-                  🚧 Полноценная страница статьи будет реализована в отдельной
-                  задаче
-                </p>
-                <p>
-                  Это заглушка для тестирования маршрутизации /{article.slug}
-                </p>
-              </div>
-            </div>
-          </article>
+            {article.sources.length > 0 && (
+              <ArticleResources
+                resources={article.sources.map(s => ({
+                  id: s.id,
+                  title: s.title,
+                  url: s.url,
+                  external: true,
+                }))}
+              />
+            )}
+          </ArticleLayout>
         </main>
         <AppFooter />
       </AppPageWrapper>

@@ -48,6 +48,10 @@
   .article-layout-two-column {
     grid-template-columns: 1fr 280px;
 
+    &__header {
+      grid-column: 1 / -1;
+    }
+
     &__content {
       max-width: 100%;
       margin: 0;

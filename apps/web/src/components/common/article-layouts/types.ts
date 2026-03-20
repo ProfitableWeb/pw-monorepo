@@ -15,6 +15,7 @@ export type ArticleLayoutType =
 export interface BaseArticleLayoutProps {
   children: ReactNode;
   className?: string;
+  header?: ReactNode;
 }
 
 /**

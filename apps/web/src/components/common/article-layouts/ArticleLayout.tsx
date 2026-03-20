@@ -53,6 +53,11 @@ interface ArticleLayoutProps {
   sidebar?: ReactNode;
 
   /**
+   * Шапка статьи (заголовок, подзаголовок, мета) — рендерится внутри grid
+   */
+  header?: ReactNode;
+
+  /**
    * Дополнительный CSS класс
    */
   className?: string;
@@ -86,6 +91,7 @@ export const ArticleLayout = ({
   children,
   toc,
   sidebar,
+  header,
   className,
 }: ArticleLayoutProps) => {
   const renderLayout = () => {
@@ -95,6 +101,7 @@ export const ArticleLayout = ({
           <ArticleLayoutThreeColumn
             toc={toc}
             sidebar={sidebar}
+            header={header}
             className={className}
           >
             {children}
@@ -103,21 +110,25 @@ export const ArticleLayout = ({
 
       case 'two-column':
         return (
-          <ArticleLayoutTwoColumn sidebar={sidebar} className={className}>
+          <ArticleLayoutTwoColumn
+            sidebar={sidebar}
+            header={header}
+            className={className}
+          >
             {children}
           </ArticleLayoutTwoColumn>
         );
 
       case 'full-width':
         return (
-          <ArticleLayoutFullWidth className={className}>
+          <ArticleLayoutFullWidth header={header} className={className}>
             {children}
           </ArticleLayoutFullWidth>
         );
 
       case 'one-column':
         return (
-          <ArticleLayoutOneColumn className={className}>
+          <ArticleLayoutOneColumn header={header} className={className}>
             {children}
           </ArticleLayoutOneColumn>
         );
@@ -131,6 +142,7 @@ export const ArticleLayout = ({
           <ArticleLayoutThreeColumn
             toc={toc}
             sidebar={sidebar}
+            header={header}
             className={className}
           >
             {children}

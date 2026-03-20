@@ -1,5 +1,6 @@
 .article-page {
   min-height: 100vh;
+  flex: 1 0 auto; // Растягиваемся под контент внутри flex-контейнера .main-layout
   background: var(--color-bg-primary);
 
   &__main {

@@ -30,9 +30,12 @@ import './ArticleLayoutOneColumn.scss';
  * - Full-width: для лендингов, газетной вёрстки без ограничений
  */
 export const ArticleLayoutOneColumn = memo<BaseArticleLayoutProps>(
-  ({ children, className }) => {
+  ({ children, header, className }) => {
     return (
       <div className={clsx('article-layout-one-column', className)}>
+        {header && (
+          <div className='article-layout-one-column__header'>{header}</div>
+        )}
         <main className='article-layout-one-column__content'>{children}</main>
       </div>
     );

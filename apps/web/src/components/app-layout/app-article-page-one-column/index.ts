@@ -1,1 +1,0 @@
-export { ArticlePageOneColumn } from './ArticlePageOneColumn';

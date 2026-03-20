@@ -19,9 +19,14 @@ import './ArticleLayoutThreeColumn.scss';
  * - Mobile (<768px): 1 колонка - только Content
  */
 export const ArticleLayoutThreeColumn = memo<ArticleLayoutFullProps>(
-  ({ children, toc, sidebar, className }) => {
+  ({ children, toc, sidebar, header, className }) => {
     return (
       <div className={clsx('article-layout-three-column', className)}>
+        {/* Шапка статьи — на всю ширину grid */}
+        {header && (
+          <div className='article-layout-three-column__header'>{header}</div>
+        )}
+
         {/* Table of Contents - слева (только Desktop) */}
         {toc && (
           <aside

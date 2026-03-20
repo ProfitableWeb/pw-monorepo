@@ -22,12 +22,8 @@
   @media (min-width: 640px) {
     padding-top: 35px;
     padding-bottom: 20px;
-    padding-left: 0; // Убраны, так как паддинги уже есть в app-page-wrapper
+    padding-left: 0;
     padding-right: 0;
-    // Ограничиваем ширину и центрируем, как контент статьи
-    max-width: 70ch; // ~600-700px в зависимости от шрифта
-    margin-left: auto;
-    margin-right: auto;
   }
 
   // ============================================================
