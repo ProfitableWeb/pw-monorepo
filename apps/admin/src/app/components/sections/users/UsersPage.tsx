@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/app/components/ui/input';
 import { useHeaderStore, type BreadcrumbItem } from '@/app/store/header-store';
+import { useNavigationStore } from '@/app/store/navigation-store';
 import {
   Users,
   LayoutDashboard,
@@ -31,12 +32,22 @@ import {
 
 export function UsersPage() {
   const { setBreadcrumbs, reset } = useHeaderStore();
+  const { selectedUserId, clearSelectedUserId } = useNavigationStore();
   const [activeSubsection, setActiveSubsection] = useState('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<{
     id: string;
     name: string;
   } | null>(null);
+
+  // Open user profile when navigating from another section
+  useEffect(() => {
+    if (selectedUserId) {
+      setSelectedUser({ id: selectedUserId, name: '...' });
+      setActiveSubsection('list');
+      clearSelectedUserId();
+    }
+  }, [selectedUserId, clearSelectedUserId]);
 
   useEffect(() => {
     const crumbs: BreadcrumbItem[] = [

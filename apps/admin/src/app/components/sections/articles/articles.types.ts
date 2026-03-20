@@ -5,6 +5,7 @@ export interface Article {
   status: 'published' | 'draft' | 'scheduled' | 'archived';
   category: string;
   author: string;
+  authorId: string;
   views: number;
   date: string;
 }

@@ -27,6 +27,7 @@ interface NavigationStore {
   recentPages: PageId[];
   seoKbArticleId?: string;
   editArticleId?: string;
+  selectedUserId?: string;
   navigateTo: (pageId: PageId, options?: NavigateOptions) => void;
   navigateToArticleEditor: (
     articleId?: string,
@@ -37,7 +38,9 @@ interface NavigationStore {
     options?: NavigateOptions
   ) => void;
   navigateToSeoKb: (articleId: string, options?: NavigateOptions) => void;
+  navigateToUserProfile: (userId: string, options?: NavigateOptions) => void;
   clearSeoKbArticleId: () => void;
+  clearSelectedUserId: () => void;
   getPageTitle: (pageId: PageId) => string;
   getNavigationItem: (pageId: PageId) => NavigationItem | undefined;
 }
@@ -51,6 +54,7 @@ export const useNavigationStore = create<NavigationStore>(set => ({
   recentPages: [],
   seoKbArticleId: undefined,
   editArticleId: undefined,
+  selectedUserId: undefined,
 
   navigateTo: (pageId: PageId, options?: NavigateOptions) => {
     set(state => {
@@ -120,8 +124,29 @@ export const useNavigationStore = create<NavigationStore>(set => ({
     }
   },
 
+  navigateToUserProfile: (userId: string, options?: NavigateOptions) => {
+    set(state => {
+      const recentPages = [
+        'users' as PageId,
+        ...state.recentPages.filter(p => p !== 'users'),
+      ].slice(0, 5);
+      return {
+        currentPage: 'users',
+        recentPages,
+        selectedUserId: userId,
+      };
+    });
+    if (!options?.skipPush) {
+      pushUrl('users', pageIdToUrl('users'));
+    }
+  },
+
   clearSeoKbArticleId: () => {
     set({ seoKbArticleId: undefined });
+  },
+
+  clearSelectedUserId: () => {
+    set({ selectedUserId: undefined });
   },
 
   getPageTitle: (pageId: PageId) => {

@@ -19,7 +19,8 @@ import { FiltersToolbar } from './assets/FiltersToolbar';
 import { ArticlesTable } from './assets/ArticlesTable';
 
 export function ArticlesSection() {
-  const { navigateToArticleEditor } = useNavigationStore();
+  const { navigateToArticleEditor, navigateToUserProfile } =
+    useNavigationStore();
   const { data: apiCategories } = useAdminCategories();
 
   // --- Server-side filter state ---
@@ -77,6 +78,7 @@ export function ArticlesSection() {
           : 'draft') as Article['status'],
         category: a.primaryCategory.name,
         author: a.author?.name ?? '—',
+        authorId: a.author?.id ?? '',
         views: a.views,
         date: a.publishedAt ?? '',
       })),
@@ -152,6 +154,7 @@ export function ArticlesSection() {
             <ArticlesTable
               articles={articles}
               onEdit={articleId => navigateToArticleEditor(articleId)}
+              onViewAuthor={authorId => navigateToUserProfile(authorId)}
             />
           )}
         </CardContent>

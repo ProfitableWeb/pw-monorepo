@@ -25,9 +25,14 @@ import { getStatusColor, getStatusLabel } from '../articles.utils';
 interface ArticlesTableProps {
   articles: Article[];
   onEdit: (articleId: string) => void;
+  onViewAuthor: (authorId: string) => void;
 }
 
-export function ArticlesTable({ articles, onEdit }: ArticlesTableProps) {
+export function ArticlesTable({
+  articles,
+  onEdit,
+  onViewAuthor,
+}: ArticlesTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -62,7 +67,18 @@ export function ArticlesTable({ articles, onEdit }: ArticlesTableProps) {
                   {article.title}
                 </button>
               </TableCell>
-              <TableCell>{article.author}</TableCell>
+              <TableCell>
+                {article.authorId ? (
+                  <button
+                    onClick={() => onViewAuthor(article.authorId)}
+                    className='hover:underline text-left'
+                  >
+                    {article.author}
+                  </button>
+                ) : (
+                  article.author
+                )}
+              </TableCell>
               <TableCell>
                 <Badge className={getStatusColor(article.status)}>
                   {getStatusLabel(article.status)}
