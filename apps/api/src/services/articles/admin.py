@@ -45,6 +45,7 @@ UPDATABLE_FIELDS = {
     "robots_no_index",
     "robots_no_follow",
     "artifacts",
+    "toc",
 }
 
 
@@ -85,6 +86,7 @@ def create_article(
     robots_no_index: bool = False,
     robots_no_follow: bool = False,
     artifacts: dict | None = None,
+    toc: list | None = None,
 ) -> Article:
     if not slug:
         slug = generate_slug(title)
@@ -118,6 +120,7 @@ def create_article(
         robots_no_index=robots_no_index,
         robots_no_follow=robots_no_follow,
         artifacts=artifacts,
+        toc=toc,
     )
     db.add(article)
     db.flush()

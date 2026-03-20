@@ -95,6 +95,7 @@ def _to_response(article: Article, revision_count: int = 0) -> ArticleAdminRespo
         if article.author
         else None,
         artifacts=article.artifacts,
+        toc=article.toc,
         revision_count=revision_count,
     )
 
@@ -196,6 +197,7 @@ def create_article(
         robots_no_index=body.robots_no_index,
         robots_no_follow=body.robots_no_follow,
         artifacts=body.artifacts,
+        toc=body.toc,
     )
     return _response_with_revisions(db, article)
 
