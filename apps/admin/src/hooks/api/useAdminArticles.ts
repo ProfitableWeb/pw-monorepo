@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getAdminArticles,
   getAdminArticle,
+  getAdminArticleStats,
   createArticle,
   updateArticle,
   deleteArticle,
@@ -24,6 +25,13 @@ export function useAdminArticles(params?: AdminArticlesParams) {
   return useQuery({
     queryKey: adminArticleKeys.list(params),
     queryFn: () => getAdminArticles(params),
+  });
+}
+
+export function useAdminArticleStats() {
+  return useQuery({
+    queryKey: adminArticleKeys.stats(),
+    queryFn: getAdminArticleStats,
   });
 }
 

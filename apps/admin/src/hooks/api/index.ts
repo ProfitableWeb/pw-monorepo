@@ -4,6 +4,7 @@ export { useArticleComments, useUserComments } from './useComments';
 export {
   useAdminArticles,
   useAdminArticle,
+  useAdminArticleStats,
   useRevisions,
   useRevision,
   useCreateArticle,

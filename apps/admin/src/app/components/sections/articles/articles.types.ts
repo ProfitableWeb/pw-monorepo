@@ -7,10 +7,3 @@ export interface Article {
   views: number;
   date: string;
 }
-
-export interface ArticlesFilterState {
-  searchQuery: string;
-  selectedStatuses: string[];
-  selectedCategories: string[];
-  dateRange: { from?: Date; to?: Date };
-}

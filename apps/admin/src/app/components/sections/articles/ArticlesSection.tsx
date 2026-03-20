@@ -1,7 +1,11 @@
 import { useHeaderStore } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
 import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
-import { useAdminArticles, useAdminCategories } from '@/hooks/api';
+import {
+  useAdminArticles,
+  useAdminArticleStats,
+  useAdminCategories,
+} from '@/hooks/api';
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -10,15 +14,57 @@ import { LoadingSpinner } from '@/app/components/common';
 
 import type { Article } from './articles.types';
 import { VALID_STATUSES } from './articles.constants';
-import { filterArticles } from './articles.utils';
 import { StatsCards } from './assets/StatsCards';
 import { FiltersToolbar } from './assets/FiltersToolbar';
 import { ArticlesTable } from './assets/ArticlesTable';
 
 export function ArticlesSection() {
-  const { data: adminResult, isLoading } = useAdminArticles();
-  const { data: apiCategories } = useAdminCategories();
   const { navigateToArticleEditor } = useNavigationStore();
+  const { data: apiCategories } = useAdminCategories();
+
+  // --- Server-side filter state ---
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
+
+  // Debounce search input 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchInput), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Map category name → slug for API
+  const categorySlugMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of apiCategories ?? []) {
+      map.set(c.name, c.slug);
+    }
+    return map;
+  }, [apiCategories]);
+
+  const categoryNames = useMemo(
+    () => (apiCategories ?? []).map(c => c.name),
+    [apiCategories]
+  );
+
+  // Build API params
+  const apiParams = useMemo(
+    () => ({
+      limit: 100,
+      search: debouncedSearch || undefined,
+      status: selectedStatus,
+      category: selectedCategory
+        ? categorySlugMap.get(selectedCategory)
+        : undefined,
+    }),
+    [debouncedSearch, selectedStatus, selectedCategory, categorySlugMap]
+  );
+
+  const { data: adminResult, isLoading } = useAdminArticles(apiParams);
+  const { data: stats } = useAdminArticleStats();
 
   const articles: Article[] = useMemo(
     () =>
@@ -36,16 +82,6 @@ export function ArticlesSection() {
     [adminResult]
   );
 
-  const categoryNames = useMemo(
-    () => (apiCategories ?? []).map(c => c.name),
-    [apiCategories]
-  );
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
-
   const { setBreadcrumbs, reset } = useHeaderStore();
 
   useEffect(() => {
@@ -53,42 +89,20 @@ export function ArticlesSection() {
     return () => reset();
   }, [setBreadcrumbs, reset]);
 
-  const toggleStatus = (status: string) => {
-    setSelectedStatuses(prev =>
-      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
-    );
-  };
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const clearAllFilters = () => {
-    setSelectedStatuses([]);
-    setSelectedCategories([]);
-    setDateRange({});
-    setSearchQuery('');
-  };
-
-  const filteredArticles = filterArticles(
-    articles,
-    searchQuery,
-    selectedStatuses,
-    selectedCategories,
-    dateRange
-  );
-
-  const publishedCount = articles.filter(a => a.status === 'published').length;
-  const draftCount = articles.filter(a => a.status === 'draft').length;
-  const totalViews = articles.reduce((sum, a) => sum + a.views, 0);
-
   useEffect(() => {
     useHeaderStore.setState({ title: 'Управление статьями' });
   }, []);
+
+  const clearAllFilters = () => {
+    setSelectedStatus(undefined);
+    setSelectedCategory(undefined);
+    setSearchInput('');
+  };
+
+  const totalArticles = stats?.total ?? articles.length;
+  const publishedCount = stats?.published ?? 0;
+  const draftCount = stats?.draft ?? 0;
+  const totalViews = stats?.views ?? 0;
 
   return (
     <div className='p-6 space-y-6'>
@@ -99,7 +113,7 @@ export function ArticlesSection() {
           <p className='text-muted-foreground mt-1'>
             {isLoading
               ? 'Загрузка...'
-              : `${articles.length} статей • ${publishedCount} опубликовано • ${draftCount} черновиков • ${totalViews.toLocaleString()} просмотров`}
+              : `${totalArticles} статей • ${publishedCount} опубликовано • ${draftCount} черновиков • ${totalViews.toLocaleString()} просмотров`}
           </p>
         </div>
         <Button onClick={() => navigateToArticleEditor()}>
@@ -110,7 +124,7 @@ export function ArticlesSection() {
 
       {/* Карточки статистики */}
       <StatsCards
-        total={articles.length}
+        total={totalArticles}
         publishedCount={publishedCount}
         draftCount={draftCount}
         totalViews={totalViews}
@@ -120,15 +134,13 @@ export function ArticlesSection() {
       <Card className='sticky top-16 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80'>
         <CardHeader>
           <FiltersToolbar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedStatuses={selectedStatuses}
-            onToggleStatus={toggleStatus}
-            selectedCategories={selectedCategories}
-            onToggleCategory={toggleCategory}
+            searchQuery={searchInput}
+            onSearchChange={setSearchInput}
+            selectedStatus={selectedStatus}
+            onStatusChange={setSelectedStatus}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
             categoryNames={categoryNames}
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
             onClearAll={clearAllFilters}
           />
         </CardHeader>
@@ -137,7 +149,7 @@ export function ArticlesSection() {
             <LoadingSpinner label='Загрузка статей...' size='size-5' />
           ) : (
             <ArticlesTable
-              articles={filteredArticles}
+              articles={articles}
               onEdit={articleId => navigateToArticleEditor(articleId)}
             />
           )}

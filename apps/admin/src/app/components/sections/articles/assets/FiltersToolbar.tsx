@@ -1,8 +1,5 @@
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
-import { Calendar } from '@/app/components/ui/calendar';
-import { Checkbox } from '@/app/components/ui/checkbox';
-import { formatDate } from '@/app/components/common';
 import { Input } from '@/app/components/ui/input';
 import {
   Popover,
@@ -10,39 +7,31 @@ import {
   PopoverTrigger,
 } from '@/app/components/ui/popover';
 import { cn } from '@/app/components/ui/utils';
-import { Search, X, CalendarIcon, ChevronDown } from 'lucide-react';
+import { Search, X, ChevronDown, Check } from 'lucide-react';
 import { STATUSES } from '../articles.constants';
 
 interface FiltersToolbarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  selectedStatuses: string[];
-  onToggleStatus: (status: string) => void;
-  selectedCategories: string[];
-  onToggleCategory: (category: string) => void;
+  selectedStatus: string | undefined;
+  onStatusChange: (status: string | undefined) => void;
+  selectedCategory: string | undefined;
+  onCategoryChange: (category: string | undefined) => void;
   categoryNames: string[];
-  dateRange: { from?: Date; to?: Date };
-  onDateRangeChange: (range: { from?: Date; to?: Date }) => void;
   onClearAll: () => void;
 }
 
 export function FiltersToolbar({
   searchQuery,
   onSearchChange,
-  selectedStatuses,
-  onToggleStatus,
-  selectedCategories,
-  onToggleCategory,
+  selectedStatus,
+  onStatusChange,
+  selectedCategory,
+  onCategoryChange,
   categoryNames,
-  dateRange,
-  onDateRangeChange,
   onClearAll,
 }: FiltersToolbarProps) {
-  const hasActiveFilters =
-    selectedStatuses.length > 0 ||
-    selectedCategories.length > 0 ||
-    dateRange.from ||
-    dateRange.to;
+  const hasActiveFilters = !!selectedStatus || !!selectedCategory;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -67,37 +56,43 @@ export function FiltersToolbar({
             <Button
               variant='outline'
               size='sm'
-              className={cn(
-                'h-8',
-                selectedStatuses.length > 0 && 'border-primary'
-              )}
+              className={cn('h-8', selectedStatus && 'border-primary')}
             >
               Статус
-              {selectedStatuses.length > 0 && (
+              {selectedStatus && (
                 <Badge variant='secondary' className='ml-2 h-5 px-1.5'>
-                  {selectedStatuses.length}
+                  1
                 </Badge>
               )}
               <ChevronDown className='ml-2 h-3 w-3' />
             </Button>
           </PopoverTrigger>
           <PopoverContent className='w-56 p-3' align='start'>
-            <div className='space-y-2'>
+            <div className='space-y-1'>
               <div className='font-medium text-sm mb-3'>Статус статьи</div>
               {STATUSES.map(status => (
-                <div key={status.value} className='flex items-center space-x-2'>
-                  <Checkbox
-                    id={`status-${status.value}`}
-                    checked={selectedStatuses.includes(status.value)}
-                    onCheckedChange={() => onToggleStatus(status.value)}
+                <button
+                  key={status.value}
+                  onClick={() =>
+                    onStatusChange(
+                      selectedStatus === status.value ? undefined : status.value
+                    )
+                  }
+                  className={cn(
+                    'flex items-center w-full px-2 py-1.5 text-sm rounded-md hover:bg-accent',
+                    selectedStatus === status.value && 'bg-accent'
+                  )}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      selectedStatus === status.value
+                        ? 'opacity-100'
+                        : 'opacity-0'
+                    )}
                   />
-                  <label
-                    htmlFor={`status-${status.value}`}
-                    className='text-sm cursor-pointer flex-1'
-                  >
-                    {status.label}
-                  </label>
-                </div>
+                  {status.label}
+                </button>
               ))}
             </div>
           </PopoverContent>
@@ -109,56 +104,10 @@ export function FiltersToolbar({
             <Button
               variant='outline'
               size='sm'
-              className={cn(
-                'h-8',
-                selectedCategories.length > 0 && 'border-primary'
-              )}
+              className={cn('h-8', selectedCategory && 'border-primary')}
             >
               Категория
-              {selectedCategories.length > 0 && (
-                <Badge variant='secondary' className='ml-2 h-5 px-1.5'>
-                  {selectedCategories.length}
-                </Badge>
-              )}
-              <ChevronDown className='ml-2 h-3 w-3' />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className='w-56 p-3' align='start'>
-            <div className='space-y-2'>
-              <div className='font-medium text-sm mb-3'>Категории</div>
-              {categoryNames.map(category => (
-                <div key={category} className='flex items-center space-x-2'>
-                  <Checkbox
-                    id={`category-${category}`}
-                    checked={selectedCategories.includes(category)}
-                    onCheckedChange={() => onToggleCategory(category)}
-                  />
-                  <label
-                    htmlFor={`category-${category}`}
-                    className='text-sm cursor-pointer flex-1'
-                  >
-                    {category}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Фильтр по дате */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant='outline'
-              size='sm'
-              className={cn(
-                'h-8',
-                (dateRange.from || dateRange.to) && 'border-primary'
-              )}
-            >
-              <CalendarIcon className='mr-2 h-3 w-3' />
-              Дата
-              {(dateRange.from || dateRange.to) && (
+              {selectedCategory && (
                 <Badge variant='secondary' className='ml-2 h-5 px-1.5'>
                   1
                 </Badge>
@@ -166,15 +115,33 @@ export function FiltersToolbar({
               <ChevronDown className='ml-2 h-3 w-3' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='w-auto p-0' align='start'>
-            <div className='p-3'>
-              <div className='font-medium text-sm mb-3'>Диапазон дат</div>
-              <Calendar
-                mode='range'
-                selected={{ from: dateRange.from, to: dateRange.to }}
-                onSelect={range => onDateRangeChange(range || {})}
-                numberOfMonths={2}
-              />
+          <PopoverContent className='w-56 p-3' align='start'>
+            <div className='space-y-1'>
+              <div className='font-medium text-sm mb-3'>Категории</div>
+              {categoryNames.map(category => (
+                <button
+                  key={category}
+                  onClick={() =>
+                    onCategoryChange(
+                      selectedCategory === category ? undefined : category
+                    )
+                  }
+                  className={cn(
+                    'flex items-center w-full px-2 py-1.5 text-sm rounded-md hover:bg-accent text-left',
+                    selectedCategory === category && 'bg-accent'
+                  )}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4 shrink-0',
+                      selectedCategory === category
+                        ? 'opacity-100'
+                        : 'opacity-0'
+                    )}
+                  />
+                  {category}
+                </button>
+              ))}
             </div>
           </PopoverContent>
         </Popover>
@@ -193,47 +160,23 @@ export function FiltersToolbar({
         )}
 
         {/* Активные фильтры */}
-        {selectedStatuses.map(status => (
-          <Badge
-            key={status}
-            variant='secondary'
-            className='h-8 gap-1 pl-3 pr-2'
-          >
-            {STATUSES.find(s => s.value === status)?.label}
-            <button
-              onClick={() => onToggleStatus(status)}
-              className='ml-1 hover:bg-muted rounded-sm p-0.5'
-            >
-              <X className='h-3 w-3' />
-            </button>
-          </Badge>
-        ))}
-
-        {selectedCategories.map(category => (
-          <Badge
-            key={category}
-            variant='secondary'
-            className='h-8 gap-1 pl-3 pr-2'
-          >
-            {category}
-            <button
-              onClick={() => onToggleCategory(category)}
-              className='ml-1 hover:bg-muted rounded-sm p-0.5'
-            >
-              <X className='h-3 w-3' />
-            </button>
-          </Badge>
-        ))}
-
-        {(dateRange.from || dateRange.to) && (
+        {selectedStatus && (
           <Badge variant='secondary' className='h-8 gap-1 pl-3 pr-2'>
-            {dateRange.from && dateRange.to
-              ? `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`
-              : dateRange.from
-                ? `С ${formatDate(dateRange.from)}`
-                : `До ${formatDate(dateRange.to)}`}
+            {STATUSES.find(s => s.value === selectedStatus)?.label}
             <button
-              onClick={() => onDateRangeChange({})}
+              onClick={() => onStatusChange(undefined)}
+              className='ml-1 hover:bg-muted rounded-sm p-0.5'
+            >
+              <X className='h-3 w-3' />
+            </button>
+          </Badge>
+        )}
+
+        {selectedCategory && (
+          <Badge variant='secondary' className='h-8 gap-1 pl-3 pr-2'>
+            {selectedCategory}
+            <button
+              onClick={() => onCategoryChange(undefined)}
               className='ml-1 hover:bg-muted rounded-sm p-0.5'
             >
               <X className='h-3 w-3' />

@@ -26,6 +26,7 @@ export const adminArticleKeys = {
   lists: () => [...adminArticleKeys.all, 'list'] as const,
   list: (params?: AdminArticlesParams) =>
     [...adminArticleKeys.lists(), params] as const,
+  stats: () => [...adminArticleKeys.all, 'stats'] as const,
   details: () => [...adminArticleKeys.all, 'detail'] as const,
   detail: (id: string) => [...adminArticleKeys.details(), id] as const,
   revisions: (id: string, params?: PaginationParams) =>

@@ -918,6 +918,18 @@ export async function getAdminArticles(
   };
 }
 
+export interface ArticleStats {
+  total: number;
+  published: number;
+  draft: number;
+  views: number;
+}
+
+export async function getAdminArticleStats(): Promise<ArticleStats> {
+  const data = await apiFetch<ArticleStats>('/admin/articles/stats');
+  return data ?? { total: 0, published: 0, draft: 0, views: 0 };
+}
+
 export async function getAdminArticle(
   articleId: string
 ): Promise<AdminArticleResponseType | null> {

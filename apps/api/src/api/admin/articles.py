@@ -200,6 +200,40 @@ def create_article(
     return _response_with_revisions(db, article)
 
 
+@router.get("/stats")
+def article_stats(
+    db: Session = Depends(get_db),
+    _user: User = Depends(get_current_admin),
+) -> ApiResponse[dict]:
+    from sqlalchemy import func, select as sa_select
+
+    rows = db.execute(
+        sa_select(Article.status, func.count(), func.coalesce(func.sum(Article.views), 0))
+        .group_by(Article.status)
+    ).all()
+
+    total = 0
+    published = 0
+    draft = 0
+    views = 0
+    for status, cnt, v in rows:
+        total += cnt
+        views += int(v)
+        # status may be enum or string depending on driver
+        s = status.value if hasattr(status, "value") else str(status)
+        if s == "published":
+            published = cnt
+        elif s == "draft":
+            draft = cnt
+
+    return ApiResponse(success=True, data={
+        "total": total,
+        "published": published,
+        "draft": draft,
+        "views": views,
+    })
+
+
 @router.get("", response_model=ApiResponse[list[ArticleAdminListItem]])
 def list_articles(
     page: int = Query(default=1, ge=1),
