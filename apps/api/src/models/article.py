@@ -99,6 +99,9 @@ class Article(UUIDMixin, TimestampMixin, Base):
     # Артефакты (PW-038) — JSONB, структура см. docs/tasks/PW-038
     artifacts: Mapped[Any | None] = mapped_column(JSONB)
 
+    # Table of Contents — JSONB, массив {id, text, level, enabled}
+    toc: Mapped[Any | None] = mapped_column(JSONB)
+
     # PW-054: primary_category_id (обязательная, для URL/breadcrumbs/SEO)
     primary_category_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("categories.id", ondelete="RESTRICT")

@@ -64,6 +64,7 @@ class ArticleCreateRequest(BaseModel):
     robots_no_index: bool = False
     robots_no_follow: bool = False
     artifacts: dict[str, Any] | None = None
+    toc: list[dict[str, Any]] | None = None
 
 
 class ArticleUpdateRequest(BaseModel):
@@ -95,6 +96,7 @@ class ArticleUpdateRequest(BaseModel):
     robots_no_index: bool | None = None
     robots_no_follow: bool | None = None
     artifacts: dict[str, Any] | None = None
+    toc: list[dict[str, Any]] | None = None
 
 
 class ArticleScheduleRequest(BaseModel):
@@ -141,6 +143,8 @@ class ArticleAdminResponse(BaseModel):
     author: AuthorBrief | None = None
     # Artifacts
     artifacts: dict[str, Any] | None = None
+    # Table of Contents
+    toc: list[dict[str, Any]] | None = None
     revision_count: int = 0
 
     model_config = {"from_attributes": True}
