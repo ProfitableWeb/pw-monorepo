@@ -1,6 +1,7 @@
 """
-PW-027/PW-042-A | Точка входа FastAPI.
+PW-027/PW-042-A/PW-061-B | Точка входа FastAPI.
 CORS, structured logging, request middleware. Эндпоинты через api_router (/api/*).
+MCP-сервер монтируется на /mcp (Streamable HTTP transport).
 """
 
 from asgi_correlation_id import CorrelationIdMiddleware
@@ -10,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.router import api_router
 from src.core.config import settings
 from src.core.logging import setup_logging
+from src.mcp.server import create_mcp_asgi_app
 from src.middleware.logging import RequestLoggingMiddleware
 
 setup_logging()
@@ -34,6 +36,9 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
+
+# PW-061-B: MCP-сервер (Streamable HTTP transport)
+app.mount("/mcp", create_mcp_asgi_app())
 
 
 @app.get("/")

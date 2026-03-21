@@ -24,6 +24,7 @@ dependencies = [
     "psutil>=5.9.0",
     "structlog>=24.1.0",
     "asgi-correlation-id>=4.3.0",
+    "mcp>=1.0.0",
 ]
 
 [project.optional-dependencies]
