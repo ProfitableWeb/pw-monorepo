@@ -32,6 +32,7 @@ COPY package.json ./
 
 # Build Next.js (standalone output)
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=1536"
 RUN cd apps/web && bun run build
 
 # --- Stage 3: Production runtime ---
