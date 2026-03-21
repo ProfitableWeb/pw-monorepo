@@ -54,3 +54,10 @@ export const adminMediaKeys = {
   detail: (id: string) => [...adminMediaKeys.details(), id] as const,
   stats: () => [...adminMediaKeys.all, 'stats'] as const,
 };
+
+export const adminMcpKeys = {
+  all: ['admin', 'mcp'] as const,
+  keys: () => [...adminMcpKeys.all, 'keys'] as const,
+  audit: () => [...adminMcpKeys.all, 'audit'] as const,
+  health: () => [...adminMcpKeys.all, 'health'] as const,
+};

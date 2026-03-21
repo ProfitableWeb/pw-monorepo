@@ -38,3 +38,10 @@ export {
   useUpdateMedia,
   useDeleteMedia,
 } from './useMedia';
+export {
+  useMcpKeys,
+  useCreateMcpKey,
+  useRevokeMcpKey,
+  useMcpAuditLog,
+  useMcpConnectionTest,
+} from './useMcpKeys';

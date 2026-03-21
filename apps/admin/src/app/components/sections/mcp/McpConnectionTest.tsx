@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Wifi, WifiOff, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
@@ -8,35 +7,20 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { cn } from '@/app/components/ui/utils';
-import type { McpConnectionStatus } from './mcp.types';
-
-type TestState = 'idle' | 'loading' | 'success' | 'error';
-
-// Mock: simulate connection check
-const MOCK_STATUS: McpConnectionStatus = {
-  available: true,
-  toolCount: 29,
-  version: '1.0.0',
-};
+import { useMcpConnectionTest } from '@/hooks/api';
 
 export function McpConnectionTest() {
-  const [state, setState] = useState<TestState>('idle');
-  const [status, setStatus] = useState<McpConnectionStatus | null>(null);
+  const {
+    mutate,
+    data: status,
+    isPending,
+    isError,
+    error,
+    isIdle,
+  } = useMcpConnectionTest();
 
-  const handleTest = async () => {
-    setState('loading');
-    setStatus(null);
-
-    try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      // TODO: заменить на реальный вызов API (PW-061-C)
-      setStatus(MOCK_STATUS);
-      setState('success');
-    } catch {
-      setState('error');
-    }
+  const handleTest = () => {
+    mutate();
   };
 
   return (
@@ -48,32 +32,32 @@ export function McpConnectionTest() {
           variant='outline'
           className='gap-1.5'
           onClick={handleTest}
-          disabled={state === 'loading'}
+          disabled={isPending}
         >
-          {state === 'loading' ? (
+          {isPending ? (
             <Loader2 className='h-4 w-4 animate-spin' />
           ) : (
             <RefreshCw className='h-4 w-4' />
           )}
-          {state === 'loading' ? 'Проверка...' : 'Проверить'}
+          {isPending ? 'Проверка...' : 'Проверить'}
         </Button>
       </CardHeader>
       <CardContent>
-        {state === 'idle' && (
+        {isIdle && (
           <p className='text-sm text-muted-foreground'>
             Нажмите «Проверить» чтобы убедиться, что MCP-сервер доступен и
             отвечает.
           </p>
         )}
 
-        {state === 'loading' && (
+        {isPending && (
           <div className='flex items-center gap-2 text-sm text-muted-foreground'>
             <Loader2 className='h-4 w-4 animate-spin' />
             Подключение к MCP-серверу...
           </div>
         )}
 
-        {state === 'success' && status && (
+        {status && !isPending && (
           <div
             className={cn(
               'flex items-center gap-3 rounded-lg border p-3',
@@ -94,16 +78,13 @@ export function McpConnectionTest() {
                     Сервер доступен
                   </p>
                   <p className='text-xs text-muted-foreground mt-0.5'>
-                    {status.toolCount} tools, версия {status.version}
+                    {status.toolCount} tools
                   </p>
                 </>
               ) : (
                 <>
                   <p className='text-sm font-medium text-red-500'>
-                    Ошибка подключения
-                  </p>
-                  <p className='text-xs text-muted-foreground mt-0.5'>
-                    {status.error || 'Сервер не отвечает'}
+                    Сервер недоступен
                   </p>
                 </>
               )}
@@ -111,13 +92,13 @@ export function McpConnectionTest() {
           </div>
         )}
 
-        {state === 'error' && (
+        {isError && !isPending && (
           <div className='flex items-center gap-3 rounded-lg border border-red-500/30 bg-red-500/5 p-3'>
             <WifiOff className='h-5 w-5 text-red-500 shrink-0' />
             <div>
               <p className='text-sm font-medium text-red-500'>Ошибка</p>
               <p className='text-xs text-muted-foreground mt-0.5'>
-                Не удалось выполнить проверку
+                {error?.message || 'Не удалось выполнить проверку'}
               </p>
             </div>
           </div>

@@ -3,9 +3,7 @@ import {
   Plus,
   Copy,
   Check,
-  Trash2,
   Ban,
-  RotateCcw,
   Shield,
   ShieldCheck,
   ShieldAlert,
@@ -14,6 +12,8 @@ import {
   Search,
   ArrowUpDown,
   X,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -31,8 +31,8 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { cn } from '@/app/components/ui/utils';
+import { useMcpKeys, useCreateMcpKey, useRevokeMcpKey } from '@/hooks/api';
 import type { McpApiKey, McpKeyScope } from './mcp.types';
-import { MOCK_API_KEYS } from './mcp.mock-data';
 
 const SCOPE_CONFIG: Record<
   McpKeyScope,
@@ -94,38 +94,33 @@ function formatRelative(iso: string | null): string {
 interface CreateKeyDialogProps {
   open: boolean;
   onClose: () => void;
-  onCreated: (key: McpApiKey, rawKey: string) => void;
+  onCreated: (rawKey: string) => void;
 }
 
 function CreateKeyDialog({ open, onClose, onCreated }: CreateKeyDialogProps) {
   const [name, setName] = useState('');
   const [scope, setScope] = useState<McpKeyScope>('write');
   const [expiry, setExpiry] = useState('');
+  const createMutation = useCreateMcpKey();
 
   if (!open) return null;
 
   const handleCreate = () => {
-    // Mock: generate fake key
-    const hex = Array.from({ length: 40 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('');
-    const rawKey = `pw_mcp_${hex}`;
-    const newKey: McpApiKey = {
-      id: crypto.randomUUID(),
-      name: name || 'Новый ключ',
-      keyPrefix: rawKey.slice(0, 12),
-      scope,
-      isActive: true,
-      lastUsedAt: null,
-      expiresAt: expiry
-        ? new Date(Date.now() + parseInt(expiry) * 86400000).toISOString()
-        : null,
-      createdAt: new Date().toISOString(),
-    };
-    onCreated(newKey, rawKey);
-    setName('');
-    setScope('write');
-    setExpiry('');
+    createMutation.mutate(
+      {
+        name: name || 'Новый ключ',
+        scope,
+        expires_in_days: expiry ? parseInt(expiry) : null,
+      },
+      {
+        onSuccess: result => {
+          onCreated(result.rawKey);
+          setName('');
+          setScope('write');
+          setExpiry('');
+        },
+      }
+    );
   };
 
   return (
@@ -204,13 +199,25 @@ function CreateKeyDialog({ open, onClose, onCreated }: CreateKeyDialogProps) {
               </SelectContent>
             </Select>
           </div>
+
+          {createMutation.error && (
+            <p className='text-xs text-red-400 flex items-center gap-1'>
+              <AlertTriangle className='size-3' />
+              {createMutation.error.message}
+            </p>
+          )}
         </div>
 
         <div className='flex justify-end gap-2 mt-6'>
           <Button variant='ghost' onClick={onClose}>
             Отмена
           </Button>
-          <Button onClick={handleCreate}>Создать</Button>
+          <Button onClick={handleCreate} disabled={createMutation.isPending}>
+            {createMutation.isPending && (
+              <Loader2 className='h-4 w-4 animate-spin mr-1' />
+            )}
+            Создать
+          </Button>
         </div>
       </div>
     </div>
@@ -316,7 +323,7 @@ function KeyCreatedModal({ rawKey, onClose }: KeyCreatedModalProps) {
         <div className='bg-muted rounded-lg p-3 mb-2'>
           <div className='flex items-center gap-2'>
             <code className='flex-1 text-sm font-mono break-all'>
-              {showKey ? rawKey : '•'.repeat(rawKey.length)}
+              {showKey ? rawKey : '\u2022'.repeat(rawKey.length)}
             </code>
             <Button
               variant='ghost'
@@ -407,7 +414,9 @@ const SCOPE_ORDER: Record<McpKeyScope, number> = {
 };
 
 export function McpApiKeys() {
-  const [keys, setKeys] = useState<McpApiKey[]>(MOCK_API_KEYS);
+  const { data: keys = [], isLoading, error } = useMcpKeys();
+  const revokeMutation = useRevokeMcpKey();
+
   const [showCreate, setShowCreate] = useState(false);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
 
@@ -469,20 +478,14 @@ export function McpApiKeys() {
     return result;
   }, [keys, searchQuery, statusFilter, sortField, sortDir]);
 
-  const handleCreated = (key: McpApiKey, rawKey: string) => {
-    setKeys(prev => [key, ...prev]);
+  const handleCreated = (rawKey: string) => {
     setShowCreate(false);
     setCreatedKey(rawKey);
   };
 
-  const handleToggleActive = (id: string) => {
-    setKeys(prev =>
-      prev.map(k => (k.id === id ? { ...k, isActive: !k.isActive } : k))
-    );
-  };
-
-  const handleDelete = (id: string) => {
-    setKeys(prev => prev.filter(k => k.id !== id));
+  const handleRevoke = (key: McpApiKey) => {
+    if (!confirm(`Деактивировать ключ «${key.name}»?`)) return;
+    revokeMutation.mutate(key.id);
   };
 
   const hasFilters = searchQuery || statusFilter !== 'all';
@@ -574,7 +577,17 @@ export function McpApiKeys() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className='flex items-center justify-center py-8 text-muted-foreground'>
+              <Loader2 className='h-5 w-5 animate-spin mr-2' />
+              <span className='text-sm'>Загрузка ключей...</span>
+            </div>
+          ) : error ? (
+            <div className='flex items-center justify-center py-8 text-red-400'>
+              <AlertTriangle className='h-5 w-5 mr-2' />
+              <span className='text-sm'>Ошибка загрузки: {error.message}</span>
+            </div>
+          ) : filtered.length === 0 ? (
             <p className='text-sm text-muted-foreground text-center py-8'>
               {hasFilters
                 ? 'Ключи не найдены. Попробуйте изменить параметры поиска.'
@@ -624,32 +637,23 @@ export function McpApiKeys() {
                         {key.expiresAt && (
                           <span>Истекает: {formatDate(key.expiresAt)}</span>
                         )}
+                        {key.userName && <span>Владелец: {key.userName}</span>}
                       </div>
                     </div>
 
                     <div className='flex items-center gap-1 shrink-0'>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8'
-                        onClick={() => handleToggleActive(key.id)}
-                        title={key.isActive ? 'Деактивировать' : 'Активировать'}
-                      >
-                        {key.isActive ? (
+                      {key.isActive && (
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          className='h-8 w-8'
+                          onClick={() => handleRevoke(key)}
+                          disabled={revokeMutation.isPending}
+                          title='Деактивировать'
+                        >
                           <Ban className='h-4 w-4' />
-                        ) : (
-                          <RotateCcw className='h-4 w-4' />
-                        )}
-                      </Button>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8 text-destructive hover:text-destructive'
-                        onClick={() => handleDelete(key.id)}
-                        title='Удалить'
-                      >
-                        <Trash2 className='h-4 w-4' />
-                      </Button>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );

@@ -9,6 +9,14 @@
  * @see apps/web/src/lib/api-client.ts — аналогичный клиент для web
  */
 
+import type {
+  McpApiKey,
+  McpApiKeyCreateResult,
+  McpAuditEntry,
+  McpConnectionStatus,
+  McpKeyCreatePayload,
+} from '@/app/components/sections/mcp/mcp.types';
+
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 // ---------------------------------------------------------------------------
@@ -2337,4 +2345,140 @@ export async function getWebmasterQueries(): Promise<WebmasterQueryData[]> {
   );
   if (!raw) throw new ApiError(500, 'Пустой ответ API');
   return raw.queries;
+}
+
+// ---------------------------------------------------------------------------
+// MCP API-ключи (PW-061-C)
+// ---------------------------------------------------------------------------
+
+interface McpKeyRaw {
+  id: string;
+  name: string;
+  key_prefix: string;
+  scope: string;
+  is_active: boolean;
+  last_used_at: string | null;
+  expires_at: string | null;
+  created_at: string | null;
+  user_name: string | null;
+}
+
+interface McpKeyCreateResponseRaw {
+  id: string;
+  name: string;
+  raw_key: string;
+  key_prefix: string;
+  scope: string;
+  is_active: boolean;
+  expires_at: string | null;
+  created_at: string | null;
+}
+
+interface AuditLogEntryRaw {
+  id: string;
+  timestamp: string;
+  user_name: string | null;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  changes: Record<string, unknown> | null;
+}
+
+function mapMcpKey(raw: McpKeyRaw): McpApiKey {
+  return {
+    id: raw.id,
+    name: raw.name,
+    keyPrefix: raw.key_prefix,
+    scope: raw.scope as McpApiKey['scope'],
+    isActive: raw.is_active,
+    lastUsedAt: raw.last_used_at,
+    expiresAt: raw.expires_at,
+    createdAt: raw.created_at ?? '',
+    userName: raw.user_name ?? undefined,
+  };
+}
+
+function mapMcpKeyCreateResponse(
+  raw: McpKeyCreateResponseRaw
+): McpApiKeyCreateResult {
+  return {
+    id: raw.id,
+    name: raw.name,
+    rawKey: raw.raw_key,
+    keyPrefix: raw.key_prefix,
+    scope: raw.scope as McpApiKey['scope'],
+    isActive: raw.is_active,
+    expiresAt: raw.expires_at,
+    createdAt: raw.created_at ?? '',
+  };
+}
+
+function mapMcpAuditEntry(raw: AuditLogEntryRaw): McpAuditEntry {
+  const changes = raw.changes ?? {};
+  return {
+    id: raw.id,
+    timestamp: raw.timestamp,
+    keyPrefix: (changes.key_prefix as string) ?? '',
+    keyName: (changes.key_name as string) ?? '',
+    tool: raw.action.replace('mcp.', ''),
+    resourceType: raw.resource_type !== 'mcp' ? raw.resource_type : null,
+    resourceId: raw.resource_id ? String(raw.resource_id) : null,
+    userName: raw.user_name,
+  };
+}
+
+export async function getMcpKeys(): Promise<McpApiKey[]> {
+  const data = await apiFetch<McpKeyRaw[]>('/admin/mcp-keys');
+  return (data ?? []).map(mapMcpKey);
+}
+
+export async function createMcpKey(
+  payload: McpKeyCreatePayload
+): Promise<McpApiKeyCreateResult> {
+  const raw = await apiMutate<McpKeyCreateResponseRaw>('/admin/mcp-keys', {
+    method: 'POST',
+    body: payload,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapMcpKeyCreateResponse(raw);
+}
+
+export async function revokeMcpKey(keyId: string): Promise<void> {
+  await apiMutate(`/admin/mcp-keys/${encodeURIComponent(keyId)}`, {
+    method: 'DELETE',
+  });
+}
+
+export interface McpAuditParams {
+  limit?: number;
+  offset?: number;
+  dateRange?: '24h' | '7d' | '30d';
+}
+
+export async function getMcpAuditLog(
+  params?: McpAuditParams
+): Promise<{ data: McpAuditEntry[]; total: number }> {
+  const q = new URLSearchParams();
+  q.set('actionPrefix', 'mcp.');
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.offset) q.set('offset', String(params.offset));
+  if (params?.dateRange) q.set('dateRange', params.dateRange);
+  const qs = q.toString();
+  const result = await apiFetchWithMeta<AuditLogEntryRaw[]>(
+    `/admin/audit${qs ? `?${qs}` : ''}`
+  );
+  return {
+    data: (result.data ?? []).map(mapMcpAuditEntry),
+    total: result.meta.total ?? 0,
+  };
+}
+
+export async function testMcpConnection(): Promise<McpConnectionStatus> {
+  const data = await apiFetch<{ available: boolean; tool_count: number }>(
+    '/admin/mcp-keys/health'
+  );
+  return {
+    available: data?.available ?? false,
+    toolCount: data?.tool_count ?? 0,
+  };
 }

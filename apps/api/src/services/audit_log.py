@@ -52,6 +52,7 @@ def get_entries(
     limit: int = 20,
     offset: int = 0,
     action: str | None = None,
+    action_prefix: str | None = None,
     user_id: str | None = None,
     date_range: str | None = None,
 ) -> tuple[list[AuditLogResponse], int]:
@@ -62,6 +63,8 @@ def get_entries(
 
     if action:
         query = query.filter(AuditLog.action == action)
+    if action_prefix:
+        query = query.filter(AuditLog.action.startswith(action_prefix))
     if user_id:
         try:
             uid = uuid.UUID(user_id)

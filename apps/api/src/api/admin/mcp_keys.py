@@ -25,6 +25,19 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/mcp-keys", tags=["admin-mcp-keys"])
 
 
+@router.get("/health", response_model=ApiResponse[dict])
+def mcp_health(
+    _user: User = Depends(get_current_admin),
+) -> ApiResponse[dict]:
+    """Проверка доступности MCP-сервера: количество tools."""
+    from src.mcp.config import TOOL_SCOPES
+
+    return ApiResponse(
+        success=True,
+        data={"available": True, "tool_count": len(TOOL_SCOPES)},
+    )
+
+
 def _to_response(key: "McpApiKey") -> McpKeyResponse:
     return McpKeyResponse(
         id=str(key.id),

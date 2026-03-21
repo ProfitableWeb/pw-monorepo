@@ -1,21 +1,15 @@
 /**
- * PW-061-A | Лог MCP-действий.
+ * PW-061-C | Лог MCP-действий.
  * Полноэкранная таблица с закреплённой шапкой, поиском, фильтрацией.
+ * Данные из /api/admin/audit с фильтром actionPrefix=mcp.
  */
 import { useMemo, useState } from 'react';
-import {
-  CheckCircle2,
-  XCircle,
-  Search,
-  X,
-  ChevronDown,
-  AlertTriangle,
-} from 'lucide-react';
+import { Search, X, ChevronDown, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { cn } from '@/app/components/ui/utils';
+import { useMcpAuditLog } from '@/hooks/api';
 import type { McpAuditEntry } from './mcp.types';
-import { MOCK_AUDIT_LOG, MOCK_API_KEYS } from './mcp.mock-data';
 
 // --- Helpers ---
 
@@ -28,11 +22,6 @@ function formatTimestamp(iso: string): string {
     second: '2-digit',
   });
   return `${day}, ${time}`;
-}
-
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
 }
 
 const TOOL_CATEGORIES: Record<string, string> = {
@@ -67,7 +56,7 @@ const TOOL_CATEGORIES: Record<string, string> = {
   get_content_brief: 'Контент',
 };
 
-type ResultFilter = 'all' | 'success' | 'error';
+type DateRangeFilter = '' | '24h' | '7d' | '30d';
 
 // --- FilterDropdown ---
 
@@ -136,18 +125,24 @@ function FilterDropdown({
 // --- Main Component ---
 
 export function McpAuditLog() {
-  const [entries] = useState<McpAuditEntry[]>(MOCK_AUDIT_LOG);
+  const [dateRange, setDateRange] = useState<DateRangeFilter>('');
+  const { data, isLoading, error } = useMcpAuditLog({
+    limit: 100,
+    dateRange: dateRange || undefined,
+  });
+
+  const entries = data?.data ?? [];
+  const total = data?.total ?? 0;
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [resultFilter, setResultFilter] = useState<ResultFilter>('all');
   const [keyFilter, setKeyFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   // Unique keys for filter
   const keyOptions = useMemo(() => {
     const unique = new Map<string, string>();
-    for (const key of MOCK_API_KEYS) {
-      unique.set(key.keyPrefix, key.name);
+    for (const e of entries) {
+      if (e.keyPrefix) unique.set(e.keyPrefix, e.keyName || e.keyPrefix);
     }
     return [
       { value: '', label: 'Все ключи' },
@@ -156,7 +151,7 @@ export function McpAuditLog() {
         label: name,
       })),
     ];
-  }, []);
+  }, [entries]);
 
   // Unique categories for filter
   const categoryOptions = useMemo(() => {
@@ -173,10 +168,9 @@ export function McpAuditLog() {
     ];
   }, [entries]);
 
-  // Filtering
+  // Client-side filtering (search, key, category)
   const filtered = useMemo(() => {
     return entries.filter(e => {
-      if (resultFilter !== 'all' && e.result !== resultFilter) return false;
       if (keyFilter && e.keyPrefix !== keyFilter) return false;
       if (categoryFilter && TOOL_CATEGORIES[e.tool] !== categoryFilter)
         return false;
@@ -184,24 +178,23 @@ export function McpAuditLog() {
         const q = searchQuery.toLowerCase();
         return (
           e.tool.toLowerCase().includes(q) ||
-          e.keyName.toLowerCase().includes(q) ||
-          e.keyPrefix.toLowerCase().includes(q) ||
-          (e.resourceId && e.resourceId.toLowerCase().includes(q)) ||
-          (e.errorMessage && e.errorMessage.toLowerCase().includes(q))
+          (e.keyName && e.keyName.toLowerCase().includes(q)) ||
+          (e.keyPrefix && e.keyPrefix.toLowerCase().includes(q)) ||
+          (e.resourceId && e.resourceId.toLowerCase().includes(q))
         );
       }
       return true;
     });
-  }, [entries, resultFilter, keyFilter, categoryFilter, searchQuery]);
+  }, [entries, keyFilter, categoryFilter, searchQuery]);
 
   const hasActiveFilters =
-    resultFilter !== 'all' || keyFilter || categoryFilter || searchQuery;
+    keyFilter || categoryFilter || searchQuery || dateRange;
 
   const clearFilters = () => {
-    setResultFilter('all');
     setKeyFilter('');
     setCategoryFilter('');
     setSearchQuery('');
+    setDateRange('');
   };
 
   return (
@@ -230,36 +223,17 @@ export function McpAuditLog() {
 
           {/* Filters */}
           <div className='flex items-center gap-2'>
-            {/* Result filter */}
-            <div className='flex items-center rounded-md border divide-x'>
-              {(['all', 'success', 'error'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => setResultFilter(f)}
-                  className={cn(
-                    'px-2.5 py-1.5 text-xs font-medium transition-colors',
-                    resultFilter === f
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                  )}
-                >
-                  {f === 'all' && 'Все'}
-                  {f === 'success' && (
-                    <span className='flex items-center gap-1'>
-                      <CheckCircle2 className='size-3' />
-                      OK
-                    </span>
-                  )}
-                  {f === 'error' && (
-                    <span className='flex items-center gap-1'>
-                      <XCircle className='size-3' />
-                      Ошибки
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
+            <FilterDropdown
+              label='Период'
+              value={dateRange}
+              options={[
+                { value: '', label: 'Все' },
+                { value: '24h', label: '24 часа' },
+                { value: '7d', label: '7 дней' },
+                { value: '30d', label: '30 дней' },
+              ]}
+              onChange={v => setDateRange(v as DateRangeFilter)}
+            />
             <FilterDropdown
               label='Ключ'
               value={keyFilter}
@@ -277,7 +251,7 @@ export function McpAuditLog() {
           {/* Results count + clear */}
           <div className='flex items-center gap-2 ml-auto'>
             <span className='text-xs text-muted-foreground'>
-              {filtered.length} из {entries.length}
+              {filtered.length} из {total}
             </span>
             {hasActiveFilters && (
               <Button
@@ -296,7 +270,20 @@ export function McpAuditLog() {
 
       {/* Table */}
       <div className='flex-1 min-h-0 overflow-auto'>
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className='flex flex-col items-center justify-center py-16 text-muted-foreground'>
+            <Loader2 className='size-8 mb-3 animate-spin opacity-30' />
+            <p className='text-sm'>Загрузка лога...</p>
+          </div>
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center py-16 text-red-400'>
+            <AlertTriangle className='size-8 mb-3 opacity-50' />
+            <p className='text-sm font-medium'>Ошибка загрузки</p>
+            <p className='text-xs mt-1 text-muted-foreground'>
+              {error.message}
+            </p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-16 text-muted-foreground'>
             <Search className='size-8 mb-3 opacity-30' />
             <p className='text-sm font-medium'>Записей не найдено</p>
@@ -314,26 +301,16 @@ export function McpAuditLog() {
                 <th className='text-left px-4 py-2.5'>Tool</th>
                 <th className='text-left px-4 py-2.5 w-[200px]'>Ключ</th>
                 <th className='text-left px-4 py-2.5 w-[180px]'>Ресурс</th>
-                <th className='text-right px-4 py-2.5 w-[80px]'>Время отв.</th>
-                <th className='text-center px-4 py-2.5 w-[70px]'>Статус</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(entry => {
+              {filtered.map((entry: McpAuditEntry) => {
                 const cat = TOOL_CATEGORIES[entry.tool];
-                const isError = entry.result === 'error';
-                const isExpanded = expandedRow === entry.id;
 
                 return (
                   <tr
                     key={entry.id}
-                    onClick={() => setExpandedRow(isExpanded ? null : entry.id)}
-                    className={cn(
-                      'border-b border-border/50 text-sm transition-colors cursor-pointer',
-                      isError
-                        ? 'bg-red-500/[0.03] hover:bg-red-500/[0.06]'
-                        : 'hover:bg-muted/40'
-                    )}
+                    className='border-b border-border/50 text-sm transition-colors hover:bg-muted/40'
                   >
                     {/* Время */}
                     <td className='px-4 py-2.5 w-[150px] align-top'>
@@ -344,36 +321,34 @@ export function McpAuditLog() {
 
                     {/* Tool */}
                     <td className='px-4 py-2.5 align-top'>
-                      <div className='flex flex-col gap-1'>
-                        <div className='flex items-center gap-2'>
-                          <code className='text-xs font-mono font-medium'>
-                            {entry.tool}
-                          </code>
-                          {cat && (
-                            <span className='text-[10px] text-muted-foreground/60 bg-muted rounded px-1.5 py-0.5'>
-                              {cat}
-                            </span>
-                          )}
-                        </div>
-                        {isExpanded && isError && entry.errorMessage && (
-                          <div className='flex items-start gap-1.5 mt-1 text-xs text-red-400'>
-                            <AlertTriangle className='size-3 mt-0.5 shrink-0' />
-                            <span>{entry.errorMessage}</span>
-                          </div>
+                      <div className='flex items-center gap-2'>
+                        <code className='text-xs font-mono font-medium'>
+                          {entry.tool}
+                        </code>
+                        {cat && (
+                          <span className='text-[10px] text-muted-foreground/60 bg-muted rounded px-1.5 py-0.5'>
+                            {cat}
+                          </span>
                         )}
                       </div>
                     </td>
 
                     {/* Ключ */}
                     <td className='px-4 py-2.5 w-[200px] align-top'>
-                      <div className='flex flex-col'>
-                        <span className='text-xs font-medium truncate'>
-                          {entry.keyName}
+                      {entry.keyPrefix ? (
+                        <div className='flex flex-col'>
+                          <span className='text-xs font-medium truncate'>
+                            {entry.keyName || entry.keyPrefix}
+                          </span>
+                          <code className='text-[10px] text-muted-foreground/50 font-mono'>
+                            {entry.keyPrefix}...
+                          </code>
+                        </div>
+                      ) : (
+                        <span className='text-xs text-muted-foreground/50 italic'>
+                          stdio
                         </span>
-                        <code className='text-[10px] text-muted-foreground/50 font-mono'>
-                          {entry.keyPrefix}...
-                        </code>
-                      </div>
+                      )}
                     </td>
 
                     {/* Ресурс */}
@@ -387,31 +362,6 @@ export function McpAuditLog() {
                           —
                         </span>
                       )}
-                    </td>
-
-                    {/* Время ответа */}
-                    <td className='px-4 py-2.5 w-[80px] text-right align-top'>
-                      <span
-                        className={cn(
-                          'text-xs font-mono',
-                          entry.durationMs > 1000
-                            ? 'text-amber-400'
-                            : 'text-muted-foreground'
-                        )}
-                      >
-                        {formatDuration(entry.durationMs)}
-                      </span>
-                    </td>
-
-                    {/* Статус */}
-                    <td className='px-4 py-2.5 w-[70px] align-top'>
-                      <div className='flex justify-center'>
-                        {isError ? (
-                          <XCircle className='size-4 text-red-500' />
-                        ) : (
-                          <CheckCircle2 className='size-4 text-green-500' />
-                        )}
-                      </div>
                     </td>
                   </tr>
                 );

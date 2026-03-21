@@ -21,6 +21,26 @@ export interface McpApiKey {
   lastUsedAt: string | null;
   expiresAt: string | null;
   createdAt: string;
+  userName?: string;
+}
+
+/** Payload для создания MCP-ключа */
+export interface McpKeyCreatePayload {
+  name: string;
+  scope: McpKeyScope;
+  expires_in_days?: number | null;
+}
+
+/** Ответ при создании — содержит raw key (показывается один раз) */
+export interface McpApiKeyCreateResult {
+  id: string;
+  name: string;
+  rawKey: string;
+  keyPrefix: string;
+  scope: McpKeyScope;
+  isActive: boolean;
+  expiresAt: string | null;
+  createdAt: string;
 }
 
 export interface McpAuditEntry {
@@ -31,14 +51,10 @@ export interface McpAuditEntry {
   tool: string;
   resourceType: string | null;
   resourceId: string | null;
-  result: 'success' | 'error';
-  durationMs: number;
-  errorMessage?: string;
+  userName: string | null;
 }
 
 export interface McpConnectionStatus {
   available: boolean;
   toolCount: number;
-  version: string;
-  error?: string;
 }

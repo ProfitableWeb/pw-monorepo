@@ -20,13 +20,15 @@ def get_audit_entries(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     action: str | None = Query(None),
+    action_prefix: str | None = Query(None, alias="actionPrefix"),
     user_id: str | None = Query(None, alias="userId"),
     date_range: Literal["24h", "7d", "30d"] | None = Query(None, alias="dateRange"),
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[AuditLogResponse]]:
     items, total = audit_log_service.get_entries(
-        db, limit=limit, offset=offset, action=action, user_id=user_id, date_range=date_range
+        db, limit=limit, offset=offset, action=action, action_prefix=action_prefix,
+        user_id=user_id, date_range=date_range,
     )
     return ApiResponse(
         success=True,
