@@ -52,13 +52,16 @@ jobs:
           # Копируем файл на сервер через scp (атомарно, надёжнее pipe)
           scp -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
+              -o ServerAliveInterval=30 \
               -P ${SSH_PORT:-22} \
               "$ENV_FILE" "${SSH_USER}@${SSH_HOST}:~/profitableweb/.env.dev"
           rm -f "$ENV_FILE"
 
-          # Деплой в той же сессии
+          # Деплой (ServerAliveInterval не даёт SSH отвалиться во время docker build)
           ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
+              -o ServerAliveInterval=30 \
+              -o ServerAliveCountMax=20 \
               -p ${SSH_PORT:-22} \
               ${SSH_USER}@${SSH_HOST} << 'EOF'
             set -e
