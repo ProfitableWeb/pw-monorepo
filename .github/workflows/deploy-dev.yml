@@ -28,44 +28,35 @@ jobs:
         env:
           SSH_PORT: ${{ secrets.SSH_PORT }}
 
-      - name: Write dev env file
+      - name: Write env and deploy
         run: |
-          ENV_CONTENT=""
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_DB=profitableweb_dev\n"
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_USER=pw\n"
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_PASSWORD=${DEV_POSTGRES_PASSWORD}\n"
-          [ -n "$DEV_JWT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}JWT_SECRET=${DEV_JWT_SECRET}\n"
-          ENV_CONTENT="${ENV_CONTENT}FRONTEND_URL=http://dev.profitableweb.ru\n"
-          ENV_CONTENT="${ENV_CONTENT}ADMIN_URL=http://dev.profitableweb.ru/admin\n"
-          ENV_CONTENT="${ENV_CONTENT}CORS_ORIGINS=[\"http://dev.profitableweb.ru\"]\n"
-          [ -n "$STORAGE_BACKEND" ]    && ENV_CONTENT="${ENV_CONTENT}STORAGE_BACKEND=${STORAGE_BACKEND}\n"
-          [ -n "$S3_ENDPOINT" ]        && ENV_CONTENT="${ENV_CONTENT}S3_ENDPOINT=${S3_ENDPOINT}\n"
-          [ -n "$S3_BUCKET" ]          && ENV_CONTENT="${ENV_CONTENT}S3_BUCKET=${S3_BUCKET}\n"
-          [ -n "$S3_ACCESS_KEY" ]      && ENV_CONTENT="${ENV_CONTENT}S3_ACCESS_KEY=${S3_ACCESS_KEY}\n"
-          [ -n "$S3_SECRET_KEY" ]      && ENV_CONTENT="${ENV_CONTENT}S3_SECRET_KEY=${S3_SECRET_KEY}\n"
-          [ -n "$S3_REGION" ]          && ENV_CONTENT="${ENV_CONTENT}S3_REGION=${S3_REGION}\n"
-          [ -n "$S3_PUBLIC_ENDPOINT" ] && ENV_CONTENT="${ENV_CONTENT}S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}\n"
+          # Формируем .env.dev локально (надёжнее чем echo -e через pipe)
+          ENV_FILE=$(mktemp)
+          {
+            echo "POSTGRES_DB=profitableweb_dev"
+            echo "POSTGRES_USER=pw"
+            echo "POSTGRES_PASSWORD=${DEV_POSTGRES_PASSWORD}"
+            [ -n "$DEV_JWT_SECRET" ]     && echo "JWT_SECRET=${DEV_JWT_SECRET}"
+            echo "FRONTEND_URL=http://dev.profitableweb.ru"
+            echo "ADMIN_URL=http://dev.profitableweb.ru/admin"
+            echo "CORS_ORIGINS=[\"http://dev.profitableweb.ru\"]"
+            [ -n "$STORAGE_BACKEND" ]    && echo "STORAGE_BACKEND=${STORAGE_BACKEND}"
+            [ -n "$S3_ENDPOINT" ]        && echo "S3_ENDPOINT=${S3_ENDPOINT}"
+            [ -n "$S3_BUCKET" ]          && echo "S3_BUCKET=${S3_BUCKET}"
+            [ -n "$S3_ACCESS_KEY" ]      && echo "S3_ACCESS_KEY=${S3_ACCESS_KEY}"
+            [ -n "$S3_SECRET_KEY" ]      && echo "S3_SECRET_KEY=${S3_SECRET_KEY}"
+            [ -n "$S3_REGION" ]          && echo "S3_REGION=${S3_REGION}"
+            [ -n "$S3_PUBLIC_ENDPOINT" ] && echo "S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}"
+          } > "$ENV_FILE"
 
-          echo -e "$ENV_CONTENT" | ssh -i ~/.ssh/deploy_key \
+          # Копируем файл на сервер через scp (атомарно, надёжнее pipe)
+          scp -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
-              -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/.env.dev"
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          DEV_POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
-          DEV_JWT_SECRET: ${{ secrets.DEV_JWT_SECRET }}
-          STORAGE_BACKEND: ${{ secrets.STORAGE_BACKEND }}
-          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-          S3_REGION: ${{ secrets.S3_REGION }}
-          S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
+              -P ${SSH_PORT:-22} \
+              "$ENV_FILE" "${SSH_USER}@${SSH_HOST}:~/profitableweb/.env.dev"
+          rm -f "$ENV_FILE"
 
-      - name: Deploy to VM
-        run: |
+          # Деплой в той же сессии
           ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -p ${SSH_PORT:-22} \
@@ -73,6 +64,9 @@ jobs:
             set -e
 
             cd ~/profitableweb
+
+            # Проверяем что .env.dev содержит POSTGRES_PASSWORD
+            grep -q "POSTGRES_PASSWORD=." .env.dev || { echo "ERROR: .env.dev missing POSTGRES_PASSWORD"; exit 1; }
 
             # Обновление кода (ветка develop)
             git fetch origin
@@ -88,6 +82,15 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
+          DEV_POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
+          DEV_JWT_SECRET: ${{ secrets.DEV_JWT_SECRET }}
+          STORAGE_BACKEND: ${{ secrets.STORAGE_BACKEND }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
 
       - name: Health check
         run: |

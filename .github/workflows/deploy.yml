@@ -30,59 +30,40 @@ jobs:
         env:
           SSH_PORT: ${{ secrets.SSH_PORT }}
 
-      - name: Write prod env file
+      - name: Write env and deploy
         run: |
-          ENV_CONTENT=""
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_DB=${POSTGRES_DB:-profitableweb}\n"
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_USER=${POSTGRES_USER:-pw}\n"
-          ENV_CONTENT="${ENV_CONTENT}POSTGRES_PASSWORD=${POSTGRES_PASSWORD}\n"
-          [ -n "$JWT_SECRET" ]           && ENV_CONTENT="${ENV_CONTENT}JWT_SECRET=${JWT_SECRET}\n"
-          [ -n "$FRONTEND_URL" ]         && ENV_CONTENT="${ENV_CONTENT}FRONTEND_URL=${FRONTEND_URL}\n"
-          [ -n "$ADMIN_URL" ]            && ENV_CONTENT="${ENV_CONTENT}ADMIN_URL=${ADMIN_URL}\n"
-          [ -n "$CORS_ORIGINS" ]         && ENV_CONTENT="${ENV_CONTENT}CORS_ORIGINS=${CORS_ORIGINS}\n"
-          [ -n "$YANDEX_CLIENT_ID" ]     && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}\n"
-          [ -n "$YANDEX_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}\n"
-          [ -n "$GOOGLE_CLIENT_ID" ]     && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}\n"
-          [ -n "$GOOGLE_CLIENT_SECRET" ] && ENV_CONTENT="${ENV_CONTENT}GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}\n"
-          [ -n "$TELEGRAM_BOT_TOKEN" ]   && ENV_CONTENT="${ENV_CONTENT}TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}\n"
-          [ -n "$STORAGE_BACKEND" ]      && ENV_CONTENT="${ENV_CONTENT}STORAGE_BACKEND=${STORAGE_BACKEND}\n"
-          [ -n "$S3_ENDPOINT" ]          && ENV_CONTENT="${ENV_CONTENT}S3_ENDPOINT=${S3_ENDPOINT}\n"
-          [ -n "$S3_BUCKET" ]            && ENV_CONTENT="${ENV_CONTENT}S3_BUCKET=${S3_BUCKET}\n"
-          [ -n "$S3_ACCESS_KEY" ]        && ENV_CONTENT="${ENV_CONTENT}S3_ACCESS_KEY=${S3_ACCESS_KEY}\n"
-          [ -n "$S3_SECRET_KEY" ]        && ENV_CONTENT="${ENV_CONTENT}S3_SECRET_KEY=${S3_SECRET_KEY}\n"
-          [ -n "$S3_REGION" ]            && ENV_CONTENT="${ENV_CONTENT}S3_REGION=${S3_REGION}\n"
-          [ -n "$S3_PUBLIC_ENDPOINT" ]   && ENV_CONTENT="${ENV_CONTENT}S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}\n"
+          # Формируем .env.prod локально (надёжнее чем echo -e через pipe)
+          ENV_FILE=$(mktemp)
+          {
+            echo "POSTGRES_DB=${POSTGRES_DB:-profitableweb}"
+            echo "POSTGRES_USER=${POSTGRES_USER:-pw}"
+            echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+            [ -n "$JWT_SECRET" ]           && echo "JWT_SECRET=${JWT_SECRET}"
+            [ -n "$FRONTEND_URL" ]         && echo "FRONTEND_URL=${FRONTEND_URL}"
+            [ -n "$ADMIN_URL" ]            && echo "ADMIN_URL=${ADMIN_URL}"
+            [ -n "$CORS_ORIGINS" ]         && echo "CORS_ORIGINS=${CORS_ORIGINS}"
+            [ -n "$YANDEX_CLIENT_ID" ]     && echo "YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}"
+            [ -n "$YANDEX_CLIENT_SECRET" ] && echo "YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}"
+            [ -n "$GOOGLE_CLIENT_ID" ]     && echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"
+            [ -n "$GOOGLE_CLIENT_SECRET" ] && echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}"
+            [ -n "$TELEGRAM_BOT_TOKEN" ]   && echo "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
+            [ -n "$STORAGE_BACKEND" ]      && echo "STORAGE_BACKEND=${STORAGE_BACKEND}"
+            [ -n "$S3_ENDPOINT" ]          && echo "S3_ENDPOINT=${S3_ENDPOINT}"
+            [ -n "$S3_BUCKET" ]            && echo "S3_BUCKET=${S3_BUCKET}"
+            [ -n "$S3_ACCESS_KEY" ]        && echo "S3_ACCESS_KEY=${S3_ACCESS_KEY}"
+            [ -n "$S3_SECRET_KEY" ]        && echo "S3_SECRET_KEY=${S3_SECRET_KEY}"
+            [ -n "$S3_REGION" ]            && echo "S3_REGION=${S3_REGION}"
+            [ -n "$S3_PUBLIC_ENDPOINT" ]   && echo "S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}"
+          } > "$ENV_FILE"
 
-          echo -e "$ENV_CONTENT" | ssh -i ~/.ssh/deploy_key \
+          # Копируем файл на сервер через scp (атомарно, надёжнее pipe)
+          scp -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
-              -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} "cat > ~/profitableweb/.env.prod"
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          YANDEX_CLIENT_ID: ${{ secrets.YANDEX_CLIENT_ID }}
-          YANDEX_CLIENT_SECRET: ${{ secrets.YANDEX_CLIENT_SECRET }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
-          ADMIN_URL: ${{ secrets.ADMIN_URL }}
-          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
-          STORAGE_BACKEND: ${{ secrets.STORAGE_BACKEND }}
-          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-          S3_REGION: ${{ secrets.S3_REGION }}
-          S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
+              -P ${SSH_PORT:-22} \
+              "$ENV_FILE" "${SSH_USER}@${SSH_HOST}:~/profitableweb/.env.prod"
+          rm -f "$ENV_FILE"
 
-      - name: Deploy to VM
-        run: |
+          # Деплой
           ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -p ${SSH_PORT:-22} \
@@ -90,6 +71,9 @@ jobs:
             set -e
 
             cd ~/profitableweb
+
+            # Проверяем что .env.prod содержит POSTGRES_PASSWORD
+            grep -q "POSTGRES_PASSWORD=." .env.prod || { echo "ERROR: .env.prod missing POSTGRES_PASSWORD"; exit 1; }
 
             # Переключение remote на GitHub (если ещё GitVerse)
             CURRENT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "")
@@ -114,6 +98,25 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          YANDEX_CLIENT_ID: ${{ secrets.YANDEX_CLIENT_ID }}
+          YANDEX_CLIENT_SECRET: ${{ secrets.YANDEX_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          ADMIN_URL: ${{ secrets.ADMIN_URL }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+          STORAGE_BACKEND: ${{ secrets.STORAGE_BACKEND }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
 
       - name: Health check
         run: |
