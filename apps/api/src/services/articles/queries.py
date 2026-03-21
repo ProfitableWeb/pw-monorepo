@@ -9,15 +9,17 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.sql import Select
 
-from src.models.article import Article, ArticleStatus
+from src.models.article import Article, ArticleStatus, ArticleType
 from src.models.user import User
 from src.services.articles import category_filter_by_slug
 
 
 def _base_published_query() -> Select[Any]:
+    """Base query for public article listings (excludes pages)."""
     return (
         select(Article)
         .where(Article.status == ArticleStatus.PUBLISHED)
+        .where(Article.type == ArticleType.ARTICLE)
         .options(
             joinedload(Article.primary_category),
             selectinload(Article.categories),
@@ -52,6 +54,7 @@ def get_all_articles(
         select(func.count())
         .select_from(Article)
         .where(Article.status == ArticleStatus.PUBLISHED)
+        .where(Article.type == ArticleType.ARTICLE)
     )
     if category_slug:
         count_stmt = count_stmt.where(cat_filter)
@@ -110,6 +113,7 @@ def get_articles_by_author(
         select(func.count())
         .select_from(Article)
         .where(Article.status == ArticleStatus.PUBLISHED)
+        .where(Article.type == ArticleType.ARTICLE)
         .join(Article.author)
         .where(User.name == author_name)
     )
@@ -120,3 +124,20 @@ def get_articles_by_author(
 
     articles = list(db.scalars(stmt).unique().all())
     return articles, total
+
+
+def get_page_by_slug(db: Session, slug: str) -> Article | None:
+    """Fetch a published page by slug."""
+    stmt = (
+        select(Article)
+        .where(Article.status == ArticleStatus.PUBLISHED)
+        .where(Article.type == ArticleType.PAGE)
+        .where(Article.slug == slug)
+        .options(
+            joinedload(Article.primary_category),
+            selectinload(Article.categories),
+            selectinload(Article.tags),
+            joinedload(Article.author),
+        )
+    )
+    return db.scalars(stmt).unique().first()

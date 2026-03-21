@@ -366,6 +366,52 @@ export async function getFullArticleBySlug(
 }
 
 /**
+ * Получает страницу (type=page) по slug
+ */
+export async function getPageBySlug(slug: string): Promise<FullArticle | null> {
+  const raw = await apiFetch<ArticleFullRaw>(
+    `/pages/${encodeURIComponent(slug)}`
+  );
+  if (!raw) return null;
+
+  const artifacts = raw.artifacts;
+  const selfCheck =
+    artifacts?.selfCheck?.enabled && artifacts.selfCheck.items.length > 0
+      ? artifacts.selfCheck.items
+      : [];
+  const sources =
+    artifacts?.sources?.enabled && artifacts.sources.items.length > 0
+      ? artifacts.sources.items.map(s => ({
+          id: s.id,
+          title: s.title,
+          url: s.url,
+        }))
+      : [];
+
+  return {
+    id: raw.id,
+    title: raw.title,
+    subtitle: raw.subtitle ?? '',
+    slug: raw.slug,
+    content: raw.content,
+    excerpt: raw.excerpt ?? '',
+    category: raw.category,
+    categories: raw.categories ?? [],
+    tags: raw.tags ?? [],
+    author: raw.author ?? undefined,
+    readTime: raw.reading_time ?? undefined,
+    imageUrl: raw.image_url ?? undefined,
+    imageAlt: raw.image_alt ?? undefined,
+    publishedAt: raw.published_at ?? '',
+    updatedAt: raw.updated_at ?? undefined,
+    layout: raw.layout ?? 'three-column',
+    toc: raw.toc ?? [],
+    selfCheck,
+    sources,
+  };
+}
+
+/**
  * Получает статьи автора
  */
 export async function getArticlesByAuthor(

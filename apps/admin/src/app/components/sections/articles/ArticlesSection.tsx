@@ -55,6 +55,7 @@ export function ArticlesSection() {
   const apiParams = useMemo(
     () => ({
       limit: 100,
+      type: 'article' as const,
       search: debouncedSearch || undefined,
       status: selectedStatus,
       category: selectedCategory

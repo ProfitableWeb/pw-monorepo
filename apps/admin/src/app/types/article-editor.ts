@@ -49,6 +49,7 @@ export interface ArtifactsData {
 }
 
 export interface ArticleFormData {
+  type: 'article' | 'page';
   h1: string;
   subtitle: string;
   title: string;
@@ -85,6 +86,7 @@ export interface ArticleFormData {
 
 /** Данные статьи для передачи в iframe-предпросмотр через postMessage */
 export interface PreviewArticleData {
+  type?: 'article' | 'page';
   h1: string;
   subtitle: string;
   content: string;

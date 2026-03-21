@@ -52,6 +52,7 @@ interface TocItem {
 }
 
 interface PreviewArticleData {
+  type?: string;
   h1: string;
   subtitle: string;
   content: string;
@@ -139,6 +140,7 @@ export default function PreviewPage() {
 
   const { artifacts } = article;
   const layout = (article.layout ?? 'one-column') as ArticleLayoutType;
+  const isPage = article.type === 'page';
 
   // Вопросы для самопроверки — рендерим если секция включена и есть непустые вопросы
   const selfCheckQuestions =
@@ -184,8 +186,8 @@ export default function PreviewPage() {
               <ArticleHeader
                 title={article.h1}
                 subtitle={article.subtitle}
-                publishedAt={new Date()}
-                categoryName={article.category}
+                publishedAt={isPage ? undefined : new Date()}
+                categoryName={isPage ? undefined : article.category}
                 showAuthor={!hasSidebar}
               />
             }

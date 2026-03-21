@@ -908,6 +908,7 @@ export async function getAdminArticles(
   if (params?.sortBy) q.set('sort_by', params.sortBy);
   if (params?.order) q.set('order', params.order);
   if (params?.authorId) q.set('author_id', params.authorId);
+  if (params?.type) q.set('type', params.type);
   const qs = q.toString();
   const result = await apiFetchWithMeta<AdminArticleListItemRaw[]>(
     `/admin/articles${qs ? `?${qs}` : ''}`

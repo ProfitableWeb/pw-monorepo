@@ -9,6 +9,7 @@ export type PageId =
   | 'dashboard'
   | 'ai-center'
   | 'articles'
+  | 'pages'
   | 'calendar'
   | 'categories'
   | 'tags'
@@ -75,6 +76,14 @@ export const navigationItems: NavigationItem[] = [
     section: 'Контент',
     path: 'content/articles',
     keywords: ['посты', 'публикации', 'записи'],
+  },
+  {
+    id: 'pages',
+    title: 'Страницы',
+    icon: 'StickyNote',
+    section: 'Контент',
+    path: 'content/pages',
+    keywords: ['страница', 'page', 'о проекте', 'контакты'],
   },
   {
     id: 'calendar',

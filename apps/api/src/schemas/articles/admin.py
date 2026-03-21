@@ -65,6 +65,7 @@ class ArticleCreateRequest(BaseModel):
     robots_no_follow: bool = False
     artifacts: dict[str, Any] | None = None
     toc: list[dict[str, Any]] | None = None
+    type: Literal["article", "page"] = "article"
 
 
 class ArticleUpdateRequest(BaseModel):
@@ -97,6 +98,7 @@ class ArticleUpdateRequest(BaseModel):
     robots_no_follow: bool | None = None
     artifacts: dict[str, Any] | None = None
     toc: list[dict[str, Any]] | None = None
+    type: Literal["article", "page"] | None = None
 
 
 class ArticleScheduleRequest(BaseModel):
@@ -115,6 +117,7 @@ class ArticleAdminResponse(BaseModel):
     content_format: str
     excerpt: str
     summary: str | None = None
+    type: str = "article"
     status: str
     layout: str
     image_url: str | None = None
@@ -154,6 +157,7 @@ class ArticleAdminListItem(BaseModel):
     id: str
     title: str
     slug: str
+    type: str = "article"
     status: str
     excerpt: str
     primary_category: CategoryBrief

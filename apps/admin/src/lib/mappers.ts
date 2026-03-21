@@ -32,6 +32,7 @@ export function apiToFormData(
   timezone: string
 ): ArticleFormData {
   return {
+    type: (article.type ?? 'article') as 'article' | 'page',
     h1: article.title,
     subtitle: article.subtitle ?? '',
     title: article.metaTitle ?? '',
@@ -149,6 +150,7 @@ export function formDataToCreatePayload(
 /** Пустые defaultValues для новой статьи */
 export function getEmptyFormData(timezone: string): ArticleFormData {
   return {
+    type: 'article',
     h1: '',
     subtitle: '',
     title: '',

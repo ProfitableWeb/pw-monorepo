@@ -5,6 +5,7 @@ import { SidebarNav } from '@/app/components/layout/sidebar-nav';
 import { Header } from '@/app/components/layout/header';
 import { DashboardSection } from '@/app/components/sections/dashboard';
 import { ArticlesSection } from '@/app/components/sections/articles';
+import { PagesSection } from '@/app/components/sections/pages';
 import { CalendarSection } from '@/app/components/sections/calendar';
 import { CategoriesSection } from '@/app/components/sections/categories';
 import { TagsSection } from '@/app/components/sections/tags';
@@ -154,6 +155,8 @@ function App() {
         return 'AI центр';
       case 'articles':
         return 'Статьи';
+      case 'pages':
+        return 'Страницы';
       case 'calendar':
         return 'Календарь публикаций';
       case 'categories':
@@ -207,6 +210,8 @@ function App() {
         return <AICenter />;
       case 'articles':
         return <ArticlesSection />;
+      case 'pages':
+        return <PagesSection />;
       case 'calendar':
         return <CalendarSection />;
       case 'categories':

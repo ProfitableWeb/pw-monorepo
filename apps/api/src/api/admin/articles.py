@@ -41,6 +41,11 @@ def _to_response(article: Article, revision_count: int = 0) -> ArticleAdminRespo
         id=str(article.id),
         title=article.title,
         slug=article.slug,
+        type=(
+            article.type.value
+            if hasattr(article.type, "value")
+            else str(article.type or "article")
+        ),
         subtitle=article.subtitle,
         content=article.content,
         content_format=(
@@ -105,6 +110,11 @@ def _to_list_item(article: Article) -> ArticleAdminListItem:
         id=str(article.id),
         title=article.title,
         slug=article.slug,
+        type=(
+            article.type.value
+            if hasattr(article.type, "value")
+            else str(article.type or "article")
+        ),
         status=(
             article.status.value
             if hasattr(article.status, "value")
@@ -198,6 +208,7 @@ def create_article(
         robots_no_follow=body.robots_no_follow,
         artifacts=body.artifacts,
         toc=body.toc,
+        type=body.type,
     )
     return _response_with_revisions(db, article)
 
@@ -246,6 +257,7 @@ def list_articles(
     sort_by: str = "updated_at",
     order: str = "desc",
     author_id: str | None = None,
+    type: str | None = None,
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[list[ArticleAdminListItem]]:
@@ -260,6 +272,7 @@ def list_articles(
         sort_by=sort_by,
         order=order,
         author_id=author_uuid,
+        article_type=type,
     )
     data = [_to_list_item(a) for a in articles]
     return ApiResponse(

@@ -86,6 +86,7 @@ const DEFAULT_SETTINGS: EditorSettings = {
 
 function toPreviewData(form: ArticleFormData): PreviewArticleData {
   return {
+    type: form.type,
     h1: form.h1,
     subtitle: form.subtitle,
     content: form.content,

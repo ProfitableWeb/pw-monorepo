@@ -17,6 +17,7 @@ export interface AdminArticleResponse {
   id: string;
   title: string;
   slug: string;
+  type: string;
   subtitle: string | null;
   content: string;
   contentFormat: string;
@@ -58,6 +59,7 @@ export interface AdminArticleListItem {
   id: string;
   title: string;
   slug: string;
+  type: string;
   status: string;
   excerpt: string;
   primaryCategory: { id: string; name: string; slug: string };
@@ -81,6 +83,7 @@ export interface AdminArticlesParams {
   sortBy?: string;
   order?: 'asc' | 'desc';
   authorId?: string;
+  type?: string;
 }
 
 // ---------------------------------------------------------------------------

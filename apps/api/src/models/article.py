@@ -58,6 +58,11 @@ class ArticleStatus(str, enum.Enum):
     SCHEDULED = "scheduled"
 
 
+class ArticleType(str, enum.Enum):
+    ARTICLE = "article"
+    PAGE = "page"
+
+
 class ContentFormat(str, enum.Enum):
     HTML = "html"
     MARKDOWN = "markdown"
@@ -77,6 +82,7 @@ class Article(UUIDMixin, TimestampMixin, Base):
     summary: Mapped[str | None] = mapped_column(Text)
     reading_time: Mapped[int | None] = mapped_column(Integer)
     views: Mapped[int] = mapped_column(Integer, default=0)
+    type: Mapped[ArticleType] = mapped_column(String(20), default=ArticleType.ARTICLE)
     layout: Mapped[ArticleLayout] = mapped_column(default=ArticleLayout.THREE_COLUMN)
     status: Mapped[ArticleStatus] = mapped_column(default=ArticleStatus.DRAFT)
     image_url: Mapped[str | None] = mapped_column(String(500))

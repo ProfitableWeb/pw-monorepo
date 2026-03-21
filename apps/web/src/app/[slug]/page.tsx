@@ -9,6 +9,7 @@ import {
   getArticlesByCategory,
   getArticleBySlug,
   getFullArticleBySlug,
+  getPageBySlug,
 } from '@/lib/api-client';
 import {
   generateCategoryJsonLd,
@@ -17,20 +18,14 @@ import {
   generateArticleBreadcrumbJsonLd,
 } from '@/utils/seo';
 
-// Список статических страниц (обрабатываются Next.js автоматически)
-const STATIC_PAGES = ['about', 'contact', 'privacy', 'terms'];
-
 /**
- * Единый динамический роут для категорий и статей
+ * Единый динамический роут для категорий, статей и страниц (type=page)
  *
  * Логика разрешения маршрутов:
- * 1. Статические страницы (обрабатываются Next.js автоматически)
- * 2. Категории - приоритетная проверка
- * 3. Статьи - проверка если категория не найдена
+ * 1. Страницы (type=page) — /about, /privacy и т.д.
+ * 2. Категории
+ * 3. Статьи
  * 4. 404 если ничего не найдено
- *
- * @param params - Параметры маршрута
- * @returns Компонент страницы
  */
 export default async function DynamicPage({
   params,
@@ -39,12 +34,40 @@ export default async function DynamicPage({
 }) {
   const { slug } = await params;
 
-  // Проверка на статические страницы (на всякий случай)
-  if (STATIC_PAGES.includes(slug)) {
-    notFound();
+  // Приоритет 1: Проверка страницы (type=page)
+  const page = await getPageBySlug(slug);
+  if (page) {
+    const breadcrumbJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Главная',
+          item: 'https://profitableweb.ru/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: page.title,
+          item: `https://profitableweb.ru/${page.slug}`,
+        },
+      ],
+    };
+
+    return (
+      <>
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
+        <ArticlePage article={page} />
+      </>
+    );
   }
 
-  // Приоритет 1: Проверка категории
+  // Приоритет 2: Проверка категории
   const category = await getCategoryBySlug(slug);
   if (category) {
     const articles = await getArticlesByCategory(category.slug);
@@ -66,7 +89,7 @@ export default async function DynamicPage({
     );
   }
 
-  // Приоритет 2: Проверка статьи (полная версия с content, toc, artifacts)
+  // Приоритет 3: Проверка статьи (полная версия с content, toc, artifacts)
   const fullArticle = await getFullArticleBySlug(slug);
   if (fullArticle) {
     // Для JSON-LD нужен masonry-тип Article — получим его тоже
@@ -135,6 +158,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+
+  // Проверка страницы (type=page)
+  const page = await getPageBySlug(slug);
+  if (page) {
+    return {
+      title: `${page.title} | ProfitableWeb`,
+      description: page.subtitle || page.excerpt,
+      openGraph: {
+        type: 'website',
+        url: `https://profitableweb.ru/${page.slug}`,
+        title: page.title,
+        description: page.subtitle || page.excerpt,
+        siteName: 'ProfitableWeb',
+        locale: 'ru_RU',
+        ...(page.imageUrl ? { images: [page.imageUrl] } : {}),
+      },
+    };
+  }
 
   // Проверка категории
   const category = await getCategoryBySlug(slug);

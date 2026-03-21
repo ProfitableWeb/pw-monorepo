@@ -34,6 +34,7 @@ import {
   PanelLeftClose,
   LogOut,
   FolderKanban,
+  StickyNote,
 } from 'lucide-react';
 
 interface NavItem {
@@ -72,6 +73,11 @@ const navSections: NavSection[] = [
         id: 'articles',
         title: 'Статьи',
         icon: <FileText className='h-5 w-5' />,
+      },
+      {
+        id: 'pages',
+        title: 'Страницы',
+        icon: <StickyNote className='h-5 w-5' />,
       },
       {
         id: 'calendar',

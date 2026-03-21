@@ -7,6 +7,7 @@ from fastapi import APIRouter
 
 from src.api.admin.router import admin_router
 from src.api.articles import router as articles_router
+from src.api.pages import router as pages_router
 from src.api.auth import router as auth_router
 from src.api.categories import router as categories_router
 from src.api.comments import router as comments_router
@@ -20,5 +21,6 @@ api_router.include_router(admin_router)
 api_router.include_router(seo_router)
 api_router.include_router(categories_router)
 api_router.include_router(articles_router)
+api_router.include_router(pages_router)
 api_router.include_router(comments_router)
 api_router.include_router(users_router)

@@ -1,1 +1,0 @@
-export { AboutPageClient } from './AboutPageClient';

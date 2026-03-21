@@ -10,7 +10,7 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from src.models.article import Article, ArticleStatus
+from src.models.article import Article, ArticleStatus, ArticleType
 from src.models.category import Category
 from src.models.tag import Tag
 from src.services.articles import category_filter_by_slug
@@ -46,6 +46,7 @@ UPDATABLE_FIELDS = {
     "robots_no_follow",
     "artifacts",
     "toc",
+    "type",
 }
 
 
@@ -87,6 +88,7 @@ def create_article(
     robots_no_follow: bool = False,
     artifacts: dict | None = None,
     toc: list | None = None,
+    type: str = "article",
 ) -> Article:
     if not slug:
         slug = generate_slug(title)
@@ -121,6 +123,7 @@ def create_article(
         robots_no_follow=robots_no_follow,
         artifacts=artifacts,
         toc=toc,
+        type=type,
     )
     db.add(article)
     db.flush()
@@ -160,9 +163,14 @@ def get_all_articles(
     sort_by: str = "updated_at",
     order: str = "desc",
     author_id: uuid.UUID | None = None,
+    article_type: str | None = None,
 ) -> tuple[list[Article], int]:
     stmt = _base_admin_query()
     count_stmt = select(func.count()).select_from(Article)
+
+    if article_type:
+        stmt = stmt.where(Article.type == article_type)
+        count_stmt = count_stmt.where(Article.type == article_type)
 
     if status:
         stmt = stmt.where(Article.status == status)
