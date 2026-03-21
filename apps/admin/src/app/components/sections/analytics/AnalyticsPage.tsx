@@ -1,18 +1,8 @@
 import { useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { useHeaderStore } from '@/app/store/header-store';
-import {
-  BarChart3,
-  TrendingUp,
-  Users,
-  Calendar,
-  Download,
-  Settings,
-  LayoutDashboard,
-  Cog,
-  LayoutPanelTop,
-  SearchCheck,
-} from 'lucide-react';
+import { BarChart3, Calendar, Download, LayoutDashboard } from 'lucide-react';
+import { SYSTEM_BREADCRUMB } from '@/app/store/breadcrumb.constants';
 import { StatsCards } from './assets/StatsCards';
 import { ViewsChart } from './assets/ViewsChart';
 import { TopArticles } from './assets/TopArticles';
@@ -25,18 +15,7 @@ export function AnalyticsPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      {
-        label: 'Система',
-        icon: Cog,
-        dropdown: [
-          { label: 'Настройки', icon: Settings, href: 'settings' },
-          { label: 'Пользователи', icon: Users, href: 'users' },
-          { label: 'Продвижение', icon: TrendingUp, href: 'promotion' },
-          { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
-          { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
-          { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ],
-      },
+      SYSTEM_BREADCRUMB,
       { label: 'Аналитика', icon: BarChart3 },
     ]);
 

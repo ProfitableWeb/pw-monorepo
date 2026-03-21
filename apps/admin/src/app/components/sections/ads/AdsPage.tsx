@@ -11,17 +11,13 @@ import { useHeaderStore } from '@/app/store/header-store';
 import {
   LayoutPanelTop,
   DollarSign,
-  TrendingUp,
   Plus,
   BarChart,
   Target,
   Settings,
   LayoutDashboard,
-  Cog,
-  Users,
-  BarChart3,
-  SearchCheck,
 } from 'lucide-react';
+import { SYSTEM_BREADCRUMB } from '@/app/store/breadcrumb.constants';
 import { campaigns, placements } from './ads.constants';
 import { AdsStatsGrid } from './assets/AdsStatsGrid';
 import { CampaignCard } from './assets/CampaignCard';
@@ -33,18 +29,7 @@ export function AdsPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      {
-        label: 'Система',
-        icon: Cog,
-        dropdown: [
-          { label: 'Настройки', icon: Settings, href: 'settings' },
-          { label: 'Пользователи', icon: Users, href: 'users' },
-          { label: 'Продвижение', icon: TrendingUp, href: 'promotion' },
-          { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
-          { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
-          { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ],
-      },
+      SYSTEM_BREADCRUMB,
       { label: 'Реклама', icon: LayoutPanelTop },
     ]);
 

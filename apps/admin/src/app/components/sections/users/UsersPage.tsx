@@ -2,18 +2,8 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/app/components/ui/input';
 import { useHeaderStore, type BreadcrumbItem } from '@/app/store/header-store';
 import { useNavigationStore } from '@/app/store/navigation-store';
-import {
-  Users,
-  LayoutDashboard,
-  Search,
-  ChevronRight,
-  Settings,
-  TrendingUp,
-  BarChart3,
-  LayoutPanelTop,
-  SearchCheck,
-  Cog,
-} from 'lucide-react';
+import { Users, LayoutDashboard, Search } from 'lucide-react';
+import { SYSTEM_BREADCRUMB } from '@/app/store/breadcrumb.constants';
 import { cn } from '@/app/components/ui/utils';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { NAVIGATION_ITEMS } from './users.constants';
@@ -52,18 +42,7 @@ export function UsersPage() {
   useEffect(() => {
     const crumbs: BreadcrumbItem[] = [
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      {
-        label: 'Система',
-        icon: Cog,
-        dropdown: [
-          { label: 'Настройки', icon: Settings, href: 'settings' },
-          { label: 'Пользователи', icon: Users, href: 'users' },
-          { label: 'Продвижение', icon: TrendingUp, href: 'promotion' },
-          { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
-          { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
-          { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ],
-      },
+      SYSTEM_BREADCRUMB,
     ];
 
     if (selectedUser) {
@@ -166,12 +145,6 @@ export function UsersPage() {
                 >
                   <Icon className='size-4 flex-shrink-0' />
                   <span className='flex-1 text-left'>{item.label}</span>
-                  <ChevronRight
-                    className={cn(
-                      'size-4 transition-transform flex-shrink-0',
-                      isActive && 'rotate-90'
-                    )}
-                  />
                 </button>
               );
             })}

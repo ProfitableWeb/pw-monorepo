@@ -8,17 +8,8 @@ import {
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { useHeaderStore } from '@/app/store/header-store';
-import {
-  TrendingUp,
-  Users,
-  Target,
-  LayoutDashboard,
-  Cog,
-  Settings,
-  BarChart3,
-  LayoutPanelTop,
-  SearchCheck,
-} from 'lucide-react';
+import { TrendingUp, Target, LayoutDashboard } from 'lucide-react';
+import { SYSTEM_BREADCRUMB } from '@/app/store/breadcrumb.constants';
 
 import { channels, campaigns } from './promotion.constants';
 import { StatsGrid } from './assets/StatsGrid';
@@ -32,18 +23,7 @@ export function PromotionPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      {
-        label: 'Система',
-        icon: Cog,
-        dropdown: [
-          { label: 'Настройки', icon: Settings, href: 'settings' },
-          { label: 'Пользователи', icon: Users, href: 'users' },
-          { label: 'Продвижение', icon: TrendingUp, href: 'promotion' },
-          { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
-          { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
-          { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ],
-      },
+      SYSTEM_BREADCRUMB,
       { label: 'Продвижение', icon: TrendingUp },
     ]);
 

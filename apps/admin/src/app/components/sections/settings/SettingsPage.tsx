@@ -8,20 +8,8 @@ import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { useHeaderStore } from '@/app/store/header-store';
-import {
-  Settings,
-  LayoutDashboard,
-  Search,
-  ChevronRight,
-  Save,
-  X,
-  Cog,
-  Users,
-  TrendingUp,
-  BarChart3,
-  LayoutPanelTop,
-  SearchCheck,
-} from 'lucide-react';
+import { Settings, LayoutDashboard, Search, Save, X } from 'lucide-react';
+import { SYSTEM_BREADCRUMB } from '@/app/store/breadcrumb.constants';
 import { cn } from '@/app/components/ui/utils';
 import { settingsCategories } from './settings.constants';
 import { ProfileSettings } from './profile';
@@ -44,18 +32,7 @@ export function SettingsPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Дашборд', href: 'dashboard', icon: LayoutDashboard },
-      {
-        label: 'Система',
-        icon: Cog,
-        dropdown: [
-          { label: 'Настройки', icon: Settings, href: 'settings' },
-          { label: 'Пользователи', icon: Users, href: 'users' },
-          { label: 'Продвижение', icon: TrendingUp, href: 'promotion' },
-          { label: 'Аналитика', icon: BarChart3, href: 'analytics' },
-          { label: 'Реклама', icon: LayoutPanelTop, href: 'ads' },
-          { label: 'SEO', icon: SearchCheck, href: 'seo' },
-        ],
-      },
+      SYSTEM_BREADCRUMB,
       { label: 'Настройки', icon: Settings },
     ]);
 
@@ -158,12 +135,6 @@ export function SettingsPage() {
                 >
                   <Icon className='size-4 flex-shrink-0' />
                   <span className='flex-1 text-left'>{category.label}</span>
-                  <ChevronRight
-                    className={cn(
-                      'size-4 transition-transform flex-shrink-0',
-                      isActive && 'rotate-90'
-                    )}
-                  />
                 </button>
               );
             })}

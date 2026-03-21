@@ -23,6 +23,7 @@ import { PromotionPage } from '@/app/components/sections/promotion';
 import { AnalyticsPage } from '@/app/components/sections/analytics';
 import { AdsPage } from '@/app/components/sections/ads';
 import { SeoPage } from '@/app/components/sections/seo';
+import { McpPage } from '@/app/components/sections/mcp';
 import { SystemHub } from '@/app/components/sections/system-hub';
 import { CommandPalette } from '@/app/components/layout/command-palette';
 import {
@@ -197,6 +198,8 @@ function App() {
         return 'Редактор статьи';
       case 'seo':
         return 'SEO';
+      case 'mcp':
+        return 'MCP';
       default:
         return 'Панель управления';
     }
@@ -246,6 +249,8 @@ function App() {
         return <AdsPage />;
       case 'seo':
         return <SeoPage />;
+      case 'mcp':
+        return <McpPage />;
       default:
         return <DashboardSection />;
     }
@@ -381,6 +386,10 @@ function App() {
             ) : activeSection === 'seo' ? (
               <div className='flex-1 min-h-0 overflow-hidden'>
                 <SeoPage />
+              </div>
+            ) : activeSection === 'mcp' ? (
+              <div className='flex-1 min-h-0 overflow-hidden'>
+                <McpPage />
               </div>
             ) : activeSection === 'research' ? (
               <ScrollArea className='flex-1 min-h-0'>

@@ -26,6 +26,7 @@ export type PageId =
   | 'analytics'
   | 'ads'
   | 'seo'
+  | 'mcp'
   | 'system-hub'
   | 'research'
   | 'research-workspace'
@@ -240,5 +241,13 @@ export const navigationItems: NavigationItem[] = [
     section: 'Система',
     path: 'system/seo',
     keywords: ['оптимизация', 'поисковые системы'],
+  },
+  {
+    id: 'mcp',
+    title: 'MCP',
+    icon: 'Cable',
+    section: 'Система',
+    path: 'system/mcp',
+    keywords: ['model context protocol', 'api ключи', 'интеграция', 'ai'],
   },
 ];
