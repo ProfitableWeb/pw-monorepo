@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import DOMPurify from 'dompurify';
 import './ArticleContent.scss';
+import { headingToId } from './heading-id';
 
 interface ArticleContentProps {
   /**
@@ -66,6 +67,7 @@ export const ArticleContent = ({ html, className }: ArticleContentProps) => {
         'th',
         'div',
         'span',
+        'mark',
         'br',
         'hr',
         'section',
@@ -86,7 +88,18 @@ export const ArticleContent = ({ html, className }: ArticleContentProps) => {
       ALLOWED_URI_REGEXP:
         /^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
     });
-    setSanitizedHtml(sanitized);
+    // Добавляем id к заголовкам h2-h4 для навигации через ToC
+    const withHeadingIds = sanitized.replace(
+      /<h([2-4])([^>]*)>([\s\S]*?)<\/h[2-4]>/gi,
+      (match, level, attrs, inner) => {
+        if (/id\s*=/i.test(attrs)) return match;
+        const text = inner.replace(/<[^>]+>/g, '').trim();
+        const id = headingToId(text);
+        return `<h${level}${attrs} id="${id}">${inner}</h${level}>`;
+      }
+    );
+
+    setSanitizedHtml(withHeadingIds);
   }, [html]);
 
   return (

@@ -153,6 +153,7 @@ const AUTOSAVE_DELAY = 4000;
 export function ArticleWorkbench() {
   const {
     articleId,
+    content: editorContent,
     openArticle,
     closeArticle,
     setContent,
@@ -209,6 +210,15 @@ export function ArticleWorkbench() {
       openArticle(null, '', '');
     }
   }, [apiArticle, timezone, isCreateMode, reset, openArticle]);
+
+  // Синхронизация Zustand content → react-hook-form
+  // Monaco обновляет Zustand напрямую, а form должна быть в курсе
+  useEffect(() => {
+    const currentFormContent = getValues('content');
+    if (editorContent !== currentFormContent) {
+      setValue('content', editorContent, { shouldDirty: true });
+    }
+  }, [editorContent, setValue, getValues]);
 
   const currentStatus = watch('status');
   const publishedAt = watch('publishedAt');
@@ -291,7 +301,7 @@ export function ArticleWorkbench() {
   // --- Сохранение ---
   const handleSave = useCallback(async () => {
     if (!categories) return;
-    const formData = getValues();
+    const formData = { ...getValues(), content: editorContent };
 
     try {
       if (isCreateMode || !articleId) {
@@ -300,6 +310,7 @@ export function ArticleWorkbench() {
             openArticle(result.id, result.slug, result.content);
             markSaved();
             navigateToArticleEditor(result.id);
+            toast.success('Статья создана');
           },
           onError: () => toast.error('Не удалось создать статью'),
         });
@@ -307,7 +318,10 @@ export function ArticleWorkbench() {
         updateMutation.mutate(
           { articleId, data: formDataToUpdatePayload(formData, categories) },
           {
-            onSuccess: () => markSaved(),
+            onSuccess: () => {
+              markSaved();
+              toast.success('Статья сохранена');
+            },
             onError: () => toast.error('Не удалось сохранить статью'),
           }
         );
@@ -317,6 +331,7 @@ export function ArticleWorkbench() {
     }
   }, [
     getValues,
+    editorContent,
     categories,
     isCreateMode,
     articleId,

@@ -41,7 +41,8 @@ export {
 export {
   useMcpKeys,
   useCreateMcpKey,
-  useRevokeMcpKey,
+  useToggleMcpKey,
+  useDeleteMcpKey,
   useMcpAuditLog,
   useMcpConnectionTest,
 } from './useMcpKeys';

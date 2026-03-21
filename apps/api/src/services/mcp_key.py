@@ -110,20 +110,20 @@ def verify_key(db: Session, raw_key: str) -> tuple[McpApiKey, User] | None:
     return api_key, user
 
 
-# --- Revoke ---
+# --- Toggle / Delete ---
 
 
-def revoke_key(db: Session, key_id: uuid.UUID) -> McpApiKey:
-    """Деактивирует ключ (soft revoke)."""
+def toggle_key(db: Session, key_id: uuid.UUID) -> McpApiKey:
+    """Переключает is_active (активация / деактивация)."""
     api_key = get_key(db, key_id)
     if not api_key:
         raise ValueError("Ключ не найден")
-    api_key.is_active = False
+    api_key.is_active = not api_key.is_active
     return api_key
 
 
 def delete_key(db: Session, key_id: uuid.UUID) -> None:
-    """Полностью удаляет ключ."""
+    """Полностью удаляет ключ из базы."""
     api_key = get_key(db, key_id)
     if not api_key:
         raise ValueError("Ключ не найден")

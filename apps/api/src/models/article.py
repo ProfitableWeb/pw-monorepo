@@ -126,7 +126,9 @@ class Article(UUIDMixin, TimestampMixin, Base):
     )
     author: Mapped["User | None"] = relationship(back_populates="articles")
     tags: Mapped[list["Tag"]] = relationship(secondary=article_tags)
-    comments: Mapped[list["Comment"]] = relationship(back_populates="article")
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="article", cascade="all, delete-orphan", passive_deletes=True
+    )
     revisions: Mapped[list["ArticleRevision"]] = relationship(
         back_populates="article", cascade="all, delete-orphan"
     )

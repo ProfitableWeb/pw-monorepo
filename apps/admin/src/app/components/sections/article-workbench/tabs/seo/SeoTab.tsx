@@ -52,6 +52,7 @@ interface SeoTabProps {
 
 export function SeoTab({ register, watch, setValue }: SeoTabProps) {
   const [autoSlug, setAutoSlug] = useState(true);
+  const hasCheckedCustomSlug = useRef(false);
   const [keywordInput, setKeywordInput] = useState('');
   const keywordInputRef = useRef<HTMLInputElement>(null);
   const [authorPopoverOpen, setAuthorPopoverOpen] = useState(false);
@@ -78,6 +79,14 @@ export function SeoTab({ register, watch, setValue }: SeoTabProps) {
   // Авто-генерация slug из H1
   useEffect(() => {
     if (autoSlug && h1) {
+      // При первом срабатывании: если slug уже задан и отличается от автогенерации — кастомный
+      if (!hasCheckedCustomSlug.current) {
+        hasCheckedCustomSlug.current = true;
+        if (slug && slug !== transliterate(h1)) {
+          setAutoSlug(false);
+          return;
+        }
+      }
       setValue('slug', transliterate(h1));
     }
   }, [autoSlug, h1, setValue]);

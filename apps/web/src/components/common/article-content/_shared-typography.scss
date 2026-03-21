@@ -66,14 +66,13 @@
 
 // Ссылки
 @mixin article-link {
-  color: var(--color-primary);
+  color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid var(--color-primary);
-  transition: color 0.2s, border-color 0.2s;
+  border-bottom: 1px solid var(--color-border);
+  transition: border-color 0.3s ease;
 
   &:hover {
-    color: var(--color-primary-hover, var(--color-primary));
-    border-bottom-color: var(--color-primary-hover, var(--color-primary));
+    border-bottom-color: transparent;
   }
 }
 
@@ -204,12 +203,13 @@
 @mixin article-table-cell {
   padding: 0.75em 1em;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 30%, transparent);
 }
 
 @mixin article-table-header {
   font-weight: 700;
   background: var(--color-background-secondary);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 45%, transparent);
 }
 
 // Горизонтальная линия
@@ -217,6 +217,14 @@
   margin: 2.4em 0;
   border: none;
   border-top: 1px solid var(--color-border);
+}
+
+// Mark (маркер-выделение)
+@mixin article-mark {
+  background-color: var(--mark-green-bg, #c5f3c5);
+  color: var(--mark-green-text, #182718);
+  padding: 0.05em 0.2em;
+  border-radius: 2px;
 }
 
 // Strong и Em

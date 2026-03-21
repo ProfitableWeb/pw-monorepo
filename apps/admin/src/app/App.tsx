@@ -42,6 +42,7 @@ import { urlToPageId } from '@/app/lib/routes';
 import type { PageId } from '@/app/store/navigation.constants';
 import { useResearchStore } from '@/app/store/research-store';
 import { Drawer } from 'vaul';
+import { Toaster } from '@/app/components/ui/sonner';
 
 /** Восстановить навигацию из распарсенного маршрута (включая параметрические) */
 function restoreRoute(
@@ -423,6 +424,7 @@ function App() {
 
         {/* Command Palette */}
         <CommandPalette />
+        <Toaster />
       </div>
     </ThemeProvider>
   );

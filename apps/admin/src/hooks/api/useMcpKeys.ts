@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getMcpKeys,
   createMcpKey,
-  revokeMcpKey,
+  toggleMcpKey,
+  deleteMcpKey,
   getMcpAuditLog,
   testMcpConnection,
   type McpAuditParams,
@@ -28,10 +29,20 @@ export function useCreateMcpKey() {
   });
 }
 
-export function useRevokeMcpKey() {
+export function useToggleMcpKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (keyId: string) => revokeMcpKey(keyId),
+    mutationFn: (keyId: string) => toggleMcpKey(keyId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminMcpKeys.keys() });
+    },
+  });
+}
+
+export function useDeleteMcpKey() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (keyId: string) => deleteMcpKey(keyId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: adminMcpKeys.keys() });
     },

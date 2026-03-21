@@ -1,8 +1,9 @@
 """
 PW-061-B | Admin API для управления MCP API-ключами.
-POST /api/admin/mcp-keys — создать ключ (возвращает raw key один раз).
-GET  /api/admin/mcp-keys — список всех ключей.
-DELETE /api/admin/mcp-keys/{key_id} — отозвать ключ.
+POST   /api/admin/mcp-keys                — создать ключ (возвращает raw key один раз).
+GET    /api/admin/mcp-keys                — список всех ключей.
+PATCH  /api/admin/mcp-keys/{key_id}/toggle — переключить active/inactive.
+DELETE /api/admin/mcp-keys/{key_id}        — полностью удалить ключ.
 """
 
 from typing import TYPE_CHECKING
@@ -102,25 +103,55 @@ def create_mcp_key(
     return ApiResponse(success=True, data=_to_create_response(api_key, raw_key))
 
 
+@router.patch("/{key_id}/toggle", response_model=ApiResponse[McpKeyResponse])
+def toggle_mcp_key(
+    key_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin),
+) -> ApiResponse[McpKeyResponse]:
+    uid = parse_uuid(key_id)
+    try:
+        api_key = mcp_key_service.toggle_key(db, uid)
+    except ValueError as exc:
+        raise HTTPException(404, str(exc))
+
+    action = "mcp_key.activated" if api_key.is_active else "mcp_key.deactivated"
+    audit_service.log_action(
+        db,
+        user_id=current_user.id,
+        action=action,
+        resource_type="mcp_api_key",
+        resource_id=uid,
+        changes={"name": api_key.name, "is_active": api_key.is_active},
+    )
+
+    db.commit()
+    return ApiResponse(success=True, data=_to_response(api_key))
+
+
 @router.delete("/{key_id}", status_code=204)
-def revoke_mcp_key(
+def delete_mcp_key(
     key_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin),
 ) -> None:
     uid = parse_uuid(key_id)
     try:
-        api_key = mcp_key_service.revoke_key(db, uid)
+        key = mcp_key_service.get_key(db, uid)
+        if not key:
+            raise ValueError("Ключ не найден")
+        key_name = key.name
+        mcp_key_service.delete_key(db, uid)
     except ValueError as exc:
         raise HTTPException(404, str(exc))
 
     audit_service.log_action(
         db,
         user_id=current_user.id,
-        action="mcp_key.revoked",
+        action="mcp_key.deleted",
         resource_type="mcp_api_key",
         resource_id=uid,
-        changes={"name": api_key.name},
+        changes={"name": key_name},
     )
 
     db.commit()

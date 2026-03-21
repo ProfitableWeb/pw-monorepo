@@ -165,6 +165,7 @@ def register(mcp_server: object) -> None:
         title: str,
         content: str,
         primary_category_id: str,
+        subtitle: str | None = None,
         excerpt: str = "",
         tags: list[str] | None = None,
         meta_title: str | None = None,
@@ -186,8 +187,8 @@ def register(mcp_server: object) -> None:
                 return json.dumps({"error": "Создание статей требует аутентификации (author_id)"}, ensure_ascii=False)
 
             article = svc_create(
-                db, author_id=user.id, title=title, content=content,
-                primary_category_id=cat_id, excerpt=excerpt,
+                db, author_id=user.id, title=title, subtitle=subtitle,
+                content=content, primary_category_id=cat_id, excerpt=excerpt,
                 tags=tags, meta_title=meta_title, meta_description=meta_description,
             )
             log_mcp_action(db, user=user, api_key=key, tool_name="create_article",
@@ -210,6 +211,7 @@ def register(mcp_server: object) -> None:
     def update_article(
         id_or_slug: str,
         title: str | None = None,
+        subtitle: str | None = None,
         content: str | None = None,
         excerpt: str | None = None,
         meta_title: str | None = None,
@@ -231,6 +233,8 @@ def register(mcp_server: object) -> None:
             fields = {}
             if title is not None:
                 fields["title"] = title
+            if subtitle is not None:
+                fields["subtitle"] = subtitle
             if content is not None:
                 fields["content"] = content
             if excerpt is not None:

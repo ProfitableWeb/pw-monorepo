@@ -2443,7 +2443,16 @@ export async function createMcpKey(
   return mapMcpKeyCreateResponse(raw);
 }
 
-export async function revokeMcpKey(keyId: string): Promise<void> {
+export async function toggleMcpKey(keyId: string): Promise<McpApiKey> {
+  const raw = await apiMutate<McpKeyRaw>(
+    `/admin/mcp-keys/${encodeURIComponent(keyId)}/toggle`,
+    { method: 'PATCH' }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapMcpKey(raw);
+}
+
+export async function deleteMcpKey(keyId: string): Promise<void> {
   await apiMutate(`/admin/mcp-keys/${encodeURIComponent(keyId)}`, {
     method: 'DELETE',
   });

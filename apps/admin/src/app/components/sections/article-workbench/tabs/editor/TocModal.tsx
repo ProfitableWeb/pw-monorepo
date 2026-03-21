@@ -17,6 +17,7 @@ import { Button } from '@/app/components/ui/button';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { RefreshCw } from 'lucide-react';
 import type { TocItem } from '@/app/types/article-editor';
+import { transliterate } from '../seo/seo.utils';
 
 /** Парсит заголовки h2–h4 из HTML-строки */
 function parseHeadings(html: string): TocItem[] {
@@ -36,14 +37,8 @@ function parseHeadings(html: string): TocItem[] {
     const text = innerHtml.replace(/<[^>]+>/g, '').trim();
     if (!text) continue;
 
-    // id: из атрибута или генерируем из текста
-    const id =
-      idMatch?.[1] ||
-      text
-        .toLowerCase()
-        .replace(/[^\p{L}\p{N}\s-]/gu, '')
-        .replace(/\s+/g, '-')
-        .slice(0, 80);
+    // id: из атрибута или транслитерация текста
+    const id = idMatch?.[1] || transliterate(text).slice(0, 80);
 
     items.push({ id, text, level, enabled: true });
   }

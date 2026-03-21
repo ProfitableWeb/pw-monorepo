@@ -121,6 +121,10 @@
     @include article-em;
   }
 
+  mark {
+    @include article-mark;
+  }
+
   // Секции
   section {
     @include article-section;

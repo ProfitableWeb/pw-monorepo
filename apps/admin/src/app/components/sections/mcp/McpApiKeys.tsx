@@ -3,7 +3,7 @@ import {
   Plus,
   Copy,
   Check,
-  Ban,
+  Trash2,
   Shield,
   ShieldCheck,
   ShieldAlert,
@@ -30,8 +30,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
+import { Switch } from '@/app/components/ui/switch';
 import { cn } from '@/app/components/ui/utils';
-import { useMcpKeys, useCreateMcpKey, useRevokeMcpKey } from '@/hooks/api';
+import {
+  useMcpKeys,
+  useCreateMcpKey,
+  useToggleMcpKey,
+  useDeleteMcpKey,
+} from '@/hooks/api';
 import type { McpApiKey, McpKeyScope } from './mcp.types';
 
 const SCOPE_CONFIG: Record<
@@ -40,19 +46,19 @@ const SCOPE_CONFIG: Record<
 > = {
   read: {
     label: 'Чтение',
-    color: 'text-blue-400 bg-blue-400/10',
+    color: 'text-emerald-400 bg-emerald-400/10',
     icon: Shield,
     description: 'Только просмотр данных',
   },
   write: {
     label: 'Запись',
-    color: 'text-amber-400 bg-amber-400/10',
+    color: 'text-emerald-500 bg-emerald-500/10',
     icon: ShieldCheck,
     description: 'Чтение + создание и редактирование',
   },
   admin: {
     label: 'Админ',
-    color: 'text-red-400 bg-red-400/10',
+    color: 'text-emerald-600 bg-emerald-600/10',
     icon: ShieldAlert,
     description: 'Полный доступ включая удаление',
   },
@@ -415,7 +421,8 @@ const SCOPE_ORDER: Record<McpKeyScope, number> = {
 
 export function McpApiKeys() {
   const { data: keys = [], isLoading, error } = useMcpKeys();
-  const revokeMutation = useRevokeMcpKey();
+  const toggleMutation = useToggleMcpKey();
+  const deleteMutation = useDeleteMcpKey();
 
   const [showCreate, setShowCreate] = useState(false);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
@@ -483,9 +490,18 @@ export function McpApiKeys() {
     setCreatedKey(rawKey);
   };
 
-  const handleRevoke = (key: McpApiKey) => {
-    if (!confirm(`Деактивировать ключ «${key.name}»?`)) return;
-    revokeMutation.mutate(key.id);
+  const handleToggle = (key: McpApiKey) => {
+    toggleMutation.mutate(key.id);
+  };
+
+  const handleDelete = (key: McpApiKey) => {
+    if (
+      !confirm(
+        `Удалить ключ «${key.name}» навсегда? Это действие нельзя отменить.`
+      )
+    )
+      return;
+    deleteMutation.mutate(key.id);
   };
 
   const hasFilters = searchQuery || statusFilter !== 'all';
@@ -641,19 +657,25 @@ export function McpApiKeys() {
                       </div>
                     </div>
 
-                    <div className='flex items-center gap-1 shrink-0'>
-                      {key.isActive && (
-                        <Button
-                          variant='ghost'
-                          size='icon'
-                          className='h-8 w-8'
-                          onClick={() => handleRevoke(key)}
-                          disabled={revokeMutation.isPending}
-                          title='Деактивировать'
-                        >
-                          <Ban className='h-4 w-4' />
-                        </Button>
-                      )}
+                    <div className='flex items-center gap-2 shrink-0'>
+                      <Switch
+                        checked={key.isActive}
+                        onCheckedChange={() => handleToggle(key)}
+                        disabled={toggleMutation.isPending}
+                        aria-label={
+                          key.isActive ? 'Деактивировать' : 'Активировать'
+                        }
+                      />
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='h-8 w-8 text-muted-foreground hover:text-red-400'
+                        onClick={() => handleDelete(key)}
+                        disabled={deleteMutation.isPending}
+                        title='Удалить навсегда'
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
                     </div>
                   </div>
                 );
