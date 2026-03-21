@@ -51,9 +51,10 @@ def require_scope(tool_name: str) -> Callable:
             if ctx is not None:
                 _, api_key = get_auth_from_ctx(ctx)
                 if api_key is not None and not check_scope(api_key.scope, required):
+                    scope_str = getattr(api_key.scope, "value", api_key.scope)
                     return json.dumps({
                         "error": f"Недостаточно прав. Требуется scope '{required}', "
-                        f"ваш ключ имеет scope '{api_key.scope.value}'."
+                        f"ваш ключ имеет scope '{scope_str}'."
                     })
 
             return fn(*args, **kwargs)

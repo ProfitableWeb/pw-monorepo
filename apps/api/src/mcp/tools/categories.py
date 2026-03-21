@@ -105,7 +105,14 @@ def register(mcp_server: object) -> None:
             if not cat:
                 return json.dumps({"error": "Категория не найдена"}, ensure_ascii=False)
 
-            req = CategoryUpdateRequest(name=name, slug=slug, description=description)
+            fields = {}
+            if name is not None:
+                fields["name"] = name
+            if slug is not None:
+                fields["slug"] = slug
+            if description is not None:
+                fields["description"] = description
+            req = CategoryUpdateRequest(**fields)
             updated = svc_update(db, cat_uuid, req)
             log_mcp_action(db, user=user, api_key=key, tool_name="update_category",
                            resource_type="category", resource_id=cat_uuid,

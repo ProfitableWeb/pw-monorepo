@@ -39,15 +39,19 @@ def create_mcp_server(*, streamable_http_path: str = "/mcp") -> FastMCP:
     return mcp
 
 
-def create_mcp_asgi_app():
+def create_mcp_asgi_app() -> tuple["McpAuthMiddleware", FastMCP]:
     """Создаёт ASGI-приложение для монтирования на FastAPI.
 
     Оборачивает Streamable HTTP transport в auth middleware.
     Монтируется на /mcp в FastAPI, поэтому внутренний путь = "/" чтобы
     итоговый endpoint был /mcp (а не /mcp/mcp).
+
+    Возвращает (asgi_app, mcp_server) — mcp_server нужен для lifespan
+    (session_manager.run() должен вызываться из lifespan FastAPI,
+    т.к. FastAPI не пробрасывает lifespan в mounted raw ASGI apps).
     """
     mcp = create_mcp_server(streamable_http_path="/")
     # FastMCP предоставляет streamable HTTP app через .streamable_http_app()
     mcp_app = mcp.streamable_http_app()
     # Оборачиваем в auth middleware
-    return McpAuthMiddleware(mcp_app)
+    return McpAuthMiddleware(mcp_app), mcp

@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "pw-local": {
+      "type": "http",
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_LOCAL_KEY_HERE"
+      }
+    },
+    "pw-dev": {
+      "type": "http",
+      "url": "https://api.dev.profitableweb.ru/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_DEV_KEY_HERE"
+      }
+    },
+    "pw-prod": {
+      "type": "http",
+      "url": "https://api.profitableweb.ru/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_PROD_KEY_HERE"
+      }
+    }
+  }
+}

@@ -70,6 +70,14 @@ class McpAuthMiddleware:
             api_key, user = result
             db.commit()  # persist last_used_at update
 
+            # commit() делает expire всех атрибутов — refresh загружает их обратно.
+            # expunge() отвязывает от сессии, сохраняя данные в памяти,
+            # чтобы tool-хендлеры могли обращаться к атрибутам после db.close().
+            db.refresh(api_key)
+            db.refresh(user)
+            db.expunge(api_key)
+            db.expunge(user)
+
             # Store auth info in request state
             scope.setdefault("state", {})
             scope["state"]["mcp_user"] = user

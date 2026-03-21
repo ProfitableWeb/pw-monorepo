@@ -4,6 +4,9 @@ CORS, structured logging, request middleware. Эндпоинты через api_
 MCP-сервер монтируется на /mcp (Streamable HTTP transport).
 """
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,10 +19,26 @@ from src.middleware.logging import RequestLoggingMiddleware
 
 setup_logging()
 
+# PW-061-D: создаём MCP до FastAPI, чтобы управлять lifespan session manager
+_mcp_asgi_app, _mcp_server = create_mcp_asgi_app()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Управляет жизненным циклом MCP session manager.
+
+    FastAPI не пробрасывает lifespan в mounted raw ASGI apps,
+    поэтому session_manager.run() вызываем явно.
+    """
+    async with _mcp_server.session_manager.run():
+        yield
+
+
 app = FastAPI(
     title=settings.app_name,
     description="Backend API for ProfitableWeb Research Lab",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Middleware stack (Starlette: первый add_middleware = innermost)
@@ -38,7 +57,7 @@ app.add_middleware(
 app.include_router(api_router)
 
 # PW-061-B: MCP-сервер (Streamable HTTP transport)
-app.mount("/mcp", create_mcp_asgi_app())
+app.mount("/mcp", _mcp_asgi_app)
 
 
 @app.get("/")

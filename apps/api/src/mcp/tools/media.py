@@ -18,16 +18,16 @@ def register(mcp_server: object) -> None:
     def list_media(
         page: int = 1,
         limit: int = 20,
-        mime_type: str | None = None,
+        file_type: str | None = None,
         ctx: Context = None,
     ) -> str:
-        """Список медиафайлов с фильтрацией по MIME-типу. Поддерживает пагинацию."""
-        from src.services.media import list_media_files
+        """Список медиафайлов с фильтрацией по типу (image/document/video/audio). Поддерживает пагинацию."""
+        from src.services.media import list_media as svc_list_media
 
         db = get_db()
         try:
             user, key = get_auth_from_ctx(ctx)
-            files, total = list_media_files(db, page=page, limit=limit, mime_type=mime_type)
+            files, total = svc_list_media(db, page=page, limit=limit, file_type=file_type)
             data = [
                 {
                     "id": str(f.id),
@@ -41,7 +41,7 @@ def register(mcp_server: object) -> None:
                 for f in files
             ]
             log_mcp_action(db, user=user, api_key=key, tool_name="list_media",
-                           arguments={"page": page, "limit": limit, "mime_type": mime_type})
+                           arguments={"page": page, "limit": limit, "file_type": file_type})
             db.commit()
             return json.dumps({"files": data, "total": total, "page": page}, ensure_ascii=False)
         finally:
@@ -54,7 +54,7 @@ def register(mcp_server: object) -> None:
         ctx: Context = None,
     ) -> str:
         """Получить метаданные и URL медиафайла по ID."""
-        from src.services.media import get_media_file
+        from src.services.media import get_media as svc_get_media
 
         db = get_db()
         try:
@@ -64,7 +64,7 @@ def register(mcp_server: object) -> None:
             except ValueError:
                 return json.dumps({"error": "media_id должен быть UUID"}, ensure_ascii=False)
 
-            f = get_media_file(db, mid)
+            f = svc_get_media(db, mid)
             if not f:
                 return json.dumps({"error": "Файл не найден"}, ensure_ascii=False)
 
@@ -96,8 +96,10 @@ def register(mcp_server: object) -> None:
     ) -> str:
         """Загрузить медиафайл (base64-encoded). Максимум 10MB. Поддерживает JPEG, PNG, WebP, GIF, SVG, PDF."""
         import base64
+        import mimetypes
 
-        from src.services.media import upload_media_file
+        from src.services.media import upload_media as svc_upload_media
+        from src.services.storage import storage
 
         db = get_db()
         try:
@@ -112,12 +114,18 @@ def register(mcp_server: object) -> None:
                 return json.dumps({"error": "File size exceeds 10MB limit"}, ensure_ascii=False)
 
             if user is None:
-                return json.dumps({"error": "Загрузка медиа требует аутентификации (uploaded_by_id)"}, ensure_ascii=False)
+                return json.dumps({"error": "Загрузка медиа требует аутентификации"}, ensure_ascii=False)
 
-            media = upload_media_file(
-                db, file_bytes=file_bytes, filename=filename,
-                uploaded_by_id=user.id, alt_text=alt_text,
+            content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+
+            media = svc_upload_media(
+                db, storage, data=file_bytes, filename=filename,
+                content_type=content_type, user_id=user.id,
             )
+
+            if alt_text and media:
+                media.alt_text = alt_text
+
             log_mcp_action(db, user=user, api_key=key, tool_name="upload_media",
                            resource_type="media", resource_id=media.id,
                            arguments={"filename": filename, "size": len(file_bytes)})
@@ -142,7 +150,7 @@ def register(mcp_server: object) -> None:
         ctx: Context = None,
     ) -> str:
         """Обновить alt-текст и/или caption медиафайла."""
-        from src.services.media import get_media_file
+        from src.services.media import get_media as svc_get_media
 
         db = get_db()
         try:
@@ -152,7 +160,7 @@ def register(mcp_server: object) -> None:
             except ValueError:
                 return json.dumps({"error": "media_id должен быть UUID"}, ensure_ascii=False)
 
-            f = get_media_file(db, mid)
+            f = svc_get_media(db, mid)
             if not f:
                 return json.dumps({"error": "Файл не найден"}, ensure_ascii=False)
 
