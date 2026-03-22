@@ -177,6 +177,8 @@ def update_profile(
     *,
     name: str | None = None,
     email: str | None = None,
+    bio: str | None = ...,
+    social_links: dict[str, str] | None = ...,
 ) -> User:
     if name is not None:
         user.name = name
@@ -186,6 +188,10 @@ def update_profile(
             msg = "Пользователь с таким email уже существует"
             raise ValueError(msg)
         user.email = email
+    if bio is not ...:
+        user.bio = bio
+    if social_links is not ...:
+        user.social_links = social_links
     db.commit()
     db.refresh(user)
     return user

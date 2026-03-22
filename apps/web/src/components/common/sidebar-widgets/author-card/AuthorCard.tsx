@@ -2,34 +2,32 @@
 
 import React from 'react';
 import SocialIcons from '@/components/common/social-icons';
-import { SOCIAL_LINKS_AUTHOR } from '@/components/common/social-icons';
+import {
+  SOCIAL_LINKS_AUTHOR,
+  buildSocialLinks,
+} from '@/components/common/social-icons';
+import { AUTHOR_DATA } from '@/config/author';
+import type { Author } from '@/lib/api-client';
 import './AuthorCard.scss';
 
 interface AuthorCardProps {
-  name?: string;
-  description?: string;
+  author?: Author;
 }
 
-// Моковые данные по умолчанию
-const DEFAULT_AUTHOR = {
-  name: 'Николай Егоров',
-  description:
-    'Исследую веб-разработку, AI-автоматизацию, цифровой дизайн и экономику.',
-};
+export const AuthorCard = ({ author }: AuthorCardProps) => {
+  const name = author?.name ?? AUTHOR_DATA.name;
+  const bio = author?.bio ?? AUTHOR_DATA.description;
+  const avatar = author?.avatar ?? '/imgs/author/avatar.jpg';
+  const socialLinks = author?.socialLinks
+    ? buildSocialLinks(author.socialLinks)
+    : SOCIAL_LINKS_AUTHOR;
+  const hasSocials = socialLinks.length > 0;
 
-export const AuthorCard = ({
-  name = DEFAULT_AUTHOR.name,
-  description = DEFAULT_AUTHOR.description,
-}: AuthorCardProps) => {
   return (
     <div className='author-card'>
       <div className='author-card__header'>
         <div className='author-card__avatar'>
-          <img
-            src='/imgs/author/avatar.jpg'
-            alt={name}
-            className='author-card__avatar-img'
-          />
+          <img src={avatar} alt={name} className='author-card__avatar-img' />
         </div>
         <div className='author-card__meta'>
           <h3 className='author-card__title'>Автор</h3>
@@ -37,15 +35,17 @@ export const AuthorCard = ({
         </div>
       </div>
 
-      <div className='author-card__socials'>
-        <SocialIcons
-          size='md'
-          className='author-card__socials-icons'
-          links={SOCIAL_LINKS_AUTHOR}
-        />
-      </div>
+      {hasSocials && (
+        <div className='author-card__socials'>
+          <SocialIcons
+            size='md'
+            className='author-card__socials-icons'
+            links={socialLinks}
+          />
+        </div>
+      )}
 
-      <p className='author-card__description'>{description}</p>
+      {bio && <p className='author-card__description'>{bio}</p>}
     </div>
   );
 };

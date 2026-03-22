@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArticleAuthorBlock } from '@/components/common/article-author';
 import { ArticleMeta } from '@/components/common/article-meta';
+import type { Author } from '@/lib/api-client';
 import './ArticleHeader.scss';
 
 export interface ArticleHeaderProps {
@@ -14,6 +15,7 @@ export interface ArticleHeaderProps {
   categoryName?: string;
   /** Показывать блок автора (default true). В three-column layout автор в sidebar. */
   showAuthor?: boolean;
+  author?: Author;
 }
 
 /**
@@ -33,6 +35,7 @@ export const ArticleHeader = ({
   categorySlug,
   categoryName,
   showAuthor = true,
+  author,
 }: ArticleHeaderProps) => {
   return (
     <header className='article-header'>
@@ -50,7 +53,7 @@ export const ArticleHeader = ({
       )}
 
       {/* Блок автора — скрыт когда автор в sidebar (three-column, two-column) */}
-      {showAuthor && <ArticleAuthorBlock />}
+      {showAuthor && <ArticleAuthorBlock author={author} />}
     </header>
   );
 };

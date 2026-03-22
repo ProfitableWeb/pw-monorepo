@@ -8,6 +8,8 @@ export interface UserProfileSettings {
   name: string;
   email: string;
   avatar?: string;
+  bio?: string;
+  socialLinks?: Record<string, string>;
 }
 
 export interface NotificationSettings {

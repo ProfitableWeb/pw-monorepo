@@ -8,6 +8,17 @@ export type ArticleLayoutType =
   | 'one-column';
 
 /**
+ * Author profile for article pages
+ */
+export interface Author {
+  id: string;
+  name: string;
+  avatar?: string;
+  bio?: string;
+  socialLinks?: Record<string, string>;
+}
+
+/**
  * Article type for blog posts
  */
 export interface Article {
@@ -20,7 +31,7 @@ export interface Article {
   tags: string[];
   publishedAt: Date;
   updatedAt: Date;
-  author?: string;
+  author?: Author;
   readingTime?: number;
   views?: number;
   layout?: ArticleLayoutType; // Layout type (default: 'three-column')

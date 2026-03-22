@@ -60,10 +60,18 @@ interface ArticleListItemRaw {
   published_at?: string | null;
 }
 
+interface AuthorRaw {
+  id: string;
+  name: string;
+  avatar?: string | null;
+  bio?: string | null;
+  social_links?: Record<string, string> | null;
+}
+
 /** Полный ответ статьи (включая content, toc, artifacts, layout) */
 interface ArticleFullRaw extends ArticleListItemRaw {
   content: string;
-  author?: string | null;
+  author?: AuthorRaw | null;
   views?: number;
   layout?: string | null;
   toc?: TocItemRaw[] | null;
@@ -98,6 +106,14 @@ interface ArtifactsRaw {
   provenance?: { enabled: boolean; workspaceId: string; showLink: boolean };
 }
 
+export interface Author {
+  id: string;
+  name: string;
+  avatar?: string;
+  bio?: string;
+  socialLinks?: Record<string, string>;
+}
+
 /** Полная статья для страницы */
 export interface FullArticle {
   id: string;
@@ -109,7 +125,7 @@ export interface FullArticle {
   category: string;
   categories: string[];
   tags: string[];
-  author?: string;
+  author?: Author;
   readTime?: number;
   imageUrl?: string;
   imageAlt?: string;
@@ -352,7 +368,15 @@ export async function getFullArticleBySlug(
     category: raw.category,
     categories: raw.categories ?? [],
     tags: raw.tags ?? [],
-    author: raw.author ?? undefined,
+    author: raw.author
+      ? {
+          id: raw.author.id,
+          name: raw.author.name,
+          avatar: raw.author.avatar ?? undefined,
+          bio: raw.author.bio ?? undefined,
+          socialLinks: raw.author.social_links ?? undefined,
+        }
+      : undefined,
     readTime: raw.reading_time ?? undefined,
     imageUrl: raw.image_url ?? undefined,
     imageAlt: raw.image_alt ?? undefined,
@@ -398,7 +422,15 @@ export async function getPageBySlug(slug: string): Promise<FullArticle | null> {
     category: raw.category,
     categories: raw.categories ?? [],
     tags: raw.tags ?? [],
-    author: raw.author ?? undefined,
+    author: raw.author
+      ? {
+          id: raw.author.id,
+          name: raw.author.name,
+          avatar: raw.author.avatar ?? undefined,
+          bio: raw.author.bio ?? undefined,
+          socialLinks: raw.author.social_links ?? undefined,
+        }
+      : undefined,
     readTime: raw.reading_time ?? undefined,
     imageUrl: raw.image_url ?? undefined,
     imageAlt: raw.image_alt ?? undefined,

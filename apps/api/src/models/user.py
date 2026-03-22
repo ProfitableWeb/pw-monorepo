@@ -7,7 +7,8 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, String, UniqueConstraint
+from sqlalchemy import Boolean, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin, UUIDMixin
@@ -36,6 +37,8 @@ class User(UUIDMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(200))
     email: Mapped[str] = mapped_column(String(200), unique=True)
     avatar: Mapped[str | None] = mapped_column(String(500))
+    bio: Mapped[str | None] = mapped_column(Text)
+    social_links: Mapped[dict | None] = mapped_column(JSONB)
     role: Mapped[UserRole] = mapped_column(default=UserRole.VIEWER)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     last_login_at: Mapped[datetime | None] = mapped_column(default=None)

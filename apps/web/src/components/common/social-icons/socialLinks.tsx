@@ -95,3 +95,45 @@ export const SOCIAL_LINKS_APPBAR: SocialLink[] = getLinksByName([
  * @deprecated Используйте конкретные конфигурации: SOCIAL_LINKS_FOOTER, SOCIAL_LINKS_AUTHOR, SOCIAL_LINKS_APPBAR
  */
 export const SOCIAL_LINKS: SocialLink[] = ALL_SOCIAL_LINKS;
+
+/**
+ * Маппинг ключей social_links из БД → имя в ALL_SOCIAL_LINKS
+ */
+const KEY_TO_NAME: Record<string, string> = {
+  vk: 'VKontakte',
+  telegram: 'Telegram',
+  dzen: 'Yandex Dzen',
+  github: 'GitHub',
+};
+
+/**
+ * Иконка глобуса — fallback для произвольных ссылок
+ */
+const GLOBE_ICON = (
+  <path
+    d='M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm6.918 6h-3.215a15.89 15.89 0 00-1.394-3.587A8.03 8.03 0 0118.918 8zM12 4.04c.648.923 1.186 1.928 1.588 2.96h-3.176A13.885 13.885 0 0112 4.04zM4.26 14a7.822 7.822 0 010-4h3.692a16.476 16.476 0 000 4H4.26zm.822 2h3.215a15.89 15.89 0 001.394 3.587A8.03 8.03 0 015.082 16zM8.297 8H5.082a8.03 8.03 0 014.609-3.587A15.89 15.89 0 008.297 8zm3.703 11.96A13.885 13.885 0 0110.412 16h3.176A13.885 13.885 0 0112 19.96zm1.932-5.96h-3.864a14.575 14.575 0 010-4h3.864a14.575 14.575 0 010 4zm.377 5.587A15.89 15.89 0 0015.703 16h3.215a8.03 8.03 0 01-4.609 3.587zM16.048 14a16.476 16.476 0 000-4h3.692a7.822 7.822 0 010 4h-3.692z'
+    fill='currentColor'
+  />
+);
+
+/**
+ * Построить список SocialLink[] из пользовательского socialLinks объекта.
+ * Известные платформы получают брендовые иконки, остальные — глобус.
+ */
+export function buildSocialLinks(
+  socialLinks: Record<string, string>
+): SocialLink[] {
+  return Object.entries(socialLinks)
+    .filter(([, url]) => url)
+    .map(([key, url]) => {
+      const knownName = KEY_TO_NAME[key];
+      const known = knownName
+        ? ALL_SOCIAL_LINKS.find(l => l.name === knownName)
+        : undefined;
+      return {
+        name: known?.name ?? key,
+        href: url,
+        icon: known?.icon ?? GLOBE_ICON,
+      };
+    });
+}

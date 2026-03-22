@@ -30,6 +30,8 @@ def _profile_response(user: User, db: Session) -> ProfileResponse:
         name=user.name,
         email=user.email,
         avatar=user.avatar,
+        bio=user.bio,
+        social_links=user.social_links,
         role=user.role.value,
         has_password=user.password_hash is not None,
         oauth_provider=user.oauth_provider,
@@ -53,7 +55,8 @@ def update_profile(
 ) -> ApiResponse[ProfileResponse]:
     try:
         user = user_service.update_profile(
-            db, user, name=body.name, email=body.email
+            db, user, name=body.name, email=body.email,
+            bio=body.bio, social_links=body.social_links,
         )
     except ValueError as e:
         raise HTTPException(

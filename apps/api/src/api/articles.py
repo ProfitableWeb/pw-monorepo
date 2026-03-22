@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from src.core.database import get_db
 from src.models.article import Article
-from src.schemas.articles.public import ArticleListItem, ArticleResponse
+from src.schemas.articles.public import ArticleListItem, ArticleResponse, AuthorProfile
 from src.schemas.common import ApiMeta, ApiResponse
 from src.services.articles import queries as article_service
 
@@ -29,7 +29,13 @@ def _article_to_response(article: Article) -> ArticleResponse:
         category=article.primary_category.slug if article.primary_category else "",
         categories=[c.slug for c in article.categories],
         tags=[t.name for t in article.tags],
-        author=article.author.name if article.author else None,
+        author=AuthorProfile(
+            id=str(article.author.id),
+            name=article.author.name,
+            avatar=article.author.avatar,
+            bio=article.author.bio,
+            social_links=article.author.social_links,
+        ) if article.author else None,
         reading_time=article.reading_time,
         views=article.views,
         layout=article.layout.value if article.layout else "three-column",

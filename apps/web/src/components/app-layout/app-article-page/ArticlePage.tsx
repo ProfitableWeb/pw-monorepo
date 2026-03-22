@@ -65,7 +65,9 @@ const ArticlePage = ({ article, categoryName }: ArticlePageProps) => {
           <ArticleLayout
             layout={layout}
             toc={tocSidebar}
-            sidebar={hasSidebar ? <AuthorCard /> : undefined}
+            sidebar={
+              hasSidebar ? <AuthorCard author={article.author} /> : undefined
+            }
             header={
               <ArticleHeader
                 title={article.title}
@@ -78,6 +80,7 @@ const ArticlePage = ({ article, categoryName }: ArticlePageProps) => {
                 categorySlug={article.category}
                 categoryName={categoryName}
                 showAuthor={!hasSidebar}
+                author={article.author}
               />
             }
           >

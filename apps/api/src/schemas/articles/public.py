@@ -9,6 +9,16 @@ from typing import Any
 from pydantic import BaseModel
 
 
+class AuthorProfile(BaseModel):
+    id: str
+    name: str
+    avatar: str | None = None
+    bio: str | None = None
+    social_links: dict[str, str] | None = None
+
+    model_config = {"from_attributes": True}
+
+
 class ArticleResponse(BaseModel):
     id: str
     title: str
@@ -20,7 +30,7 @@ class ArticleResponse(BaseModel):
     category: str  # primary category slug (backward compat)
     categories: list[str] = []  # все категории (primary + additional)
     tags: list[str] = []
-    author: str | None = None
+    author: AuthorProfile | None = None
     reading_time: int | None = None
     views: int = 0
     layout: str = "three-column"

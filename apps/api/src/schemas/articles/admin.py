@@ -30,6 +30,7 @@ class TagBrief(BaseModel):
 class AuthorBrief(BaseModel):
     id: str
     name: str
+    avatar: str | None = None
 
     model_config = {"from_attributes": True}
 

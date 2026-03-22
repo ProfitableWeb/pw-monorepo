@@ -26,7 +26,11 @@ def _article_to_brief(article: object) -> dict:
         "status": article.status.value if hasattr(article.status, "value") else str(article.status),
         "excerpt": (article.excerpt or "")[:200],
         "category": article.primary_category.name if article.primary_category else None,
-        "author": article.author.name if article.author else None,
+        "author": {
+            "id": str(article.author.id),
+            "name": article.author.name,
+            "avatar": article.author.avatar,
+        } if article.author else None,
         "published_at": article.published_at.isoformat() if article.published_at else None,
         "updated_at": article.updated_at.isoformat() if article.updated_at else None,
         "views": getattr(article, "views", 0),
