@@ -470,12 +470,7 @@ export async function getArticlesByAuthor(
   return (data ?? []).map(mapArticleListItem);
 }
 
-/**
- * Получает публичный профиль основного автора сайта
- */
-export async function getAuthorProfile(): Promise<AuthorProfile | null> {
-  const raw = await apiFetch<AuthorProfileRaw>('/authors/primary');
-  if (!raw) return null;
+function mapAuthorProfile(raw: AuthorProfileRaw): AuthorProfile {
   return {
     id: raw.id,
     name: raw.name,
@@ -486,6 +481,26 @@ export async function getAuthorProfile(): Promise<AuthorProfile | null> {
     socialLinks: raw.social_links ?? undefined,
     articleCount: raw.article_count,
   };
+}
+
+/**
+ * Получает публичный профиль основного автора сайта
+ */
+export async function getAuthorProfile(): Promise<AuthorProfile | null> {
+  const raw = await apiFetch<AuthorProfileRaw>('/authors/primary');
+  if (!raw) return null;
+  return mapAuthorProfile(raw);
+}
+
+/**
+ * Получает публичный профиль автора по ID
+ */
+export async function getAuthorById(id: string): Promise<AuthorProfile | null> {
+  const raw = await apiFetch<AuthorProfileRaw>(
+    `/authors/${encodeURIComponent(id)}`
+  );
+  if (!raw) return null;
+  return mapAuthorProfile(raw);
 }
 
 /**

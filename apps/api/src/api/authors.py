@@ -1,7 +1,10 @@
 """
 PW-063 | Публичный профиль автора.
 GET /api/authors/primary — основной автор сайта (первый admin).
+GET /api/authors/{user_id} — профиль автора по ID.
 """
+
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -11,6 +14,7 @@ from sqlalchemy.orm import Session
 from src.core.database import get_db
 from src.models.article import Article, ArticleStatus, ArticleType
 from src.models.user import User, UserRole
+from src.schemas.common import ApiResponse
 
 
 router = APIRouter(prefix="/authors", tags=["authors"])
@@ -55,8 +59,10 @@ def _user_to_profile(user: User, db: Session) -> AuthorPublicProfile:
     )
 
 
-@router.get("/primary", response_model=AuthorPublicProfile)
-def get_primary_author(db: Session = Depends(get_db)) -> AuthorPublicProfile:
+@router.get("/primary", response_model=ApiResponse[AuthorPublicProfile])
+def get_primary_author(
+    db: Session = Depends(get_db),
+) -> ApiResponse[AuthorPublicProfile]:
     """Публичный профиль основного автора сайта (первый admin)."""
     stmt = (
         select(User)
@@ -67,4 +73,16 @@ def get_primary_author(db: Session = Depends(get_db)) -> AuthorPublicProfile:
     user = db.scalars(stmt).first()
     if not user:
         raise HTTPException(status_code=404, detail="Автор не найден")
-    return _user_to_profile(user, db)
+    return ApiResponse(success=True, data=_user_to_profile(user, db))
+
+
+@router.get("/{user_id}", response_model=ApiResponse[AuthorPublicProfile])
+def get_author_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+) -> ApiResponse[AuthorPublicProfile]:
+    """Публичный профиль автора по ID."""
+    user = db.get(User, user_id)
+    if not user or not user.is_active:
+        raise HTTPException(status_code=404, detail="Автор не найден")
+    return ApiResponse(success=True, data=_user_to_profile(user, db))

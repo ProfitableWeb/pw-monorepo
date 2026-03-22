@@ -38,7 +38,7 @@ export const AuthorPage = ({ author, articles }: AuthorPageProps) => {
     '@type': 'Person',
     name,
     description: bio,
-    url: 'https://profitableweb.ru/author',
+    url: `https://profitableweb.ru/author/${author?.id ?? ''}`,
     image: author?.avatar
       ? `https://profitableweb.ru${author.avatar}`
       : `https://profitableweb.ru${AUTHOR_FALLBACK.avatar}`,
