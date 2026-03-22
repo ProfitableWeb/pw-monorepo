@@ -42,6 +42,8 @@ def _user_response(user: User) -> AuthUserResponse:
         email=user.email,
         avatar=user.avatar,
         role=user.role.value,
+        bio=user.bio,
+        social_links=user.social_links,
     )
 
 

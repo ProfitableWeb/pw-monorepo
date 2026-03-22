@@ -1815,6 +1815,8 @@ interface UserAdminBriefRaw {
 }
 
 interface UserAdminDetailRaw extends UserAdminBriefRaw {
+  bio: string | null;
+  social_links: Record<string, string> | null;
   oauth_providers: string[];
   has_password: boolean;
   updated_at: string;
@@ -1841,6 +1843,8 @@ export interface AdminUserBrief {
 }
 
 export interface AdminUserDetail extends AdminUserBrief {
+  bio: string | null;
+  socialLinks: Record<string, string> | null;
   oauthProviders: string[];
   hasPassword: boolean;
   updatedAt: string;
@@ -1914,7 +1918,14 @@ export async function adminGetUserStats(): Promise<AdminUserListStats> {
 
 export async function adminUpdateUser(
   userId: string,
-  data: { name?: string; email?: string; role?: string; is_active?: boolean }
+  data: {
+    name?: string;
+    email?: string;
+    role?: string;
+    is_active?: boolean;
+    bio?: string | null;
+    social_links?: Record<string, string> | null;
+  }
 ): Promise<AdminUserBrief> {
   const raw = await apiMutate<UserAdminBriefRaw>(
     `/admin/users/${encodeURIComponent(userId)}`,
@@ -1933,6 +1944,8 @@ export async function adminDeleteUser(userId: string): Promise<void> {
 function mapAdminUserDetail(raw: UserAdminDetailRaw): AdminUserDetail {
   return {
     ...mapAdminUserBrief(raw),
+    bio: raw.bio,
+    socialLinks: raw.social_links,
     oauthProviders: raw.oauth_providers,
     hasPassword: raw.has_password,
     updatedAt: raw.updated_at,

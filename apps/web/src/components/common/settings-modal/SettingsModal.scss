@@ -554,7 +554,7 @@
   text-align: right;
 }
 
-// Ссылки
+// Соцсети
 .settings-modal__links-list {
   display: flex;
   flex-direction: column;
@@ -565,6 +565,94 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+// Кастомный dropdown-select для платформ
+.platform-select {
+  position: relative;
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.platform-select__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-background);
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    border-color: var(--input-border-focus);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px var(--input-border-focus-light, rgba(90, 220, 90, 0.1));
+  }
+}
+
+.platform-select__placeholder {
+  color: var(--input-placeholder);
+}
+
+.platform-select__chevron {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--input-placeholder);
+}
+
+.platform-select__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  width: 100%;
+  min-width: 160px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-background);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.platform-select__option {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: var(--color-bg-hover, rgba(255, 255, 255, 0.06));
+  }
+
+  &--active {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
 }
 
 .settings-modal__link-remove {

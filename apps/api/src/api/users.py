@@ -54,10 +54,8 @@ def update_profile(
     db: Session = Depends(get_db),
 ) -> ApiResponse[ProfileResponse]:
     try:
-        user = user_service.update_profile(
-            db, user, name=body.name, email=body.email,
-            bio=body.bio, social_links=body.social_links,
-        )
+        fields = body.model_dump(exclude_unset=True)
+        user = user_service.update_profile(db, user, **fields)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=str(e)

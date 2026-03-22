@@ -6,8 +6,8 @@
 import { Feed } from 'feed';
 
 import { baseUrl, coreMetadata } from '@/config/metadata';
-import { AUTHOR_DATA } from '@/config/author';
-import { getAllArticles } from '@/lib/api-client';
+import { AUTHOR_FALLBACK } from '@/config/author';
+import { getAllArticles, getAuthorProfile } from '@/lib/api-client';
 import { getSeoConfig } from '@/lib/seo-config';
 
 export const revalidate = 3600; // 1 час
@@ -20,6 +20,11 @@ export async function GET() {
   }
 
   const { rssConfig } = config;
+
+  const author = await getAuthorProfile();
+  const authorName = author?.name ?? AUTHOR_FALLBACK.name;
+  const authorEmail = author?.email ?? AUTHOR_FALLBACK.email;
+  const authorUrl = `${baseUrl}/author`;
 
   const feed = new Feed({
     title: coreMetadata.title.default,
@@ -35,9 +40,9 @@ export async function GET() {
       atom: `${baseUrl}/feed.xml`,
     },
     author: {
-      name: AUTHOR_DATA.name,
-      email: AUTHOR_DATA.email,
-      link: AUTHOR_DATA.url,
+      name: authorName,
+      email: authorEmail,
+      link: authorUrl,
     },
   });
 
@@ -55,9 +60,9 @@ export async function GET() {
         image: article.imageUrl ? `${baseUrl}${article.imageUrl}` : undefined,
         author: [
           {
-            name: AUTHOR_DATA.name,
-            email: AUTHOR_DATA.email,
-            link: AUTHOR_DATA.url,
+            name: authorName,
+            email: authorEmail,
+            link: authorUrl,
           },
         ],
       });

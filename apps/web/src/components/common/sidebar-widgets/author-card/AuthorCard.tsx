@@ -6,7 +6,7 @@ import {
   SOCIAL_LINKS_AUTHOR,
   buildSocialLinks,
 } from '@/components/common/social-icons';
-import { AUTHOR_DATA } from '@/config/author';
+import { AUTHOR_FALLBACK } from '@/config/author';
 import type { Author } from '@/lib/api-client';
 import './AuthorCard.scss';
 
@@ -15,9 +15,9 @@ interface AuthorCardProps {
 }
 
 export const AuthorCard = ({ author }: AuthorCardProps) => {
-  const name = author?.name ?? AUTHOR_DATA.name;
-  const bio = author?.bio ?? AUTHOR_DATA.description;
-  const avatar = author?.avatar ?? '/imgs/author/avatar.jpg';
+  const name = author?.name ?? AUTHOR_FALLBACK.name;
+  const bio = author?.bio ?? AUTHOR_FALLBACK.description;
+  const avatar = author?.avatar ?? AUTHOR_FALLBACK.avatar;
   const socialLinks = author?.socialLinks
     ? buildSocialLinks(author.socialLinks)
     : SOCIAL_LINKS_AUTHOR;

@@ -1,7 +1,7 @@
 {
   "name": "@profitable-web/web",
   "version": "0.1.0",
-  "description": "Next.js 16 frontend для исследовательского блога по монетизации хобби с чистым SCSS",
+  "description": "Next.js 16 frontend для исследовательского блога ProfitableWeb с SCSS-модулями",
   "license": "MIT",
   "private": true,
   "scripts": {

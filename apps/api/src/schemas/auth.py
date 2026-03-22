@@ -22,6 +22,8 @@ class AuthUserResponse(BaseModel):
     email: str
     avatar: str | None = None
     role: str
+    bio: str | None = None
+    social_links: dict[str, str] | None = None
 
     model_config = {"from_attributes": True}
 

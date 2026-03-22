@@ -15,7 +15,7 @@ export interface User {
   avatar?: string;
   role: string;
   bio?: string;
-  links?: string[];
+  socialLinks?: Record<string, string>;
 }
 
 export type AuthProvider = 'yandex' | 'telegram' | 'google';
@@ -41,6 +41,8 @@ function mapAuthUserToUser(raw: AuthUser): User {
     email: raw.email,
     avatar: raw.avatar,
     role: raw.role,
+    bio: raw.bio,
+    socialLinks: raw.socialLinks,
   };
 }
 

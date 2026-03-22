@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AUTHOR_SCHEMA, AUTHOR_DATA } from '@/config/author';
+import { AUTHOR_FALLBACK } from '@/config/author';
 import { ArticleAuthorAvatar } from './avatar';
 import { ArticleAuthorMeta } from './meta';
 import { ArticleAuthorDivider } from './divider';
@@ -25,22 +25,20 @@ export const ArticleAuthorBlock = ({
   author,
   className = '',
 }: ArticleAuthorBlockProps) => {
-  const name = author?.name ?? AUTHOR_DATA.name;
-  const description = author?.bio ?? AUTHOR_DATA.description;
-  const avatarSrc = author?.avatar ?? '/imgs/author/avatar.jpg';
+  const name = author?.name ?? AUTHOR_FALLBACK.name;
+  const description = author?.bio ?? AUTHOR_FALLBACK.description;
+  const avatarSrc = author?.avatar ?? AUTHOR_FALLBACK.avatar;
 
-  const jsonLd = author
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name,
-        description,
-        image: author.avatar,
-        sameAs: author.socialLinks
-          ? Object.values(author.socialLinks)
-          : undefined,
-      }
-    : AUTHOR_SCHEMA;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    description,
+    image: avatarSrc,
+    ...(author?.socialLinks && {
+      sameAs: Object.values(author.socialLinks),
+    }),
+  };
 
   return (
     <div className={`article-author-block ${className}`}>

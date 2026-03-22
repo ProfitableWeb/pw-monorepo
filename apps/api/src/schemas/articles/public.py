@@ -12,6 +12,7 @@ from pydantic import BaseModel
 class AuthorProfile(BaseModel):
     id: str
     name: str
+    job_title: str | None = None
     avatar: str | None = None
     bio: str | None = None
     social_links: dict[str, str] | None = None

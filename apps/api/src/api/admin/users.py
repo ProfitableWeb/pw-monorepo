@@ -65,6 +65,8 @@ def _to_detail(user: User, db: Session) -> UserAdminDetailResponse:
         updated_at=user.updated_at,
         last_login_at=user.last_login_at,
         articles_count=articles_count,
+        bio=user.bio,
+        social_links=user.social_links,
         oauth_providers=providers,
         has_password=user.password_hash is not None,
     )

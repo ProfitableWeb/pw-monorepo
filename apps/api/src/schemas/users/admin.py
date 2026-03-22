@@ -24,6 +24,8 @@ class UserAdminBriefResponse(BaseModel):
 
 class UserAdminDetailResponse(UserAdminBriefResponse):
     """Детальная карточка пользователя."""
+    bio: str | None = None
+    social_links: dict[str, str] | None = None
     oauth_providers: list[str] = []
     has_password: bool = False
     updated_at: datetime
@@ -37,6 +39,8 @@ class UserAdminUpdateRequest(BaseModel):
     email: EmailStr | None = None
     role: str | None = None
     is_active: bool | None = None
+    bio: str | None = None
+    social_links: dict[str, str] | None = None
 
     @field_validator("role")
     @classmethod

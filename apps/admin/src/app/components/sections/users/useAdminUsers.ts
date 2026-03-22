@@ -63,6 +63,8 @@ export function useUpdateUser() {
         email?: string;
         role?: string;
         is_active?: boolean;
+        bio?: string | null;
+        social_links?: Record<string, string> | null;
       };
     }) => adminUpdateUser(userId, data),
     onSuccess: (_data, vars) => {

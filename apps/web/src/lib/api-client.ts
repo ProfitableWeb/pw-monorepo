@@ -63,9 +63,15 @@ interface ArticleListItemRaw {
 interface AuthorRaw {
   id: string;
   name: string;
+  job_title?: string | null;
   avatar?: string | null;
   bio?: string | null;
+  email?: string | null;
   social_links?: Record<string, string> | null;
+}
+
+interface AuthorProfileRaw extends AuthorRaw {
+  article_count: number;
 }
 
 /** Полный ответ статьи (включая content, toc, artifacts, layout) */
@@ -109,9 +115,16 @@ interface ArtifactsRaw {
 export interface Author {
   id: string;
   name: string;
+  jobTitle?: string;
   avatar?: string;
   bio?: string;
+  email?: string;
   socialLinks?: Record<string, string>;
+}
+
+/** Расширенный публичный профиль автора */
+export interface AuthorProfile extends Author {
+  articleCount: number;
 }
 
 /** Полная статья для страницы */
@@ -372,6 +385,7 @@ export async function getFullArticleBySlug(
       ? {
           id: raw.author.id,
           name: raw.author.name,
+          jobTitle: raw.author.job_title ?? undefined,
           avatar: raw.author.avatar ?? undefined,
           bio: raw.author.bio ?? undefined,
           socialLinks: raw.author.social_links ?? undefined,
@@ -426,6 +440,7 @@ export async function getPageBySlug(slug: string): Promise<FullArticle | null> {
       ? {
           id: raw.author.id,
           name: raw.author.name,
+          jobTitle: raw.author.job_title ?? undefined,
           avatar: raw.author.avatar ?? undefined,
           bio: raw.author.bio ?? undefined,
           socialLinks: raw.author.social_links ?? undefined,
@@ -453,6 +468,24 @@ export async function getArticlesByAuthor(
     `/articles?author=${encodeURIComponent(authorName)}&limit=100`
   );
   return (data ?? []).map(mapArticleListItem);
+}
+
+/**
+ * Получает публичный профиль основного автора сайта
+ */
+export async function getAuthorProfile(): Promise<AuthorProfile | null> {
+  const raw = await apiFetch<AuthorProfileRaw>('/authors/primary');
+  if (!raw) return null;
+  return {
+    id: raw.id,
+    name: raw.name,
+    jobTitle: raw.job_title ?? undefined,
+    avatar: raw.avatar ?? undefined,
+    bio: raw.bio ?? undefined,
+    email: raw.email ?? undefined,
+    socialLinks: raw.social_links ?? undefined,
+    articleCount: raw.article_count,
+  };
 }
 
 /**
@@ -496,6 +529,8 @@ interface AuthUserRaw {
   email: string;
   avatar?: string | null;
   role: string;
+  bio?: string | null;
+  social_links?: Record<string, string> | null;
 }
 
 export interface AuthUser {
@@ -504,6 +539,8 @@ export interface AuthUser {
   email: string;
   avatar?: string;
   role: string;
+  bio?: string;
+  socialLinks?: Record<string, string>;
 }
 
 function mapAuthUser(raw: AuthUserRaw): AuthUser {
@@ -513,6 +550,8 @@ function mapAuthUser(raw: AuthUserRaw): AuthUser {
     email: raw.email,
     avatar: raw.avatar ?? undefined,
     role: raw.role,
+    bio: raw.bio ?? undefined,
+    socialLinks: raw.social_links ?? undefined,
   };
 }
 
@@ -607,7 +646,7 @@ interface ProfileRaw {
   avatar?: string | null;
   role: string;
   bio?: string | null;
-  links?: string[];
+  social_links?: Record<string, string> | null;
   has_password: boolean;
   oauth_provider?: string | null;
   oauth_providers?: string[];
@@ -620,7 +659,7 @@ export interface UserProfile {
   avatar?: string;
   role: string;
   bio?: string;
-  links?: string[];
+  socialLinks?: Record<string, string>;
   hasPassword: boolean;
   oauthProvider?: string;
   oauthProviders: string[];
@@ -634,7 +673,7 @@ function mapProfile(raw: ProfileRaw): UserProfile {
     avatar: raw.avatar ?? undefined,
     role: raw.role,
     bio: raw.bio ?? undefined,
-    links: raw.links ?? [],
+    socialLinks: raw.social_links ?? undefined,
     hasPassword: raw.has_password,
     oauthProvider: raw.oauth_provider ?? undefined,
     oauthProviders: raw.oauth_providers ?? [],
@@ -649,7 +688,7 @@ export async function getProfile(): Promise<UserProfile | null> {
 export async function updateProfile(updates: {
   name?: string;
   bio?: string;
-  links?: string[];
+  social_links?: Record<string, string>;
 }): Promise<UserProfile> {
   const data = await apiFetch<ProfileRaw>('/users/me', {
     method: 'PATCH',

@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
+import { Textarea } from '@/app/components/ui/textarea';
 import {
   ArrowLeft,
   Mail,
@@ -30,6 +31,7 @@ import {
   Trash2,
   Camera,
   X,
+  Plus,
 } from 'lucide-react';
 import { cn } from '@/app/components/ui/utils';
 import { formatDate, LoadingSpinner } from '@/app/components/common';
@@ -111,6 +113,10 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formRole, setFormRole] = useState<UserBrief['role']>('viewer');
+  const [formBio, setFormBio] = useState('');
+  const [formSocialLinks, setFormSocialLinks] = useState<
+    { key: string; url: string }[]
+  >([]);
 
   // Синхронизация формы с данными сервера
   useEffect(() => {
@@ -118,6 +124,12 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
       setFormName(user.name);
       setFormEmail(user.email);
       setFormRole(user.role as UserBrief['role']);
+      setFormBio(user.bio ?? '');
+      setFormSocialLinks(
+        user.socialLinks
+          ? Object.entries(user.socialLinks).map(([key, url]) => ({ key, url }))
+          : []
+      );
     }
   }, [user]);
 
@@ -159,18 +171,50 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
     articlesCount: user.articlesCount,
   };
 
+  /** Сериализация formSocialLinks в Record для API */
+  const socialLinksToRecord = (): Record<string, string> | null => {
+    const valid = formSocialLinks.filter(l => l.key && l.url.trim());
+    if (valid.length === 0) return null;
+    return Object.fromEntries(valid.map(l => [l.key, l.url.trim()]));
+  };
+
+  const originalSocialLinks = user.socialLinks
+    ? JSON.stringify(
+        Object.entries(user.socialLinks).sort(([a], [b]) => a.localeCompare(b))
+      )
+    : null;
+  const currentSocialLinks = socialLinksToRecord();
+  const currentSocialLinksStr = currentSocialLinks
+    ? JSON.stringify(
+        Object.entries(currentSocialLinks).sort(([a], [b]) =>
+          a.localeCompare(b)
+        )
+      )
+    : null;
+
   const hasChanges =
     formName.trim() !== user.name ||
     formEmail.trim() !== user.email ||
-    formRole !== role;
+    formRole !== role ||
+    formBio.trim() !== (user.bio ?? '') ||
+    originalSocialLinks !== currentSocialLinksStr;
 
   const isValid = formName.trim().length > 0 && formEmail.trim().length > 0;
 
   const handleSave = () => {
-    const data: { name?: string; email?: string; role?: string } = {};
+    const data: {
+      name?: string;
+      email?: string;
+      role?: string;
+      bio?: string | null;
+      social_links?: Record<string, string> | null;
+    } = {};
     if (formName.trim() !== user.name) data.name = formName.trim();
     if (formEmail.trim() !== user.email) data.email = formEmail.trim();
     if (formRole !== role) data.role = formRole;
+    if (formBio.trim() !== (user.bio ?? '')) data.bio = formBio.trim() || null;
+    if (originalSocialLinks !== currentSocialLinksStr)
+      data.social_links = socialLinksToRecord();
 
     updateUser.mutate(
       { userId: user.id, data },
@@ -188,6 +232,12 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
     setFormName(user.name);
     setFormEmail(user.email);
     setFormRole(role);
+    setFormBio(user.bio ?? '');
+    setFormSocialLinks(
+      user.socialLinks
+        ? Object.entries(user.socialLinks).map(([key, url]) => ({ key, url }))
+        : []
+    );
   };
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,6 +434,116 @@ export function UserProfile({ userId, onBack }: UserProfileProps) {
                     ? `${user.articlesCount} статей`
                     : 'Нет статей'}
                 </span>
+              </div>
+
+              {hasChanges && (
+                <div className='flex items-center gap-2 pt-2'>
+                  <Button
+                    size='sm'
+                    onClick={handleSave}
+                    disabled={!isValid || updateUser.isPending}
+                  >
+                    {updateUser.isPending && (
+                      <Loader2 className='size-4 mr-2 animate-spin' />
+                    )}
+                    Сохранить
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={handleReset}
+                    disabled={updateUser.isPending}
+                  >
+                    Отменить
+                  </Button>
+                </div>
+              )}
+            </div>
+          </InfoSection>
+
+          {/* Биография и ссылки */}
+          <InfoSection title='Профиль автора'>
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <Label
+                  htmlFor='profile-bio'
+                  className='text-sm text-muted-foreground'
+                >
+                  Биография
+                </Label>
+                <Textarea
+                  id='profile-bio'
+                  value={formBio}
+                  onChange={e => setFormBio(e.target.value)}
+                  placeholder='Краткая биография автора...'
+                  className='max-w-lg min-h-[80px]'
+                />
+              </div>
+
+              <div className='space-y-2'>
+                <Label className='text-sm text-muted-foreground'>
+                  Социальные ссылки
+                </Label>
+                <div className='space-y-2 max-w-lg'>
+                  {formSocialLinks.map((link, i) => (
+                    <div key={i} className='flex items-center gap-2'>
+                      <Select
+                        value={link.key}
+                        onValueChange={v => {
+                          const next = [...formSocialLinks];
+                          next[i] = { key: v, url: link.url };
+                          setFormSocialLinks(next);
+                        }}
+                      >
+                        <SelectTrigger className='w-[140px]'>
+                          <SelectValue placeholder='Платформа' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='vk'>VKontakte</SelectItem>
+                          <SelectItem value='telegram'>Telegram</SelectItem>
+                          <SelectItem value='dzen'>Дзен</SelectItem>
+                          <SelectItem value='github'>GitHub</SelectItem>
+                          <SelectItem value='website'>Сайт</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={link.url}
+                        onChange={e => {
+                          const next = [...formSocialLinks];
+                          next[i] = { key: link.key, url: e.target.value };
+                          setFormSocialLinks(next);
+                        }}
+                        placeholder='https://...'
+                        className='flex-1'
+                      />
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='size-8 flex-shrink-0'
+                        onClick={() =>
+                          setFormSocialLinks(
+                            formSocialLinks.filter((_, j) => j !== i)
+                          )
+                        }
+                      >
+                        <X className='size-4' />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() =>
+                      setFormSocialLinks([
+                        ...formSocialLinks,
+                        { key: 'website', url: '' },
+                      ])
+                    }
+                  >
+                    <Plus className='size-4 mr-2' />
+                    Добавить ссылку
+                  </Button>
+                </div>
               </div>
 
               {hasChanges && (

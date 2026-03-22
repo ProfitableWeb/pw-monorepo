@@ -218,9 +218,9 @@ import { ArticleAuthorAvatar, ArticleAuthorMeta, ArticleAuthorDescription } from
 
 | Prop          | Тип       | По умолчанию              | Описание                 |
 | ------------- | --------- | ------------------------- | ------------------------ |
-| `name`        | `string?` | Из `AUTHOR_DATA`          | Имя автора               |
-| `description` | `string?` | Из `AUTHOR_DATA`          | Описание/биография       |
-| `jobTitle`    | `string?` | Из `AUTHOR_DATA`          | Должность автора         |
+| `name`        | `string?` | Из `AUTHOR_FALLBACK`      | Имя автора               |
+| `description` | `string?` | Из `AUTHOR_FALLBACK`      | Описание/биография       |
+| `jobTitle`    | `string?` | Из `AUTHOR_FALLBACK`      | Должность автора         |
 | `avatarSrc`   | `string?` | `/imgs/author/avatar.jpg` | URL аватара              |
 | `className`   | `string?` | `''`                      | Дополнительный CSS класс |
 

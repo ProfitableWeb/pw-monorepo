@@ -177,6 +177,7 @@ def update_profile(
     *,
     name: str | None = None,
     email: str | None = None,
+    job_title: str | None = ...,
     bio: str | None = ...,
     social_links: dict[str, str] | None = ...,
 ) -> User:
@@ -188,6 +189,8 @@ def update_profile(
             msg = "Пользователь с таким email уже существует"
             raise ValueError(msg)
         user.email = email
+    if job_title is not ...:
+        user.job_title = job_title
     if bio is not ...:
         user.bio = bio
     if social_links is not ...:
@@ -294,6 +297,8 @@ def update_user_admin(
     email: str | None = None,
     role: str | None = None,
     is_active: bool | None = None,
+    bio: str | None = ...,
+    social_links: dict[str, str] | None = ...,
 ) -> User:
     """Обновление пользователя администратором (включая роль)."""
     if name is not None:
@@ -308,6 +313,10 @@ def update_user_admin(
         user.role = UserRole(role)
     if is_active is not None:
         user.is_active = is_active
+    if bio is not ...:
+        user.bio = bio
+    if social_links is not ...:
+        user.social_links = social_links
     db.commit()
     db.refresh(user)
     return user

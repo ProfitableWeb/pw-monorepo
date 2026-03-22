@@ -3,18 +3,33 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SocialIcons from '@/components/common/social-icons';
-import { SOCIAL_LINKS_AUTHOR } from '@/components/common/social-icons';
-import { AUTHOR_DATA } from '@/config/author';
+import {
+  SOCIAL_LINKS_AUTHOR,
+  buildSocialLinks,
+} from '@/components/common/social-icons';
+import { AUTHOR_FALLBACK } from '@/config/author';
+import type { AuthorProfile } from '@/lib/api-client';
 import {
   containerVariants,
   itemVariants,
 } from '@/components/app-layout/app-category-page/category-page-header/CategoryPageHeader.animations';
 import './AuthorPageHeader.scss';
 
+interface AuthorPageHeaderProps {
+  author: AuthorProfile | null;
+}
+
 /**
  * Шапка страницы автора (аналог CategoryPageHeader)
  */
-const AuthorPageHeader = () => {
+const AuthorPageHeader = ({ author }: AuthorPageHeaderProps) => {
+  const name = author?.name ?? AUTHOR_FALLBACK.name;
+  const jobTitle = author?.jobTitle ?? AUTHOR_FALLBACK.jobTitle;
+  const avatar = author?.avatar ?? AUTHOR_FALLBACK.avatar;
+  const socialLinks = author?.socialLinks
+    ? buildSocialLinks(author.socialLinks)
+    : SOCIAL_LINKS_AUTHOR;
+
   return (
     <motion.section
       className='author-page-header'
@@ -29,8 +44,8 @@ const AuthorPageHeader = () => {
             variants={itemVariants}
           >
             <img
-              src={AUTHOR_DATA.avatar}
-              alt={AUTHOR_DATA.name}
+              src={avatar}
+              alt={name}
               className='author-page-header__avatar'
             />
           </motion.div>
@@ -40,19 +55,19 @@ const AuthorPageHeader = () => {
               className='author-page-header__title'
               variants={itemVariants}
             >
-              {AUTHOR_DATA.name}
+              {name}
             </motion.h1>
             <motion.p
               className='author-page-header__subtitle'
               variants={itemVariants}
             >
-              {AUTHOR_DATA.jobTitle}
+              {jobTitle}
             </motion.p>
             <motion.div
               className='author-page-header__socials'
               variants={itemVariants}
             >
-              <SocialIcons size='lg' links={SOCIAL_LINKS_AUTHOR} />
+              <SocialIcons size='lg' links={socialLinks} />
             </motion.div>
           </div>
         </div>

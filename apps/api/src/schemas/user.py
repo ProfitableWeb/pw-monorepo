@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr, field_validator
 class UpdateProfileRequest(BaseModel):
     name: str | None = None
     email: EmailStr | None = None
+    job_title: str | None = None
     bio: str | None = None
     social_links: dict[str, str] | None = None
 
@@ -53,6 +54,7 @@ class ProfileResponse(BaseModel):
     id: str
     name: str
     email: str
+    job_title: str | None = None
     avatar: str | None = None
     bio: str | None = None
     social_links: dict[str, str] | None = None

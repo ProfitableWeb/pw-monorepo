@@ -32,6 +32,7 @@ def _article_to_response(article: Article) -> ArticleResponse:
         author=AuthorProfile(
             id=str(article.author.id),
             name=article.author.name,
+            job_title=article.author.job_title,
             avatar=article.author.avatar,
             bio=article.author.bio,
             social_links=article.author.social_links,

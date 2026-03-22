@@ -1,4 +1,4 @@
-import { AUTHOR_SCHEMA } from '@/config/author';
+import { AUTHOR_FALLBACK } from '@/config/author';
 import { Article } from '@/components/common/masonry/types';
 import { Category } from '@/types';
 import type { ArticleCommentThread } from '@profitable-web/types';
@@ -32,7 +32,11 @@ export function generateArticleJsonLd(article: Article) {
     datePublished: article.createdAt,
     image: article.imageUrl,
     url: `https://profitableweb.ru/${article.slug}`, // Короткий URL без /articles/
-    author: AUTHOR_SCHEMA,
+    author: {
+      '@type': 'Person',
+      name: AUTHOR_FALLBACK.name,
+      url: 'https://profitableweb.ru/author',
+    },
     ...(article.category && {
       articleSection: article.category,
     }),
@@ -105,7 +109,11 @@ export function generateBlogPostingWithCommentsJsonLd(
     ...(articleLike.description && { description: articleLike.description }),
     datePublished: articleLike.datePublished,
     url: articleLike.url,
-    author: AUTHOR_SCHEMA,
+    author: {
+      '@type': 'Person',
+      name: AUTHOR_FALLBACK.name,
+      url: 'https://profitableweb.ru/author',
+    },
     commentCount: count,
     comment: commentList,
   };

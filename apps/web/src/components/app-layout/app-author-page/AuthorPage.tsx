@@ -7,19 +7,46 @@ import AppFooter from '@/components/app-layout/app-footer';
 import { MasonryGrid } from '@/components/common/masonry';
 import { Article } from '@/components/common/masonry/types';
 import SocialIcons from '@/components/common/social-icons';
-import { SOCIAL_LINKS_AUTHOR } from '@/components/common/social-icons';
-import { AUTHOR_DATA, AUTHOR_SCHEMA } from '@/config/author';
+import {
+  SOCIAL_LINKS_AUTHOR,
+  buildSocialLinks,
+} from '@/components/common/social-icons';
+import { AUTHOR_FALLBACK } from '@/config/author';
+import type { AuthorProfile } from '@/lib/api-client';
 import AuthorPageHeader from './author-page-header';
 import './AuthorPage.scss';
 
 interface AuthorPageProps {
+  author: AuthorProfile | null;
   articles: Article[];
 }
 
 /**
  * AuthorPage - компонент страницы автора
  */
-export const AuthorPage = ({ articles }: AuthorPageProps) => {
+export const AuthorPage = ({ author, articles }: AuthorPageProps) => {
+  const name = author?.name ?? AUTHOR_FALLBACK.name;
+  const bio = author?.bio ?? AUTHOR_FALLBACK.description;
+  const email = author?.email ?? AUTHOR_FALLBACK.email;
+  const socialLinks = author?.socialLinks
+    ? buildSocialLinks(author.socialLinks)
+    : SOCIAL_LINKS_AUTHOR;
+  const bioParagraphs = bio ? bio.split('\n\n').filter(Boolean) : [];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    description: bio,
+    url: 'https://profitableweb.ru/author',
+    image: author?.avatar
+      ? `https://profitableweb.ru${author.avatar}`
+      : `https://profitableweb.ru${AUTHOR_FALLBACK.avatar}`,
+    ...(author?.socialLinks && {
+      sameAs: Object.values(author.socialLinks),
+    }),
+  };
+
   return (
     <div className='author-page'>
       <AppBar />
@@ -28,10 +55,10 @@ export const AuthorPage = ({ articles }: AuthorPageProps) => {
           {/* JSON-LD для SEO */}
           <script
             type='application/ld+json'
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(AUTHOR_SCHEMA) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
 
-          <AuthorPageHeader />
+          <AuthorPageHeader author={author} />
 
           <div className='author-page__container'>
             <div className='author-page__triptych'>
@@ -39,28 +66,13 @@ export const AuthorPage = ({ articles }: AuthorPageProps) => {
               <section className='author-page__triptych-item'>
                 <h2 className='author-page__section-title'>Об авторе</h2>
                 <div className='author-page__bio-text'>
-                  {AUTHOR_DATA.bio.map((paragraph, index) => (
+                  {bioParagraphs.map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>
                   ))}
                 </div>
               </section>
 
-              {/* Блок 2: Специализация */}
-              <section className='author-page__triptych-item'>
-                <h2 className='author-page__section-title'>Фокус</h2>
-                <div className='author-page__specialization'>
-                  {AUTHOR_DATA.specialization.map((item, index) => (
-                    <div key={index} className='author-page__spec-item'>
-                      <span className='author-page__spec-label'>
-                        {item.label}
-                      </span>
-                      <p className='author-page__spec-value'>{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Блок 3: Контакты */}
+              {/* Блок 2: Контакты */}
               <section className='author-page__triptych-item'>
                 <h2 className='author-page__section-title'>Связь</h2>
                 <div className='author-page__contacts-minimal'>
@@ -68,14 +80,16 @@ export const AuthorPage = ({ articles }: AuthorPageProps) => {
                     Открыт для обсуждения новых идей, исследований и
                     сотрудничества.
                   </p>
-                  <a
-                    href={`mailto:${AUTHOR_DATA.email}`}
-                    className='author-page__email-minimal'
-                  >
-                    {AUTHOR_DATA.email}
-                  </a>
+                  {email && (
+                    <a
+                      href={`mailto:${email}`}
+                      className='author-page__email-minimal'
+                    >
+                      {email}
+                    </a>
+                  )}
                   <div className='author-page__socials-minimal'>
-                    <SocialIcons size='md' links={SOCIAL_LINKS_AUTHOR} />
+                    <SocialIcons size='md' links={socialLinks} />
                   </div>
                 </div>
               </section>

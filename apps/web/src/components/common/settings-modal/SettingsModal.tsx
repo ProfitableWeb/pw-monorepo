@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from 'react';
+import { LuChevronDown } from 'react-icons/lu';
 import { Modal } from '@/components/common/modal';
 import { Input, Button, FancyButton } from '@/components/common/form-controls';
 import {
@@ -35,6 +42,77 @@ import {
 import type { UserSettings, SettingsTab } from '@profitable-web/types';
 import { DEFAULT_USER_SETTINGS } from '@profitable-web/types';
 import './SettingsModal.scss';
+
+/** Кастомный dropdown-select для выбора платформы */
+function PlatformSelect({
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const selected = useMemo(
+    () => options.find(o => o.value === value),
+    [options, value]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className='platform-select'>
+      <button
+        type='button'
+        className='platform-select__trigger'
+        onClick={() => setOpen(!open)}
+      >
+        <span className={selected ? '' : 'platform-select__placeholder'}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <LuChevronDown className='platform-select__chevron' />
+      </button>
+      {open && (
+        <ul className='platform-select__menu'>
+          {options.map(opt => (
+            <li key={opt.value}>
+              <button
+                type='button'
+                className={`platform-select__option${opt.value === value ? ' platform-select__option--active' : ''}`}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+              >
+                {opt.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -265,12 +343,48 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [bio, setBio] = useState(user?.bio || '');
-    const [links, setLinks] = useState<string[]>(user?.links || []);
+    const [socialLinks, setSocialLinks] = useState<
+      { key: string; url: string }[]
+    >(() => {
+      const sl = user?.socialLinks;
+      if (!sl || Object.keys(sl).length === 0) return [];
+      return Object.entries(sl).map(([key, url]) => ({ key, url }));
+    });
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Синхронизация формы при обновлении user (напр. после checkAuth)
+    useEffect(() => {
+      setName(user?.name || '');
+      setEmail(user?.email || '');
+      setBio(user?.bio || '');
+      const sl = user?.socialLinks;
+      setSocialLinks(
+        sl && Object.keys(sl).length > 0
+          ? Object.entries(sl).map(([key, url]) => ({ key, url }))
+          : []
+      );
+    }, [user]);
+
     const MAX_LINKS = 5;
+    const PLATFORM_OPTIONS = [
+      { value: 'vk', label: 'VKontakte' },
+      { value: 'telegram', label: 'Telegram' },
+      { value: 'dzen', label: 'Yandex Dzen' },
+      { value: 'github', label: 'GitHub' },
+      { value: 'website', label: 'Сайт' },
+    ];
+
+    const socialLinksToRecord = (
+      items: { key: string; url: string }[]
+    ): Record<string, string> => {
+      const result: Record<string, string> = {};
+      for (const { key, url } of items) {
+        if (key && url.trim()) result[key] = url.trim();
+      }
+      return result;
+    };
 
     const emailChanged = email !== (user?.email || '');
     const [emailVerificationSent, setEmailVerificationSent] = useState(false);
@@ -278,23 +392,31 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
     const hasProfileChanges =
       name !== (user?.name || '') ||
       bio !== (user?.bio || '') ||
-      JSON.stringify(links) !== JSON.stringify(user?.links || []);
+      JSON.stringify(socialLinksToRecord(socialLinks)) !==
+        JSON.stringify(user?.socialLinks || {});
 
     const handleSaveProfile = async () => {
       setSaving(true);
       try {
-        const updates: { name?: string; bio?: string; links?: string[] } = {};
+        const updates: {
+          name?: string;
+          bio?: string;
+          social_links?: Record<string, string>;
+        } = {};
         if (name !== user?.name) updates.name = name;
         if (bio !== (user?.bio || '')) updates.bio = bio;
-        const filteredLinks = links.filter(l => l.trim() !== '');
-        if (JSON.stringify(filteredLinks) !== JSON.stringify(user?.links || []))
-          updates.links = filteredLinks;
+        const newSocialLinks = socialLinksToRecord(socialLinks);
+        if (
+          JSON.stringify(newSocialLinks) !==
+          JSON.stringify(user?.socialLinks || {})
+        )
+          updates.social_links = newSocialLinks;
         const result = await updateProfile(updates);
         updateUser({
           name: result.name,
           email: result.email,
           bio: result.bio,
-          links: result.links,
+          socialLinks: result.socialLinks,
         });
         toast.success('Профиль обновлён');
       } catch (error) {
@@ -474,35 +596,49 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
         </div>
 
         <div className='settings-modal__form-group'>
-          <label className='input__label'>Ссылки</label>
+          <label className='input__label'>Соцсети</label>
           <div className='settings-modal__links-list'>
-            {links.map((link, index) => (
+            {socialLinks.map((item, index) => (
               <div key={index} className='settings-modal__link-row'>
+                <PlatformSelect
+                  value={item.key}
+                  options={PLATFORM_OPTIONS}
+                  placeholder='Платформа'
+                  onChange={key => {
+                    const updated = [...socialLinks];
+                    updated[index] = { ...item, key };
+                    setSocialLinks(updated);
+                  }}
+                />
                 <Input
                   placeholder='https://...'
-                  value={link}
+                  value={item.url}
                   onChange={e => {
-                    const updated = [...links];
-                    updated[index] = e.target.value;
-                    setLinks(updated);
+                    const updated = [...socialLinks];
+                    updated[index] = { ...item, url: e.target.value };
+                    setSocialLinks(updated);
                   }}
                   fullWidth
                 />
                 <button
                   type='button'
                   className='settings-modal__link-remove'
-                  onClick={() => setLinks(links.filter((_, i) => i !== index))}
+                  onClick={() =>
+                    setSocialLinks(socialLinks.filter((_, i) => i !== index))
+                  }
                   aria-label='Удалить ссылку'
                 >
                   <LuTrash2 />
                 </button>
               </div>
             ))}
-            {links.length < MAX_LINKS && (
+            {socialLinks.length < MAX_LINKS && (
               <Button
                 variant='outline'
                 size='sm'
-                onClick={() => setLinks([...links, ''])}
+                onClick={() =>
+                  setSocialLinks([...socialLinks, { key: '', url: '' }])
+                }
               >
                 <LuPlus /> Добавить ссылку
               </Button>
@@ -529,7 +665,12 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                 setEmail(user?.email || '');
                 setEmailVerificationSent(false);
                 setBio(user?.bio || '');
-                setLinks(user?.links || []);
+                const sl = user?.socialLinks;
+                setSocialLinks(
+                  sl && Object.keys(sl).length > 0
+                    ? Object.entries(sl).map(([key, url]) => ({ key, url }))
+                    : []
+                );
               }}
               disabled={saving}
             >

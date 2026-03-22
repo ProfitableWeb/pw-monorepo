@@ -1,26 +1,33 @@
 import { Metadata } from 'next';
 import { AuthorPage } from '@/components/app-layout/app-author-page';
-import { getArticlesByAuthor } from '@/lib/api-client';
-import { AUTHOR_DATA } from '@/config/author';
+import { getArticlesByAuthor, getAuthorProfile } from '@/lib/api-client';
+import { AUTHOR_FALLBACK } from '@/config/author';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `${AUTHOR_DATA.name} — ${AUTHOR_DATA.jobTitle}`,
-  description: AUTHOR_DATA.description,
-  openGraph: {
-    title: `${AUTHOR_DATA.name} — ${AUTHOR_DATA.jobTitle}`,
-    description: AUTHOR_DATA.description,
-    images: [{ url: AUTHOR_DATA.avatar }],
-    type: 'profile',
-    firstName: AUTHOR_DATA.firstName,
-    lastName: AUTHOR_DATA.lastName,
-    username: 'nick_egorov',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const author = await getAuthorProfile();
+  const name = author?.name ?? AUTHOR_FALLBACK.name;
+  const jobTitle = author?.jobTitle ?? AUTHOR_FALLBACK.jobTitle;
+  const description = author?.bio ?? AUTHOR_FALLBACK.description;
+  const avatar = author?.avatar ?? AUTHOR_FALLBACK.avatar;
+
+  return {
+    title: `${name} — ${jobTitle}`,
+    description,
+    openGraph: {
+      title: `${name} — ${jobTitle}`,
+      description,
+      images: [{ url: avatar }],
+      type: 'profile',
+    },
+  };
+}
 
 export default async function Page() {
-  const articles = await getArticlesByAuthor(AUTHOR_DATA.name);
+  const author = await getAuthorProfile();
+  const authorName = author?.name ?? AUTHOR_FALLBACK.name;
+  const articles = await getArticlesByAuthor(authorName);
 
-  return <AuthorPage articles={articles} />;
+  return <AuthorPage author={author} articles={articles} />;
 }

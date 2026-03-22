@@ -38,6 +38,7 @@ class User(UUIDMixin, TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(200), unique=True)
     avatar: Mapped[str | None] = mapped_column(String(500))
     bio: Mapped[str | None] = mapped_column(Text)
+    job_title: Mapped[str | None] = mapped_column(String(200))
     social_links: Mapped[dict | None] = mapped_column(JSONB)
     role: Mapped[UserRole] = mapped_column(default=UserRole.VIEWER)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
