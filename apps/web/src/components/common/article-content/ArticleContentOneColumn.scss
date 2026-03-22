@@ -88,6 +88,14 @@
     @include article-pre;
   }
 
+  // Shiki подсветка синтаксиса (dual theme)
+  @include article-shiki;
+  @include article-copy-button;
+
+  [data-theme="dark"] & {
+    @include article-shiki-dark;
+  }
+
   // Изображения
   img {
     @include article-image;

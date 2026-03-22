@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import DOMPurify from 'dompurify';
 import './ArticleContentOneColumn.scss';
 import { headingToId } from './heading-id';
+import { useCopyCodeButtons } from './use-copy-code-buttons';
 
 interface ArticleContentOneColumnProps {
   /**
@@ -41,6 +42,7 @@ export const ArticleContentOneColumn = ({
   html,
   className,
 }: ArticleContentOneColumnProps) => {
+  const containerRef = useRef<HTMLElement>(null);
   // Start with unsanitized HTML to match SSR
   const [sanitizedHtml, setSanitizedHtml] = useState(html);
 
@@ -90,6 +92,8 @@ export const ArticleContentOneColumn = ({
         'rel',
         'width',
         'height',
+        'style',
+        'tabindex',
       ],
       ALLOWED_URI_REGEXP:
         /^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
@@ -109,8 +113,11 @@ export const ArticleContentOneColumn = ({
     setSanitizedHtml(withHeadingIds);
   }, [html]);
 
+  useCopyCodeButtons(containerRef, sanitizedHtml);
+
   return (
     <article
+      ref={containerRef}
       className={clsx('article-content-one-column', className)}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />

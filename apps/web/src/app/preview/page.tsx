@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ArticleHeader } from '@/components/app-layout/article-header';
 import { ArticleContentOneColumn } from '@/components/common/article-content';
 import { ArticleLayout } from '@/components/common/article-layouts';
@@ -12,6 +12,7 @@ import AppFooter from '@/components/app-layout/app-footer';
 import { TableOfContents } from '@/components/common/table-of-contents';
 import { AuthorCard } from '@/components/common/sidebar-widgets/author-card';
 import type { ArticleLayoutType } from '@/components/common/article-layouts/types';
+import { highlightCode } from './actions';
 
 // Разрешённые origin для postMessage
 const ALLOWED_ORIGINS = [
@@ -76,6 +77,9 @@ interface PreviewArticleData {
 export default function PreviewPage() {
   const [article, setArticle] = useState<PreviewArticleData | null>(null);
 
+  // Для отмены устаревших запросов подсветки при быстрых обновлениях
+  const highlightSeqRef = useRef(0);
+
   const handleMessage = useCallback((event: MessageEvent) => {
     // Валидация origin
     if (!ALLOWED_ORIGINS.includes(event.origin)) return;
@@ -84,9 +88,23 @@ export default function PreviewPage() {
     if (!msg || typeof msg.type !== 'string') return;
 
     switch (msg.type) {
-      case 'preview:update':
-        setArticle(msg.data);
+      case 'preview:update': {
+        const data = msg.data as PreviewArticleData;
+        setArticle(data);
+
+        // Подсветка кода через Server Action (async, не блокирует рендер)
+        if (data.content?.includes('<code')) {
+          const seq = ++highlightSeqRef.current;
+          highlightCode(data.content).then(highlighted => {
+            if (seq === highlightSeqRef.current) {
+              setArticle(prev =>
+                prev ? { ...prev, content: highlighted } : prev
+              );
+            }
+          });
+        }
         break;
+      }
 
       case 'preview:click': {
         const el = document.elementFromPoint(msg.x, msg.y);

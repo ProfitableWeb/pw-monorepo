@@ -11,6 +11,7 @@ import {
   getFullArticleBySlug,
   getPageBySlug,
 } from '@/lib/api-client';
+import { highlightCodeBlocks } from '@/lib/code-highlight';
 import {
   generateCategoryJsonLd,
   generateArticleJsonLd,
@@ -37,6 +38,7 @@ export default async function DynamicPage({
   // Приоритет 1: Проверка страницы (type=page)
   const page = await getPageBySlug(slug);
   if (page) {
+    page.content = await highlightCodeBlocks(page.content);
     const breadcrumbJsonLd = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -92,6 +94,7 @@ export default async function DynamicPage({
   // Приоритет 3: Проверка статьи (полная версия с content, toc, artifacts)
   const fullArticle = await getFullArticleBySlug(slug);
   if (fullArticle) {
+    fullArticle.content = await highlightCodeBlocks(fullArticle.content);
     // Для JSON-LD нужен masonry-тип Article — получим его тоже
     const article = await getArticleBySlug(slug);
     const articleJsonLd = article ? generateArticleJsonLd(article) : null;

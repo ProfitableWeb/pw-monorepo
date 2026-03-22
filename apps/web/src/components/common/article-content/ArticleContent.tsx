@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import DOMPurify from 'dompurify';
 import './ArticleContent.scss';
 import { headingToId } from './heading-id';
+import { useCopyCodeButtons } from './use-copy-code-buttons';
 
 interface ArticleContentProps {
   /**
@@ -35,6 +36,7 @@ interface ArticleContentProps {
  * ```
  */
 export const ArticleContent = ({ html, className }: ArticleContentProps) => {
+  const containerRef = useRef<HTMLElement>(null);
   // Start with unsanitized HTML to match SSR
   const [sanitizedHtml, setSanitizedHtml] = useState(html);
 
@@ -84,6 +86,8 @@ export const ArticleContent = ({ html, className }: ArticleContentProps) => {
         'rel',
         'width',
         'height',
+        'style',
+        'tabindex',
       ],
       ALLOWED_URI_REGEXP:
         /^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
@@ -102,8 +106,11 @@ export const ArticleContent = ({ html, className }: ArticleContentProps) => {
     setSanitizedHtml(withHeadingIds);
   }, [html]);
 
+  useCopyCodeButtons(containerRef, sanitizedHtml);
+
   return (
     <article
+      ref={containerRef}
       className={clsx('article-content', className)}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />

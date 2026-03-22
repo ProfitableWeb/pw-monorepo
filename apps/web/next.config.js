@@ -2,6 +2,9 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Shiki использует WASM и динамические импорты — нужен внешний модуль для Turbopack
+  serverExternalPackages: ['shiki'],
+
   // Experimental features
   experimental: {
     optimizePackageImports: ['framer-motion', '@tanstack/react-query'],
