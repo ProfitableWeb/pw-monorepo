@@ -8,7 +8,7 @@
 
 Часть Turborepo-монорепо наряду с:
 
-- `apps/web` — публичный фронтенд (Next.js 15, SSR, SCSS-модули)
+- `apps/web` — публичный фронтенд (Next.js 16, SSR, SCSS-модули)
 - `apps/api` — бэкенд (FastAPI, PostgreSQL)
 - `packages/types` — общие TypeScript-типы (`@profitable-web/types`)
 

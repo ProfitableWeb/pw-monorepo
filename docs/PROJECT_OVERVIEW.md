@@ -1,42 +1,54 @@
-# ProfitableWeb - Исследовательская платформа монетизации хобби
+# ProfitableWeb — Обзор проекта
 
-## 🎯 Миссия проекта
+## Миссия
 
-Создание модели для генерации финансового капитала из личных хобби через исследования, документирование инсайтов и
-построение автономной цифровой экосистемы.
+Исследовательская платформа, изучающая трансформацию труда через AI-автоматизацию. Создание модели для генерации
+финансового капитала из личных компетенций и призвания через исследования, документирование инсайтов и построение
+автономной цифровой экосистемы.
 
-## 🏗️ Архитектура проекта
+## Архитектура
 
-### Репозитории
+Turborepo-монорепозиторий с тремя приложениями и пакетом общих типов:
 
-- **profitable-web-backend**: Python FastAPI + SQLAlchemy + uvicorn
-- **profitable-web-frontend**: Next.js + TypeScript + SSG/SSR
-- **profitable-web-admin**: Next.js SPA для управления контентом
-- **profitable-web-docs**: Техническая документация и API specs
+| Приложение       | Стек                                       | Порт |
+| ---------------- | ------------------------------------------ | ---- |
+| `apps/web`       | Next.js 16, React 19, SCSS-модули          | 3000 |
+| `apps/admin`     | Vite SPA, React 19, Tailwind CSS, Radix UI | 3001 |
+| `apps/api`       | FastAPI, SQLAlchemy 2.0 (sync), PostgreSQL | 8000 |
+| `packages/types` | Shared TypeScript types                    | —    |
 
-## 🔧 Техническая информация
+## Технологический стек
 
-### Технологический стек
+**Frontend (apps/web):**
 
-**Backend:**
+- Next.js 16 (App Router, React 19)
+- SCSS-модули, система тем (светлая/тёмная)
+- TanStack React Query, React Context (auth, theme)
+- Shiki (подсветка синтаксиса), Framer Motion (анимации)
 
-- FastAPI (Python 3.11+)
-- uv (package & Python version management)
-- SQLAlchemy ORM
-- PostgreSQL
-- Redis (кэширование)
-- JWT Authentication
+**Admin Panel (apps/admin):**
 
-**Frontend:**
+- Vite SPA, React 19, TypeScript
+- Tailwind CSS, Radix UI, Zustand
+- TipTap (WYSIWYG-редактор), Monaco Editor
+- react-resizable-panels (docking workspace)
 
-- Next.js 14 (App Router)
-- TypeScript
-- CSS Modules/Styled Components
-- React Query
-- Zustand (state management)
+**Backend (apps/api):**
+
+- FastAPI, Python 3.11+
+- SQLAlchemy 2.0 (синхронный, psycopg2), PostgreSQL
+- JWT + OAuth (Яндекс, Google, Telegram)
+- Alembic (миграции), structlog (логирование)
+- MCP-сервер для AI-интеграций
 
 **DevOps:**
 
-- Docker
-- GitHub Actions
-- Cloud.ru
+- Turborepo + Bun Workspaces
+- PM2 (process manager), nginx (reverse proxy)
+- GitHub Actions (CI/CD), Cloud.ru (VM hosting)
+- GitVerse (основной) + GitHub (зеркало)
+
+## Пакетные менеджеры
+
+- **Bun** (>=1.2.17) — JavaScript/TypeScript
+- **uv** — Python
