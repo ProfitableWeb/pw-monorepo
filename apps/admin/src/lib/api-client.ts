@@ -10,6 +10,12 @@
  */
 
 import type {
+  AiProvider,
+  AiProviderCreatePayload,
+  AiProviderTestResult,
+  AiProviderUpdatePayload,
+} from '@/app/components/sections/ai-center/ai-center.types';
+import type {
   McpApiKey,
   McpApiKeyCreateResult,
   McpAuditEntry,
@@ -2503,4 +2509,157 @@ export async function testMcpConnection(): Promise<McpConnectionStatus> {
     available: data?.available ?? false,
     toolCount: data?.tool_count ?? 0,
   };
+}
+
+// ---------------------------------------------------------------------------
+// AI Providers (PW-064)
+// ---------------------------------------------------------------------------
+
+interface AiProviderRaw {
+  id: string;
+  name: string;
+  api_type: string;
+  api_key_prefix: string;
+  base_url: string | null;
+  model_name: string;
+  is_default: boolean;
+  is_active: boolean;
+  max_context_tokens: number | null;
+  description: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+interface AiProviderTestResultRaw {
+  success: boolean;
+  latency_ms: number;
+  model_response: string | null;
+  error: string | null;
+}
+
+function mapAiProvider(raw: AiProviderRaw): AiProvider {
+  return {
+    id: raw.id,
+    name: raw.name,
+    apiType: raw.api_type as AiProvider['apiType'],
+    apiKeyPrefix: raw.api_key_prefix,
+    baseUrl: raw.base_url,
+    modelName: raw.model_name,
+    isDefault: raw.is_default,
+    isActive: raw.is_active,
+    maxContextTokens: raw.max_context_tokens,
+    description: raw.description,
+    createdAt: raw.created_at ?? '',
+    updatedAt: raw.updated_at ?? '',
+  };
+}
+
+function mapAiProviderTestResult(
+  raw: AiProviderTestResultRaw
+): AiProviderTestResult {
+  return {
+    success: raw.success,
+    latencyMs: raw.latency_ms,
+    modelResponse: raw.model_response,
+    error: raw.error,
+  };
+}
+
+export async function getAiProviders(): Promise<AiProvider[]> {
+  const data = await apiFetch<AiProviderRaw[]>('/admin/ai-providers');
+  return (data ?? []).map(mapAiProvider);
+}
+
+export async function createAiProvider(
+  payload: AiProviderCreatePayload
+): Promise<AiProvider> {
+  const raw = await apiMutate<AiProviderRaw>('/admin/ai-providers', {
+    method: 'POST',
+    body: payload,
+  });
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAiProvider(raw);
+}
+
+export async function updateAiProvider(
+  id: string,
+  payload: AiProviderUpdatePayload
+): Promise<AiProvider> {
+  const raw = await apiMutate<AiProviderRaw>(
+    `/admin/ai-providers/${encodeURIComponent(id)}`,
+    { method: 'PATCH', body: payload }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAiProvider(raw);
+}
+
+export async function deleteAiProvider(id: string): Promise<void> {
+  await apiMutate(`/admin/ai-providers/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function setDefaultAiProvider(id: string): Promise<AiProvider> {
+  const raw = await apiMutate<AiProviderRaw>(
+    `/admin/ai-providers/${encodeURIComponent(id)}/default`,
+    { method: 'POST' }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAiProvider(raw);
+}
+
+export async function toggleAiProvider(id: string): Promise<AiProvider> {
+  const raw = await apiMutate<AiProviderRaw>(
+    `/admin/ai-providers/${encodeURIComponent(id)}/toggle`,
+    { method: 'POST' }
+  );
+  if (!raw) throw new ApiError(500, 'Пустой ответ API');
+  return mapAiProvider(raw);
+}
+
+export async function getAiProviderKey(id: string): Promise<string> {
+  const data = await apiFetch<{ api_key: string }>(
+    `/admin/ai-providers/${encodeURIComponent(id)}/key`
+  );
+  return data?.api_key ?? '';
+}
+
+export async function testAiProviderRaw(params: {
+  api_type: string;
+  api_key: string;
+  base_url?: string | null;
+  model_name: string;
+}): Promise<AiProviderTestResult> {
+  const raw = await apiMutate<AiProviderTestResultRaw>(
+    '/admin/ai-providers/test-raw',
+    {
+      method: 'POST',
+      body: params,
+    }
+  );
+  if (!raw)
+    return {
+      success: false,
+      latencyMs: 0,
+      modelResponse: null,
+      error: 'Пустой ответ',
+    };
+  return mapAiProviderTestResult(raw);
+}
+
+export async function testAiProvider(
+  id: string
+): Promise<AiProviderTestResult> {
+  const raw = await apiMutate<AiProviderTestResultRaw>(
+    `/admin/ai-providers/${encodeURIComponent(id)}/test`,
+    { method: 'POST' }
+  );
+  if (!raw)
+    return {
+      success: false,
+      latencyMs: 0,
+      modelResponse: null,
+      error: 'Пустой ответ',
+    };
+  return mapAiProviderTestResult(raw);
 }

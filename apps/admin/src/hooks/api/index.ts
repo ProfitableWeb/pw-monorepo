@@ -46,3 +46,12 @@ export {
   useMcpAuditLog,
   useMcpConnectionTest,
 } from './useMcpKeys';
+export {
+  useAiProviders,
+  useCreateAiProvider,
+  useUpdateAiProvider,
+  useDeleteAiProvider,
+  useSetDefaultAiProvider,
+  useToggleAiProvider,
+  useTestAiProvider,
+} from './useAiProviders';

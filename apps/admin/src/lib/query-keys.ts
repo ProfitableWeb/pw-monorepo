@@ -61,3 +61,8 @@ export const adminMcpKeys = {
   audit: () => [...adminMcpKeys.all, 'audit'] as const,
   health: () => [...adminMcpKeys.all, 'health'] as const,
 };
+
+export const adminAiProviderKeys = {
+  all: ['admin', 'ai-providers'] as const,
+  list: () => [...adminAiProviderKeys.all, 'list'] as const,
+};

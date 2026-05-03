@@ -5,6 +5,7 @@ PW-038/PW-041/PW-042/PW-047 | Корневой admin-роутер. Собира�
 
 from fastapi import APIRouter
 
+from src.api.admin.ai_providers import router as ai_providers_router
 from src.api.admin.articles import router as articles_router
 from src.api.admin.audit_logs import router as audit_logs_router
 from src.api.admin.categories import router as categories_router
@@ -20,6 +21,7 @@ from src.api.admin.users import router as users_router
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
+admin_router.include_router(ai_providers_router)
 admin_router.include_router(articles_router)
 admin_router.include_router(audit_logs_router)
 admin_router.include_router(errors_router)
