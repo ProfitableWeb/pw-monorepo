@@ -196,9 +196,17 @@ git pushall         # Оба (кастомный алиас)
 
 ## Агентные правила
 
-Подробные Cursor rules лежат в `.cursor/rules/*.mdc`. Claude Code может использовать их как справочный источник при
-работе с соответствующей областью (backend, frontend, docs, git, context headers), но не нужно дублировать весь набор в
-`.claude/rules/`: источником детальных правил остаётся `.cursor/rules/`, а кросс-агентная выжимка — `AGENTS.md`.
+ProfitableWeb использует **tiered shared + tool-specific** модель (ADR-004):
+
+- **`AGENTS.md`** (root) — портативный слой с переносимыми правилами и картой контекста. Читается любым AI-инструментом,
+  поддерживающим `AGENTS.md` (Codex, OpenCode, Aider и др.).
+- **`.cursor/rules/*.mdc`** — канонический источник детальных правил с `globs` и `alwaysApply`. Claude Code использует
+  их как справочный источник, но не дублирует содержимое в `.claude/rules/`.
+- **`apps/*/CLAUDE.md`** — nested-контекст для конкретного app (например, `apps/admin/CLAUDE.md`).
+- **`.github/copilot-instructions.md`** — короткий pointer для GitHub Copilot.
+
+Подробное обоснование и матрица инструментов: `docs/architecture/decisions/ADR-004-agent-rules-portability.md` и
+`docs/agentic-development.md` (раздел «Карта агентного контекста»).
 
 ## Ключевые файлы
 
