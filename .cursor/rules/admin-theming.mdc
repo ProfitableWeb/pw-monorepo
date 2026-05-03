@@ -1,0 +1,14 @@
+---
+description: Темизация apps/admin через Tailwind, Radix и theme provider
+globs: "apps/admin/src/**/*.{ts,tsx,css}"
+alwaysApply: false
+---
+
+# Темизация apps/admin
+
+- Стили admin пишутся Tailwind-классами и существующими UI-примитивами; SCSS-модули сюда не добавлять.
+- Используй design tokens Tailwind/Radix: `bg-background`, `text-muted-foreground`, `border`, `text-destructive`, `bg-accent`.
+- Не добавляй hardcoded hex/rgb в JSX, если есть token или utility-класс.
+- Radix/shadcn-like компоненты из `app/components/ui/` предпочитай самописной ARIA-разметке.
+- Если меняешь интерактивный элемент, проверь focus-visible, keyboard navigation и dark theme.
+- Для layout/sections сохраняй существующий визуальный язык: cards, borders, muted text, compact controls.

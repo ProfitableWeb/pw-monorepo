@@ -1,0 +1,14 @@
+---
+description: Темизация apps/web через SCSS themes и semantic tokens
+globs: "apps/web/src/**/*.{scss,tsx,ts}"
+alwaysApply: false
+---
+
+# Темизация apps/web
+
+- Источник темы — `apps/web/src/styles/themes/` и shared utils в `styles/utils/`.
+- Компоненты используют SCSS/SCSS-модули рядом с компонентом; Tailwind и inline styles не добавлять.
+- Предпочитай semantic CSS-переменные (`--color-*`) вместо hardcoded hex/rgb в компонентных стилях.
+- Если нужен новый цветовой смысл, добавь semantic token для light и dark темы.
+- Не меняй primitive/semantic tokens под один частный компонент без проверки повторного использования.
+- Проверяй UI в светлой и тёмной теме, если меняешь цвета, границы, code blocks, selections или surfaces.

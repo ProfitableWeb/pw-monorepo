@@ -1,0 +1,14 @@
+---
+description: TypeScript-качество: импорты, union handling и типы
+globs: "apps/web/src/**/*.{ts,tsx},apps/admin/src/**/*.{ts,tsx},packages/**/*.ts"
+alwaysApply: false
+---
+
+# TypeScript-качество
+
+- Импорты держи вверху файла. Inline import допустим только для документированного circular dependency или lazy-loading.
+- Для discriminated unions и enum в `switch` добавляй exhaustive `never` check в default-ветке.
+- Не используй `any` в публичных типах API, shared types и component props; предпочитай конкретный тип или `unknown` с narrowing.
+- Общие DTO между web/admin/api-клиентами бери из `@profitable-web/types`, если тип уже существует.
+- Имена пользовательских текстов — на русском; технические идентификаторы, enum values и API-поля не переводить.
+- Побочные эффекты держи в `useEffect`, callbacks стабилизируй только когда это реально снижает rerender или нужно для deps.

@@ -73,5 +73,8 @@ ENV/
 .claude/settings.local.json
 .mcp.json
 
+# Local Cursor hook state (machine-specific transcript indexes)
+.cursor/hooks/state/
+
 .playwright/
 .playwright-mcp

@@ -1,0 +1,17 @@
+---
+description: Context headers для важных модулей кода
+globs: "apps/web/src/**/*.{ts,tsx},apps/admin/src/**/*.{ts,tsx},apps/api/src/**/*.py"
+alwaysApply: false
+---
+
+# Context headers
+
+- Для важных модулей добавляй короткую шапку с контекстом: роль, границы ответственности, ключевые связи.
+- Frontend: JSDoc над imports. Backend: module docstring в начале файла.
+- Добавлять для orchestrator-компонентов, stores, providers, API clients, query-key factories, MCP tools, сложных hooks и backend-сервисов.
+- Не добавлять для простых UI-примитивов, очевидных constants/types/utils, автогенерируемого кода и миграций без ручной логики.
+- Header не должен пересказывать код, список imports или имя компонента. Он должен объяснять то, чего не видно из сигнатур.
+- Если меняешь поведение модуля с header, обнови header в том же diff.
+- Если header разрастается больше 8-10 строк, перенеси подробности в README/ADR и оставь ссылку.
+- Шаблоны: `docs/templates/frontend/context-header.ts.md` и `docs/templates/backend/context-header.py.md`.
+- Подробнее: `docs/agentic-development.md`.

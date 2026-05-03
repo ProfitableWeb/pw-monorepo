@@ -2,54 +2,54 @@
 alwaysApply: true
 ---
 
-# Git Remote Configuration: Dual Repository Setup
+# Конфигурация Git remote: два репозитория
 
-## Overview
+## Обзор
 
-ProfitableWeb project maintains synchronization with two Git repositories simultaneously:
+Проект ProfitableWeb синхронизируется с двумя Git-репозиториями одновременно:
 
-- **GitVerse (origin)** - Primary repository: `git@gitverse.ru:profitableweb.ru/pw-monorepo.git`
-- **GitHub (github)** - Secondary repository: `https://github.com/ProfitableWeb/pw-monorepo.git`
+- **GitVerse (origin)** — основной репозиторий: `git@gitverse.ru:profitableweb.ru/pw-monorepo.git`
+- **GitHub (github)** — дополнительный репозиторий: `https://github.com/ProfitableWeb/pw-monorepo.git`
 
-## Push Commands
+## Команды push
 
-### Push to GitVerse only (default)
+### Только в GitVerse (по умолчанию)
 
 ```bash
 git push
-# or
+# или
 git push origin
 ```
 
-### Push to GitHub only
+### Только в GitHub
 
 ```bash
 git push github
 ```
 
-### Push to both repositories
+### В оба репозитория
 
-Use `git pushall` if configured as alias, or push manually:
+Если настроен alias — `git pushall`, иначе вручную:
 
 ```bash
 git push origin && git push github
 ```
 
-## Initial Setup for New Clones
+## Первичная настройка после clone
 
-When cloning the repository for the first time, add the GitHub remote:
+После первого `git clone` добавьте remote `github`:
 
 ```bash
 git remote add github https://github.com/ProfitableWeb/pw-monorepo.git
 ```
 
-Verify remotes:
+Проверка remotes:
 
 ```bash
 git remote -v
 ```
 
-Should show:
+Ожидаемый вывод:
 
 ```
 origin  git@gitverse.ru:profitableweb.ru/pw-monorepo.git (fetch)
@@ -58,15 +58,15 @@ github  https://github.com/ProfitableWeb/pw-monorepo.git (fetch)
 github  https://github.com/ProfitableWeb/pw-monorepo.git (push)
 ```
 
-## Workflow Guidelines
+## Рабочий процесс
 
-- **Primary development**: Use `git push` to push to GitVerse (origin)
-- **Backup/Mirror**: Use `git push github` to mirror to GitHub
-- **Both repositories**: Push to both when important changes need to be backed up
+- **Основная разработка**: `git push` — в GitVerse (`origin`)
+- **Резервная копия / зеркало**: `git push github` — зеркалирование на GitHub
+- **Оба репозитория**: push в оба при важных изменениях, которые нужно продублировать
 
-## Important Notes
+## Важно
 
-- GitVerse is the **primary** repository for CI/CD and deployment
-- GitHub serves as a **backup/mirror** repository
-- Always ensure both repositories are in sync when pushing critical changes
-- Pull requests should ideally be made to GitVerse, with GitHub used primarily as a backup
+- GitVerse — **основной** репозиторий для CI/CD и деплоя
+- GitHub — **резерв / зеркало**
+- Перед push критичных изменений держите оба remote в актуальном состоянии
+- Pull request по возможности открывайте в GitVerse; GitHub — в основном как резерв

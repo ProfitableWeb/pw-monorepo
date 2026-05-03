@@ -1,0 +1,14 @@
+---
+description: Стек и команды backend-приложения FastAPI
+globs: "apps/api/**/*.py,apps/api/pyproject.toml,apps/api/alembic/**/*.py"
+alwaysApply: false
+---
+
+# Python-стек
+
+- Backend живёт в `apps/api`: Python 3.11+, FastAPI, SQLAlchemy 2.0, psycopg2, PostgreSQL, Alembic.
+- Пакетный менеджер — `uv`; зависимости добавляй через `uv add` / `uv add --dev` из `apps/api`.
+- ORM синхронный. Не переводить слой БД на async без отдельного архитектурного решения.
+- Основные проверки из `apps/api`: `uv run ruff check`, `uv run mypy .`, `uv run pytest`.
+- Конфиг приложения — Pydantic Settings в `src/core/config.py`; не читать `.env` напрямую из доменного кода.
+- Миграции Alembic создавать через `uv run alembic revision --autogenerate -m "..."` и проверять diff миграции глазами.

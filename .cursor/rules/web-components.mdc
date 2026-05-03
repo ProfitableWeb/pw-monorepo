@@ -1,0 +1,15 @@
+---
+description: Компоненты apps/web: Next.js, SCSS-модули и SSR
+globs: "apps/web/src/**/*.{ts,tsx,scss}"
+alwaysApply: false
+---
+
+# Компоненты apps/web
+
+- `apps/web` — Next.js 16 App Router, React 19, SCSS/SCSS-модули. Не добавляй Tailwind или CSS-in-JS.
+- Сложный компонент держи как тонкий orchestrator: data hooks, локальный state, композиция подкомпонентов.
+- Подкомпоненты, утилиты и локальные типы располагай рядом с фичей; общий UI — в `components/common/`.
+- Для серверного состояния используй TanStack Query и ключи из `lib/query-keys.ts`.
+- Auth и theme идут через существующие Context-провайдеры, не заменяй их Zustand без отдельного решения.
+- В App Router учитывай границу server/client: `use client` только там, где есть hooks, browser API или event handlers.
+- SEO для контентных страниц — через `generateMetadata()` и JSON-LD helpers из `utils/seo.ts`.

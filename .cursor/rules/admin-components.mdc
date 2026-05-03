@@ -1,0 +1,15 @@
+---
+description: Компоненты apps/admin: Vite SPA, Tailwind, Radix и секции
+globs: "apps/admin/src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Компоненты apps/admin
+
+- `apps/admin` — Vite SPA, React 19, Tailwind CSS, Radix UI, Zustand. Не использовать Next.js-паттерны.
+- Новый раздел навигации размещай в `app/components/sections/{section}/`.
+- UI-примитивы без бизнес-логики живут в `app/components/ui/`; бизнес-компоненты между секциями — в `common/`.
+- `SectionName.tsx` должен быть orchestrator: импорты, state, data hooks, композиция.
+- Декомпозиция: constants → `{feature}.constants.ts`, utils → `{feature}.utils.ts`, типы → `{feature}.types.ts`, сложная логика → `use{Name}.ts`.
+- Вложенную директорию заводи только для 3+ связанных файлов; максимальная вложенность — 3 уровня.
+- Barrel-экспорт: `export { Component } from './Component'`; не публикуй внутренние `assets/` наружу.

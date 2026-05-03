@@ -1,0 +1,15 @@
+---
+description: State-паттерны для web и admin
+globs: "apps/web/src/**/*.{ts,tsx},apps/admin/src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Frontend state
+
+- Server state — TanStack Query: `useQuery`/`useMutation`, стабильные query keys, invalidation после write-операций.
+- Local UI state — `useState`/`useReducer`: открытие диалогов, tabs внутри компонента, текст формы.
+- URL-state — фильтры, поиск, pagination и tabs, которые должны открываться по deep-link.
+- `apps/web`: auth/theme через существующие Context; не плодить параллельные глобальные stores.
+- `apps/admin`: глобальное session/application state через Zustand stores.
+- При мутации `Set`, `Map`, массивов и объектов в Zustand создавай новый экземпляр, не меняй ссылку in-place.
+- API-клиенты должны использовать существующий слой `lib/api-client.ts`; не разбрасывай raw `fetch` по компонентам.

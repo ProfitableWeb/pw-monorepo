@@ -91,7 +91,7 @@ Context).
 
 **Организация кода**: подробные правила в `apps/admin/CLAUDE.md` — структура `components/`, атомарная декомпозиция,
 иерархия вложенности секций, именование файлов. Эталон паттерна — `sections/ai-center/` (с README.md внутри). Шаблон
-README для секций — `docs/templates/section-readme-template.md`.
+README для секций — `docs/templates/frontend/section-readme.md`.
 
 ### apps/api — FastAPI
 
@@ -193,6 +193,12 @@ git pushall         # Оба (кастомный алиас)
 
 Основной язык — **русский**. Весь пользовательский текст, коммиты и документация на русском, если технические термины не
 требуют английского.
+
+## Агентные правила
+
+Подробные Cursor rules лежат в `.cursor/rules/*.mdc`. Claude Code может использовать их как справочный источник при
+работе с соответствующей областью (backend, frontend, docs, git, context headers), но не нужно дублировать весь набор в
+`.claude/rules/`: источником детальных правил остаётся `.cursor/rules/`, а кросс-агентная выжимка — `AGENTS.md`.
 
 ## Ключевые файлы
 
