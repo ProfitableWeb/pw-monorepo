@@ -2,15 +2,19 @@
 
 ## Обзор
 
-| Параметр | Local               | Test                      | Prod                          |
-| -------- | ------------------- | ------------------------- | ----------------------------- |
-| Домен    | localhost           | dev.profitableweb.ru      | TBD                           |
-| VM       | —                   | 213.171.25.187            | отдельная VM                  |
-| БД       | SQLite / PostgreSQL | PostgreSQL                | PostgreSQL                    |
-| Файлы    | uploads/ (локально) | uploads/ на VM (nginx)    | S3 (при необходимости)        |
-| Данные   | Mock / Seed         | Seed                      | Реальные                      |
-| CI/CD    | —                   | GitVerse → push to master | GitVerse → отдельный workflow |
-| SSL      | —                   | Let's Encrypt             | Let's Encrypt                 |
+Prod и dev — два изолированных Docker Compose-контура на **одной** Cloud.ru VM (`213.171.25.187`), разделённые портами и
+отдельными PostgreSQL.
+
+| Параметр | Local                  | Dev                               | Prod                                                |
+| -------- | ---------------------- | --------------------------------- | --------------------------------------------------- |
+| Домен    | localhost              | dev.profitableweb.ru              | profitableweb.ru (DNS ещё не переключён на VM) / IP |
+| Хостинг  | машина разработчика    | VM, dev-контур Docker             | VM, prod-контур Docker                              |
+| Порты    | 3000 / 3001 / 8000     | 3100 / 3101 / 8100                | 3000 / 3001 / 8000                                  |
+| БД       | PostgreSQL (локальный) | PostgreSQL :5433 (контейнер)      | PostgreSQL :5432 (контейнер)                        |
+| Файлы    | uploads/ (локально)    | uploads/ на VM (nginx)            | S3 Cloud.ru (`STORAGE_BACKEND=s3`)                  |
+| Данные   | Mock / Seed            | Seed                              | Реальные                                            |
+| CI/CD    | —                      | `deploy-dev.yml` (push в develop) | `deploy.yml` (push в master)                        |
+| SSL      | —                      | нет (:80)                         | нет (:80); Let's Encrypt — после переключения DNS   |
 
 ## Local
 
@@ -23,39 +27,41 @@ bun turbo dev  # Запуск всех приложений
 - **web**: http://localhost:3000
 - **admin**: http://localhost:3001
 - **api**: http://localhost:8000
-- **БД**: SQLite (по умолчанию) или локальный PostgreSQL
-- **Данные**: mock-данные из `src/lib/mock-api.ts` или seed-скрипт
+- **БД**: локальный PostgreSQL (`postgresql://postgres:postgres@localhost:5432/profitableweb` по умолчанию, см.
+  `apps/api/src/core/config.py`)
+- **Данные**: mock-данные фронтенда или seed-скрипт (`apps/api/src/seed.py` — только `create_all` + guard, безопасен)
 
 Для работы без БД фронтенд использует mock-данные. API можно не запускать.
 
-## Test
+## Dev (VM, dev-контур)
 
-Тестовый сервер на Cloud.ru VM. Автоматический деплой при push в master.
+Стейджинг на Cloud.ru VM. Автодеплой при push в `develop`.
 
 - **VM**: `213.171.25.187`, пользователь `webresearcher`
 - **SSH**: `ssh -i ~/.ssh/cloudru_deploy webresearcher@213.171.25.187`
 - **web**: http://dev.profitableweb.ru
 - **admin**: http://dev.profitableweb.ru/admin
 - **api**: http://dev.profitableweb.ru/api
-- **БД**: PostgreSQL 14 на той же VM
-- **Данные**: seed-скрипт для начального наполнения
-- **Процессы**: PM2 (`ecosystem.config.js`)
-- **Reverse proxy**: nginx
+- **Контейнеры**: pw-dev-web :3100, pw-dev-api :8100, pw-dev-admin :3101, pw-dev-postgres :5433
 
-### Nginx routing
+### Nginx routing (dev)
 
 ```
-dev.profitableweb.ru/           → localhost:3000 (web)
-dev.profitableweb.ru/admin/     → localhost:3001 (admin)
-dev.profitableweb.ru/api/       → localhost:8000 (api)
-dev.profitableweb.ru/uploads/   → ~/profitableweb/uploads/ (статика)
+dev.profitableweb.ru/           → 127.0.0.1:3100 (web)
+dev.profitableweb.ru/admin/     → 127.0.0.1:3101 (admin)
+dev.profitableweb.ru/api/       → 127.0.0.1:8100 (api)
 ```
 
-## Prod
+## Prod (VM, prod-контур)
 
-Планируется. Будет отдельная VM с аналогичной конфигурацией.
+Тот же сервер, отдельный контур. Автодеплой при push в `master`.
 
-- Домен: profitableweb.ru
-- Отдельный GitVerse workflow для деплоя
-- Бэкапы БД по расписанию
-- Мониторинг (TBD)
+- **Доступ**: http://213.171.25.187/ (домен `profitableweb.ru` пока указывает на стороннюю площадку, не на VM)
+- **Контейнеры**: pw-prod-web :3000, pw-prod-api :8000, pw-prod-admin :3001, pw-prod-postgres :5432
+- **Файлы**: Cloud.ru Object Storage (S3), бакет `pw-media`
+
+### Открытые пункты
+
+- Переключить A-запись `profitableweb.ru` на VM
+- После переключения DNS — Let's Encrypt + `listen 443 ssl` в nginx + открыть порт 443 в security group
+- Бэкапы БД по расписанию, мониторинг (TBD)

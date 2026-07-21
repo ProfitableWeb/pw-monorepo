@@ -92,13 +92,12 @@ PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.org/simple} pip install -e .
 В `pyproject.toml` свой индекс не прописывают — это делают через окружение или `pip.conf`, чтобы не завязывать
 репозиторий на конкретный URL.
 
-## Контекст проекта: без Docker
+## Контекст проекта: сборка в Docker на VM
 
-В этом проекте **CI и деплой идут без Docker**: GitHub Actions по SSH заходит на VM, там выполняются `bun install`,
-`uv sync`, сборки и запуск через PM2 (см.
-[deploy-gitverse-only.yml](https://github.com/ProfitableWeb/pw-monorepo/blob/master/.github/workflows/deploy-gitverse-only.yml)).
-Поэтому «своё зеркало» на той же VM логично поднимать тоже без контейнеров — через установку сервиса (Verdaccio, devpi)
-напрямую или через **зеркало GitVerse** и не поднимать своё.
+В этом проекте CI деплоит через Docker: GitHub Actions по SSH заходит на VM и выполняет `docker compose up -d --build`
+(см. [deploy.yml](https://github.com/ProfitableWeb/pw-monorepo/blob/master/.github/workflows/deploy.yml)) —
+`bun install` и `uv sync` выполняются **внутри docker build** на самой VM. Зеркало реестров, если понадобится, должно
+быть доступно из build-контекста Docker; проще всего использовать **зеркало GitVerse** и не поднимать своё.
 
 ## Минимальный старт: своё npm-зеркало
 

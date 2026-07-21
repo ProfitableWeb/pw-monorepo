@@ -1,5 +1,8 @@
 # Nginx конфигурация для Cloud.ru
 
+> ⚠️ Написано в PM2-эпоху (январь 2026). Nginx-часть актуальна; команды управления приложениями обновлены на Docker
+> Compose в PW-070. Полный процесс деплоя — [runbooks/deploy.md](../architecture/runbooks/deploy.md).
+
 ## 🚨 Быстрое исправление 400 Bad Request
 
 ### Вариант 1: Автоматический (рекомендуется)
@@ -91,22 +94,21 @@ sudo tail -f /var/log/nginx/profitableweb_error.log
 ### 2. Проверить логи Next.js
 
 ```bash
-pm2 logs web --lines 50
+cd ~/profitableweb
+docker compose -f docker-compose.prod.yml logs --tail 50 web
 ```
 
 ### 3. Перезапустить Next.js
 
 ```bash
-pm2 restart web
+docker compose -f docker-compose.prod.yml restart web
 ```
 
 ### 4. Пересобрать Next.js
 
 ```bash
-cd ~/profitableweb/apps/web
-bun install
-bun run build
-pm2 restart web
+cd ~/profitableweb
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build web
 ```
 
 ## 🔄 Автоматизация (опционально)
@@ -126,11 +128,11 @@ pm2 restart web
 ## 💡 Полезные команды
 
 ```bash
-# Проверить PM2 процессы
-pm2 list
+# Проверить Docker-контейнеры
+docker compose -f docker-compose.prod.yml ps
 
 # Проверить что слушает на портах
-netstat -tlnp | grep -E '3000|8000|80'
+ss -tlnp | grep -E '3000|8000|80'
 
 # Проверить синтаксис nginx
 sudo nginx -t

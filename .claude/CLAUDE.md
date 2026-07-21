@@ -119,9 +119,11 @@ README для секций — `docs/templates/frontend/section-readme.md`.
 
 **Роли пользователей**: admin, editor, author, viewer.
 
-**Хранение файлов**: локальный диск, раздача через nginx. Абстракция сервиса в `services/storage.py`.
+**Хранение файлов**: два бэкенда через `STORAGE_BACKEND=local|s3` — LocalStorage (диск VM, раздача через nginx) и
+S3Storage (Cloud.ru Evolution Object Storage, boto3). Абстракция в `services/storage.py`.
 
-**Миграции**: Alembic, автоприменение при деплое через CI/CD.
+**Миграции**: Alembic, применяются автоматически при старте api-контейнера (`alembic upgrade head` в CMD
+`apps/api/Dockerfile`), отдельного шага в CI нет.
 
 ### MCP-сервер (Model Context Protocol)
 
@@ -167,16 +169,29 @@ README для секций — `docs/templates/frontend/section-readme.md`.
 
 ### Деплой
 
-nginx :80 проксирует: web :3000 (Next.js SSR), admin :3001 (Vite), api :8000 (uvicorn), uploads/ (статика). PM2
-управляет всеми процессами (`ecosystem.config.js`). Cloud.ru VM, CI/CD через GitHub Actions.
+Cloud.ru VM (`vm-pw`, 213.171.25.187, пользователь `webresearcher`, репо в `~/profitableweb`). Все сервисы — в Docker
+Compose, на одной VM два контура плюс инфраструктура:
+
+- **prod** (`docker-compose.prod.yml`): web :3000, api :8000, admin :3001, postgres :5432
+- **dev** (`docker-compose.dev.yml`): web :3100, api :8100, admin :3101, postgres :5433
+- **infra** (`docker-compose.infra.yml`): Gitea :3300 + его postgres
+
+nginx на хосте слушает только :80 (HTTPS не настроен), server-блоки: `profitableweb.ru` / IP → prod,
+`dev.profitableweb.ru` → dev, `git.profitableweb.ru` → Gitea. Конфиг — `infra/nginx/profitableweb.conf`, копируется в
+`/etc/nginx/sites-available/` при каждом прод-деплое.
+
+CI/CD — GitHub Actions: `deploy.yml` (push в `master` → прод: на VM `git reset --hard origin/master`, обновление
+nginx-конфига, `docker compose up -d --build`), `deploy-dev.yml` (push в `develop` → dev-контур). `ecosystem.config.js`
+в корне — наследие PM2-эпохи, процессами больше не управляет.
 
 ## Git Workflow
 
-**Два репозитория**: GitVerse (`origin`, основной) + GitHub (`github`, зеркало).
+**Два репозитория**: GitHub (`origin`, основной — GitHub Actions и деплой тянут код с него) + GitVerse (`gitverse`,
+зеркало).
 
 ```bash
-git push            # Только GitVerse
-git push github     # Только GitHub
+git push            # Только GitHub (origin)
+git push gitverse   # Только GitVerse
 git pushall         # Оба (кастомный алиас)
 ```
 

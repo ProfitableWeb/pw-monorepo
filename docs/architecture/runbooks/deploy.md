@@ -6,7 +6,7 @@
 - **Контуры**: prod (`profitableweb.ru`) + dev (`dev.profitableweb.ru`)
 - **Оркестрация**: Docker Compose (заменил PM2 в PW-043)
 - **CI/CD**: GitHub Actions
-- **Git-зеркала**: GitVerse (`origin`) + GitHub (`github`)
+- **Git-репозитории**: GitHub (`origin`, основной — CI и VM тянут код с него) + GitVerse (`gitverse`, зеркало)
 
 ## GitHub Secrets
 
@@ -63,7 +63,7 @@ openssl rand -base64 48
 Push в `master` → GitHub Actions (`deploy.yml`) автоматически деплоит.
 
 ```bash
-git push github master  # → автодеплой на profitableweb.ru
+git push origin master  # → автодеплой на profitableweb.ru
 ```
 
 Что происходит:
@@ -79,7 +79,7 @@ git push github master  # → автодеплой на profitableweb.ru
 Push в `develop` → GitHub Actions (`deploy-dev.yml`) автоматически деплоит.
 
 ```bash
-git push github develop  # → автодеплой на dev.profitableweb.ru
+git push origin develop  # → автодеплой на dev.profitableweb.ru
 ```
 
 ## Ручной деплой

@@ -1,74 +1,64 @@
 # Деплой
 
+> Оперативные команды и полный список секретов — в runbook [deploy.md](../runbooks/deploy.md).
+
+## Обзор
+
+Все сервисы работают в **Docker Compose** на одной Cloud.ru VM (PM2 заменён в PW-043, `ecosystem.config.js` удалён в
+PW-070). На VM три compose-стека:
+
+| Стек  | Файл                       | Контейнеры                                                | Порты (127.0.0.1)      |
+| ----- | -------------------------- | --------------------------------------------------------- | ---------------------- |
+| prod  | `docker-compose.prod.yml`  | pw-prod-web, pw-prod-api, pw-prod-admin, pw-prod-postgres | 3000, 8000, 3001, 5432 |
+| dev   | `docker-compose.dev.yml`   | pw-dev-web, pw-dev-api, pw-dev-admin, pw-dev-postgres     | 3100, 8100, 3101, 5433 |
+| infra | `docker-compose.infra.yml` | pw-gitea, pw-gitea-db                                     | 3300                   |
+
 ## CI/CD Pipeline
 
-GitVerse Workflows запускается при push в `master`.
+GitHub Actions, два workflow:
 
-### Последовательность
+- **`deploy.yml`** — push в `master` (paths: `apps/**`, `packages/**`, `docker-compose.prod.yml`, Dockerfile,
+  `infra/nginx/**`) → прод
+- **`deploy-dev.yml`** — push в `develop` → dev-контур
 
-1. SSH на VM (`webresearcher@213.171.25.187`)
-2. `git pull origin master`
-3. `bun install` + `cd apps/api && uv sync`
-4. `uv run alembic upgrade head` (миграции до перезапуска)
-5. `cd apps/web && bun run build` + `cd apps/admin && bun run build`
-6. Запись секретов в `.env`
-7. `pm2 restart ecosystem.config.js`
+### Последовательность (prod)
 
-## PM2
+1. CI формирует `.env.prod` из GitHub Secrets и копирует на VM через `scp`
+2. SSH на VM (`webresearcher@213.171.25.187`)
+3. `git fetch origin && git reset --hard origin/master` (origin = GitHub)
+4. Обновление nginx-конфига: `infra/nginx/profitableweb.conf` → `/etc/nginx/sites-available/profitableweb`,
+   `nginx -t && systemctl reload nginx`
+5. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build --remove-orphans`
+6. Health check: `curl http://<IP>/api/health`
 
-Процесс-менеджер PM2 управляет всеми тремя приложениями.
+### Миграции
 
-```javascript
-// ecosystem.config.js
-module.exports = {
-  apps: [
-    {
-      name: 'web',
-      cwd: './apps/web',
-      script: 'node_modules/.bin/next',
-      args: 'start -p 3000',
-    },
-    {
-      name: 'admin',
-      cwd: './apps/admin',
-      script: 'node_modules/.bin/next',
-      args: 'start -p 3001',
-    },
-    {
-      name: 'api',
-      cwd: './apps/api',
-      script: 'uv',
-      args: 'run uvicorn src.main:app --host 0.0.0.0 --port 8000',
-    },
-  ],
-};
+Alembic-миграции применяются **при старте api-контейнера** — CMD в `apps/api/Dockerfile`:
+
+```dockerfile
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"]
 ```
 
-### Команды PM2
-
-```bash
-pm2 status                    # Статус процессов
-pm2 restart ecosystem.config.js  # Перезапуск всех
-pm2 logs web                  # Логи web
-pm2 logs api --lines 100      # Последние 100 строк логов API
-```
+Отдельного шага миграций в CI нет. Подробности — [migrations.md](../database/migrations.md).
 
 ## Nginx
 
-Reverse proxy на порты приложений. Конфиг: `/etc/nginx/sites-enabled/profitableweb`.
+Работает на хосте VM (не в контейнере), слушает только **:80** — HTTPS пока не настроен (домен `profitableweb.ru` ещё не
+переключён на VM). Конфиг в репозитории: `infra/nginx/profitableweb.conf`, три server-блока:
 
-```nginx
-server {
-    server_name dev.profitableweb.ru;
+| server_name           | Контур | Проксирует на                        |
+| --------------------- | ------ | ------------------------------------ |
+| profitableweb.ru / IP | prod   | 3000 (web), 3001 (admin), 8000 (api) |
+| dev.profitableweb.ru  | dev    | 3100 (web), 3101 (admin), 8100 (api) |
+| git.profitableweb.ru  | infra  | 3300 (Gitea)                         |
 
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-    }
-    location /admin {
-        proxy_pass http://127.0.0.1:3001;
-    }
-    location /api {
-        proxy_pass http://127.0.0.1:8000;
-    }
-}
+Конфиг обновляется автоматически при каждом прод-деплое (шаг 4 pipeline) или вручную скриптом
+`infra/scripts/update-nginx.sh`.
+
+## Полезные команды
+
+```bash
+docker compose -f docker-compose.prod.yml ps           # Статус контейнеров
+docker compose -f docker-compose.prod.yml logs -f api  # Логи сервиса
+docker compose -f docker-compose.prod.yml restart web  # Перезапуск сервиса
 ```

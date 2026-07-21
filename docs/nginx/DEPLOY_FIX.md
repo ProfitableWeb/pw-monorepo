@@ -1,5 +1,11 @@
 # Исправление 400 Bad Request на Cloud.ru
 
+> ⚠️ **Историческая заметка (январь 2026, PM2-эпоха, PW-015).** Анализ nginx-конфига актуален, но все команды `pm2 *` и
+> сборка на хосте устарели: с PW-043 сервисы работают в Docker Compose. Актуальный процесс деплоя и диагностики —
+> [runbooks/deploy.md](../architecture/runbooks/deploy.md). Вместо `pm2 restart web` →
+> `docker compose -f docker-compose.prod.yml restart web`, вместо `pm2 logs web` →
+> `docker compose -f docker-compose.prod.yml logs -f web`.
+
 ## Проблема
 
 На cloud.ru не грузится список статей, возникают 400 Bad Request ошибки на webpack файлы Next.js.

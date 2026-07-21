@@ -44,9 +44,9 @@ Turborepo-монорепозиторий с тремя приложениями 
 **DevOps:**
 
 - Turborepo + Bun Workspaces
-- PM2 (process manager), nginx (reverse proxy)
+- Docker Compose (prod/dev контуры), nginx (reverse proxy на хосте)
 - GitHub Actions (CI/CD), Cloud.ru (VM hosting)
-- GitVerse (основной) + GitHub (зеркало)
+- GitHub (`origin`, основной) + GitVerse (`gitverse`, зеркало)
 
 ## Пакетные менеджеры
 

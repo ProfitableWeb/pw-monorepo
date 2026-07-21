@@ -14,7 +14,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Проверка что скрипт запускается из корня репозитория
-if [ ! -f "ecosystem.config.js" ]; then
+if [ ! -f "docker-compose.prod.yml" ]; then
     echo -e "${RED}❌ Скрипт должен запускаться из корня репозитория${NC}"
     exit 1
 fi
@@ -65,7 +65,7 @@ if curl -s http://127.0.0.1:3000/ > /dev/null; then
     echo -e "${GREEN}✅ Next.js отвечает на порту 3000${NC}"
 else
     echo -e "${RED}❌ Next.js не отвечает на порту 3000${NC}"
-    echo -e "${YELLOW}Попробуйте: pm2 restart web${NC}"
+    echo -e "${YELLOW}Попробуйте: docker compose -f docker-compose.prod.yml restart web${NC}"
 fi
 
 # Проверить через nginx
@@ -88,4 +88,4 @@ echo "Посмотреть логи nginx:"
 echo "  sudo tail -f /var/log/nginx/profitableweb_error.log"
 echo ""
 echo "Посмотреть логи Next.js:"
-echo "  pm2 logs web"
+echo "  docker compose -f docker-compose.prod.yml logs -f web"

@@ -44,18 +44,19 @@ uv run alembic history --verbose
    uv run alembic upgrade head
    ```
 5. Закоммитить файл миграции вместе с изменением модели
-6. При push в master — CI/CD автоматически выполнит `alembic upgrade head` на сервере
+6. При push в master — миграции применятся автоматически при старте api-контейнера на сервере
 
 ## CI/CD интеграция
 
-В GitVerse workflow миграции применяются **до** перезапуска приложений:
+Отдельного шага миграций в CI нет: они выполняются **при старте api-контейнера**, до запуска uvicorn — CMD в
+`apps/api/Dockerfile`:
 
-```bash
-cd apps/api
-uv sync
-uv run alembic upgrade head  # ← сначала миграции
-# ... затем build и pm2 restart
+```dockerfile
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"]
 ```
+
+Деплой (`docker compose up -d --build`) пересоздаёт контейнер → миграции применяются до того, как API начнёт принимать
+трафик. Если миграция падает — контейнер не стартует, ошибка видна в `docker compose logs api`.
 
 ## Соглашения
 
