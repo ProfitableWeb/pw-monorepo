@@ -117,10 +117,12 @@ uv run alembic revision --autogenerate -m "описание"
 
 ## Workspace facts
 
-- ProfitableWeb использует **GitVerse `origin`** как основной репозиторий и **GitHub `github`** как зеркало.
-- Деплой — Docker на одной VM Cloud.ru, nginx :80 проксирует web :3000, admin :3001, api :8000, uploads/ (статика).
-  CI/CD — GitHub Actions.
-- Миграции Alembic применяются **автоматически** при деплое (`uv run alembic upgrade head` в workflow).
+- ProfitableWeb использует **GitHub `origin`** как основной репозиторий (CI и деплой тянут код с него) и **GitVerse
+  `gitverse`** как зеркало.
+- Деплой — Docker Compose на одной VM Cloud.ru, nginx на хосте (:80) проксирует web :3000, admin :3001, api :8000,
+  uploads/ (статика). CI/CD — GitHub Actions (`deploy.yml` master → prod, `deploy-dev.yml` develop → dev).
+- Миграции Alembic применяются **автоматически** при старте api-контейнера (`alembic upgrade head` в CMD
+  `apps/api/Dockerfile`).
 - MCP-сервер: `.mcp.json` описывает три окружения — `pw-local`, `pw-dev`, `pw-prod`. Авторизация — Bearer-токены
   `pw_mcp_*`, управление через админку или API `/api/admin/mcp-keys`.
 
