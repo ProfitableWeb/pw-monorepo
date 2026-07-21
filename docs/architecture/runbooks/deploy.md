@@ -151,4 +151,5 @@ sudo tail -50 /var/log/nginx/access.log
 | API (FastAPI) | 127.0.0.1:8000 | 127.0.0.1:8100 |
 | Web (Next.js) | 127.0.0.1:3000 | 127.0.0.1:3100 |
 | Admin (Vite)  | 127.0.0.1:3001 | 127.0.0.1:3101 |
-| Gitea         | —              | 127.0.0.1:3300 |
+
+> Gitea (`docker-compose.infra.yml`, порт 3300) — описан, но не развёрнут (PW-043-F отложена).

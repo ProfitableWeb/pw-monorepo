@@ -11,7 +11,11 @@ PW-070). На VM три compose-стека:
 | ----- | -------------------------- | --------------------------------------------------------- | ---------------------- |
 | prod  | `docker-compose.prod.yml`  | pw-prod-web, pw-prod-api, pw-prod-admin, pw-prod-postgres | 3000, 8000, 3001, 5432 |
 | dev   | `docker-compose.dev.yml`   | pw-dev-web, pw-dev-api, pw-dev-admin, pw-dev-postgres     | 3100, 8100, 3101, 5433 |
-| infra | `docker-compose.infra.yml` | pw-gitea, pw-gitea-db                                     | 3300                   |
+| infra | `docker-compose.infra.yml` | pw-gitea, pw-gitea-db — **не развёрнут** (PW-043-F)       | 3300 (не слушается)    |
+
+> Контур **infra** (Gitea для self-hosted git-зеркала) описан, но не поднят: контейнеров Gitea на VM нет. При будущем
+> запуске требует `GITEA_DB_PASSWORD` (fail-fast `:?`, задать в env перед
+> `docker compose -f docker-compose.infra.yml up`).
 
 ## CI/CD Pipeline
 
@@ -46,11 +50,11 @@ CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn src.main:app --h
 Работает на хосте VM (не в контейнере), слушает только **:80** — HTTPS пока не настроен (домен `profitableweb.ru` ещё не
 переключён на VM). Конфиг в репозитории: `infra/nginx/profitableweb.conf`, три server-блока:
 
-| server_name           | Контур | Проксирует на                        |
-| --------------------- | ------ | ------------------------------------ |
-| profitableweb.ru / IP | prod   | 3000 (web), 3001 (admin), 8000 (api) |
-| dev.profitableweb.ru  | dev    | 3100 (web), 3101 (admin), 8100 (api) |
-| git.profitableweb.ru  | infra  | 3300 (Gitea)                         |
+| server_name           | Контур | Проксирует на                                |
+| --------------------- | ------ | -------------------------------------------- |
+| profitableweb.ru / IP | prod   | 3000 (web), 3001 (admin), 8000 (api)         |
+| dev.profitableweb.ru  | dev    | 3100 (web), 3101 (admin), 8100 (api)         |
+| git.profitableweb.ru  | infra  | 3300 (Gitea) — апстрим не поднят, отдаёт 502 |
 
 Конфиг обновляется автоматически при каждом прод-деплое (шаг 4 pipeline) или вручную скриптом
 `infra/scripts/update-nginx.sh`.

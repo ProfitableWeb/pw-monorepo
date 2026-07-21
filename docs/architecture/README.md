@@ -7,19 +7,22 @@
 ```
                           nginx :80 (хост VM)
                                  │
-        ┌────────────────────────┼────────────────────────┐
-   profitableweb.ru / IP   dev.profitableweb.ru    git.profitableweb.ru
-        │                        │                        │
-   PROD-контур (Docker)     DEV-контур (Docker)      Gitea :3300
-   web :3000 · api :8000    web :3100 · api :8100    (+ свой postgres)
-   admin :3001              admin :3101
-        │                        │
-   postgres :5432           postgres :5433
+        ┌────────────────────────┴────────────────────────┐
+   profitableweb.ru / IP                          dev.profitableweb.ru
+        │                                                  │
+   PROD-контур (Docker)                              DEV-контур (Docker)
+   web :3000 · api :8000                             web :3100 · api :8100
+   admin :3001                                       admin :3101
+        │                                                  │
+   postgres :5432                                    postgres :5433
 ```
 
-**VM**: Cloud.ru, `213.171.25.187` **Оркестрация**: Docker Compose (`docker-compose.{prod,dev,infra}.yml`) **Reverse
-proxy**: nginx на хосте (только :80, HTTPS пока не настроен) **CI/CD**: GitHub Actions (`deploy.yml` master → prod,
+**VM**: Cloud.ru, `213.171.25.187` **Оркестрация**: Docker Compose (`docker-compose.{prod,dev}.yml`) **Reverse proxy**:
+nginx на хосте (только :80, HTTPS пока не настроен) **CI/CD**: GitHub Actions (`deploy.yml` master → prod,
 `deploy-dev.yml` develop → dev)
+
+> `docker-compose.infra.yml` (Gitea для self-hosted git-зеркала, `git.profitableweb.ru` → :3300) **описан, но не
+> развёрнут** — PW-043-F отложена. Контейнеров Gitea на VM нет, порт 3300 не слушается.
 
 ## Приложения
 
