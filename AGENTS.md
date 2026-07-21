@@ -65,7 +65,8 @@ uv run alembic revision --autogenerate -m "описание"
 - Типы: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
 - `PW-XXXX` должен существовать в `docs/tasks/`
 - **Не добавлять** `Co-Authored-By:` или другие строки авторства
-- Два remote: `origin` (GitVerse, основной) + `github` (зеркало). Алиас `git pushall` пушит в оба.
+- Два remote: `origin` (GitHub, основной — CI и деплой тянут с него) + `gitverse` (зеркало). Алиас `git pushall` пушит в
+  оба.
 
 Канонический файл: `.cursor/rules/git-commit-format.mdc`.
 

@@ -102,10 +102,10 @@ S3_SECRET_KEY=<secret_key>
 S3_REGION=ru-central-1
 ```
 
-### GitVerse секреты
+### CI-секреты
 
-Те же 7 переменных добавляются как секреты в GitVerse → Settings → Secrets. CI/CD workflow автоматически прокидывает их
-на сервер при деплое.
+Те же 7 переменных добавляются как секреты в GitHub (`origin`) → Settings → Secrets. CI/CD workflow (`deploy.yml`)
+автоматически прокидывает их на сервер при деплое.
 
 ## 6. Проверка соединения
 
@@ -162,5 +162,5 @@ cd apps/api && uv run python test_s3.py
 
 - `apps/api/src/core/config.py` — настройки S3 (7 полей)
 - `apps/api/src/services/storage.py` — S3Storage (boto3)
-- `.github/workflows/deploy-gitverse-only.yml` — прокидывание секретов на сервер
+- `.github/workflows/deploy.yml` — прокидывание секретов на сервер при деплое
 - `docs/architecture/decisions/ADR-003-file-storage.md` — архитектурное решение
