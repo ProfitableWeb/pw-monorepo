@@ -114,7 +114,7 @@ PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.org/simple} pip install -e .
 3. В пайплайне или на VM перед `bun install`: `export NPM_CONFIG_REGISTRY=http://localhost:4873/` (если Verdaccio на той
    же машине) или `http://your-vm:4873/`.
 
-**Вариант В — Verdaccio в Docker** (если позже появится Docker на VM или отдельном хосте):
+**Вариант В — Verdaccio в Docker** (Docker на VM уже есть — можно добавить сервис в `docker-compose.infra.yml`):
 
 ```bash
 docker run -d --name verdaccio -p 4873:4873 -v verdaccio-storage:/verdaccio/storage verdaccio/verdaccio
