@@ -1,4 +1,9 @@
 module.exports = {
+  // Барьер секретов — публичный репозиторий, скан всех staged-файлов перед коммитом
+  '*': (filenames) => {
+    const files = filenames.map((f) => f.replace(/\\/g, '/')).join(' ');
+    return `bun scripts/check-secrets.mjs ${files}`;
+  },
   'apps/web/**/*.{ts,tsx}': (filenames) => {
     const files = filenames.map((f) => f.replace(/\\/g, '/')).join(' ');
     return [

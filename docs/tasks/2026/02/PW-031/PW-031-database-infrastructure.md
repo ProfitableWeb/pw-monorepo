@@ -21,7 +21,7 @@ PW-030 API упадёт из-за отсутствия БД.
 - [x] Seed-данные загружены (6 категорий, 38 статей, 13 комментариев)
 - [x] API перезапущен с новой БД — отдаёт реальные данные
 
-**DATABASE_URL**: `postgresql://profitableweb:profitableweb_2026@localhost:5432/profitableweb`
+**DATABASE_URL**: `postgresql://profitableweb:<БД-ПАРОЛЬ-РОТИРОВАН-СМ-PW-071>@localhost:5432/profitableweb`
 
 ### Фаза 2: Seed-скрипт для начальных данных
 

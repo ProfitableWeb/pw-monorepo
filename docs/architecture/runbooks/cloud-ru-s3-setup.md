@@ -12,14 +12,14 @@
 
 В панели Cloud.ru → Object Storage → Object Storage API:
 
-| Параметр         | Пример                                 |
-| ---------------- | -------------------------------------- |
-| Endpoint         | `https://s3.cloud.ru/pw-media`         |
-| ID тенанта       | `2095a86e-3589-4ab0-a898-239e85b83a0f` |
-| Регион           | `ru-central-1`                         |
-| Название сервиса | `s3`                                   |
-| Access key ID    | `ae45fb57521aa983027d0c94f4f40f18`     |
-| Secret key       | (скрыт)                                |
+| Параметр         | Пример                                   |
+| ---------------- | ---------------------------------------- |
+| Endpoint         | `https://s3.cloud.ru/pw-media`           |
+| ID тенанта       | `<tenant_id>` (из панели Object Storage) |
+| Регион           | `ru-central-1`                           |
+| Название сервиса | `s3`                                     |
+| Access key ID    | `<key_id>`                               |
+| Secret key       | `<secret_key>` (из панели, не коммитить) |
 
 ## 2. Формат access key
 
@@ -27,10 +27,10 @@
 
 ```
 # Неправильно (InvalidAccessKeyId):
-S3_ACCESS_KEY=ae45fb57521aa983027d0c94f4f40f18
+S3_ACCESS_KEY=<key_id>
 
 # Правильно (~69 символов):
-S3_ACCESS_KEY=2095a86e-3589-4ab0-a898-239e85b83a0f:ae45fb57521aa983027d0c94f4f40f18
+S3_ACCESS_KEY=<tenant_id>:<key_id>
 ```
 
 Tenant ID берётся из панели Object Storage API (поле "ID тенанта").

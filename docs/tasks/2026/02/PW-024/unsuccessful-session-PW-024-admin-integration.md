@@ -5572,6 +5572,7 @@ x Unexpected eof
 ## Build Output
 
 ./src/components/ai-center.tsx x Unexpected eof ,-[F:\ProfitableWeb\apps\admin\src\components\ai-center.tsx:301:3] 299 |
+
 </div> 300 | ); 301 | } `----
 
 Caused by: Syntax Error
@@ -7012,7 +7013,7 @@ This file contains z.ai API provider configuration:
 ```
 1→{
      2→  "env": {
-     3→    "ANTHROPIC_AUTH_TOKEN": "30189ba3b4124c58873f9d535532677e.lyq34pEqckThwi3t",
+     3→    "ANTHROPIC_AUTH_TOKEN": "[REDACTED — утёкший Z.AI токен отозван, см. PW-071]",
      4→    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
      5→    "API_TIMEOUT_MS": "3000000",
      6→    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-4.7",
