@@ -78,3 +78,7 @@ ENV/
 
 .playwright/
 .playwright-mcp
+
+# Vendored AI-tool skill scaffolds (устанавливаются тулингом, не часть проекта)
+.agents/
+.codex/
