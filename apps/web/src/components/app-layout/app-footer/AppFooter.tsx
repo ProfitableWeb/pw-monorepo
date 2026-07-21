@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
 import './AppFooter.scss';
 
@@ -51,6 +52,11 @@ const AppFooter = () => {
             <br />в социальных сетях:
           </p>
           <FooterSocialIcons />
+          <nav className='app-footer__legal' aria-label='Правовая информация'>
+            <Link href='/privacy' className='app-footer__legal-link'>
+              Политика обработки персональных данных
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

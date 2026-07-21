@@ -46,6 +46,31 @@
   color: var(--color-primary-text); // Приглушённый зелёный для текста
 }
 
+.app-footer__legal {
+  display: flex;
+  justify-content: center;
+}
+
+.app-footer__legal-link {
+  font-size: var(--font-size-sm, 0.9rem);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: var(--color-text-muted);
+  }
+
+  &:hover:visited {
+    color: var(--color-primary);
+  }
+}
+
 // ===== FOOTER SOCIAL ICONS =====
 .footer-social-icons {
   display: flex;

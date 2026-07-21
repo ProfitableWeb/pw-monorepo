@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Comment } from '@profitable-web/types';
 import { useAuth } from '@/contexts/auth';
 import { Button } from '@/components/common/form-controls';
@@ -98,6 +99,17 @@ export function ArticleCommentForm({
           </Button>
         </span>
       </div>
+      <p className='article-comment-form__consent'>
+        Отправляя комментарий, вы соглашаетесь с{' '}
+        <Link
+          href='/privacy'
+          className='article-comment-form__consent-link'
+          target='_blank'
+        >
+          Политикой обработки персональных данных
+        </Link>
+        .
+      </p>
     </form>
   );
 }

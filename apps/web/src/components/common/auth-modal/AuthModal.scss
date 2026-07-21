@@ -10,6 +10,23 @@
     padding-bottom: 24px;
   }
 
+  &__consent {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-sm, 0.85rem);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  &__consent-link {
+    color: var(--color-primary-text);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+
   // Точная копия стилей из футера (.footer-social-icons__link)
   &__provider {
     display: flex;

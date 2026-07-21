@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Modal } from '@/components/common/modal';
 import { useAuth } from '@/contexts/auth';
 import type { AuthProvider } from '@/contexts/auth';
@@ -92,6 +93,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             </button>
           ))}
         </div>
+        <p className='auth-modal__consent'>
+          Нажимая кнопку входа, вы соглашаетесь с обработкой персональных данных
+          в соответствии с{' '}
+          <Link
+            href='/privacy'
+            className='auth-modal__consent-link'
+            target='_blank'
+            onClick={onClose}
+          >
+            Политикой обработки персональных данных
+          </Link>
+          .
+        </p>
       </div>
     </Modal>
   );

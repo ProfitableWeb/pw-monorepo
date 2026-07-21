@@ -102,4 +102,20 @@
   &__submit {
     min-width: 120px;
   }
+
+  &__consent {
+    margin: var(--space-sm) 0 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  &__consent-link {
+    color: var(--color-primary-text);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
 }
