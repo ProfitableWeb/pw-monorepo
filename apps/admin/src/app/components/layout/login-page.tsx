@@ -11,7 +11,7 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { Separator } from '@/app/components/ui/separator';
 import { Toaster, toast } from 'sonner';
 import { Mail, Lock, Eye, EyeOff, Loader2, Moon, Sun } from 'lucide-react';
-import { FaGoogle, FaYandex, FaTelegramPlane } from 'react-icons/fa';
+import { FaYandex, FaTelegramPlane } from 'react-icons/fa';
 import { PwLogo } from '@/app/components/common/pw-logo';
 
 // --- Login Form ---
@@ -32,7 +32,8 @@ function LoginForm() {
     }
   };
 
-  const handleOAuth = async (provider: 'google' | 'yandex' | 'telegram') => {
+  // Иностранные провайдеры входа в проекте не используются (ADR-002).
+  const handleOAuth = async (provider: 'yandex' | 'telegram') => {
     try {
       await loginWithProvider(provider);
     } catch {
@@ -141,16 +142,7 @@ function LoginForm() {
             </div>
 
             {/* OAuth buttons */}
-            <div className='grid grid-cols-3 gap-3'>
-              <Button
-                variant='outline'
-                className='w-full'
-                onClick={() => handleOAuth('google')}
-                disabled={isLoading}
-              >
-                <FaGoogle className='h-4 w-4' />
-                <span className='sr-only'>Google</span>
-              </Button>
+            <div className='grid grid-cols-2 gap-3'>
               <Button
                 variant='outline'
                 className='w-full'

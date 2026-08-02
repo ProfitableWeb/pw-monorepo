@@ -71,6 +71,14 @@ class ErrorStatsResponse(BaseModel):
     last_30d: int
 
 
+class LogRetentionResponse(BaseModel):
+    """PW-074 | Результат прогона ретенции журналов."""
+
+    retention_days: int
+    error_logs_deleted: int
+    audit_logs_deleted: int
+
+
 # ---------------------------------------------------------------------------
 # Audit Log
 # ---------------------------------------------------------------------------

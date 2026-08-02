@@ -65,7 +65,9 @@ class MetrikaConfigSchema(BaseModel):
     clickmap: bool = True
     track_links: bool = True
     accurate_track_bounce: bool = True
-    webvisor: bool = True
+    # Вебвизор по умолчанию выключен: он пишет движения курсора, клики и ввод
+    # в поля формы (включая текст комментария до отправки) — сбор ПДн без согласия.
+    webvisor: bool = False
     track_hash: bool = False
 
     @field_validator("counter_id")

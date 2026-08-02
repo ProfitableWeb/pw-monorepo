@@ -68,7 +68,9 @@ DEFAULT_METRIKA_CONFIG: dict = {
     "clickmap": True,
     "track_links": True,
     "accurate_track_bounce": True,
-    "webvisor": True,
+    # Вебвизор по умолчанию выключен: он пишет движения курсора, клики и ввод
+    # в поля формы (включая текст комментария до отправки) — сбор ПДн без согласия.
+    "webvisor": False,
     "track_hash": False,
 }
 

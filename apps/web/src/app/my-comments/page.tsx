@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { MyCommentsPage } from '@/components/app-layout/app-my-comments-page';
-import { getUserComments } from '@/lib/api-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,13 +10,12 @@ export const metadata: Metadata = {
 };
 
 /**
- * Страница "Мои комментарии"
- * Загружает данные на сервере и передаёт в клиентский компонент
+ * Страница «Мои комментарии».
+ *
+ * PW-074 | Данные загружаются на клиенте: `/users/me/comments` требует
+ * авторизации, а httpOnly-куки сессии в серверный fetch не попадают.
+ * Раньше здесь был серверный запрос с захардкоженным `user-1`.
  */
-export default async function Page() {
-  // Пока используем mock данные без авторизации
-  // В будущем будем получать userId из сессии
-  const comments = await getUserComments('user-1');
-
-  return <MyCommentsPage initialComments={comments} />;
+export default function Page() {
+  return <MyCommentsPage />;
 }

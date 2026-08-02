@@ -19,16 +19,16 @@ Comment ──< Comment (parent_id, вложенные)
 
 ### User (`users`)
 
-| Поле             | Тип                | Описание                                 |
-| ---------------- | ------------------ | ---------------------------------------- |
-| `id`             | int, PK            |                                          |
-| `name`           | str(255)           | Имя пользователя                         |
-| `email`          | str(255), unique   | Email                                    |
-| `role`           | str(50)            | `admin` / `editor` / `author` / `viewer` |
-| `password_hash`  | str(255), nullable | Хэш пароля (для не-OAuth)                |
-| `oauth_provider` | str(50), nullable  | `yandex` / `google` / `telegram`         |
-| `oauth_id`       | str(255), nullable | ID у OAuth-провайдера                    |
-| `created_at`     | datetime           | Дата регистрации                         |
+| Поле             | Тип                | Описание                                  |
+| ---------------- | ------------------ | ----------------------------------------- |
+| `id`             | int, PK            |                                           |
+| `name`           | str(255)           | Имя пользователя                          |
+| `email`          | str(255), unique   | Email                                     |
+| `role`           | str(50)            | `admin` / `editor` / `author` / `viewer`  |
+| `password_hash`  | str(255), nullable | Хэш пароля (для не-OAuth)                 |
+| `oauth_provider` | str(50), nullable  | `yandex` / `telegram` (`google` — legacy) |
+| `oauth_id`       | str(255), nullable | ID у OAuth-провайдера                     |
+| `created_at`     | datetime           | Дата регистрации                          |
 
 ### Category (`categories`)
 

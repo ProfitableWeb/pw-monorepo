@@ -1,2 +1,2 @@
 export { useArticleComments } from './useArticleComments';
-export { useUserComments } from './useUserComments';
+export { useOwnComments } from './useOwnComments';

@@ -119,7 +119,7 @@ def refresh(
     response: Response,
     db: Session = Depends(get_db),
 ) -> AuthUserResponse:
-    token = request.cookies.get("refresh_token")
+    token = request.cookies.get("refresh_token")  # secret-scan:allow
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -166,6 +166,10 @@ def me(user: User = Depends(get_current_user)) -> AuthUserResponse:
 
 # -----------------------------------------------------------------------
 # OAuth — URL generation
+#
+# Поддерживаемые провайдеры входа: Яндекс ID (redirect) и Telegram Login
+# Widget. Иностранные провайдеры входа в проекте не используются и новых
+# добавлять не следует — проектное решение, обоснование в ADR-002.
 # -----------------------------------------------------------------------
 
 
@@ -192,11 +196,6 @@ def get_oauth_url(
 
         return OAuthUrlResponse(url=get_authorization_url(state=state, callback_url=callback_url))
 
-    if provider == "google":
-        from src.auth.oauth.google import get_authorization_url
-
-        return OAuthUrlResponse(url=get_authorization_url(state=state, callback_url=callback_url))
-
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=f"Неизвестный провайдер: {provider}",
@@ -212,10 +211,6 @@ def _extract_oauth_profile(provider: str, code: str, callback_url: str) -> dict:
     """Обмен кода на профиль OAuth-пользователя."""
     if provider == "yandex":
         from src.auth.oauth.yandex import exchange_code
-
-        return exchange_code(code, callback_url=callback_url)
-    if provider == "google":
-        from src.auth.oauth.google import exchange_code
 
         return exchange_code(code, callback_url=callback_url)
 

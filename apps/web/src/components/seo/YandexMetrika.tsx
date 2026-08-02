@@ -21,7 +21,10 @@ export function YandexMetrika({
   clickmap = true,
   trackLinks = true,
   accurateTrackBounce = true,
-  webvisor = true,
+  // Вебвизор по умолчанию ВЫКЛЮЧЕН: он записывает движения курсора, клики и ввод
+  // в поля формы — включая текст комментария до его отправки. Это сбор ПДн,
+  // на который у посетителя не спрашивали отдельного согласия.
+  webvisor = false,
   trackHash = false,
 }: YandexMetrikaProps) {
   if (!counterId) return null;

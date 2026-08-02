@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { SOCIAL_LINKS_FOOTER } from '@/components/common/social-icons';
+import { openCookieSettings } from '@/lib/cookie-consent';
 import './AppFooter.scss';
 
 /**
@@ -56,6 +57,16 @@ const AppFooter = () => {
             <Link href='/privacy' className='app-footer__legal-link'>
               Политика обработки персональных данных
             </Link>
+            <span className='app-footer__legal-separator' aria-hidden='true'>
+              ·
+            </span>
+            <button
+              type='button'
+              className='app-footer__legal-link app-footer__legal-link--button'
+              onClick={openCookieSettings}
+            >
+              Настройки cookie
+            </button>
           </nav>
         </div>
       </div>

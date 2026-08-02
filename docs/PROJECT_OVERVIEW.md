@@ -37,7 +37,7 @@ Turborepo-монорепозиторий с тремя приложениями 
 
 - FastAPI, Python 3.11+
 - SQLAlchemy 2.0 (синхронный, psycopg2), PostgreSQL
-- JWT + OAuth (Яндекс, Google, Telegram)
+- JWT + OAuth (Яндекс, Telegram)
 - Alembic (миграции), structlog (логирование)
 - MCP-сервер для AI-интеграций
 

@@ -35,7 +35,11 @@ class Comment(UUIDMixin, TimestampMixin, Base):
     parent: Mapped["Comment | None"] = relationship(
         remote_side="Comment.id", back_populates="replies"
     )
-    replies: Mapped[list["Comment"]] = relationship(back_populates="parent")
+    # PW-074: ORM-каскад зеркалит ondelete="CASCADE" на parent_id — удаление
+    # комментария уносит ветку ответов и на SQLite (тесты), где FK не форсируются.
+    replies: Mapped[list["Comment"]] = relationship(
+        back_populates="parent", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<Comment {self.id}>"

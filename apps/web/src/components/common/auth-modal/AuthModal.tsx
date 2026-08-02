@@ -26,15 +26,6 @@ const PROVIDER_ICONS: Record<
       />
     ),
   },
-  google: {
-    viewBox: '0 0 24 24',
-    content: (
-      <path
-        d='M21.35 11.1h-9.18v2.73h5.51c-.24 1.28-.99 2.37-2.11 3.1v2.57h3.41c2-1.84 3.15-4.55 3.15-7.77 0-.53-.05-1.04-.14-1.53l-.64-.1zM12.17 22c2.85 0 5.24-.95 6.99-2.57l-3.41-2.57c-.95.63-2.16 1.01-3.58 1.01-2.75 0-5.08-1.86-5.91-4.36H2.72v2.65C4.46 19.82 8.03 22 12.17 22zM6.26 13.51a5.99 5.99 0 010-3.02V7.84H2.72a10.02 10.02 0 000 8.32l3.54-2.65zM12.17 5.87c1.55 0 2.94.53 4.03 1.58l3.02-3.02C17.4 2.77 15.01 1.82 12.17 1.82 8.03 1.82 4.46 3.99 2.72 7.66l3.54 2.65c.83-2.5 3.16-4.44 5.91-4.44z'
-        fill='currentColor'
-      />
-    ),
-  },
   telegram: {
     viewBox: '0 0 24 24',
     content: (
@@ -46,10 +37,10 @@ const PROVIDER_ICONS: Record<
   },
 };
 
-// Telegram использует Login Widget (не OAuth redirect), поэтому обрабатывается отдельно
+// Telegram использует Login Widget (не OAuth redirect), поэтому обрабатывается отдельно.
+// Иностранные провайдеры входа в проекте не используются — см. ADR-002.
 const OAUTH_PROVIDERS: { id: AuthProvider; name: string }[] = [
   { id: 'yandex', name: 'Яндекс' },
-  { id: 'google', name: 'Google' },
 ];
 
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {

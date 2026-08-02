@@ -160,6 +160,11 @@ def seed(db: Session) -> None:
             status=ArticleStatus.PUBLISHED,
             published_at=_parse_dt(a["published_at"]),
         )
+        # PW-054: счётчик статей в категории считается по junction
+        # article_categories (services/category.py), а не по
+        # primary_category_id. Без этой строки сид даёт 0 статей во всех
+        # категориях — и на странице категории, и в списке категорий.
+        art.categories.append(cat)
         db.add(art)
         article_map[a["slug"]] = art
     db.flush()
@@ -177,6 +182,7 @@ def seed(db: Session) -> None:
         status=ArticleStatus.PUBLISHED,
         published_at=_parse_dt("2025-01-20T10:00:00Z"),
     )
+    one_col.categories.append(cat_map["ai-automation"])
     db.add(one_col)
     db.flush()
     article_map["one-column-article"] = one_col

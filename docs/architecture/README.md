@@ -59,7 +59,7 @@ nginx на хосте (только :80, HTTPS пока не настроен) *
 ### [Аутентификация](./auth/)
 
 - [Обзор](./auth/overview.md) — JWT flow и роли
-- [OAuth-провайдеры](./auth/oauth-providers.md) — Yandex, Google, Telegram
+- [OAuth-провайдеры](./auth/oauth-providers.md) — Yandex, Telegram
 
 ### [Runbooks](./runbooks/)
 

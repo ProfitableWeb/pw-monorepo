@@ -114,8 +114,8 @@ README для секций — `docs/templates/frontend/section-readme.md`.
 - `models/` — всегда плоский (Alembic auto-discovery через `__init__.py`)
 
 **Авторизация**: JWT access-токен (15 мин, Path=/api) + refresh-токен (7 дней, Path=/api/auth) в httpOnly-куках. OAuth:
-Яндекс, Google, Telegram Login Widget. FastAPI-зависимости: `get_current_user`, `get_current_admin`, `get_optional_user`
-в `auth/dependencies.py`.
+Яндекс, Telegram Login Widget. FastAPI-зависимости: `get_current_user`, `get_current_admin`, `get_optional_user` в
+`auth/dependencies.py`. **Иностранные провайдеры входа не добавлять** — проектное решение, обоснование в ADR-002.
 
 **Роли пользователей**: admin, editor, author, viewer.
 

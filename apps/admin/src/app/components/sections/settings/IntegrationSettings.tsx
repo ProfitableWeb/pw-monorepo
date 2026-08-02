@@ -13,14 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/app/components/ui/tabs';
-import {
-  Zap,
-  Key,
-  Webhook,
-  MessageSquare,
-  Activity,
-  BarChart3,
-} from 'lucide-react';
+import { Zap, Key, Webhook, MessageSquare, Activity } from 'lucide-react';
 import { SettingRow } from './shared/SettingRow';
 
 // Компонент настроек интеграций
@@ -53,14 +46,14 @@ export function IntegrationSettings({
               <CardTitle className='text-lg'>Подключенные сервисы</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <SettingRow
-                icon={BarChart3}
-                label='Google Analytics'
-                description='Аналитика посещаемости и поведения пользователей'
-                defaultChecked={true}
-                onChange={onChangeDetected}
-              />
-              <Separator />
+              {/*
+                PW-074: строка «Google Analytics» удалена. Скриптов GA в коде
+                нет и быть не должно: зарубежная аналитика противоречит ч. 5
+                ст. 18 ФЗ-152 (локализация) и заявленному РКН «трансграничная
+                передача не осуществляется». Переключатель был моком, но
+                утверждал обратное. Аналитика проекта — Яндекс.Метрика,
+                настраивается в разделе SEO.
+              */}
               <SettingRow
                 icon={MessageSquare}
                 label='Telegram Bot'

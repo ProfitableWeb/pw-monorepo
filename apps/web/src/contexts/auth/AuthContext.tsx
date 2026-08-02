@@ -18,7 +18,11 @@ export interface User {
   socialLinks?: Record<string, string>;
 }
 
-export type AuthProvider = 'yandex' | 'telegram' | 'google';
+/**
+ * Провайдеры входа.
+ * Иностранные провайдеры в проекте не используются — см. ADR-002.
+ */
+export type AuthProvider = 'yandex' | 'telegram';
 
 export interface AuthContextType {
   user: User | null;

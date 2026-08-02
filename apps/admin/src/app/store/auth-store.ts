@@ -1,7 +1,7 @@
 /**
  * Стор авторизации.
  *
- * Поддерживает login по email/password и OAuth (Google, Яндекс, Telegram).
+ * Поддерживает login по email/password и OAuth (Яндекс, Telegram).
  * Хранит текущего пользователя, флаг isAdmin (admin/editor) и isLoading.
  * `checkAuth` вызывается при старте приложения для восстановления сессии.
  *
@@ -32,9 +32,7 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  loginWithProvider: (
-    provider: 'google' | 'yandex' | 'telegram'
-  ) => Promise<void>;
+  loginWithProvider: (provider: 'yandex' | 'telegram') => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;

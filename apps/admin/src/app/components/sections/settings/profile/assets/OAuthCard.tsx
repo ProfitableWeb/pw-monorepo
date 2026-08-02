@@ -11,6 +11,7 @@ import { cn } from '@/app/components/ui/utils';
 import { LogIn, Loader2, Link, Unlink } from 'lucide-react';
 import {
   OAUTH_PROVIDERS,
+  LEGACY_OAUTH_PROVIDERS,
   PROVIDER_LABELS,
 } from '../profile-settings.constants';
 import type { OAuthCardProps } from '../profile-settings.types';
@@ -22,6 +23,13 @@ export function OAuthCard({
   onLink,
   onUnlink,
 }: OAuthCardProps) {
+  const linked = profile?.oauthProviders ?? [];
+  // Устаревшие провайдеры показываем только тем, у кого привязка уже есть
+  const visibleProviders: readonly string[] = [
+    ...OAUTH_PROVIDERS,
+    ...LEGACY_OAUTH_PROVIDERS.filter(provider => linked.includes(provider)),
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -34,8 +42,8 @@ export function OAuthCard({
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-3'>
-        {OAUTH_PROVIDERS.map(provider => {
-          const isConnected = profile?.oauthProviders?.includes(provider);
+        {visibleProviders.map(provider => {
+          const isConnected = linked.includes(provider);
           const isLinking = linkingProvider === provider;
           const isUnlinking = unlinkingProvider === provider;
           return (

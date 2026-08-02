@@ -36,7 +36,9 @@ jobs:
             echo "POSTGRES_DB=profitableweb_dev"
             echo "POSTGRES_USER=pw"
             echo "POSTGRES_PASSWORD=${DEV_POSTGRES_PASSWORD}"
-            [ -n "$DEV_JWT_SECRET" ]     && echo "JWT_SECRET=${DEV_JWT_SECRET}"
+            # PW-074 | Безусловно: пустой секрет должен ронять деплой, а не
+            # молча уводить API на публичный дефолт из config.py
+            echo "JWT_SECRET=${DEV_JWT_SECRET:?DEV_JWT_SECRET required}"
             echo "FRONTEND_URL=http://dev.profitableweb.ru"
             echo "ADMIN_URL=http://dev.profitableweb.ru/admin"
             echo "CORS_ORIGINS=[\"http://dev.profitableweb.ru\"]"

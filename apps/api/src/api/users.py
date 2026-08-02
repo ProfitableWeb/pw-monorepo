@@ -1,14 +1,16 @@
 """
 PW-034 | Управление профилем пользователя: данные, пароль, аватар, OAuth-привязки.
+PW-074 | DELETE /users/me — уничтожение собственной учётной записи (ст. 21 ФЗ-152).
 """
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from src.auth.dependencies import get_current_user
+from src.auth.jwt import clear_auth_cookies
 from src.auth.passwords import hash_password, verify_password
 from src.core.database import get_db
-from src.models.user import User
+from src.models.user import User, UserRole
 from src.schemas.common import ApiResponse
 from src.schemas.user import (
     ChangePasswordRequest,
@@ -16,6 +18,7 @@ from src.schemas.user import (
     SetPasswordRequest,
     UpdateProfileRequest,
 )
+from src.services import audit_log as audit_service
 from src.services import user as user_service
 from src.services.avatar import avatar_path, process_avatar, validate_avatar
 from src.services.storage import storage
@@ -33,7 +36,7 @@ def _profile_response(user: User, db: Session) -> ProfileResponse:
         bio=user.bio,
         social_links=user.social_links,
         role=user.role.value,
-        has_password=user.password_hash is not None,
+        has_password=user.password_hash is not None,  # secret-scan:allow
         oauth_provider=user.oauth_provider,
         oauth_providers=providers,
     )
@@ -61,6 +64,48 @@ def update_profile(
             status_code=status.HTTP_409_CONFLICT, detail=str(e)
         ) from e
     return ApiResponse(success=True, data=_profile_response(user, db))
+
+
+@router.delete("/me", response_model=ApiResponse[None])
+def delete_own_account(
+    response: Response,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ApiResponse[None]:
+    """
+    PW-074 | Удаление собственной учётной записи — реализация права на
+    уничтожение персональных данных (ст. 21 ФЗ-152).
+
+    Уничтожает запись users, комментарии, OAuth-привязки и файл аватара;
+    журналы обезличиваются. Операция необратима.
+    """
+    if user.role == UserRole.ADMIN and user_service.count_active_admins(db) <= 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Нельзя удалить учётную запись последнего администратора. "
+                "Назначьте другого администратора и повторите."
+            ),
+        )
+
+    user_id = user.id
+    stats = user_service.delete_account(db, user)
+
+    # user_id остаётся в аудите как обезличенный идентификатор уничтоженной
+    # записи — этого требует акт об уничтожении (Приказ РКН № 179), при этом
+    # сам по себе UUID без остальных данных субъекта не идентифицирует.
+    audit_service.log_action(
+        db,
+        user_id=None,
+        action="user.account_deleted",
+        resource_type="personal_data",
+        resource_id=user_id,
+        changes=stats,
+    )
+    db.commit()
+
+    clear_auth_cookies(response)
+    return ApiResponse(success=True)
 
 
 @router.post("/me/password", response_model=ApiResponse[ProfileResponse])

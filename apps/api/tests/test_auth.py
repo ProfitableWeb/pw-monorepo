@@ -124,10 +124,10 @@ def test_oauth_url_yandex(client: TestClient):
     assert "oauth.yandex.ru" in r.json()["url"]
 
 
-def test_oauth_url_google(client: TestClient):
+def test_oauth_url_google_removed(client: TestClient):
+    """Google не является поддерживаемым провайдером входа (ADR-002)."""
     r = client.get("/api/auth/google/url")
-    assert r.status_code == 200
-    assert "accounts.google.com" in r.json()["url"]
+    assert r.status_code == 400
 
 
 def test_oauth_url_unknown_provider(client: TestClient):

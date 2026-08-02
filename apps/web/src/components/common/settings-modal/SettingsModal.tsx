@@ -706,11 +706,16 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   // -------------------------------------------------------------------------
   // Секция безопасности
   // -------------------------------------------------------------------------
+  // Провайдеры, доступные для подключения.
+  // Иностранные провайдеры в проекте не используются — см. ADR-002.
   const OAUTH_PROVIDERS = [
-    { id: 'google', label: 'Google' },
     { id: 'yandex', label: 'Яндекс' },
     { id: 'telegram', label: 'Telegram' },
   ] as const;
+
+  // Подключить нельзя, но у части пользователей привязка осталась с прежней
+  // версии — показываем её, чтобы аккаунт можно было отвязать.
+  const LEGACY_OAUTH_PROVIDERS = [{ id: 'google', label: 'Google' }] as const;
 
   const SecuritySection = () => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -827,6 +832,11 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
     }
 
     const linkedProviders = profile?.oauthProviders ?? [];
+    // Устаревшие провайдеры показываем только тем, у кого привязка уже есть
+    const visibleProviders = [
+      ...OAUTH_PROVIDERS,
+      ...LEGACY_OAUTH_PROVIDERS.filter(p => linkedProviders.includes(p.id)),
+    ];
 
     return (
       <div className='settings-modal__section settings-modal__section--security'>
@@ -834,7 +844,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
         <div className='settings-modal__oauth-section'>
           <label className='settings-modal__label'>Привязанные аккаунты</label>
           <div className='settings-modal__oauth-providers'>
-            {OAUTH_PROVIDERS.map(p => {
+            {visibleProviders.map(p => {
               const isLinked = linkedProviders.includes(p.id);
               const isLinking = linkingProvider === p.id;
               const isUnlinking = unlinkingProvider === p.id;

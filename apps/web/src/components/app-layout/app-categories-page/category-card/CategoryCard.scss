@@ -14,7 +14,7 @@
   }
 
   &__title {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-primary);
     font-weight: 700;
     font-size: 20px;
     line-height: 1.2;
@@ -49,7 +49,7 @@
   }
 
   &__subtitle {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-primary);
     font-weight: var(--font-weight-subheading);
     font-size: 16px;
     color: var(--masonry-subtitle-color);
@@ -77,7 +77,7 @@
   }
 
   &__description {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-primary);
     font-weight: 400;
     font-size: 15px;
     line-height: 1.5;

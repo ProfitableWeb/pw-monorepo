@@ -2,11 +2,15 @@
 
 ## Обзор
 
-| Провайдер | Консоль                                                      | Scope                    | Получаемые данные                   |
-| --------- | ------------------------------------------------------------ | ------------------------ | ----------------------------------- |
-| Yandex    | [oauth.yandex.ru](https://oauth.yandex.ru)                   | `login:info login:email` | id, name, email, avatar             |
-| Google    | [console.cloud.google.com](https://console.cloud.google.com) | `openid email profile`   | sub, name, email, picture           |
-| Telegram  | [BotFather](https://t.me/BotFather)                          | — (Login Widget)         | id, first_name, username, photo_url |
+| Провайдер | Консоль                                    | Scope                    | Получаемые данные                   |
+| --------- | ------------------------------------------ | ------------------------ | ----------------------------------- |
+| Yandex    | [oauth.yandex.ru](https://oauth.yandex.ru) | `login:info login:email` | id, name, email, avatar             |
+| Telegram  | [BotFather](https://t.me/BotFather)        | — (Login Widget)         | id, first_name, username, photo_url |
+
+> **Иностранные провайдеры входа не используются.** Состав провайдеров ограничен российскими информационными системами —
+> проектное решение, обоснование и контекст в
+> [ADR-002](../decisions/ADR-002-auth.md#2026-08-02--google-исключён-из-состава-провайдеров-входа). Новых иностранных
+> провайдеров не добавлять.
 
 ## Callback URL
 
@@ -39,18 +43,6 @@ YANDEX_CLIENT_ID=<из консоли>
 YANDEX_CLIENT_SECRET=<из консоли>
 ```
 
-## Google
-
-1. Зайти в [Google Cloud Console](https://console.cloud.google.com)
-2. APIs & Services → Credentials → Create OAuth 2.0 Client
-3. Authorized redirect URIs: добавить callback для каждого окружения
-4. Сохранить `ClientID` и `ClientSecret` → GitVerse Secrets
-
-```
-GOOGLE_CLIENT_ID=<id>.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=GOCSPX-<secret>
-```
-
 ## Telegram
 
 Telegram использует Login Widget, а не стандартный OAuth redirect.
@@ -69,7 +61,7 @@ TELEGRAM_BOT_TOKEN=123456789:ABCdef...
 Данные от Telegram Widget проверяются через HMAC-SHA256 с хэшем токена бота:
 
 ```python
-secret = hashlib.sha256(bot_token.encode()).digest()
+secret = hashlib.sha256(bot_token.encode()).digest()  # secret-scan:allow
 check = hmac.new(secret, data_check_string.encode(), hashlib.sha256).hexdigest()
 ```
 

@@ -6,9 +6,14 @@ JWT + OAuth настройки для аутентификации.
 
 import json
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings
 
 _DEFAULT_ORIGINS = ["http://localhost:3000", "http://localhost:3001"]
+
+# PW-074 | Значение опубликовано в открытом репозитории — пригодно только для
+# локальной разработки. Вне режима DEBUG отвергается валидатором ниже.
+_INSECURE_JWT_SECRET = "change-me-in-production"
 
 
 class Settings(BaseSettings):
@@ -29,7 +34,7 @@ class Settings(BaseSettings):
         return [s.strip() for s in raw.split(",") if s.strip()]
 
     # JWT
-    jwt_secret: str = "change-me-in-production"
+    jwt_secret: str = _INSECURE_JWT_SECRET
     jwt_access_expire_minutes: int = 15
     jwt_refresh_expire_days: int = 7
 
@@ -43,10 +48,6 @@ class Settings(BaseSettings):
 
     # Шифрование OAuth-токенов (Fernet, PW-048)
     encryption_key: str = ""
-
-    # OAuth — Google
-    google_client_id: str = ""
-    google_client_secret: str = ""
 
     # Telegram Login Widget
     telegram_bot_token: str = ""
@@ -73,6 +74,30 @@ class Settings(BaseSettings):
     max_upload_size_other: int = 50 * 1024 * 1024  # 50 MB
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
+
+    @model_validator(mode="after")
+    def _reject_insecure_jwt_secret(self) -> "Settings":
+        """PW-074 | Не даёт подняться с публично известным ключом подписи.
+
+        `POSTGRES_PASSWORD` защищён на уровне compose (`:?`) — пустое значение
+        роняет запуск. У `JWT_SECRET` такой защиты нет: он приходит через
+        `env_file`, и при отсутствии переменной Pydantic молча подставил бы
+        дефолт. Приложение поднялось бы рабочим, но любой смог бы подписать
+        себе токен администратора. Здесь отказ становится громким.
+
+        В режиме разработки (`DEBUG=true`) дефолт допускается.
+        """
+        if self.debug:
+            return self
+
+        if not self.jwt_secret or self.jwt_secret == _INSECURE_JWT_SECRET:
+            raise ValueError(
+                "JWT_SECRET не задан или равен публичному значению по умолчанию. "
+                "Задайте секрет в окружении (например: "
+                "python -c \"import secrets; print(secrets.token_urlsafe(64))\") "
+                "либо выставьте DEBUG=true для локальной разработки."
+            )
+        return self
 
 
 settings = Settings()

@@ -504,10 +504,15 @@ export async function getAuthorById(id: string): Promise<AuthorProfile | null> {
 }
 
 /**
- * Получает комментарии пользователя
+ * Получает комментарии текущего пользователя.
+ *
+ * PW-074 | Раньше здесь был `/users/{userId}/comments` с захардкоженным
+ * `user-1`: эндпоинт был открытым, и страница «Мои комментарии» показывала
+ * чужие данные (а на реальной БД падала — `user-1` не UUID). Теперь запрос
+ * идёт на `/users/me/comments`, пользователь определяется по httpOnly-куке.
+ * Вызывать только на клиенте: на сервере куки сессии в fetch не попадают.
  */
-export async function getUserComments(
-  userId: string,
+export async function getOwnComments(
   params?: CommentSearchParams
 ): Promise<Comment[]> {
   const query = new URLSearchParams();
@@ -517,7 +522,7 @@ export async function getUserComments(
 
   const qs = query.toString();
   const data = await apiFetch<CommentRaw[]>(
-    `/users/${encodeURIComponent(userId)}/comments${qs ? `?${qs}` : ''}`
+    `/users/me/comments${qs ? `?${qs}` : ''}`
   );
   return (data ?? []).map(mapComment);
 }
@@ -689,7 +694,7 @@ function mapProfile(raw: ProfileRaw): UserProfile {
     role: raw.role,
     bio: raw.bio ?? undefined,
     socialLinks: raw.social_links ?? undefined,
-    hasPassword: raw.has_password,
+    hasPassword: raw.has_password, // secret-scan:allow
     oauthProvider: raw.oauth_provider ?? undefined,
     oauthProviders: raw.oauth_providers ?? [],
   };
@@ -729,8 +734,8 @@ export async function changePassword(
   const data = await apiFetch<ProfileRaw>('/users/me/password/change', {
     method: 'POST',
     body: JSON.stringify({
-      old_password: oldPassword,
-      new_password: newPassword,
+      old_password: oldPassword, // secret-scan:allow
+      new_password: newPassword, // secret-scan:allow
     }),
   });
   if (!data) throw new ApiError(500, 'Не удалось сменить пароль');

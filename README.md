@@ -49,7 +49,7 @@ ProfitableWeb/
 - **SQLAlchemy 2.0** — Синхронный ORM (psycopg2)
 - **PostgreSQL** — Primary database
 - **Alembic** — Миграции базы данных
-- **JWT + OAuth** — Авторизация (Яндекс, Google, Telegram)
+- **JWT + OAuth** — Авторизация (Яндекс, Telegram)
 
 ### Admin Panel (`apps/admin`)
 

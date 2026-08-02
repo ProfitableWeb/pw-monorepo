@@ -29,8 +29,6 @@
 | `CORS_ORIGINS`          | FastAPI prod            | `["https://profitableweb.ru"]`                                       |
 | `YANDEX_CLIENT_ID`      | FastAPI                 | OAuth Yandex ID                                                      |
 | `YANDEX_CLIENT_SECRET`  | FastAPI                 | OAuth Yandex Secret                                                  |
-| `GOOGLE_CLIENT_ID`      | FastAPI                 | OAuth Google ID                                                      |
-| `GOOGLE_CLIENT_SECRET`  | FastAPI                 | OAuth Google Secret                                                  |
 | `TELEGRAM_BOT_TOKEN`    | FastAPI                 | Telegram Login Widget                                                |
 | `STORAGE_BACKEND`       | FastAPI                 | `s3`                                                                 |
 | `S3_ENDPOINT`           | FastAPI                 | `https://s3.cloud.ru`                                                |

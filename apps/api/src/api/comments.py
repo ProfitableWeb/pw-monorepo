@@ -2,6 +2,8 @@
 PW-030 | Комментарии: треды для статей + список по пользователю (для админки).
 _build_threads() собирает плоский список в структуру {root, replies[]} на стороне Python.
 POST /articles/{slug}/comments — создание комментария (protected).
+PW-074 | Списки по пользователю закрыты авторизацией (свои комментарии либо
+роль admin/editor), добавлено удаление собственного комментария автором.
 """
 
 from collections.abc import Sequence
@@ -19,9 +21,17 @@ from src.schemas.comment import (
     CommentThreadResponse,
 )
 from src.schemas.common import ApiMeta, ApiResponse
+from src.services import audit_log as audit_service
 from src.services import comment as comment_service
 
 router = APIRouter(tags=["comments"])
+
+# Роли, которым доступны чужие комментарии (модерация из админки)
+_MODERATOR_ROLES = frozenset({"admin", "editor"})
+
+
+def _is_moderator(user: User) -> bool:
+    return user.role.value in _MODERATOR_ROLES
 
 
 def _comment_to_response(comment: Comment) -> CommentResponse:
@@ -106,16 +116,13 @@ def get_article_comments(
     return ApiResponse(success=True, data=threads)
 
 
-@router.get(
-    "/users/{user_id}/comments",
-    response_model=ApiResponse[list[CommentResponse]],
-)
-def get_user_comments(
+def _user_comments_response(
+    db: Session,
     user_id: str,
-    query: str | None = None,
-    limit: int = 20,
-    offset: int = 0,
-    db: Session = Depends(get_db),
+    *,
+    query: str | None,
+    limit: int,
+    offset: int,
 ) -> ApiResponse[list[CommentResponse]]:
     comments, total = comment_service.get_user_comments(
         db, user_id, query=query, limit=limit, offset=offset
@@ -126,3 +133,90 @@ def get_user_comments(
         data=data,
         meta=ApiMeta(limit=limit, total=total, has_more=(offset + limit < total)),
     )
+
+
+# Маршрут /users/me/comments объявлен раньше /users/{user_id}/comments —
+# иначе "me" будет поглощён параметром пути.
+@router.get(
+    "/users/me/comments",
+    response_model=ApiResponse[list[CommentResponse]],
+)
+def get_own_comments(
+    query: str | None = None,
+    limit: int = 20,
+    offset: int = 0,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ApiResponse[list[CommentResponse]]:
+    """Комментарии текущего пользователя — источник данных для /my-comments."""
+    return _user_comments_response(
+        db, str(user.id), query=query, limit=limit, offset=offset
+    )
+
+
+@router.get(
+    "/users/{user_id}/comments",
+    response_model=ApiResponse[list[CommentResponse]],
+)
+def get_user_comments(
+    user_id: str,
+    query: str | None = None,
+    limit: int = 20,
+    offset: int = 0,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ApiResponse[list[CommentResponse]]:
+    """
+    PW-074 | Раньше эндпоинт был открытым — любой выгружал комментарии любого
+    пользователя по UUID. Теперь: свои комментарии либо роль admin/editor.
+    """
+    if str(user.id) != user_id and not _is_moderator(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Доступны только собственные комментарии",
+        )
+    return _user_comments_response(
+        db, user_id, query=query, limit=limit, offset=offset
+    )
+
+
+@router.delete("/comments/{comment_id}", response_model=ApiResponse[None])
+def delete_comment(
+    comment_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ApiResponse[None]:
+    """
+    PW-074 | Удаление комментария автором (право на уничтожение, ст. 21 ФЗ-152)
+    либо модератором. Ветка ответов уходит каскадом.
+    """
+    comment = comment_service.get_comment_by_id(db, comment_id)
+    if not comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Комментарий не найден"
+        )
+
+    is_author = comment.user_id == user.id
+    if not is_author and not _is_moderator(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Можно удалить только собственный комментарий",
+        )
+
+    comment_id_uuid = comment.id
+    comment_author_id = comment.user_id
+    comment_service.delete_comment(db, comment)
+
+    # author_id пишем только для модерации: при самоудалении он дублировал бы
+    # user_id и пережил бы обезличивание журнала при удалении учётной записи.
+    audit_service.log_action(
+        db,
+        user_id=user.id,
+        action="comment.deleted" if is_author else "comment.deleted_by_moderator",
+        resource_type="personal_data" if is_author else "comment",
+        resource_id=comment_id_uuid,
+        changes=None if is_author else {"author_id": str(comment_author_id)},
+    )
+    db.commit()
+
+    return ApiResponse(success=True)

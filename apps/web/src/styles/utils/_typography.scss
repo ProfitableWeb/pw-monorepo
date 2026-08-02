@@ -2,11 +2,14 @@
 // Professional typography scale and font definitions
 
 // ===== FONT FAMILIES =====
-// Import Google Fonts in layout.tsx or globals.scss
+// Гарнитуры самохостятся через next/font (app/layout.tsx). Реальное имя семейства
+// генерируется сборкой, поэтому обращаемся к нему только через CSS-переменную.
+// Подключать Google Fonts через @import url(...) нельзя — это запрос браузера
+// посетителя к серверам Google LLC (передача IP и User-Agent за пределы РФ).
 
 // Primary font - Modern sans-serif for readability
 $font-family-primary:
-  "Inter",
+  var(--font-inter, "Inter"),
   -apple-system,
   BlinkMacSystemFont,
   "Segoe UI",

@@ -15,7 +15,7 @@ export const queryKeys = {
   },
   comments: {
     byArticle: (slug: string) => ['comments', 'article', slug] as const,
-    byUser: (userId: string, query?: string) =>
-      ['comments', 'user', userId, { query }] as const,
+    /** Комментарии текущего пользователя (`/users/me/comments`). */
+    own: (query?: string) => ['comments', 'own', { query }] as const,
   },
 } as const;

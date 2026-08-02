@@ -88,13 +88,11 @@ declare module '*.otf' {
 // ===== GLOBAL INTERFACE EXTENSIONS =====
 
 // Extend the Window interface for global variables
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
-    // Add other global variables as needed
-  }
-}
+// PW-074: блок `declare global { interface Window { gtag, dataLayer } }` удалён.
+// Зарубежная аналитика (Google Analytics, GTM) в проекте не используется и
+// использоваться не должна — регулятору заявлено отсутствие трансграничной
+// передачи. Единственная аналитика — Яндекс.Метрика, её счётчик подключается
+// инлайн-скриптом и в типизации window не нуждается.
 
 // ===== ENVIRONMENT VARIABLES =====
 declare namespace NodeJS {
@@ -107,9 +105,7 @@ declare namespace NodeJS {
     // API configuration
     NEXT_PUBLIC_API_URL: string;
 
-    // Analytics
-    NEXT_PUBLIC_GA_ID?: string;
-    NEXT_PUBLIC_GTM_ID?: string;
+    // Analytics — только Яндекс.Метрика (PW-074: GA/GTM удалены)
 
     // SEO & Social
     NEXT_PUBLIC_OG_IMAGE_URL: string;
@@ -133,8 +129,6 @@ declare namespace NodeJS {
     SENTRY_DSN?: string;
 
     // OAuth providers
-    GOOGLE_CLIENT_ID?: string;
-    GOOGLE_CLIENT_SECRET?: string;
     GITHUB_CLIENT_ID?: string;
     GITHUB_CLIENT_SECRET?: string;
   }

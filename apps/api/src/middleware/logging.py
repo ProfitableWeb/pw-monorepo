@@ -28,7 +28,7 @@ _SILENT_PATHS = frozenset({"/", "/health"})
 
 def _extract_user_id(request: Request) -> str | None:
     """Извлекает user_id из JWT access_token cookie без обращения к БД."""
-    token = request.cookies.get("access_token")
+    token = request.cookies.get("access_token")  # secret-scan:allow
     if not token:
         return None
     try:
@@ -120,7 +120,12 @@ def _capture_error_to_db(
     client_ip: str,
     user_agent: str | None,
 ) -> None:
-    """Записывает unhandled exception в error_logs. Никогда не ломает request flow."""
+    """
+    Записывает unhandled exception в error_logs. Никогда не ломает request flow.
+
+    PW-074: str(exc) у IntegrityError содержит `DETAIL: Key (email)=(...)` —
+    значения полей вырезаются санитайзерами до записи в БД.
+    """
     try:
         db = SessionLocal()
         try:
@@ -128,8 +133,12 @@ def _capture_error_to_db(
                 db,
                 level="error",
                 event="unhandled_exception",
-                message=f"{type(exc).__name__}: {exc}",
-                traceback=error_log_service.format_exception(exc),
+                message=error_log_service.sanitize_message(
+                    f"{type(exc).__name__}: {exc}"
+                ),
+                traceback=error_log_service.sanitize_traceback(
+                    error_log_service.format_exception(exc)
+                ),
                 request_method=method,
                 request_path=path,
                 request_id=request_id,

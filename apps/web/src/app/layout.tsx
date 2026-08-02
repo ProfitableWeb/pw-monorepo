@@ -5,11 +5,20 @@ import '@/styles/globals.scss';
 import { metadata as siteMetadata } from '@/config/metadata';
 import { Providers } from '@/components/providers';
 import { YandexMetrika } from '@/components/seo/YandexMetrika';
+import {
+  AnalyticsConsentGate,
+  CookieConsentBanner,
+} from '@/components/common/cookie-consent';
 import { getSeoConfig } from '@/lib/seo-config';
 
-// Font configurations
+// Шрифты подключаются через next/font: Next.js скачивает файлы на этапе сборки
+// и раздаёт их со своего origin. Обращений к fonts.googleapis.com / fonts.gstatic.com
+// из браузера посетителя не происходит — трансграничной передачи IP и User-Agent нет.
+// Кириллица обязательна: весь контент сайта на русском.
+// Inter — вариативный шрифт: одна загрузка покрывает все начертания (400/500/600/700
+// и остальные), поэтому weight не перечисляем.
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin', 'cyrillic'],
   variable: '--font-inter',
   display: 'swap',
 });
@@ -69,16 +78,24 @@ export default async function RootLayout({
         <Providers>
           <div className='main-layout'>{children}</div>
         </Providers>
+        {/*
+          Аналитика монтируется только после явного согласия посетителя
+          (п. 1 ч. 1 ст. 6 ФЗ-152). Внутрь шлюза попадает и noscript-пиксель:
+          он не должен срабатывать до выбора.
+        */}
         {metrika?.counterId && (
-          <YandexMetrika
-            counterId={metrika.counterId}
-            clickmap={metrika.clickmap}
-            trackLinks={metrika.trackLinks}
-            accurateTrackBounce={metrika.accurateTrackBounce}
-            webvisor={metrika.webvisor}
-            trackHash={metrika.trackHash}
-          />
+          <AnalyticsConsentGate>
+            <YandexMetrika
+              counterId={metrika.counterId}
+              clickmap={metrika.clickmap}
+              trackLinks={metrika.trackLinks}
+              accurateTrackBounce={metrika.accurateTrackBounce}
+              webvisor={metrika.webvisor}
+              trackHash={metrika.trackHash}
+            />
+          </AnalyticsConsentGate>
         )}
+        <CookieConsentBanner />
       </body>
     </html>
   );

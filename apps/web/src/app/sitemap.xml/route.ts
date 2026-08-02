@@ -87,7 +87,7 @@ export async function GET() {
 
   // Статические страницы
   if (sitemapConfig.includeStaticPages) {
-    for (const page of ['about']) {
+    for (const page of ['about', 'privacy']) {
       entries.push({
         url: `${baseUrl}/${page}`,
         lastmod: new Date().toISOString(),

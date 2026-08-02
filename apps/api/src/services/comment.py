@@ -31,16 +31,22 @@ def get_user_comments(
     limit: int = 20,
     offset: int = 0,
 ) -> tuple[list[Comment], int]:
+    try:
+        uid = uuid.UUID(user_id)
+    except ValueError:
+        # Некорректный UUID — пустая выдача вместо 500 от драйвера БД
+        return [], 0
+
     stmt = (
         select(Comment)
-        .where(Comment.user_id == user_id)
+        .where(Comment.user_id == uid)
         .options(joinedload(Comment.user), joinedload(Comment.article))
     )
 
     count_stmt = (
         select(func.count())
         .select_from(Comment)
-        .where(Comment.user_id == user_id)
+        .where(Comment.user_id == uid)
     )
 
     if query:
@@ -57,6 +63,25 @@ def get_user_comments(
     stmt = stmt.order_by(Comment.created_at.desc()).offset(offset).limit(limit)
     comments = list(db.scalars(stmt).unique().all())
     return comments, total
+
+
+def get_comment_by_id(db: Session, comment_id: str) -> Comment | None:
+    """Комментарий по UUID. Некорректный UUID трактуется как «не найден»."""
+    try:
+        cid = uuid.UUID(comment_id)
+    except ValueError:
+        return None
+    stmt = select(Comment).where(Comment.id == cid)
+    return db.scalars(stmt).first()
+
+
+def delete_comment(db: Session, comment: Comment) -> None:
+    """
+    PW-074 | Удаляет комментарий вместе с веткой ответов.
+    Не коммитит — вызывающий пишет аудит-запись и коммитит одной транзакцией.
+    """
+    db.delete(comment)
+    db.flush()
 
 
 def create_comment(

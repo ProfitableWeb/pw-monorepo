@@ -3,9 +3,13 @@
 // All variables are defined directly here to avoid circular import issues
 
 // ===== FONT FAMILIES =====
+// Гарнитуры самохостятся через next/font (app/layout.tsx); реальное имя семейства
+// генерируется сборкой и доступно только через CSS-переменные --font-inter / --font-playfair.
+// Литерал "Inter" оставлен вторым значением как деградация, если переменная не объявлена.
+
 // Primary font - Modern sans-serif for readability
 $font-family-primary:
-  "Inter",
+  var(--font-inter, "Inter"),
   -apple-system,
   BlinkMacSystemFont,
   "Segoe UI",
@@ -130,7 +134,8 @@ $z-tooltip: 1070;
   // SCSS variables only - CSS variables are defined in themes
 
   // Typography variables
-  --font-family-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  --font-family-primary: var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   --font-family-secondary: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-family-mono: "Fira Code", "SF Mono", Monaco, monospace;
 

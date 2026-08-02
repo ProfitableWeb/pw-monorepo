@@ -49,7 +49,11 @@ class User(UUIDMixin, TimestampMixin, Base):
     oauth_id: Mapped[str | None] = mapped_column(String(200))
 
     articles: Mapped[list["Article"]] = relationship(back_populates="author")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="user")
+    # PW-074: ORM-каскад зеркалит ondelete="CASCADE" на comments.user_id —
+    # без него db.delete(user) пытается обнулить NOT NULL-колонку.
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
     oauth_links: Mapped[list["UserOAuthLink"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )

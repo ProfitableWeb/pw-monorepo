@@ -1,7 +1,11 @@
 """
 PW-042-B | Сервис ошибок: запись, чтение, resolve, статистика.
+PW-074 | Санитизация: в журнал ошибок не должны попадать значения полей —
+psycopg2 кладёт в текст IntegrityError строку `DETAIL: Key (email)=(...)`,
+SQLAlchemy добавляет сам SQL и его параметры.
 """
 
+import re
 import traceback as tb_module
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -20,6 +24,58 @@ _DATE_RANGE_MAP: dict[str, timedelta] = {
     "30d": timedelta(days=30),
 }
 
+# ---------------------------------------------------------------------------
+# Санитизация (PW-074)
+# ---------------------------------------------------------------------------
+
+# Маркеры, после которых начинаются фактические значения полей.
+_SENSITIVE_MARKERS = ("DETAIL:", "HINT:", "CONTEXT:", "[SQL:", "[parameters:")
+# `Key (email)=(user@example.com) already exists.` → имя поля оставляем, значение нет.
+_KEY_VALUE_RE = re.compile(r"Key \(([^)]*)\)=\([^)]*\)")
+_REDACTED = "[значения скрыты]"
+_MESSAGE_MAX_LENGTH = 500
+
+
+def _strip_values(line: str) -> str:
+    """Обрезает строку по первому маркеру значений и глушит `Key (...)=(...)`."""
+    cut = len(line)
+    for marker in _SENSITIVE_MARKERS:
+        idx = line.find(marker)
+        if idx != -1:
+            cut = min(cut, idx)
+    return _KEY_VALUE_RE.sub(rf"Key (\1)=({_REDACTED})", line[:cut])
+
+
+def sanitize_message(message: str) -> str:
+    """
+    PW-074 | Оставляет только первую строку сообщения без блока значений.
+    Идемпотентна: повторный вызов ничего не меняет.
+    """
+    if not message:
+        return ""
+    lines = message.splitlines()
+    first_line = lines[0] if lines else ""
+    return _strip_values(first_line).strip()[:_MESSAGE_MAX_LENGTH]
+
+
+def sanitize_traceback(traceback_text: str | None) -> str | None:
+    """
+    PW-074 | Вычищает из трейсбека строки со значениями полей.
+    Структура трейсбека (файлы, строки, типы исключений) сохраняется.
+    """
+    if not traceback_text:
+        return traceback_text
+
+    cleaned: list[str] = []
+    for line in traceback_text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith(_SENSITIVE_MARKERS):
+            indent = line[: len(line) - len(stripped)]
+            cleaned.append(f"{indent}{_REDACTED}")
+            continue
+        cleaned.append(_strip_values(line))
+    return "\n".join(cleaned)
+
 
 def log_error(
     db: Session,
@@ -37,12 +93,16 @@ def log_error(
     status_code: int | None = None,
     context: dict | None = None,
 ) -> ErrorLog:
-    """Записывает ошибку в БД."""
+    """
+    Записывает ошибку в БД.
+    PW-074: message и traceback проходят санитизацию — единственная точка
+    записи в error_logs, поэтому фильтр здесь покрывает все вызовы.
+    """
     entry = ErrorLog(
         level=level,
         event=event,
-        message=message,
-        traceback=traceback,
+        message=sanitize_message(message),
+        traceback=sanitize_traceback(traceback),
         request_method=request_method,
         request_path=request_path,
         request_id=request_id,
