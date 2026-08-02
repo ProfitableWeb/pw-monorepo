@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use "utils" as *;
 
 .privacy-page {
   min-height: 100vh;
@@ -58,6 +58,50 @@
 
   @include md {
     font-size: var(--font-size-xl, 1.25rem);
+  }
+}
+
+/**
+ * PW-074 | Подсветка раздела, к которому отослал якорь (`/privacy#section-id`).
+ *
+ * Маркер ложится по тексту заголовка, а не на всю ширину блока — отсюда
+ * inline-обёртка и `box-decoration-break: clone`, чтобы на переносе строки
+ * подсветилась каждая строка отдельно, как настоящим маркером.
+ *
+ * Сценарий: резкая вспышка на прибытии (первые ~8% времени), затем медленное
+ * затухание. Класс снимает AnchorHighlight.tsx — длительности синхронизированы.
+ */
+.privacy-page__section-title-text {
+  padding: 2px 6px;
+  margin: 0 -6px;
+  border-radius: 3px;
+  background-color: transparent;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@keyframes privacy-anchor-flash {
+  0% {
+    background-color: transparent;
+  }
+
+  8% {
+    background-color: var(--color-success);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+.privacy-page__section--anchor-target .privacy-page__section-title-text {
+  animation: privacy-anchor-flash 2800ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-page__section--anchor-target .privacy-page__section-title-text {
+    animation: none;
+    background-color: var(--color-success-light);
   }
 }
 

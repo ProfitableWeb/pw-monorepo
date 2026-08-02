@@ -1,6 +1,7 @@
 import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
+import AnchorHighlight from './AnchorHighlight';
 import { POLICY_META, POLICY_SECTIONS } from './privacyContent';
 import './PrivacyPage.scss';
 
@@ -20,6 +21,24 @@ const formatDate = (iso: string) =>
 const PrivacyPage = () => {
   return (
     <div className='privacy-page'>
+      {/*
+        PW-074 | Блокирующий скрипт — обязан выполниться ДО разбора секций ниже.
+        Браузер применяет якорь на этапе парсинга HTML и успевает отрисовать эту
+        позицию задолго до гидратации React. Если убирать хэш уже из эффекта,
+        посетитель видит рывок: страница открылась прокрученной, дёрнулась
+        наверх и только потом поехала вниз. Поэтому хэш снимается здесь —
+        прыгать становится некуда, — а цель передаётся в AnchorHighlight,
+        который вернёт хэш в адресную строку после прокрутки.
+        Без JS остаётся штатное поведение браузера: обычный переход по якорю.
+      */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            '(function(){try{var h=location.hash;if(h&&h.length>1){window.__pwAnchorTarget=h.slice(1);' +
+            "history.replaceState(null,'',location.pathname+location.search);}}catch(e){}})();",
+        }}
+      />
+      <AnchorHighlight />
       <AppBar />
       <AppPageWrapper>
         <main className='privacy-page__main'>
@@ -42,7 +61,10 @@ const PrivacyPage = () => {
                 className='privacy-page__section'
               >
                 <h2 className='privacy-page__section-title'>
-                  {section.number}. {section.title}
+                  {/* span — чтобы маркер подсветки лёг по тексту, а не на всю ширину блока */}
+                  <span className='privacy-page__section-title-text'>
+                    {section.number}. {section.title}
+                  </span>
                 </h2>
                 {section.blocks.map((block, i) =>
                   block.type === 'list' ? (

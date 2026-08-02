@@ -1,14 +1,19 @@
-@use 'utils' as *;
+@use "utils" as *;
 
 .app-footer {
   width: 100%;
   background: transparent;
   border-top: none;
-  padding: 28px 0;
+  // Нижний padding намеренно меньше верхнего: место отдано отступу над
+  // правовой строкой (.app-footer__legal), чтобы она стояла у нижней кромки
+  // футера, а не липла к блоку иконок.
+  padding: 28px 0 16px;
   margin-top: 10px;
-  margin-bottom: 64px;
+  margin-bottom: 24px;
+
   @include md {
-    padding: 64px 0;
+    padding: 64px 0 24px;
+    margin-bottom: 32px;
   }
 }
 
@@ -50,14 +55,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  // На узких экранах строка не помещается: раскладываем в столбец, иначе
+  // точка-разделитель переносится и висит в начале второй строки.
+  flex-direction: column;
   gap: 8px;
+  // Дополнительно к gap: 24px у .app-footer__content — отрывает правовую
+  // строку от блока иконок и опускает её к нижней кромке футера.
+  margin-top: 16px;
+
+  @include md {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
 }
 
 .app-footer__legal-separator {
   font-size: var(--font-size-sm, 0.9rem);
   color: var(--color-text-muted);
   user-select: none;
+  // В столбце разделитель не нужен — пункты и так на разных строках.
+  display: none;
+
+  @include md {
+    display: inline;
+  }
 }
 
 .app-footer__legal-link {
@@ -120,7 +142,7 @@
   border-radius: var(--radius-xl);
   background: var(--color-background);
   border: 2px solid var(--color-border);
-  transition: 
+  transition:
     color 0.3s ease,
     border-color 0.3s ease,
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -160,14 +182,10 @@
 
   // Hover эффект с подсветкой
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      135deg,
-      var(--color-primary-light) 0%,
-      transparent 100%
-    );
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, transparent 100%);
     opacity: 0;
     transition: opacity var(--transition-normal);
   }
@@ -199,4 +217,3 @@
     transform: translateY(-2px);
   }
 }
-

@@ -43,6 +43,14 @@ const OAUTH_PROVIDERS: { id: AuthProvider; name: string }[] = [
   { id: 'yandex', name: 'Яндекс' },
 ];
 
+/**
+ * Подпись модалки зависит от числа провайдеров: предлагать «выбрать способ»,
+ * когда способ один, — бессмысленно. Вычисляется, а не захардкожено, чтобы
+ * текст остался корректным при изменении состава OAUTH_PROVIDERS.
+ */
+const getSubtitle = (providerCount: number) =>
+  providerCount === 1 ? 'Авторизация в один клик' : 'Выберите способ входа';
+
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const { login } = useAuth();
 
@@ -56,7 +64,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       isOpen={isOpen}
       onClose={onClose}
       title='Вход на сайт'
-      subtitle='Выберите способ входа'
+      subtitle={getSubtitle(OAUTH_PROVIDERS.length)}
       size='small'
       contentPadding={{
         top: 'calc(var(--base-content-padding-top, 24px) - 15px)',
@@ -87,11 +95,16 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         <p className='auth-modal__consent'>
           Нажимая кнопку входа, вы соглашаетесь с обработкой персональных данных
           в соответствии с{' '}
+          {/*
+            Открывается в новой вкладке, поэтому модалку НЕ закрываем: иначе
+            посетитель, заглянувший в Политику, возвращается к погашенной форме
+            входа и начинает заново.
+          */}
           <Link
             href='/privacy'
             className='auth-modal__consent-link'
             target='_blank'
-            onClick={onClose}
+            rel='noopener noreferrer'
           >
             Политикой обработки персональных данных
           </Link>

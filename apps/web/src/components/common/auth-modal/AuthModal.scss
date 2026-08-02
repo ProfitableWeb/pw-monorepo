@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use "utils" as *;
 
 .auth-modal {
   &__providers {
@@ -18,14 +18,12 @@
     color: var(--color-text-muted);
   }
 
-  &__consent-link {
-    color: var(--color-primary-text);
-    text-decoration: underline;
-
-    &:hover {
-      color: var(--color-primary);
-    }
-  }
+  // Ссылка на Политику (.auth-modal__consent-link) намеренно без собственных
+  // стилей: цвет наследуется от текста согласия, подчёркивание и поведение при
+  // наведении задаёт общее правило `p a` (utils/_text-decorations).
+  // Не возвращать сюда `color` и `text-decoration: underline` — вместе
+  // с border-bottom из общего правила это давало двойное подчёркивание,
+  // а зелёный выбивался из приглушённого текста вокруг.
 
   // Точная копия стилей из футера (.footer-social-icons__link)
   &__provider {
@@ -47,7 +45,7 @@
     padding: 0;
     margin: 0;
     font: inherit;
-    transition: 
+    transition:
       color 0.3s ease,
       border-color 0.3s ease,
       transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -80,14 +78,10 @@
 
     // Hover эффект с подсветкой
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        135deg,
-        var(--color-primary-light) 0%,
-        transparent 100%
-      );
+      background: linear-gradient(135deg, var(--color-primary-light) 0%, transparent 100%);
       opacity: 0;
       transition: opacity var(--transition-normal);
     }
