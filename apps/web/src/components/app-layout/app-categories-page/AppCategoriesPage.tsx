@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import AppBar from '@/components/app-layout/app-bar/AppBar';
 import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import AppFooter from '@/components/app-layout/app-footer';
+import { PageSpinner } from '@/components/common/spinner';
 import CategoriesPageHeader from './categories-page-header';
 import CategoryCard from './category-card';
 import { Category } from '@/types';
@@ -86,6 +87,8 @@ const AppCategoriesPage = ({ categories }: AppCategoriesPageProps) => {
 
   return (
     <div className='categories-page'>
+      {/* Заголовок и карточки категорий скрыты framer-motion до гидратации */}
+      <PageSpinner />
       <AppBar />
       <AppPageWrapper>
         <main>

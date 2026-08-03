@@ -6,6 +6,7 @@ import AppPageWrapper from '@/components/app-layout/app-page-wrapper';
 import CategoryPageHeader from './category-page-header';
 import AppFooter from '@/components/app-layout/app-footer';
 import { MasonryGrid } from '@/components/common/masonry';
+import { PageSpinner } from '@/components/common/spinner';
 import { Category } from '@/types';
 import { Article } from '@/components/common/masonry/types';
 
@@ -21,6 +22,8 @@ export interface AppCategoryPageProps {
 const AppCategoryPage = ({ category, articles }: AppCategoryPageProps) => {
   return (
     <div className='category-page'>
+      {/* Заголовок категории и карточки скрыты framer-motion до гидратации */}
+      <PageSpinner />
       <AppBar />
       <AppPageWrapper>
         <main>

@@ -1,0 +1,39 @@
+@use "utils" as *;
+
+// Затухание и отложенное появление разнесены по двум элементам намеренно:
+// на одном свойстве animation с forwards и transition конфликтуют — снятие
+// анимации сбрасывает opacity скачком, без плавности.
+//
+// .page-spinner       — затухание после гидратации (transition)
+// .page-spinner__body — отложенное появление до гидратации (animation)
+
+.page-spinner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Аппбар и футер уже интерактивны — лоадер не должен перехватывать клики
+  pointer-events: none;
+  z-index: var(--z-fixed);
+  opacity: 1;
+  transition: opacity var(--duration-medium) var(--ease-out);
+
+  &--hidden {
+    opacity: 0;
+  }
+
+  &__body {
+    display: flex;
+    // Спиннер не показывается на быстрых загрузках: за время задержки
+    // гидратация обычно успевает завершиться и родитель уходит в opacity: 0
+    opacity: 0;
+    animation: page-spinner-appear var(--duration-medium) var(--ease-out) var(--delay-long) forwards;
+  }
+}
+
+@keyframes page-spinner-appear {
+  to {
+    opacity: 1;
+  }
+}
