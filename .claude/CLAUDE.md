@@ -177,9 +177,12 @@ Compose, на одной VM два контура плюс инфраструк�
 - **infra** (`docker-compose.infra.yml`): Gitea + его postgres — **описан, но НЕ развёрнут** (PW-043-F отложена;
   контейнеров на VM нет)
 
-nginx на хосте слушает только :80 (HTTPS не настроен), server-блоки: `profitableweb.ru` / IP → prod,
-`dev.profitableweb.ru` → dev (`git.profitableweb.ru` → Gitea прописан в конфиге, но апстрим не поднят). Конфиг —
-`infra/nginx/profitableweb.conf`, копируется в `/etc/nginx/sites-available/` при каждом прод-деплое.
+nginx на хосте: prod-блок слушает :80 и :443 (TLS от certbot, сертификат `new.profitableweb.ru` в
+`/etc/letsencrypt/live/new.profitableweb.ru/`, авто-продление; редирект 80→443 — только для `new.profitableweb.ru`, IP и
+прочие имена отвечают по HTTP). Server-блоки: `profitableweb.ru` / IP → prod, `new.profitableweb.ru` → редирект на
+HTTPS-prod, `dev.profitableweb.ru` → dev (`git.profitableweb.ru` → Gitea прописан в конфиге, но апстрим не поднят).
+Конфиг — `infra/nginx/profitableweb.conf`, копируется в `/etc/nginx/sites-available/` при каждом прод-деплое;
+синхронизирован с живым конфигом VM 04.09.2026.
 
 CI/CD — GitHub Actions: `deploy.yml` (push в `master` → прод: на VM `git reset --hard origin/master`, обновление
 nginx-конфига, `docker compose up -d --build`), `deploy-dev.yml` (push в `develop` → dev-контур). `ecosystem.config.js`
