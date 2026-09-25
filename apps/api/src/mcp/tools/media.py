@@ -6,8 +6,31 @@ import json
 import uuid
 
 from mcp.server.fastmcp import Context
+from src.mcp.dependencies import (
+    get_auth_from_ctx,
+    get_db,
+    log_mcp_action,
+    require_scope,
+)
+from src.models.media_file import MediaFile
 
-from src.mcp.dependencies import get_auth_from_ctx, get_db, log_mcp_action, require_scope
+
+def _media_to_dict(f: MediaFile) -> dict:
+    """Сериализация MediaFile для ответов MCP (URL — через storage, как в admin API)."""
+    from src.services.storage import storage
+
+    return {
+        "id": str(f.id),
+        "filename": f.filename,
+        "mime_type": f.mime_type,
+        "size": f.size,
+        "url": storage.url(f.storage_key),
+        "alt": f.alt,
+        "caption": f.caption,
+        "width": f.width,
+        "height": f.height,
+        "created_at": f.created_at.isoformat() if f.created_at else None,
+    }
 
 
 def register(mcp_server: object) -> None:
@@ -28,18 +51,7 @@ def register(mcp_server: object) -> None:
         try:
             user, key = get_auth_from_ctx(ctx)
             files, total = svc_list_media(db, page=page, limit=limit, file_type=file_type)
-            data = [
-                {
-                    "id": str(f.id),
-                    "filename": f.original_filename,
-                    "mime_type": f.mime_type,
-                    "size": f.file_size,
-                    "url": f.url,
-                    "alt": f.alt_text,
-                    "created_at": f.created_at.isoformat() if f.created_at else None,
-                }
-                for f in files
-            ]
+            data = [_media_to_dict(f) for f in files]
             log_mcp_action(db, user=user, api_key=key, tool_name="list_media",
                            arguments={"page": page, "limit": limit, "file_type": file_type})
             db.commit()
@@ -71,18 +83,7 @@ def register(mcp_server: object) -> None:
             log_mcp_action(db, user=user, api_key=key, tool_name="get_media",
                            resource_type="media", resource_id=mid)
             db.commit()
-            return json.dumps({
-                "id": str(f.id),
-                "filename": f.original_filename,
-                "mime_type": f.mime_type,
-                "size": f.file_size,
-                "url": f.url,
-                "alt": f.alt_text,
-                "caption": getattr(f, "caption", None),
-                "width": getattr(f, "width", None),
-                "height": getattr(f, "height", None),
-                "created_at": f.created_at.isoformat() if f.created_at else None,
-            }, ensure_ascii=False)
+            return json.dumps(_media_to_dict(f), ensure_ascii=False)
         finally:
             db.close()
 
@@ -120,20 +121,15 @@ def register(mcp_server: object) -> None:
 
             media = svc_upload_media(
                 db, storage, data=file_bytes, filename=filename,
-                content_type=content_type, user_id=user.id,
+                content_type=content_type, user_id=user.id, alt=alt_text,
             )
-
-            if alt_text and media:
-                media.alt_text = alt_text
 
             log_mcp_action(db, user=user, api_key=key, tool_name="upload_media",
                            resource_type="media", resource_id=media.id,
                            arguments={"filename": filename, "size": len(file_bytes)})
             db.commit()
             return json.dumps({
-                "id": str(media.id),
-                "url": media.url,
-                "filename": media.original_filename,
+                **_media_to_dict(media),
                 "message": f"Файл «{filename}» загружен",
             }, ensure_ascii=False)
         except ValueError as e:
@@ -151,6 +147,7 @@ def register(mcp_server: object) -> None:
     ) -> str:
         """Обновить alt-текст и/или caption медиафайла."""
         from src.services.media import get_media as svc_get_media
+        from src.services.media import update_media as svc_update_media
 
         db = get_db()
         try:
@@ -164,10 +161,8 @@ def register(mcp_server: object) -> None:
             if not f:
                 return json.dumps({"error": "Файл не найден"}, ensure_ascii=False)
 
-            if alt_text is not None:
-                f.alt_text = alt_text
-            if caption is not None and hasattr(f, "caption"):
-                f.caption = caption
+            fields = {"alt": alt_text, "caption": caption}
+            svc_update_media(db, f, **{k: v for k, v in fields.items() if v is not None})
 
             log_mcp_action(db, user=user, api_key=key, tool_name="update_media_metadata",
                            resource_type="media", resource_id=mid,

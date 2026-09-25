@@ -1,9 +1,12 @@
 """
-PW-027/PW-042-A/PW-061-B | Точка входа FastAPI.
+PW-027/PW-042-A/PW-061-B/PW-085 | Точка входа FastAPI.
 CORS, structured logging, request middleware. Эндпоинты через api_router (/api/*).
 MCP-сервер монтируется на /mcp (Streamable HTTP transport).
+Фоновая автопубликация запланированных статей — в lifespan.
 """
 
+import asyncio
+import contextlib
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -16,6 +19,7 @@ from src.core.config import settings
 from src.core.logging import setup_logging
 from src.mcp.server import create_mcp_asgi_app
 from src.middleware.logging import RequestLoggingMiddleware
+from src.services.articles.scheduling import run_publisher_loop
 
 setup_logging()
 
@@ -25,13 +29,22 @@ _mcp_asgi_app, _mcp_server = create_mcp_asgi_app()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Управляет жизненным циклом MCP session manager.
+    """Управляет жизненным циклом MCP session manager и фоновой автопубликации.
 
     FastAPI не пробрасывает lifespan в mounted raw ASGI apps,
     поэтому session_manager.run() вызываем явно.
     """
-    async with _mcp_server.session_manager.run():
-        yield
+    publisher: asyncio.Task[None] | None = None
+    if settings.article_publisher_enabled:
+        publisher = asyncio.create_task(run_publisher_loop())
+    try:
+        async with _mcp_server.session_manager.run():
+            yield
+    finally:
+        if publisher is not None:
+            publisher.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await publisher
 
 
 app = FastAPI(

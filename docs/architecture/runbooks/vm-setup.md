@@ -163,7 +163,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 # Проверить
 docker compose -f docker-compose.prod.yml ps
-curl -s http://localhost:8000/api/health
+curl -s http://localhost:8000/health
 curl -s http://localhost:3000
 curl -s http://localhost:3001
 ```
@@ -185,11 +185,11 @@ git push github master  # → автодеплой
 docker compose -f docker-compose.prod.yml ps
 
 # API отвечает
-curl -s http://localhost:8000/api/health
+curl -s http://localhost:8000/health
 
 # Внешний доступ
 curl -s http://profitableweb.ru
-curl -s http://profitableweb.ru/api/health
+curl -s http://profitableweb.ru/api/categories  # /health у API не проксируется через nginx
 curl -s http://profitableweb.ru/admin/
 
 # Логи (если что-то не работает)
@@ -214,7 +214,7 @@ ALTER USER pw WITH PASSWORD 'новый-надёжный-пароль';
 
 # Обновить .env.prod на VM
 nano ~/profitableweb/.env.prod
-# Изменить POSTGRES_PASSWORD=новый-надёжный-пароль
+# Изменить POSTGRES_PASSWORD=новый-надёжный-пароль # secret-scan:allow — плейсхолдер
 
 # Обновить GitHub Secret POSTGRES_PASSWORD
 

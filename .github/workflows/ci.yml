@@ -1,0 +1,62 @@
+name: CI
+
+# Проверки качества: линт, типы, тесты.
+# - pull_request: гейт перед мержем
+# - workflow_call: вызывается из deploy.yml / deploy-dev.yml — деплой идёт
+#   только после зелёного CI на том же коммите (PW-081)
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+# github.workflow при вызове из деплоя — имя вызывающего воркфлоу,
+# поэтому группы PR и деплоя не пересекаются.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API — ruff + pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Ruff
+        run: uv run ruff check
+
+      - name: Pytest
+        # PW-074: вне DEBUG конфиг отвергает дефолтный JWT_SECRET;
+        # test_config проверяет именно поведение режима разработки.
+        env:
+          DEBUG: 'true'
+        run: uv run pytest -q
+
+  frontend:
+    name: Web + Admin — lint, type-check, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.17
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint, type-check, test
+        run: bun turbo lint type-check test --filter='!@profitable-web/api'

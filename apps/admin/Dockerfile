@@ -34,7 +34,7 @@ COPY package.json ./
 RUN cd apps/admin && bun run build
 
 # --- Stage 3: Serve static via nginx ---
-FROM nginx:alpine AS runner
+FROM nginx:1.31-alpine AS runner
 
 # Копируем собранную статику
 COPY --from=builder /app/apps/admin/dist /usr/share/nginx/html/admin

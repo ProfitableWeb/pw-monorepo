@@ -42,7 +42,7 @@ bun --cwd apps/web run test:watch     # Watch-режим
 
 ```bash
 cd apps/api
-uv sync                                # Установка зависимостей
+uv sync --extra dev                    # Установка зависимостей (включая pytest, ruff, mypy)
 uv run pytest                          # Все тесты
 uv run pytest tests/test_specific.py   # Один файл тестов
 uv run ruff check                      # Линтинг

@@ -10,7 +10,7 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from src.models.article import Article, ArticleStatus, ArticleType
+from src.models.article import Article, ArticleStatus
 from src.models.category import Category
 from src.models.tag import Tag
 from src.services.articles import category_filter_by_slug

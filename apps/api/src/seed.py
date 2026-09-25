@@ -258,6 +258,7 @@ def seed(db: Session) -> None:
                 content="",
                 excerpt=title,
                 primary_category_id=cat_map["ai-automation"].id,
+                categories=[cat_map["ai-automation"]],
                 author_id=author.id,
                 status=ArticleStatus.PUBLISHED,
                 published_at=_parse_dt(user_comments_dates[i]),

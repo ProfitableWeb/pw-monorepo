@@ -522,7 +522,7 @@ function mapProfile(raw: ProfileRaw): UserProfile {
     role: raw.role,
     bio: raw.bio ?? undefined,
     links: raw.links ?? [],
-    hasPassword: raw.has_password,
+    hasPassword: raw.has_password, // secret-scan:allow — имя поля
     oauthProvider: raw.oauth_provider ?? undefined,
     oauthProviders: raw.oauth_providers ?? [],
   };
@@ -584,8 +584,8 @@ export async function changePassword(
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({
-      old_password: oldPassword,
-      new_password: newPassword,
+      old_password: oldPassword, // secret-scan:allow — имя поля
+      new_password: newPassword, // secret-scan:allow — имя поля
     }),
   });
   if (!res.ok) {
@@ -703,6 +703,7 @@ interface AdminArticleRaw {
   id: string;
   title: string;
   slug: string;
+  type: string;
   subtitle: string | null;
   content: string;
   content_format: string;
@@ -741,6 +742,7 @@ interface AdminArticleListItemRaw {
   id: string;
   title: string;
   slug: string;
+  type: string;
   status: string;
   excerpt: string;
   primary_category: { id: string; name: string; slug: string };
@@ -801,6 +803,7 @@ function mapAdminArticleFull(raw: AdminArticleRaw): AdminArticleResponseType {
     id: raw.id,
     title: raw.title,
     slug: raw.slug,
+    type: raw.type,
     subtitle: raw.subtitle,
     content: raw.content,
     contentFormat: raw.content_format,
@@ -843,6 +846,7 @@ function mapAdminArticleListItem(
     id: raw.id,
     title: raw.title,
     slug: raw.slug,
+    type: raw.type,
     status: raw.status,
     excerpt: raw.excerpt,
     primaryCategory: raw.primary_category,
@@ -1953,7 +1957,7 @@ function mapAdminUserDetail(raw: UserAdminDetailRaw): AdminUserDetail {
     bio: raw.bio,
     socialLinks: raw.social_links,
     oauthProviders: raw.oauth_providers,
-    hasPassword: raw.has_password,
+    hasPassword: raw.has_password, // secret-scan:allow — имя поля
     updatedAt: raw.updated_at,
   };
 }

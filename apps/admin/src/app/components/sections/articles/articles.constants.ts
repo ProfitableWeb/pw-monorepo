@@ -5,4 +5,6 @@ export const STATUSES = [
   { value: 'archived', label: 'Архивные' },
 ] as const;
 
-export const VALID_STATUSES = new Set(STATUSES.map(s => s.value));
+export const VALID_STATUSES: ReadonlySet<string> = new Set(
+  STATUSES.map(s => s.value)
+);

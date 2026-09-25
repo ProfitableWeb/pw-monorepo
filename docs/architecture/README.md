@@ -43,6 +43,8 @@ nginx на хосте (только :80, HTTPS пока не настроен) *
   через `STORAGE_BACKEND=local|s3`
 - [ADR-004: Переносимость агентных правил](./decisions/ADR-004-agent-rules-portability.md) — tiered shared +
   tool-specific модель
+- [ADR-005: Автопубликация запланированных статей](./decisions/ADR-005-scheduled-publishing.md) — фоновая задача в
+  lifespan, условный UPDATE
 
 ### [Инфраструктура](./infrastructure/)
 

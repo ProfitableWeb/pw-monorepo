@@ -16,7 +16,6 @@ from src.models.article import Article, ArticleStatus, ArticleType
 from src.models.user import User, UserRole
 from src.schemas.common import ApiResponse
 
-
 router = APIRouter(prefix="/authors", tags=["authors"])
 
 

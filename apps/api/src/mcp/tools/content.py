@@ -5,8 +5,12 @@ PW-061-B | MCP tools: Контент-утилиты (2 tools).
 import json
 
 from mcp.server.fastmcp import Context
-
-from src.mcp.dependencies import get_auth_from_ctx, get_db, log_mcp_action, require_scope
+from src.mcp.dependencies import (
+    get_auth_from_ctx,
+    get_db,
+    log_mcp_action,
+    require_scope,
+)
 
 
 def register(mcp_server: object) -> None:

@@ -7,7 +7,6 @@ import uuid
 from datetime import datetime, timezone
 
 from mcp.server.fastmcp import Context
-
 from src.mcp.dependencies import (
     get_article_by_id_or_slug,
     get_auth_from_ctx,
@@ -147,6 +146,7 @@ def register(mcp_server: object) -> None:
     def get_article_stats(ctx: Context = None) -> str:
         """Агрегированная статистика по статьям: количество по статусам, общее число."""
         from sqlalchemy import func, select
+
         from src.models.article import Article
 
         db = get_db()
