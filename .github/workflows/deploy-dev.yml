@@ -4,14 +4,26 @@ on:
   push:
     branches: [develop]
     paths:
-      - "apps/**"
-      - "packages/**"
-      - "docker-compose.dev.yml"
-      - ".github/workflows/deploy-dev.yml"
+      - 'apps/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'docker-compose.dev.yml'
+      - '.github/workflows/deploy-dev.yml'
   workflow_dispatch:
 
+# Деплои одного контура идут строго по очереди, без отмены начатого.
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: ci
     name: Deploy to dev
     runs-on: ubuntu-latest
 
@@ -63,7 +75,7 @@ jobs:
               -o ServerAliveInterval=30 \
               -o ServerAliveCountMax=20 \
               -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} << 'EOF'
+              ${SSH_USER}@${SSH_HOST} "DEPLOY_SHA=${GITHUB_SHA} bash -ls" << 'EOF'
             set -e
 
             cd ~/profitableweb
@@ -74,7 +86,9 @@ jobs:
             # Обновление кода (ветка develop)
             git fetch origin
             git checkout develop 2>/dev/null || git checkout -b develop origin/develop
-            git reset --hard origin/develop
+            # Ровно тот коммит, на котором прошёл CI (PW-064)
+            git cat-file -e "${DEPLOY_SHA}^{commit}" || { echo "ERROR: commit ${DEPLOY_SHA} not found"; exit 1; }
+            git reset --hard "$DEPLOY_SHA"
 
             # Сборка и запуск dev-контейнеров
             docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build --remove-orphans
@@ -98,4 +112,4 @@ jobs:
       - name: Health check
         run: |
           sleep 10
-          curl -f http://dev.${{ secrets.SSH_HOST }}/api/health || echo "Dev health check failed"
+          curl -f http://dev.${{ secrets.SSH_HOST }}/api/health || echo "::warning::Dev health check failed"
