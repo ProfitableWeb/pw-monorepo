@@ -5,7 +5,6 @@ PW-061-B | MCP tools: SEO (3 tools).
 import json
 
 from mcp.server.fastmcp import Context
-
 from src.mcp.dependencies import (
     get_article_by_id_or_slug,
     get_auth_from_ctx,

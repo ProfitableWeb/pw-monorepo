@@ -6,8 +6,12 @@ import json
 import uuid
 
 from mcp.server.fastmcp import Context
-
-from src.mcp.dependencies import get_auth_from_ctx, get_db, log_mcp_action, require_scope
+from src.mcp.dependencies import (
+    get_auth_from_ctx,
+    get_db,
+    log_mcp_action,
+    require_scope,
+)
 
 
 def register(mcp_server: object) -> None:
@@ -91,7 +95,8 @@ def register(mcp_server: object) -> None:
     ) -> str:
         """Обновить название, slug или описание категории."""
         from src.schemas.admin_category import CategoryUpdateRequest
-        from src.services.category import get_category_by_id, update_category as svc_update
+        from src.services.category import get_category_by_id
+        from src.services.category import update_category as svc_update
 
         db = get_db()
         try:

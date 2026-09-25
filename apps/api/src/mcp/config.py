@@ -2,7 +2,7 @@
 PW-061-B | Конфигурация MCP-сервера: scope-модель, tool permissions.
 """
 
-from src.models.mcp_api_key import McpKeyScope, SCOPE_HIERARCHY
+from src.models.mcp_api_key import SCOPE_HIERARCHY, McpKeyScope
 
 # Mapping: tool name → required permission level
 TOOL_SCOPES: dict[str, str] = {

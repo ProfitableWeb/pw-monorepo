@@ -697,6 +697,7 @@ interface AdminArticleRaw {
   id: string;
   title: string;
   slug: string;
+  type: string;
   subtitle: string | null;
   content: string;
   content_format: string;
@@ -735,6 +736,7 @@ interface AdminArticleListItemRaw {
   id: string;
   title: string;
   slug: string;
+  type: string;
   status: string;
   excerpt: string;
   primary_category: { id: string; name: string; slug: string };
@@ -795,6 +797,7 @@ function mapAdminArticleFull(raw: AdminArticleRaw): AdminArticleResponseType {
     id: raw.id,
     title: raw.title,
     slug: raw.slug,
+    type: raw.type,
     subtitle: raw.subtitle,
     content: raw.content,
     contentFormat: raw.content_format,
@@ -837,6 +840,7 @@ function mapAdminArticleListItem(
     id: raw.id,
     title: raw.title,
     slug: raw.slug,
+    type: raw.type,
     status: raw.status,
     excerpt: raw.excerpt,
     primaryCategory: raw.primary_category,
