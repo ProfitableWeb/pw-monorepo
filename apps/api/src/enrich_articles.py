@@ -13,7 +13,6 @@ from sqlalchemy.orm import Session
 from src.core.database import SessionLocal
 from src.models.article import Article, ArticleLayout
 
-
 # ---------------------------------------------------------------------------
 # Rich content: «Психоинженерия» → three-column
 # ---------------------------------------------------------------------------

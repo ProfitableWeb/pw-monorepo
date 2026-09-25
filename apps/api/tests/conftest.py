@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import sessionmaker
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.main import app
 from src.models import Base
@@ -61,7 +62,11 @@ def _test_client():
     TestClient создаётся один раз за сессию: lifespan приложения запускает
     MCP session manager, а он не переживает повторный run() на том же
     экземпляре (RuntimeError: StreamableHTTPSessionManager .run() once).
+
+    Автопубликация (PW-085) ходит в боевую БД через SessionLocal — в тестах
+    выключена, сам сервис тестируется напрямую (test_scheduling.py).
     """
+    settings.article_publisher_enabled = False
     app.dependency_overrides[get_db] = _override_get_db
     with TestClient(app) as c:
         yield c

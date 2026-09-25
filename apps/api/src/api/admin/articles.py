@@ -218,7 +218,8 @@ def article_stats(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_admin),
 ) -> ApiResponse[dict]:
-    from sqlalchemy import func, select as sa_select
+    from sqlalchemy import func
+    from sqlalchemy import select as sa_select
 
     rows = db.execute(
         sa_select(Article.status, func.count(), func.coalesce(func.sum(Article.views), 0))
