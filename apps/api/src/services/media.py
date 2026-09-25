@@ -204,6 +204,7 @@ def upload_media(
     filename: str,
     content_type: str,
     user_id: uuid.UUID,
+    alt: str | None = None,
 ) -> MediaFile:
     """Загружает файл: валидация, обработка изображений, сохранение в storage + БД."""
     file_type = _determine_file_type(content_type)
@@ -256,6 +257,7 @@ def upload_media(
         width=width,
         height=height,
         slug=slug,
+        alt=alt,
         exif_data=exif_data,
         purposes=[],
         resizes=resizes,

@@ -26,6 +26,10 @@ jobs:
 
   deploy:
     needs: ci
+    # Ручной запуск (workflow_dispatch) можно выбрать с любой ветки —
+    # деплоим только master, иначе на сервер уехал бы непросмотренный код.
+    if: github.ref == 'refs/heads/master'
+    timeout-minutes: 30
     name: Deploy to production
     runs-on: ubuntu-latest
 
@@ -114,7 +118,7 @@ jobs:
             wait_for() {
               local url=$1; shift
               for _ in $(seq 1 30); do
-                if curl -fsS -o /dev/null "$@" "$url"; then echo "OK: $url $*"; return 0; fi
+                if curl -fsS --connect-timeout 5 --max-time 15 -o /dev/null "$@" "$url"; then echo "OK: $url $*"; return 0; fi
                 sleep 5
               done
               echo "ERROR: $url $* не отвечает"; return 1
@@ -149,3 +153,11 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           S3_REGION: ${{ secrets.S3_REGION }}
           S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
+
+      # Доступность снаружи (DNS, firewall, nginx listen) — с раннера GitHub.
+      # Не блокирует: сетевые сбои между GitHub и VM не должны краснить деплой.
+      - name: External reachability
+        run: |
+          curl -fsSL --connect-timeout 10 --max-time 30 -o /dev/null http://profitableweb.ru/api/categories \
+            && echo "OK: profitableweb.ru доступен снаружи" \
+            || echo "::warning::profitableweb.ru недоступен с раннера GitHub"

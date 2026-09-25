@@ -99,7 +99,6 @@ def register(mcp_server: object) -> None:
         import base64
         import mimetypes
 
-        from src.services.media import update_media as svc_update_media
         from src.services.media import upload_media as svc_upload_media
         from src.services.storage import storage
 
@@ -122,11 +121,8 @@ def register(mcp_server: object) -> None:
 
             media = svc_upload_media(
                 db, storage, data=file_bytes, filename=filename,
-                content_type=content_type, user_id=user.id,
+                content_type=content_type, user_id=user.id, alt=alt_text,
             )
-
-            if alt_text:
-                media = svc_update_media(db, media, alt=alt_text)
 
             log_mcp_action(db, user=user, api_key=key, tool_name="upload_media",
                            resource_type="media", resource_id=media.id,
