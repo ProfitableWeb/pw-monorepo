@@ -6,7 +6,7 @@
 
 ProfitableWeb — **Turborepo-монорепо**, исследовательский блог о трансформации труда через ИИ-автоматизацию.
 
-- `apps/web` — Next.js 15 фронтенд (App Router, React 19, SCSS-модули)
+- `apps/web` — Next.js 16 фронтенд (App Router, React 19, SCSS-модули)
 - `apps/admin` — Vite SPA админ-панель (React 19, Radix UI, Tailwind CSS)
 - `apps/api` — FastAPI Python бэкенд (синхронный SQLAlchemy, PostgreSQL)
 - `packages/types` — Общие TypeScript-типы (`@profitable-web/types`)
@@ -54,7 +54,7 @@ uv run alembic revision --autogenerate -m "описание"  # Создать �
 
 ## Архитектура
 
-### apps/web — Next.js 15
+### apps/web — Next.js 16
 
 **Роутинг**: единый динамический маршрут `[slug]/page.tsx` определяет тип контента по приоритету: статические страницы →
 категории (`getCategoryBySlug`) → статьи (`getArticleBySlug`) → 404.
