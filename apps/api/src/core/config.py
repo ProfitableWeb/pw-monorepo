@@ -72,6 +72,9 @@ class Settings(BaseSettings):
     max_upload_size_image: int = 20 * 1024 * 1024  # 20 MB
     max_upload_size_other: int = 50 * 1024 * 1024  # 50 MB
 
+    # Автопубликация запланированных статей (PW-068)
+    article_publisher_enabled: bool = True
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
 

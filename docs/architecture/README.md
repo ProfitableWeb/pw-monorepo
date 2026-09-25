@@ -37,6 +37,8 @@ GitVerse Workflows
 - [ADR-002: Аутентификация](./decisions/ADR-002-auth.md) — JWT + OAuth
 - [ADR-003: Файловое хранилище](./decisions/ADR-003-file-storage.md) — локально на VM (nginx статика), абстракция для S3
   на будущее
+- [ADR-004: Автопубликация запланированных статей](./decisions/ADR-004-scheduled-publishing.md) — фоновая задача в
+  lifespan, условный UPDATE
 
 ### [Инфраструктура](./infrastructure/)
 
