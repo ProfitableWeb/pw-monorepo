@@ -100,7 +100,7 @@ jobs:
             # а не «текущий origin/master» — он мог уйти вперёд непроверенным.
             git fetch origin
             git cat-file -e "${DEPLOY_SHA}^{commit}" || { echo "ERROR: commit ${DEPLOY_SHA} not found"; exit 1; }
-            git reset --hard "$DEPLOY_SHA"
+            git checkout -f --detach "$DEPLOY_SHA"
 
             # Обновление nginx-конфига
             sudo cp infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
@@ -109,7 +109,22 @@ jobs:
             # Сборка и запуск Docker-контейнеров
             docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build --remove-orphans
 
-            echo "Deploy completed!"
+            # Проверка здоровья (PW-064): с сервера, напрямую в контейнеры и через nginx.
+            # Повторы — API после up -d сначала применяет миграции. Провал = красный деплой.
+            wait_for() {
+              local url=$1; shift
+              for _ in $(seq 1 30); do
+                if curl -fsS -o /dev/null "$@" "$url"; then echo "OK: $url $*"; return 0; fi
+                sleep 5
+              done
+              echo "ERROR: $url $* не отвечает"; return 1
+            }
+            wait_for http://127.0.0.1:8000/health
+            wait_for http://127.0.0.1:3000/
+            wait_for http://127.0.0.1:3001/admin/
+            wait_for http://127.0.0.1/api/categories -H "Host: profitableweb.ru"
+
+            echo "Deploy completed: ${DEPLOY_SHA}"
           EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -134,8 +149,3 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           S3_REGION: ${{ secrets.S3_REGION }}
           S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
-
-      - name: Health check
-        run: |
-          sleep 10
-          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "::warning::Health check failed"
