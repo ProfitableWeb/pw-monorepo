@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import sessionmaker
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.main import app
 from src.models import Base
@@ -46,6 +47,9 @@ def db():
 def _app_client():
     # MCP session manager в lifespan запускается только один раз на процесс,
     # поэтому lifespan поднимаем один раз на всю тестовую сессию.
+    # Автопубликация ходит в боевую БД через SessionLocal — в тестах выключена,
+    # сам сервис тестируется напрямую (test_scheduling.py).
+    settings.article_publisher_enabled = False
     with TestClient(app) as c:
         yield c
 
