@@ -16,7 +16,7 @@ FastAPI backend for ProfitableWeb Research Lab.
 
 ```bash
 # Install dependencies
-uv sync
+uv sync --extra dev
 
 # Run dev server
 uv run uvicorn main:app --reload

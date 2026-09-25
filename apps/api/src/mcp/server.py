@@ -7,7 +7,6 @@ PW-061-B | Создание и конфигурация MCP-сервера.
 """
 
 from mcp.server.fastmcp import FastMCP
-
 from src.mcp.auth import McpAuthMiddleware
 from src.mcp.config import MCP_INSTRUCTIONS, MCP_SERVER_NAME
 

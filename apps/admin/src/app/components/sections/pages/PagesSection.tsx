@@ -5,7 +5,7 @@ import { breadcrumbPresets } from '@/app/utils/breadcrumbs-helper';
 import { useAdminArticles } from '@/hooks/api';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
+import { Card, CardContent } from '@/app/components/ui/card';
 import { LoadingSpinner } from '@/app/components/common';
 import {
   Table,
