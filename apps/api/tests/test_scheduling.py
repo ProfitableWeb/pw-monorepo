@@ -9,12 +9,14 @@ from src.models.audit_log import AuditLog
 from src.services.articles.scheduling import publish_due_articles
 
 
-def _make_scheduled(db, slug: str, published_at: datetime) -> Article:
+def _make_scheduled(
+    db, slug: str, published_at: datetime, content: str = "<p>Текст</p>"
+) -> Article:
     template = db.scalars(select(Article)).first()
     article = Article(
         title=f"Запланированная {slug}",
         slug=slug,
-        content="<p>Текст</p>",
+        content=content,
         excerpt="Анонс",
         primary_category_id=template.primary_category_id,
         author_id=template.author_id,
@@ -46,6 +48,25 @@ def test_publishes_only_due_articles(db):
         )
     ).all()
     assert len(audit) == 1
+
+
+def test_unpublishable_article_returns_to_draft(db, client):
+    now = datetime.now(timezone.utc)
+    article = _make_scheduled(db, "sched-empty", now - timedelta(minutes=1), content="")
+
+    assert article.id not in publish_due_articles(db, now=now)
+
+    db.expire_all()
+    assert db.get(Article, article.id).status == ArticleStatus.DRAFT
+    assert client.get("/api/articles/sched-empty").status_code == 404
+    rejected = db.scalars(
+        select(AuditLog).where(
+            AuditLog.action == "article.auto_publish_rejected",
+            AuditLog.resource_id == article.id,
+        )
+    ).all()
+    assert len(rejected) == 1
+    assert "content" in rejected[0].changes["reason"]
 
 
 def test_publish_is_idempotent(db):
