@@ -3,8 +3,11 @@
 
 FROM python:3.12-slim AS base
 
-# Установка uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+# Установка uv из PyPI с закреплённой версией (PW-064).
+# Раньше: COPY --from=ghcr.io/astral-sh/uv:latest — плавающий тег и реестр ghcr.io,
+# скачивание с которого на VM (Cloud.ru) зависло и сорвало деплой 2026-09-25.
+# PyPI с VM доступен (из него же ставятся зависимости через uv sync).
+RUN pip install --no-cache-dir uv==0.8.17
 
 WORKDIR /app
 
