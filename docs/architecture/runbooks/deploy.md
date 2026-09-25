@@ -68,15 +68,32 @@ git push github master  # → автодеплой на profitableweb.ru
 
 Что происходит:
 
-1. CI записывает `.env.prod` из GitHub Secrets на VM
-2. `git reset --hard origin/master` на VM
-3. `docker compose -f docker-compose.prod.yml up -d --build`
+1. **CI** (`ci.yml` как reusable workflow): ruff + pytest, lint + type-check + test фронтендов. **Красный CI → деплой
+   `skipped`**, на сервер ничего не уходит (PW-064)
+2. Записывается `.env.prod` из GitHub Secrets на VM
+3. `git reset --hard <SHA>` на VM — **ровно тот коммит, на котором прошёл CI**, а не текущий `origin/master`
 4. Nginx-конфиг обновляется
-5. Health check: `curl http://<IP>/api/health`
+5. `docker compose -f docker-compose.prod.yml up -d --build`
+6. Health check: `curl http://<IP>/api/health` (при неудаче — warning в логе Actions, деплой не откатывается)
+
+Деплои одного контура идут строго по очереди (`concurrency: deploy-prod`); если за время деплоя пришло несколько
+push'ей, выполнится только последний из ожидающих. `workflow_dispatch` тоже проходит через CI.
+
+Деплой запускается при изменениях в `apps/**`, `packages/**`, корневых `package.json` / `bun.lock`, Dockerfile,
+compose-файле, nginx-конфиге и самом `deploy.yml`.
+
+### Если CI красный, а выкатить нужно срочно
+
+Обхода гейта нет намеренно — именно так в прод уезжали сломанные тесты и типы (PW-063). Варианты:
+
+1. **Откатить** проблемный коммит (`git revert`) → CI зелёный → деплой. CI занимает ~30 с.
+2. Починить тест/линт отдельным коммитом.
+3. В крайнем случае — ручной деплой (раздел ниже) с явной фиксацией причины в задаче.
 
 ### Dev
 
-Push в `develop` → GitHub Actions (`deploy-dev.yml`) автоматически деплоит.
+Push в `develop` → GitHub Actions (`deploy-dev.yml`) автоматически деплоит — по той же схеме: CI → деплой проверенного
+SHA (`concurrency: deploy-dev`).
 
 ```bash
 git push github develop  # → автодеплой на dev.profitableweb.ru

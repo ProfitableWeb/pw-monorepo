@@ -1,15 +1,22 @@
 name: CI
 
-# Проверки качества: линт, типы, тесты. Деплой-воркфлоу их не запускают,
-# поэтому этот воркфлоу — единственный гейт перед мержем в master.
+# Проверки качества: линт, типы, тесты.
+# - pull_request: гейт перед мержем
+# - workflow_call: вызывается из deploy.yml / deploy-dev.yml — деплой идёт
+#   только после зелёного CI на том же коммите (PW-064)
 on:
   pull_request:
-  push:
-    branches: [master]
+  workflow_call:
+  workflow_dispatch:
 
+# github.workflow при вызове из деплоя — имя вызывающего воркфлоу,
+# поэтому группы PR и деплоя не пересекаются.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   api:
@@ -23,7 +30,7 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: uv sync --frozen --extra dev

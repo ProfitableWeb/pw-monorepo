@@ -4,16 +4,28 @@ on:
   push:
     branches: [master]
     paths:
-      - "apps/**"
-      - "packages/**"
-      - "docker-compose.prod.yml"
-      - "**/Dockerfile"
-      - ".github/workflows/deploy.yml"
-      - "infra/nginx/**"
+      - 'apps/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'docker-compose.prod.yml'
+      - '**/Dockerfile'
+      - '.github/workflows/deploy.yml'
+      - 'infra/nginx/**'
   workflow_dispatch:
 
+# Деплои одного контура идут строго по очереди, без отмены начатого.
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: ci
     name: Deploy to production
     runs-on: ubuntu-latest
 
@@ -70,7 +82,7 @@ jobs:
               -o ServerAliveInterval=30 \
               -o ServerAliveCountMax=20 \
               -p ${SSH_PORT:-22} \
-              ${SSH_USER}@${SSH_HOST} << 'EOF'
+              ${SSH_USER}@${SSH_HOST} "DEPLOY_SHA=${GITHUB_SHA} bash -ls" << 'EOF'
             set -e
 
             cd ~/profitableweb
@@ -84,9 +96,11 @@ jobs:
               git remote set-url origin https://github.com/ProfitableWeb/pw-monorepo.git
             fi
 
-            # Обновление кода
+            # Обновление кода: ровно тот коммит, на котором прошёл CI (PW-064),
+            # а не «текущий origin/master» — он мог уйти вперёд непроверенным.
             git fetch origin
-            git reset --hard origin/master
+            git cat-file -e "${DEPLOY_SHA}^{commit}" || { echo "ERROR: commit ${DEPLOY_SHA} not found"; exit 1; }
+            git reset --hard "$DEPLOY_SHA"
 
             # Обновление nginx-конфига
             sudo cp infra/nginx/profitableweb.conf /etc/nginx/sites-available/profitableweb
@@ -124,4 +138,4 @@ jobs:
       - name: Health check
         run: |
           sleep 10
-          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "Health check failed"
+          curl -f http://${{ secrets.SSH_HOST }}/api/health || echo "::warning::Health check failed"
