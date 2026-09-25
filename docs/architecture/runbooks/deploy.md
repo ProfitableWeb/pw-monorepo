@@ -71,10 +71,16 @@ git push github master  # → автодеплой на profitableweb.ru
 1. **CI** (`ci.yml` как reusable workflow): ruff + pytest, lint + type-check + test фронтендов. **Красный CI → деплой
    `skipped`**, на сервер ничего не уходит (PW-064)
 2. Записывается `.env.prod` из GitHub Secrets на VM
-3. `git reset --hard <SHA>` на VM — **ровно тот коммит, на котором прошёл CI**, а не текущий `origin/master`
+3. `git checkout -f --detach <SHA>` на VM — **ровно тот коммит, на котором прошёл CI**, а не текущий `origin/master`
 4. Nginx-конфиг обновляется
 5. `docker compose -f docker-compose.prod.yml up -d --build`
-6. Health check: `curl http://<IP>/api/health` (при неудаче — warning в логе Actions, деплой не откатывается)
+6. **Health check на сервере** (блокирующий, до 150 с на каждый пункт — API сначала применяет миграции):
+   - API `127.0.0.1:8000/health`, web `127.0.0.1:3000/`, admin `127.0.0.1:3001/admin/` — напрямую в контейнеры
+   - `127.0.0.1/api/categories` с `Host: profitableweb.ru` — сквозь nginx → API → БД
+
+   Провал → деплой красный. Контейнеры **не откатываются** автоматически — см. раздел «Откат».
+
+   Эндпоинт здоровья API — `/health` (без префикса `/api`), через nginx он не проксируется.
 
 Деплои одного контура идут строго по очереди (`concurrency: deploy-prod`); если за время деплоя пришло несколько
 push'ей, выполнится только последний из ожидающих. `workflow_dispatch` тоже проходит через CI.
@@ -94,6 +100,11 @@ compose-файле, nginx-конфиге и самом `deploy.yml`.
 
 Push в `develop` → GitHub Actions (`deploy-dev.yml`) автоматически деплоит — по той же схеме: CI → деплой проверенного
 SHA (`concurrency: deploy-dev`).
+
+Dev живёт в **отдельном каталоге** `~/profitableweb-dev` (до PW-064 prod и dev делили `~/profitableweb`, и dev-деплой
+переключал рабочую копию prod на ветку `develop`). При первом деплое каталог инициализируется автоматически с тем же
+`origin`, что у prod. Порты dev: API `8100`, web `3100`, admin `3101`; compose-проект `pw-dev` и том `pw-dev-data` —
+прежние, данные dev-БД не затрагиваются. Старый `~/profitableweb/.env.dev` больше не используется — можно удалить.
 
 ```bash
 git push github develop  # → автодеплой на dev.profitableweb.ru
@@ -127,7 +138,7 @@ docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build --rem
 
 ```bash
 docker compose -f docker-compose.prod.yml ps     # Все контейнеры running
-curl -s http://localhost:8000/api/health           # API отвечает
+curl -s http://localhost:8000/health               # API отвечает
 curl -s http://localhost:3000                      # Web отвечает
 curl -s http://localhost:3001                      # Admin отвечает
 ```

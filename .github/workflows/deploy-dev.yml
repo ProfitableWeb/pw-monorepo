@@ -61,12 +61,16 @@ jobs:
             [ -n "$S3_PUBLIC_ENDPOINT" ] && echo "S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT}"
           } > "$ENV_FILE"
 
+          # Отдельный рабочий каталог dev (PW-064): prod живёт в ~/profitableweb
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p ${SSH_PORT:-22} \
+              "${SSH_USER}@${SSH_HOST}" "mkdir -p ~/profitableweb-dev"
+
           # Копируем файл на сервер через scp (атомарно, надёжнее pipe)
           scp -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -o ServerAliveInterval=30 \
               -P ${SSH_PORT:-22} \
-              "$ENV_FILE" "${SSH_USER}@${SSH_HOST}:~/profitableweb/.env.dev"
+              "$ENV_FILE" "${SSH_USER}@${SSH_HOST}:~/profitableweb-dev/.env.dev"
           rm -f "$ENV_FILE"
 
           # Деплой (ServerAliveInterval не даёт SSH отвалиться во время docker build)
@@ -78,22 +82,43 @@ jobs:
               ${SSH_USER}@${SSH_HOST} "DEPLOY_SHA=${GITHUB_SHA} bash -ls" << 'EOF'
             set -e
 
-            cd ~/profitableweb
+            cd ~/profitableweb-dev
+
+            # Первый деплой в отдельный каталог: инициализируем репозиторий
+            # с тем же remote, что у prod (та же авторизация на GitHub)
+            if [ ! -d .git ]; then
+              git init -q
+              git remote add origin "$(git -C ~/profitableweb remote get-url origin)"
+            fi
 
             # Проверяем что .env.dev содержит POSTGRES_PASSWORD
             grep -q "POSTGRES_PASSWORD=." .env.dev || { echo "ERROR: .env.dev missing POSTGRES_PASSWORD"; exit 1; }
 
             # Обновление кода (ветка develop)
             git fetch origin
-            git checkout develop 2>/dev/null || git checkout -b develop origin/develop
             # Ровно тот коммит, на котором прошёл CI (PW-064)
             git cat-file -e "${DEPLOY_SHA}^{commit}" || { echo "ERROR: commit ${DEPLOY_SHA} not found"; exit 1; }
-            git reset --hard "$DEPLOY_SHA"
+            git checkout -f --detach "$DEPLOY_SHA"
 
             # Сборка и запуск dev-контейнеров
             docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build --remove-orphans
 
-            echo "Dev deploy completed!"
+            # Проверка здоровья (PW-064): с сервера, напрямую в контейнеры и через nginx.
+            # Повторы — API после up -d сначала применяет миграции. Провал = красный деплой.
+            wait_for() {
+              local url=$1; shift
+              for _ in $(seq 1 30); do
+                if curl -fsS -o /dev/null "$@" "$url"; then echo "OK: $url $*"; return 0; fi
+                sleep 5
+              done
+              echo "ERROR: $url $* не отвечает"; return 1
+            }
+            wait_for http://127.0.0.1:8100/health
+            wait_for http://127.0.0.1:3100/
+            wait_for http://127.0.0.1:3101/admin/
+            wait_for http://127.0.0.1/api/categories -H "Host: dev.profitableweb.ru"
+
+            echo "Dev deploy completed: ${DEPLOY_SHA}"
           EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -108,8 +133,3 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           S3_REGION: ${{ secrets.S3_REGION }}
           S3_PUBLIC_ENDPOINT: ${{ secrets.S3_PUBLIC_ENDPOINT }}
-
-      - name: Health check
-        run: |
-          sleep 10
-          curl -f http://dev.${{ secrets.SSH_HOST }}/api/health || echo "::warning::Dev health check failed"
